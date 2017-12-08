@@ -1,0 +1,8 @@
+# NOTE: Be careful with global ignores for possibly non-derived content (*.png, *.csv, *.tex, *.project, etc.)
+# These may lead to confusing sitiations or even data loss, when files are falsely assumed to be version managed.
+# For such files, a specific pattern including the full path is more appropriate (e.g: someSubdir/ignoreMe.png)
+
+NewFrontend/EURent/EURent-InterfaceSpecifications.xlsx
+NewFrontend/History/make.bat
+*.project
+*.epp

@@ -10,6 +10,7 @@ services:
       - db
     volumes:
       - ./volumes/log:/var/www/html/RAP3/log
+      - ./volumes/scripts:/var/www/html/RAP3/scripts
  
   db:
     restart: always
