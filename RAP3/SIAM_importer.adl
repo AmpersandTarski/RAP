@@ -1,0 +1,91 @@
+CONTEXT SIAMv2_1 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
+-- The purpose of this file is to provide an easy way for users of the module to include SIAM functionality.
+
+--[Required/imported SIAM functionality]--
+
+-- INCLUDE "../SIAM/SIAM_Module-versioning.adl"   -- the version definition for this module
+   INCLUDE "../SIAM/SIAM_PersonReg.adl"           -- a basic/minimalistic Person registration (just first- and last names).
+-- INCLUDE "../SIAM/SIAM_OrgReg.adl"              -- a basic/minimalistic Organization registration (just abbreviated and full names).
+-- INCLUDE "../SIAM/SIAM_PersonOrgs.adl"          -- Extension that defines (and maintains the population of) relation `personOrg`.
+-- INCLUDE "../SIAM/SIAM_Persona.adl"             -- Extension that implements Persona (based on Persons and Organizations). A Persona is a combination of person/function/organisation (Stef is director at Ordina). This enhances PersonOrg
+   INCLUDE "../SIAM/SIAM_Roles.adl"               -- Role definitions (allowed roles, default activated roles, 'god'-account property).
+-- INCLUDE "../SIAM/SIAM_LoginLogging.adl"        -- Adding a timestamp to Logins. 
+   INCLUDE "../SIAM/SIAM_Login.adl"               -- Core functionality: sessions, and login with username/password.
+-- INCLUDE "../SIAM/SIAM_LoginUsingIdPs.adl"      -- Extension of Login: Login using third party identity providers.
+-- INCLUDE "../SIAM/SIAM_AutoLoginAccount.adl"    -- Extension that implements the `autoLoginAccount` property for accounts.
+-- INCLUDE "../SIAM/SIAM_GodAccounts.adl"         -- Extension that implements the 'God-accounts' feature (accounts that have all roles).
+-- INCLUDE "../SIAM/SIAM_SessionSuspension.adl"   -- Extension that allows sessions to temporarily be suspended.
+-- INCLUDE "../SIAM/SIAM_LoginISOAuthLevels.adl"  -- Extension that introduces ISO authentication levels in a basic fashion.
+
+--[RAP3 initial set of people and accounts]--
+
+   INCLUDE "RAP3.xlsx"                            -- Initial, minimal set of people and accounts 
+
+--[RAP3 interfaces for SIAM-related stuff]--
+-- INCLUDE "../SIAM/SIAM_PersonReg.ifc"           -- a basic/minimalistic interface to edit Persons
+-- INCLUDE "../SIAM/SIAM_OrgReg.ifc"              -- a basic/minimalistic interface to edit Organizations
+-- INCLUDE "../SIAM/SIAM_Persona.ifc"             -- a basic/minimalistic interface to edit Persona
+-- INCLUDE "../SIAM/SIAM_AccountManagement.ifc"   -- a basic/minimalistic interface to edit Accounts
+
+   INCLUDE "RAP3_AccountMgt.ifc"                  -- RAP Account management interface
+   INCLUDE "RAP3_LoginForProduction.ifc"          -- RAP Login/Logout for production environment
+-- INCLUDE "RAP3_LoginForDevelopment.ifc"         -- RAP Login/Logout for development environment
+
+-- Only one of the following can be active at any time.
+-- INCLUDE "../SIAM/SIAM_Login.ifc"                             -- The simplest Login/Logout interface
+-- INCLUDE "../SIAM/SIAM_LoginWithAssistance.ifc"               -- Login/Logout interface, only to be used by developers
+-- INCLUDE "../SIAM/SIAM_LoginWithAssistanceAndAuthLevels.ifc"  -- Login/Logout interface, only to be used by developers that need LoA's
+
+-- The following VIEW replaces 'dirty' SESSION identifiers with the text "My Session" or "Some other Session"
+VIEW Sessions: SESSION DEFAULT 
+{ "uid": "_SESSION"[SESSION];V;"My Session"[LoginMessage] 
+     \/ (I[SESSION]-"_SESSION");V;"Some other Session"[LoginMessage]
+} ENDVIEW
+POPULATION LoginMessage CONTAINS [ "My Session", "Some other Session" ]
+
+-- DEFAULT view voor UIDs:
+--VIEW UIDs: UID DEFAULT { "Userid":uidUserid, "at":TXT"@", "IdP":uidIdP } ENDVIEW
+
+--[Account initialization]--
+{- Creating an account (e.g. when importing through an Excel file) does not make it usable immediately.
+For example, its property `accIsActive` must be set before it can be used to login with.
+The property `accIsInitialized` is defined to help distinguish between Accounts that are, and those that are not initialized.
+Note: setting the property `accIsActive` will automatically also set `accIsInitialized`.-}
+
+   ROLE ExecEngine MAINTAINS "Account activation/initialization"
+   RULE "Account activation/initialization": I[Account] |- accIsInitialized
+   VIOLATION (TXT "{EX} InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;User"
+             ,TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;User"
+             ,TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
+             ,TXT "{EX} InsPair;accIsInitialized;Account;", SRC I, TXT ";Account;", TGT I
+             )
+
+RELATION personMiddle[Person*Middlepart] [UNI]
+
+--[Roles]--
+RELATION name[Role*RoleName] [UNI,TOT]
+POPULATION name[Role*RoleName] CONTAINS [ ("SystemAdmin","SystemAdmin");("User","User") ]
+VIEW Role : Role(name)
+REPRESENT RoleName TYPE ALPHANUMERIC
+
+-- The following RULEs are listed here so that developers may (cherry)pick them as necessary:
+
+{- ROLE ExecEngine MAINTAINS "Initially, allowed roles are also default roles"
+   RULE "Initially, allowed roles are also default roles": 
+    accAllowedRoles |- accDefaultRoles
+   VIOLATION (TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+
+{- ROLE ExecEngine MAINTAINS "All accounts must have the role User"
+   RULE "All accounts must have the role User" : V[Account*Role];'User' |- accAllowedRoles
+   VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+   
+{- ROLE ExecEngine MAINTAINS "None of the accounts may have the role SYSTEM"
+   RULE "None of the accounts may have the role SYSTEM" : accAllowedRoles;'SYSTEM' |- V
+   VIOLATION (TXT "{EX}DelPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+   
+{- RELATION orgRole[Organization*Role] MEANING "Roles that are applicable to all accounts of the organization"
+   ROLE ExecEngine MAINTAINS "Automatically assign organization roles"
+   RULE "Automatically assign organization roles" : accOrg;orgRole;(I-'SYSTEM') |- accAllowedRoles
+   VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+
+ENDCONTEXT

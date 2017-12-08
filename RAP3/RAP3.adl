@@ -1,0 +1,182 @@
+CONTEXT RAP3 IN ENGLISH
+
+   INCLUDE "SIAM_importer.adl"
+   INCLUDE "../Sequences/SeqOntology.adl"       -- Basic notions
+
+   INCLUDE "Scripts.adl"
+   INCLUDE "Scripts.docadl"
+   INCLUDE "Scripts.ifc"
+
+   INCLUDE "Analyse.ifc"
+
+REPRESENT Language TYPE ALPHANUMERIC
+REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC
+REPRESENT Message TYPE BIGALPHANUMERIC
+REPRESENT Population TYPE BIGALPHANUMERIC
+REPRESENT ShowADL TYPE BIGALPHANUMERIC
+RELATION markupText[Purpose*MarkupText] [UNI,TOT]
+VIEW Purpose : Purpose(markupText)  --TODO: Op een of ander manier werkt deze view niet (HJO, 20161024)
+REPRESENT MarkupText TYPE BIGALPHANUMERIC
+
+RELATION compileresponse[Script*CompileResponse] [UNI] -- the most recent stdout message of compiling a script
+RELATION compileresponse[ScriptVersion*CompileResponse] [UNI]
+REPRESENT CompileResponse TYPE BIGALPHANUMERIC
+
+CLASSIFY Script ISA Sequence
+CLASSIFY ScriptVersion ISA Item
+
+--[[Manipulating Scripts with Ampersand]]--
+PATTERN Compilation
+--[Checking scripts]--
+RELATION scriptOk[ScriptVersion*ScriptVersion] [PROP] -- A ScriptVersion may have the property that Ampersand can compile it
+
+RELATION compileRequest[Script*Script][PROP]
+ROLE ExecEngine MAINTAINS "Check script"
+{- 20161111/RJ: het is een goed gebruik om de regel zodanig op te stellen 
+   dat je zeker weet dat elke relatie/expressie die in het VIOLATION statement voorkomt, 
+   ook echt bestaat. Ik heb het nut van dit goede gebruik al enkele keren ervaren.
+   Dit leidt er ook vaak toe dat een InsPair (DelPair, ...) het 'genormaliseerde' formaat heeft:
+     VIOLATION ( TXT "{EX} InsPair;relation;SrcConcept;", SRC I, TXT ";TgtConcept;", TGT I)
+   en dat is wel zo netjes.
+-}
+--RULE "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Check script" : compileRequest;submittor;accUserid |- -V
+VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT";", TGT I
+          , TXT "{EX}DelPair;compileRequest;Script;", SRC I, TXT";Script;", SRC I
+          )
+
+--[Functional specifiations]--
+RELATION funcSpecRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested the script to be converted into a functional specification
+RELATION funcSpecOk[ScriptVersion*ScriptVersion] [PROP] -- a functional specification has actually been generated (no errors)
+RELATION funcSpec[ScriptVersion*FileObject] [UNI] -- the file containing the funcspec of the script, it has the property 'funcSpecOk'
+
+ROLE ExecEngine MAINTAINS "Create fspec" -- reset funcSpecRequest after an attempt to create it has been performed.
+--RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V
+VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I
+          , TXT "{EX}DelPair;funcSpecRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          )
+
+--[Diagnosis]--
+RELATION diagRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested the script to be converted into a diagnosis
+RELATION diagOk[ScriptVersion*ScriptVersion] [PROP] -- a diagnosis has actually been generated (no errors)
+RELATION diag[ScriptVersion*FileObject] [UNI] -- the file containing the diagnosis of the script, it has the property 'diagOk'
+
+ROLE ExecEngine MAINTAINS "Create diagnosis" -- reset diagRequest after an attempt to create it has been performed.
+--RULE "Create diagnosis" : diagRequest-diag;diag~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Create diagnosis" : (diagRequest-diag;diag~);source;filePath |- -V
+VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+          , TXT "{EX}DelPair;diagRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          )
+
+--[Loading of the script]--
+RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP3
+RELATION loadedInRAP3Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
+RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP when it is loaded into the meta tables
+
+ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
+--RULE "Load population into meta tables" : loadRequest-loadedInRAP3Ok |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Load population into meta tables" : (loadRequest-loadedInRAP3Ok);source;filePath |- -V
+VIOLATION ( TXT "{EX}CompileWithAmpersand;loadPopInRAP3;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+          , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          )
+
+--[Prototypes]--
+RELATION protoRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested the script to be converted into a prototype
+RELATION protoOk[ScriptVersion*ScriptVersion] [PROP] -- a prototype has actually been generated (no errors)
+RELATION proto[Script*FileObject] [UNI] -- the index.php (or whatever) file that must be clicked to start the prototype
+
+ROLE ExecEngine MAINTAINS "Create prototype" -- reset protoRequest after an attempt to create it has been performed.
+--RULE "Create prototype" : protoRequest-proto;proto~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Create prototype" : (protoRequest-protoOk;protoOk~);source;filePath |- -V
+VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+          , TXT "{EX}DelPair;protoRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          )
+
+--[Deletion of Context (Fully cascading!)]--
+RELATION requestDestroy[Context*Context] [PROP] -- a request to destroy this context. Beware: Experimental. You might burn all. The idea is that ALL atoms in the context of RAP that are linked with this context atom (transitive closure) will be deleted. ALL relations are taken into account, except for a set, specified in cli.php. Currently, the only relation in that set is context[ScriptVersion*Context]. This is to avoid that atoms are destroyed in the specific RAP part. 
+ROLE ExecEngine MAINTAINS "Destroy Context"  -- ExecEngine is een echte pyrotechnicus.... 
+RULE "Destroy Context" : requestDestroy |- -V
+VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
+          )
+ENDPATTERN
+
+PATTERN "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)
+
+RELATION conceptualDiagram[Concept*FileObject][UNI]
+RELATION urlEncodedName[Concept*EncodedName][UNI]
+RELATION conceptualDiagram[Rule*FileObject][UNI]
+RELATION urlEncodedName[Rule*EncodedName][UNI]
+RELATION conceptualDiagram[Pattern*FileObject][UNI]
+RELATION urlEncodedName[Pattern*EncodedName][UNI]
+RELATION conceptualDiagram[Context*FileObject][UNI]
+REPRESENT EncodedName TYPE ALPHANUMERIC
+
+RELATION basePath[ScriptVersion*FilePath][UNI,TOT] -- The path on the filesystem relative from RAP to the context stuff of this scriptversion ( i.e.:  scripts\123456\generated\Script_1475844318716509\Version2016-10-07T144605\)
+
+ROLE ExecEngine MAINTAINS "link cd of context"
+RULE "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]
+                               |- conceptualDiagram[Context*FileObject];conceptualDiagram[Context*FileObject]~
+MEANING "Elke context in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
+VIOLATION ( TXT "{EX} NewStruct;FileObject"
+                ,TXT ";conceptualDiagram;Context;",SRC I[Context],TXT ";FileObject;_NEW"
+                ,TXT ";originalFileName;FileObject;_NEW;FileName;LogicalDataModel"
+                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+                                 , SRC context[ScriptVersion*Context]~;
+                                       basePath[ScriptVersion*FilePath]
+                                 , TXT "LogicalDataModel.svg"
+          )
+
+ROLE ExecEngine MAINTAINS "link cd of pattern"
+RULE "link cd of pattern" : I[Pattern] /\ context[Pattern*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Pattern*Context]~
+                               |- conceptualDiagram[Pattern*FileObject];conceptualDiagram[Pattern*FileObject]~
+MEANING "Elk pattern in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
+VIOLATION ( TXT "{EX} NewStruct;FileObject"
+                ,TXT ";conceptualDiagram;Pattern;",SRC I[Pattern],TXT ";FileObject;_NEW"
+                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+                                 , SRC context[Pattern*Context];
+                                       context[ScriptVersion*Context]~;
+                                       basePath[ScriptVersion*FilePath]
+                                 , TXT "CDPattern"
+                                 , SRC urlEncodedName[Pattern*EncodedName]
+                                 , TXT ".svg"
+          )
+
+ROLE ExecEngine MAINTAINS "link cd of rule"
+RULE "link cd of rule" : I[Rule] /\ allRules[Context*Rule]~;context[ScriptVersion*Context]~;context[ScriptVersion*Context];allRules[Context*Rule]
+                               |- conceptualDiagram[Rule*FileObject];conceptualDiagram[Rule*FileObject]~
+MEANING "Elke regel in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
+VIOLATION ( TXT "{EX} NewStruct;FileObject"
+                ,TXT ";conceptualDiagram;Rule;",SRC I[Rule],TXT ";FileObject;_NEW"
+                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+                                 , SRC allRules[Context*Rule]~;
+                                       context[ScriptVersion*Context]~;
+                                       basePath[ScriptVersion*FilePath]
+                                 , TXT "CDRule"
+                                 , SRC urlEncodedName[Rule*EncodedName]
+                                 , TXT ".svg"
+          )
+
+ROLE ExecEngine MAINTAINS "link cd of concept"
+RULE "link cd of concept" : I[Concept] /\(context[Concept*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Concept*Context]~)
+                               |- conceptualDiagram[Concept*FileObject];conceptualDiagram[Concept*FileObject]~
+MEANING "Elk concept in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
+VIOLATION ( TXT "{EX} NewStruct;FileObject"
+                ,TXT ";conceptualDiagram;Concept;",SRC I[Concept],TXT ";FileObject;_NEW"
+                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+                                 , SRC context[Concept*Context];
+                                       context[ScriptVersion*Context]~;
+                                       basePath[ScriptVersion*FilePath]
+                                 , TXT "CDConcept"
+                                 , SRC urlEncodedName[Concept*EncodedName]
+                                 , TXT ".svg"
+          )
+
+
+ENDPATTERN
+
+
+ENDCONTEXT

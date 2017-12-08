@@ -1,0 +1,13 @@
+CONTEXT "LoginWithIdP" IN ENGLISH LATEX
+-----------------------------------------------------------
+PURPOSE CONTEXT "LoginWithIdP"
+{+This context provides the stuff that is needed to call an (external) IdP for doing the authentication for us.+}
+
+INTERFACE "LoginWithIdP": "_SESSION"[SESSION]-(sessionAccount;sessionAccount~) cRud BOX
+   [ "Userid" : loginUserid cRUd
+   , "IdP"    : loginIdP cRUd
+   , "LoA"    : loginAuthISOLevel cRUd
+   ]
+
+-----------------------------------------------------------
+ENDCONTEXT

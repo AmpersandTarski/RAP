@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  rap3:
+    restart: always
+    image: ampersandtarski/ampersand-rap
+    ports:
+      - "80:80"
+    links:
+      - db
+    volumes:
+      - ./volumes/log:/var/www/html/RAP3/log
+ 
+  db:
+    restart: always
+    image: ampersandtarski/ampersand-prototype-db
+    volumes:
+      - ./volumes/mysql:/var/lib/mysql
+
+  phptools:
+    image: phpmyadmin/phpmyadmin
+    ports:
+       - "8080:80"
+    links:
+      - db

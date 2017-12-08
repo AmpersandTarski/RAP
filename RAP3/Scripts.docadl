@@ -1,0 +1,36 @@
+CONTEXT RAP3 IN ENGLISH
+
+PURPOSE PATTERN "Registration of Ampersand source files"
+{+As a student, I need to submit files for Ampersand to compile, so that I can get functional specifications and all other goodies that Ampersand has in store for me.
+In order to submit an Ampersand script in RAP3, the user uploads text in the web-application.
+This pattern defines what administration RAP3 will do in order before compiling the script/
++}
+
+PURPOSE RELATION submittor[Script*Account]
+{+RAP3 keeps separate workspaces for different users.
+For that purpose, RAP3 registers the account under which the script has been submitted.
+It registers accounts rather than persons to minimize the amount of personal data stored in RAP3.
++}
+
+PURPOSE RELATION assignment[Script*Assignment]
+{+In order to keep track of different scripts, the system can keep track of the assignment for which the script is an answer.
+Two scripts with the same assignment and submittor will be treated as subsequent versions of the same script.
++}
+
+PURPOSE RELATION content[Script*ScriptContent] 
+{+TODO+}
+
+PURPOSE RELATION submitted[Script*DateTime]
+{+Submitting a script is done by clicking on a submit-widget in the web-application of RAP3.
+When files are already present when the database is initialized, the corresponding script must be made and the file creation date will be the submission date.
++}
+
+PURPOSE INTERFACE StudentScripts
+{+This interface gives a tutor an overview of the scripts submitted by students.
++}
+
+PURPOSE RULE "Submission Timestamping"
+{+To ensure that the submittor of every script is known, the following rule automatically stamps every script with its submittor and a timestamp.
+The account logged in when creating a new script is considered to be the submittor.
++}
+ENDCONTEXT

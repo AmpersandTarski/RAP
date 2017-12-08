@@ -1,0 +1,25 @@
+﻿CONTEXT SIAM_Module_Versioning IN ENGLISH
+{- This is the version file for SIAM v 2.0. When upgrading from a previous version (i.e. the unversioned situation, which is considered to be SIAM v 1.0), you should:
+- check the files that you imported from your own SIAM_Module import file, as v 2.0 has separated features that used to be embedded in other files, so that you may choose to include them or leave them out. See the SIAM_Module-example.adl files for details.
+-}
+
+-- The assumption behind module versioning is that users use their own SIAM module loader file, and that this is adapted from the `SIAM_Module-example.adl`, and that this would imply that a test for the correct version is included. 
+
+RELATION moduleName[Module*ModuleName] [UNI,TOT] -- Name by which the module is known
+RELATION moduleVsnMajor[Module*ModuleVsnMajor] [UNI,TOT] -- The major version indicator of the module
+RELATION moduleVsnMinor[Module*ModuleVsnMinor] [UNI,TOT] -- The minor version indicator of the module
+
+POPULATION moduleName     CONTAINS [ ("SIAM", "SIAM - Session, Identity and Access Management module") ]
+POPULATION moduleVsnMajor CONTAINS [ ("SIAM", 2) ]
+POPULATION moduleVsnMinor CONTAINS [ ("SIAM", 2) ]
+
+CONCEPT ModuleName "the name (text) by which the module is known"
+REPRESENT ModuleName TYPE ALPHANUMERIC
+
+CONCEPT ModuleVsnMajor "the major version indicator of the module - incremented when changes are not backwards compatible"
+REPRESENT ModuleVsnMajor TYPE INTEGER
+
+CONCEPT ModuleVsnMinor "the minor version indicator of the module - incremented when changes exist that are backwards compatible"
+REPRESENT ModuleVsnMinor TYPE INTEGER
+
+ENDCONTEXT

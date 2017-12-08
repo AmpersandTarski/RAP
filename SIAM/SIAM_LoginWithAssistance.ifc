@@ -1,0 +1,62 @@
+﻿CONTEXT "LoginWithAssistance" IN ENGLISH LATEX
+{-This script is intended to be reusable, and for INCLUDEsion in your own scripts.
+This interface provides you with LOGIN functionality.
+It is particularly suited for developers, since it allows you to select an account
+by which you then will be logged in, rather than that you have to type the actual
+username and password.
+-}
+-----------------------------------------------------------
+
+--[Assisted Login rules]--
+
+RELATION sessionLoginAssist[SESSION*SESSION] [PROP]
+ROLE ExecEngine MAINTAINS "Reset login help"
+RULE "Reset login help": sessionLoginAssist /\ sessionAccount;sessionAccount~ |- -V
+VIOLATION (TXT "{EX} DelPair;sessionLoginAssist;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+INTERFACE "Login (Assisted)": "_SESSION"[SESSION] cRud BOX <ROWSNL>
+   [ "Login": I-(sessionAccount;sessionAccount~) cRud BOX <HCOLS>
+      [ "Userid": loginUserid cRUd
+      , "Password": loginPassword crUd -- crUd is needed for Passwords
+      , "IdP": loginIdP cRUd
+--$The following two lines are meant for demonstration contexts only
+      , "Please help": sessionLoginAssist cRUd
+      , " ": sessionLoginAssist;(V-(V;accIsActive;V));'Cannot help - there are no (active) accounts'[LoginMessage] cRud
+      ]
+--$This is for an easy login, which is just for testing purposes
+   , "Active accounts": sessionLoginAssist;V[SESSION*Account];accIsActive cRud BOX <SHCOLS>
+      [ "Login?": autoLoginAccount cRUd
+      , "Userid": accUserid cRud
+      , "Person": accPerson cRud
+      , "Organization": accOrg cRud
+      , "UIDs": accUID cRud
+--    , "Persona" : accPersona cRud
+--    , "Allowed roles": accAllowedRoles cRUd
+--    , "Default roles": accDefaultRoles cRUd
+      ]
+   , "Inactive accounts": sessionLoginAssist;V[SESSION*Account];(I-accIsActive) cRud BOX <SHCOLS>
+      [ "Activate?" : accIsActive cRUd
+      , "Userid": accUserid cRud
+      , "Person": accPerson cRud
+      , "Organization": accOrg cRud
+      , "UIDs": accUID cRud
+--    , "Persona" : accPersona cRud
+--    , "Allowed roles": accAllowedRoles cRUd
+--    , "Default roles": accDefaultRoles cRUd
+      ]
+   , "Logout": I /\ sessionAccount;sessionAccount~ cRud BOX <ROWSNL>
+      [ "Logout": I cRud BOX <HCOLS>
+         [ "Logout?": logoutRequest cRUd
+         , "UserID": sessionUserid cRud
+         , "Person": accPerson cRud
+         , "Organization": accOrg cRud
+--       , "Persona" : sessionPersona cRud
+--       , "Allowed roles": sessionAllowedRoles cRUd
+--       , "Active roles": sessionActiveRoles cRUd
+         ]
+      ]
+   ]
+POPULATION LoginMessage CONTAINS [ "Cannot help - there are no (active) accounts" ]
+
+-----------------------------------------------------------
+ENDCONTEXT

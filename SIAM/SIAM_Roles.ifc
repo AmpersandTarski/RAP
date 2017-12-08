@@ -1,0 +1,9 @@
+CONTEXT "Roles" IN ENGLISH
+
+INTERFACE "Roles" FOR "Account manager": "_SESSION";V[SESSION*Role] CRuD BOX <SCOLS>
+   [ "Role": I cRud
+   , "Assigned to": accAllowedRoles~ cRud
+   , "Default for": accDefaultRoles~ cRud
+   ]
+
+ENDCONTEXT

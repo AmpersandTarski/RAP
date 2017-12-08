@@ -1,0 +1,36 @@
+CONTEXT "Login" IN ENGLISH LATEX
+-----------------------------------------------------------
+
+INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
+   [ "Login met een bestaand account" : I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
+      [ "Studentnummer": loginUserid cRUd
+      , "Password": loginPassword crUd -- crUd is needed for Passwords
+      ]
+   , "Registreer een nieuw account": I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
+      [ "Studentnummer" : regUserID cRUd
+      , "Naam" :       regPerson CRUD    -- The CRUD does not work in COLS mode, so we'll leave it for the time being.
+      , "Email" :      regEmail cRUd
+      , "Wachtwoord" : regPassword1 crUd -- crUd is needed for Passwords
+      , "(herhaal)" :  regPassword2 crUd -- crUd is needed for Passwords
+      , "Registreer" : I BOX <PropertyButton>
+                          [ disabled : I-(regPassword1;regPassword2~ /\ regUserID;regUserID~) cRud -- Only active if there are two equal passwords.
+                          , property : regCreateAccount cRUd
+                          ]
+      ]
+   , "Logout": I /\ sessionAccount;sessionAccount~ cRud BOX <ROWSNL>
+      [ "Logout": I cRud BOX <HCOLS>
+         [ "Logout?": I BOX <PropertyButton>
+                               [ disabled : I-I
+                               , property : logoutRequest cRUd
+                               ]
+         , "UserID": sessionUserid cRud
+--       , "Organization": accOrg cRud
+--       , "Person": accPerson CRUD
+         , "Email": sessionAccount;accEmail cRud
+--       , "Allowed roles": sessionAllowedRoles cRUd
+--       , "Active roles": sessionActiveRoles cRUd
+         ]
+      ]
+   ]
+
+ENDCONTEXT

@@ -1,0 +1,18 @@
+﻿CONTEXT "Sequences" IN ENGLISH
+-- The purpose of this file is to provide an easy way for users of the module to include Sequences functionality.
+
+   INCLUDE "../Sequences/SeqOntology.adl"       -- Basic notions
+   INCLUDE "../Sequences/SeqInterfacing.svc"    -- ExecEngine rules for inserting/deleting stuff
+   INCLUDE "../Sequences/SeqItemNumbering.svc"  "NOTE: You need to include the .PHP files that do the item number computations (and then remove this textstring)!" -- ExecEngine rules for numbering items in a sequence
+   INCLUDE "../Sequences/SeqItemTexts.svc"      -- ExecEngine rules for formating numbered items in a sequence
+   INCLUDE "../Sequences/SeqTextPhrases.svc"    "NOTE: You need to include the .PHP files that do the item number computations (and then remove this textstring)!" -- ExecEngine rules for constructing texts from items in a sequence
+
+-- INCLUDE "../Sequences/SeqItems.ifc"          -- Test interface (Sequences and Items only)
+-- INCLUDE "../Sequences/SeqItemTexts.ifc"      -- Test interface, includes item numbering
+   INCLUDE "../Sequences/SeqItemNumbering.ifc"  -- Test interface, includes formatted item numbering
+   INCLUDE "../Sequences/SeqTextPhrases.ifc"    -- Test interface for text/phrase construction   
+
+VIEW Sequences: Sequence(seqName)
+VIEW Items: Item(itemName)
+
+ENDCONTEXT

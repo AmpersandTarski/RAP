@@ -1,0 +1,54 @@
+CONTEXT "Roles" IN ENGLISH
+PURPOSE CONTEXT "Roles"
+{+This context defines Accounts, i.e. registrations (of attributes) of Persona from a (web)Service Provider's perspective. 
+Examples of such attributes are usernames, passwords, roles.
+Also, it defines ways to use such attributes in SESSIONs, by defining (and (de)populating) appropriate 'session-variables'.
+Examples of session variables are: `sessionPerson`, `sessionAccount`.
+Session-variables may be used to personalize the way that a user is given access to the system.
+
+Personalizing the way access is being given is determined by attributes that have been assigned to the user, either directory or indirectly. Such attributes may be the function of the user in the organization, or the business unit he belongs to, the business function(s) that he has some doing with, etc. However, such attributes may also be roles that have been assigned to the users Axccount. Based on all such attributes, a cross-section of the data-cloud in the system is made with which the user may work in his session. This section defines not only the session variables that are specific to this system, but also the rules that determine the data-cloud for specific sessions.
+
+Dit hoofdstuk beschrijft de termen die nodig zijn om personen (users) te laten communiceren met het systeem, en op een gepersonaliseerde manier toegang te kunnen krijgen tot de gegevens uit het systeem. Waar we spreken over ``het systeem'' bedoelen we het informatiesysteem waarbinnen dit proces wordt gebruikt.
+
+Het personaliseren van de manier van toegang gebeurt op basis van attributen die, direct of indirect, aan de user zijn toegekend. Het kan bijvoorbeeld gaan over diens functie in de organisatie, de OrgUnit waar hij is geplaatst of de Bedrijfsfuncties die hij in beheer heeft. Het kan echter ook gaan over rollen die aan het Account van de user zijn toegekend. Op basis van zulke gegevens wordt een doorsnijding uit de datawolk van het systeem gemaakt, waar de user in zijn session mee kan werken. Dit hoofdstuk definieert niet alleen deze additionele session variabelen, maar ook de regels die de datawolk bepalen voor een zekere session. 
++}
+
+--[Account support for Roles/access control]--
+RELATION accAllowedRoles[Account*Role]
+MEANING "An Account registers the Roles that MAY be activated in a SESSION to which the Account is assigned"
+RELATION accDefaultRoles[Account*Role]
+MEANING "An Account registers the Roles that ARE activated in a SESSION once the Account is assigned"
+
+ROLE ExecEngine MAINTAINS "Default roles must be allowed roles"
+RULE "Default roles must be allowed roles": accDefaultRoles |- accAllowedRoles
+VIOLATION (TXT "{EX} DelPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I)
+
+--[Account-related Session Variables]--
+
+RELATION sessionAllowedRoles[SESSION*Role]
+MEANING "Within a SESSION, a Role may be activated"
+ROLE ExecEngine MAINTAINS "Set allowed session roles"
+RULE "Set allowed session roles": sessionAccount;accAllowedRoles |- sessionAllowedRoles
+VIOLATION (TXT "{EX} InsPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear allowed session roles"
+RULE "Clear allowed session roles": sessionAllowedRoles |- sessionAccount;accAllowedRoles
+VIOLATION (TXT "{EX} DelPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;", TGT I)
+
+RELATION sessionActiveRoles[SESSION*Role]
+MEANING "A SESSION has activated a Role"
+ROLE ExecEngine MAINTAINS "Activate roles in a session"
+RULE "Activate roles in a session": 
+   (I-(sessionActiveRoles;sessionActiveRoles~));sessionAccount;accDefaultRoles |- sessionActiveRoles
+VIOLATION (TXT "{EX} InsPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;", TGT I)
+ROLE ExecEngine MAINTAINS "Deactivate roles in a session"
+RULE "Deactivate roles in a session": sessionActiveRoles |- sessionAccount;V
+VIOLATION (TXT "{EX} DelPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;", TGT I)
+
+--[Glossary]--
+
+PURPOSE CONCEPT Role
+{+Niet iedereen mag alle gegevens uit een systeem inzien en/of wijzigen. Om de beheerslast te beperken die ontstaat als dit soort rechten per persoon wordt uitgegeven, gebruiken we het concept 'Role'. Een Role wordt enerzijds toegekend aan Accounts (en daarmee aan Personen) en anderzijds wordt hij gebruikt om gegevens in te zien en/of te wijzigen. Als een user inlogt worden de Rollen die aan hem zijn toegekend in de session geactiveerd (sessionrollen). Interfaces gebruiken deze sessionrollen om al dan niet gegevens te tonen en/of te editen.+}
+CONCEPT Role "de naam voor het mogen inzien en/of wijzigen van zekere gegevens, die kan worden toegekend aan accounts en in sessions kan worden geactiveerd" 
+
+-----------------------------------------------------------
+ENDCONTEXT

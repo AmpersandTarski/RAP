@@ -1,0 +1,13 @@
+$if(verbose)$<!-- Box-Paragraph.html (custom) "$label$" : $expAdl$ :: $source$ * $target$  -->
+$endif$<div>
+  <div style="display:inline" ng-repeat="(key, item) in val['$name$'] | toArray | orderBy:'+index'" ng-mouseenter="show = true" ng-mouseleave="show = false">
+		<span>{{item.index}}:
+    </span>
+		<input my-bluronenter ng-show="show" ng-model="item.phrase" type="text" placeholder="{{item.varname}}" ng-blur="put(ResourceId)">
+		<span ng-show="!show">
+       <span ng-hide="item.phrase" style="color:grey">{{item.varname}}
+       </span>
+          {{item.phrase}}
+    </span>
+  </div>
+</div>

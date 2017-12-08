@@ -1,0 +1,93 @@
+CONTEXT RAP3 IN ENGLISH
+
+PATTERN "Registration of Ampersand source files"
+
+CONCEPT Script "A script is a piece of UTF-8 encoded text that is meant to be compiled by the Ampersand compiler."
+  RELATION submittor[Script*Account] [UNI] --TOT is guaranteed by the ExecEngine
+  RELATION assignment[Script*Assignment] [UNI]
+  RELATION submitted[Script*DateTime] [UNI] -- The data/time that the file was uploaded. 
+   REPRESENT DateTime TYPE DATETIME
+  RELATION content[Script*ScriptContent] [UNI,INJ]
+   MEANING "The actual text of the script (as seen in the editor)."
+--  uncommented in an attempt to diagnose issue RAP#30 (retain for future testing/diagnosis)
+--  ROLE ExecEngine MAINTAINS "SURscriptContent"
+--  RULE "SURscriptContent": I[ScriptContent] |- content~;content
+--  MEANING "For every ScriptContent there must be a Script in the relation content."
+--  VIOLATION (TXT "{EX} DelAtom;ScriptContent;", SRC I) -- remove orphan content.
+
+
+CONCEPT Assignment "An assignment is the name of a piece of work that a student should carry out in order to succeed for a course."
+  REPRESENT Assignment TYPE ALPHANUMERIC
+
+CONCEPT FileObject ""
+  --  IDENT FileObjectName 	: FileObject (filePath)
+  VIEW FileObject 		: FileObject DEFAULT {filePath : filePath, fileName : originalFileName} HTML TEMPLATE "View-FILEOBJECT.html" ENDVIEW
+  RELATION filePath[FileObject*FilePath] [UNI] --,TOT]
+    REPRESENT FilePath TYPE BIGALPHANUMERIC
+  RELATION originalFileName[FileObject*FileName] [UNI] --,TOT]
+    REPRESENT FileName TYPE ALPHANUMERIC
+
+
+CONCEPT ScriptContent ""
+REPRESENT ScriptContent TYPE BIGALPHANUMERIC
+VIEW ScriptContent : ScriptContent DEFAULT HTML TEMPLATE "View-ACE.html" ENDVIEW
+
+CONCEPT ScriptVersion ""
+  RELATION source[ScriptVersion*FileObject] -- [UNI]?
+  RELATION version[Script*ScriptVersion] [INJ]
+  ROLE ExecEngine MAINTAINS "SURversion"
+  RULE "SURversion": I[ScriptVersion] |- version~;version
+  MEANING "Every ScriptVersion must have a Script in the relation version."
+  VIOLATION (TXT "{EX} DelAtom;ScriptVersion;", SRC I) -- i.e.: logout.
+
+
+--[Submission of new version of a script]--
+
+ROLE ExecEngine MAINTAINS "Submission Timestamping"
+RULE "Submission Timestamping": (I[Script]/\content;content~) |- submitted;V
+VIOLATION ( TXT "{EX} InsPair;submitted;Script;", SRC I, TXT ";DateTime;{php}date(DATE_ISO8601)"
+          )
+ROLE ExecEngine MAINTAINS "Submittor"
+RULE "Submittor": I[Script]#("_SESSION"[SESSION];sessionAccount) |- submittor;V
+VIOLATION ( TXT "{EX} InsPair;submittor;Script;", SRC I, TXT ";Account;", TGT I
+          )
+
+--   ROLE ExecEngine MAINTAINS "All accounts must have the role User"
+--   RULE "All accounts must have the role User" : newScript~;"_SESSION";sessionAccount |- accAllowedRoles
+--   VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I)
+
+
+--[Automatic maintaining of the sequence of versions]--
+
+ROLE ExecEngine MAINTAINS "Add version to empty sequence"
+RULE "Add version to empty sequence" :
+   (I[Script] - (itemInSeq~;itemInSeq)) ;version[Script*ScriptVersion] |- itemInSeq[Item*Sequence]~
+VIOLATION (TXT "{EX} InsPair;itemInSeq;Item;", TGT I[ScriptVersion], TXT ";Sequence;", SRC I[Script]          )
+
+ROLE ExecEngine MAINTAINS "Prepend version to non-empty sequence"
+RULE "Prepend version to non-empty sequence" :
+   (I[Script] /\ (seqFirstItem;seqFirstItem~)) ;version[Script*ScriptVersion] |- itemInSeq[Item*Sequence]~
+VIOLATION (TXT "{EX} InsPair;itemInSeq;Item;", TGT I[ScriptVersion], TXT ";Sequence;", SRC I[Script]
+          ,TXT "{EX} InsPair;nextItem;Item;",TGT I[ScriptVersion], TXT ";Item;", SRC seqFirstItem
+          )
+
+ROLE Janitor MAINTAINS "Destroy context of non-latest scriptversion"
+RULE "Destroy context of non-latest scriptversion" :
+   context[ScriptVersion*Context]~ |- -(context[ScriptVersion*Context]~;nextItem~;nextItem)
+VIOLATION (TXT "{EX} InsPair;requestDestroy;Context;",SRC I[Context],TXT ";Context;",SRC I[Context])
+
+ENDPATTERN
+
+
+
+
+
+--PURPOSE RULE "indienen door studenten"
+--{+ Om scripts te kunnen traceren naar de student, worden alleen scripts van ingeschreven studenten toegestaan.
+--Daartoe dient de student zijn of haar studentnummer te koppelen aan het account.
+--+}
+--ROLE Student MAINTAINS "indienen door studenten"
+--RULE "indienen door studenten" : submittor |- submittor;(I/\ accUserid;accUserid~ )
+--MEANING "Alleen accounts met een studentnummer mogen een script indienen."
+--VIOLATION (TXT "Aan uw account is geen studentnummer gekoppeld. Om die reden wordt script ", SRC I, TXT " niet opgeslagen.")
+ENDCONTEXT

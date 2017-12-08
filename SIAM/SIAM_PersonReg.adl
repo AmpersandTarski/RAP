@@ -1,0 +1,34 @@
+CONTEXT "Person Registration" IN ENGLISH
+{- This is a stand-alone file that implements a Person registration is a minimalistic fashion.
+Note that it does not contain an IDENT statement, so as to allow for easy extensions.
+-}
+-----------------------------------------------------------
+
+CLASSIFY Person ISA Actor -- Integration with Persona
+
+REPRESENT FirstName TYPE ALPHANUMERIC
+RELATION personFirstName[Person*FirstName] [UNI]
+MEANING "The first name of a Person that is registered."
+
+REPRESENT LastName TYPE ALPHANUMERIC
+RELATION personLastName[Person*LastName] [UNI]
+MEANING "The last name of a Person that is registered."
+
+--[Accounts and Sessions]-- 
+RELATION accPerson[Account*Person] [UNI] 
+MEANING "An Account may contain (web)service-specific attributes regarding a specific Person"
+
+RELATION sessionPerson[SESSION*Person] [UNI]
+MEANING "In a SESSION, the user (i.e. the Person that acts 'at the other side') may be known."
+ROLE ExecEngine MAINTAINS "Determine the acting person in a session"
+RULE "Determine the acting person in a session": sessionAccount;accPerson |- sessionPerson
+VIOLATION (TXT "{EX} InsPair;sessionPerson;SESSION;", SRC I, TXT ";Person;", TGT I)
+ROLE ExecEngine MAINTAINS "Undetermine the acting person in a session"
+RULE "Undetermine the acting person in a session": sessionPerson |- sessionAccount;accPerson
+VIOLATION (TXT "{EX} DelPair;sessionPerson;SESSION;", SRC I, TXT ";Person;", TGT I)
+
+--[Glossary]--
+CONCEPT Person "a human body of flesh and blood"
+
+-----------------------------------------------------------
+ENDCONTEXT

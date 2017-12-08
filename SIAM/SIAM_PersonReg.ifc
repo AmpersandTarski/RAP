@@ -1,0 +1,30 @@
+﻿CONTEXT "Person Registration Interfaces" IN ENGLISH
+-----------------------------------------------------------
+
+VIEW Persons : Person DEFAULT
+{ "first name" : personFirstName
+, " "          : TXT " "
+, "last name"  : personLastName
+} ENDVIEW
+
+POPULATION Role CONTAINS [ "PersonMgr" ]
+
+INTERFACE "Person" FOR "Person Manager": I[Person] CRUD COLS
+   [ "First name"   : personFirstName cRUd
+   , "Last name"    : personLastName cRUd
+   ]
+
+INTERFACE "People" FOR "Person Manager": V[SESSION*Person]  cRUD COLS
+   [ "First name": personFirstName cRUd
+   , "Last name" : personLastName cRUd
+   , "Account" : accPerson~ cRud
+   ]
+
+INTERFACE "Me": "_SESSION";sessionPerson cRUd COLS
+   [ "First name": personFirstName cRUd
+   , "Last name" : personLastName cRUd
+   , "Account" : accPerson~ cRud
+   ]
+
+-----------------------------------------------------------
+ENDCONTEXT

@@ -1,0 +1,51 @@
+﻿CONTEXT SequenceTextConstructionService IN ENGLISH
+{- Under the assumption that all Items in a Sequence have a phrase associated with them,
+this service computes the concatentation of all such phrases. 
+The result is that `seqLastItem;itemBigText` is the concatenation of all phrases of the items of the sequence.
+
+Note: the database automatically strips leading and trailing whitespace from texts (phrases).
+The constructor therefor automatically inserts a (single) space between two concatenated texts.
+-}
+
+REPRESENT BigText TYPE BIGALPHANUMERIC
+itemPhrase :: Item * BigText [UNI] 
+itemBigText :: Item * BigText [UNI] 
+
+ROLE ExecEngine MAINTAINS "Set BigText of first item in sequence"
+RULE "Set BigText of first item in sequence": 
+   seqFirstItem;itemPhrase |- seqFirstItem;itemBigText
+VIOLATION (TXT "{EX} InsPair;itemBigText;Item;", SRC seqFirstItem, TXT ";BigText;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Clear BigText of first item in sequence"
+RULE "Clear BigText of first item in sequence": 
+   seqFirstItem;itemBigText |- seqFirstItem;itemPhrase
+VIOLATION (TXT "{EX} DelPair;itemBigText;Item;", SRC seqFirstItem, TXT ";BigText;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Set BigText of next items in sequence"
+RULE "Set BigText of next items in sequence": 
+   (nextItem~;itemBigText;tcPrefix~ /\ itemPhrase;tcLabel~);tcResult |- itemBigText
+VIOLATION (TXT "{EX} InsPair;itemBigText;Item;", SRC I, TXT ";BigText;", TGT I)
+
+IDENT TextConstructs: TextConstruct(tcPrefix,tcLabel)
+tcPrefix :: TextConstruct * BigText [UNI]
+tcLabel  :: TextConstruct * BigText [UNI]
+tcResult :: TextConstruct * BigText [UNI]
+
+ROLE ExecEngine MAINTAINS "Create TextConstructs"
+RULE "Create TextConstructs": itemBigText~;nextItem;itemPhrase |- tcPrefix~;tcLabel
+VIOLATION (TXT "{EX} NewStruct;TextConstruct"
+               ,TXT ";tcPrefix;TextConstruct;_NEW;BigText;", SRC I
+               ,TXT ";tcLabel;TextConstruct;_NEW;BigText;", TGT I
+-- The line below may make the rule 'Compute TextConstructs' obsolete.
+--             ,TXT ";tcResult;TextConstruct;_NEW;BigText;{php}implode('',array(", SRC I, TXT ",", TGT I, TXT "))"
+          )
+
+ROLE ExecEngine MAINTAINS "Compute TextConstructs"
+RULE "Compute TextConstructs": I /\ tcPrefix;tcPrefix~ /\ tcLabel;tcLabel~ |- tcResult;tcResult~
+VIOLATION (TXT "{EX} ConstrucText;tcResult;TextConstruct;", SRC I, TXT ";BigText;", SRC tcPrefix, TXT ";", SRC tcLabel)
+
+ROLE ExecEngine MAINTAINS "Delete TextConstructs"
+RULE "Delete TextConstructs": I |- tcPrefix;itemBigText~;nextItem;itemPhrase;tcLabel~
+VIOLATION (TXT "{EX} DelAtom;TextConstruct;", SRC I)
+
+ENDCONTEXT

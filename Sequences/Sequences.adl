@@ -1,0 +1,28 @@
+﻿CONTEXT "Sequences_Testing" IN ENGLISH
+-- Bitrot awaits fix of #665
+-- This is a stand-alone context used for demonstrating and testing Sequences
+
+   INCLUDE "../Sequences/SeqOntology.adl"       -- Basic notions
+   INCLUDE "../Sequences/SeqInterfacing.svc"    -- ExecEngine rules for inserting/deleting stuff
+   INCLUDE "../Sequences/SeqItemNumbering.svc"  -- ExecEngine rules for numbering items in a sequence
+   INCLUDE "../Sequences/SeqItemTexts.svc"      -- ExecEngine rules for formating numbered items in a sequence
+   INCLUDE "../Sequences/SeqTextPhrases.svc"    -- ExecEngine rules for constructing texts from items in a sequence
+
+-- INCLUDE "../Sequences/SeqItems.ifc"          -- Test interface (Sequences and Items only)
+-- INCLUDE "../Sequences/SeqItemTexts.ifc"      -- Test interface, includes item numbering
+   INCLUDE "../Sequences/SeqItemNumbering.ifc"  -- Test interface, includes formatted item numbering
+   INCLUDE "../Sequences/SeqTextPhrases.ifc"    -- Test interface for text/phrase construction   
+
+sessionNewSeq :: SESSION * SeqName
+ROLE ExecEngine MAINTAINS "Create new Sequence"
+RULE "Create new Sequence": sessionNewSeq |- -V
+   VIOLATION ( TXT "{EX} NewStruct;Sequence;seqName;Sequence;_NEW;SeqName;", TGT I
+             , TXT "{EX} DelPair;sessionNewSeq;SESSION;", SRC I, TXT ";SeqName;", TGT I
+             )
+
+POPULATION seqName CONTAINS [ ("TestSeq", "TestSeq") ]
+
+VIEW Sequences: Sequence(seqName)
+VIEW Items: Item(itemName)
+
+ENDCONTEXT
