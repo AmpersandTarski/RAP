@@ -198,7 +198,7 @@ function Prototype($path, $scriptAtom, $scriptVersionAtom, $outputDir){
     $sqlHost = is_null(Config::get('dbHost', 'mysqlDatabase')) ? "localhost" : Config::get('dbHost', 'mysqlDatabase');
 
     $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
-    $default = $exefile . " {$basename} --dev --proto=\"{$absOutputDir}\" --dbName=\"ampersand_{$scriptAtom->id}\" --sqlHost={$sqlHost} --language=NL ";
+    $default = $exefile . " {$basename} --proto=\"{$absOutputDir}\" --dbName=\"ampersand_{$scriptAtom->id}\" --sqlHost={$sqlHost} --language=NL ";
     $cmd = is_null(Config::get('ProtoCmd', 'RAP3')) ? $default : Config::get('ProtoCmd', 'RAP3');
 
     // Execute cmd, and populate 'protoOk' upon success
