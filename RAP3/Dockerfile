@@ -1,4 +1,4 @@
-FROM ampersand:latest
+FROM ampersandtarski/ampersand-compiler:latest
 
 # build RAP3 application by cloning the models repository
 RUN mkdir -p ~/git \
