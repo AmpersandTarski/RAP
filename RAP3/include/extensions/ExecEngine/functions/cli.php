@@ -158,7 +158,7 @@ function FuncSpec($path, $scriptVersionAtom, $outputDir){
 
     // Execute cmd, and populate 'funcSpecOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('funcSpecOk', $scriptVersionAtom, $exitCode == 0);
+    setProp('funcSpecOk', $scriptVersionAtom, $exitcode == 0);
     saveCompileResponse($scriptVersionAtom, $response);
 
     // Create fSpec and link to scriptVersionAtom
@@ -180,7 +180,7 @@ function Diagnosis($path, $scriptVersionAtom, $outputDir){
 
     // Execute cmd, and populate 'diagOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('diagOk', $scriptVersionAtom, $exitCode == 0);
+    setProp('diagOk', $scriptVersionAtom, $exitcode == 0);
     saveCompileResponse($scriptVersionAtom, $response);
     
     // Create diagnose and link to scriptVersionAtom
@@ -203,7 +203,7 @@ function Prototype($path, $scriptAtom, $scriptVersionAtom, $outputDir){
 
     // Execute cmd, and populate 'protoOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('protoOk', $scriptVersionAtom, $exitCode == 0);
+    setProp('protoOk', $scriptVersionAtom, $exitcode == 0);
     saveCompileResponse($scriptVersionAtom, $response);
     
     // Create proto and link to scriptAtom
@@ -225,7 +225,7 @@ function loadPopInRAP3($path, $scriptVersionAtom, $outputDir){
 
     // Execute cmd, and populate 'loadedInRAP3Ok' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('loadedInRAP3Ok', $scriptVersionAtom, $exitCode == 0);
+    setProp('loadedInRAP3Ok', $scriptVersionAtom, $exitcode == 0);
     saveCompileResponse($scriptVersionAtom, $response);
     
     if ($exitcode == 0) {
