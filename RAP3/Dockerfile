@@ -1,4 +1,4 @@
-FROM ampersandtarski/ampersand-compiler:latest
+FROM ampersandtarski/ampersand-prototype:texlive
 
 # build RAP3 application by cloning the models repository
 RUN mkdir -p ~/git \
