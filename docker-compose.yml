@@ -3,7 +3,7 @@ version: '2'
 services:
   rap3:
     restart: always
-    image: ampersandtarski/ampersand-rap
+    image: ampersandtarski/rap3:latest
     ports:
       - "80:80"
     links:
@@ -14,7 +14,7 @@ services:
  
   db:
     restart: always
-    image: ampersandtarski/ampersand-prototype-db
+    image: ampersandtarski/rap3-db
     volumes:
       - ./volumes/mysql:/var/lib/mysql
 
