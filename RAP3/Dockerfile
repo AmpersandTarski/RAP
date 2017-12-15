@@ -9,6 +9,9 @@ RUN mkdir -p ~/git \
  && mkdir -p /var/www/html/RAP3/log \
  && chown -R www-data:www-data /var/www/html/RAP3
 
+USER www-data
+VOLUME /var/www/html/RAP3
+
 # build Enrollment demo, which is being used in the Ampersand-tutorial
 RUN ampersand -p/var/www/html/Enroll ~/git/RAP/Demos/Enroll/Enrollment.adl --verbose \
  && chown -R www-data:www-data /var/www/html/Enroll
