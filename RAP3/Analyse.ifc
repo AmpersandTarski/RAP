@@ -1,7 +1,5 @@
 ﻿CONTEXT RAP IN DUTCH
 
-VIEW Context : Context(TXT "Context")
-
 INTERFACE "Context" FOR User, Student,Tutor : I[Context] cRud BOX<ROWSNL>
       [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
       , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
@@ -10,7 +8,7 @@ INTERFACE "Context" FOR User, Student,Tutor : I[Context] cRud BOX<ROWSNL>
          , "Relaties"  : declaredIn[Relation*Context]~  cRud INTERFACE "Relations"
          , "Regels"    : I
             TABS [ "gewone regels"          : allRules[Context*Rule] ;(I[Rule]-I[PropertyRule]) cRud INTERFACE "Rules"
-      --           , "multipliciteits regels" : allRules[Context*Rule] ;         I[PropertyRule];I[Rule]  cRud INTERFACE "Rules"  --HJO20161203, dit geeft runtime fouten 
+                 , "multipliciteits regels" : allRules[Context*Rule] ;         I[PropertyRule];I[Rule]  cRud INTERFACE "Rules"
                  ]
          , "Patterns"   : context [Pattern * Context]~ cRud INTERFACE "Patterns"
          ]
@@ -39,20 +37,22 @@ INTERFACE "Relations" FOR User, Student,Tutor : I[Relation] cRud BOX <SHCOLS>
   ]
 
 INTERFACE "Relation" FOR User, Student,Tutor : I[Relation] cRud BOX
-  [ "Relation:" : I cRud
+  [ "Relation:" : I cRud LINKTO INTERFACE "Relation"
   , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
   , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
   , "Eigenschappen:" : propertyRule;declaredthrough cRud
   , "Properties:" : prop [Relation * Property] cRud
   , "Purpose:" : purpose[Relation*Purpose];markupText cRud 
   , "Meaning:" : decmean[Relation*Meaning] cRud 
+  , "Regels met deze relatie:" : usedIn[Relation*Expression];formalExpression[Rule*Expression]~ cRud LINKTO INTERFACE "Rule"
   ]
 
 INTERFACE "Rules" FOR User, Student,Tutor : I[Rule] cRud BOX <SHCOLS>
   [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
-  , "Formele expressie:" : formalExpression cRud
+  , "Formele expressie:" : formalExpression cRud LINKTO INTERFACE "Expression"
   , "Meaning:" : meaning[Rule*Meaning] cRud 
   , "Purpose:" : purpose[Rule*Purpose];markupText cRud 
+  , "Relaties in deze regel:" : formalExpression[Rule*Expression];usedIn[Relation*Expression]~ cRud LINKTO INTERFACE "Relation"
   ]
 
 INTERFACE "Rule" FOR User, Student,Tutor : I[Rule] cRud BOX
@@ -63,6 +63,22 @@ INTERFACE "Rule" FOR User, Student,Tutor : I[Rule] cRud BOX
 --  , "origin" : origin cRud  
   , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
   ]
+
+INTERFACE "Expression" FOR User, Student,Tutor : I[Expression] cRud BOX
+  [ "Expressie" : I[Expression] cRud
+  , "Binaire Expressie: " : I[BinaryTerm] cRud COLS
+           [ "links"    : first cRud
+           , "operator" : operator cRud
+           , "rechts"   : second cRud
+           ]
+  , "Unaire Expressie: " : I[UnaryTerm] cRud COLS
+           [ "argument"    : arg cRud
+           , "operator" : operator cRud
+           ]
+  , "Relatie: " : bind[BindedRelation*Relation] cRud LINKTO INTERFACE "Relation"
+  , "SubExpressie van:" : first~ \/ second~ \/ arg~ cRud LINKTO INTERFACE "Expression"
+  ]
+
 
 INTERFACE "Patterns" FOR User, Student,Tutor : I[Pattern] cRud BOX <SHCOLS>
   [ "Thema's:" : I cRud
