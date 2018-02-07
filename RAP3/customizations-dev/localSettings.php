@@ -98,15 +98,11 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'ExecEngineFunctions.php');
 /**************************************************************************************************
  * EXTENSIONS
  *************************************************************************************************/
-require_once __DIR__ . '/extensions/OAuthLogin/OAuthLogin.php' ;
+require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
+    Config::set('redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account'); // path 'redirect-after-login' triggers frontend to route back to page where status 401 was raised.
+    Config::set('redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/');
     Config::set(
-        'redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account'
-    );
-    Config::set(
-        'redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/'
-    );
-    Config::set(
-        'identityProviders', 'OAuthLogin',
+        'identityProviders', 'OAuthLogin', 
         ['linkedin' => 
             ['name' => 'LinkedIn'
             ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-linkedin.png'
@@ -117,6 +113,18 @@ require_once __DIR__ . '/extensions/OAuthLogin/OAuthLogin.php' ;
             ,'tokenUrl' => 'https://www.linkedin.com/uas/oauth2/accessToken'
             ,'apiUrl' => 'https://api.linkedin.com/v1/people/~:(emailAddress)?format=json'
             ,'scope' => 'r_emailaddress'
+            ,'state' => '4b253460f09386c8a5f42dfec2522ecf2d0083e25b2284806af0f1c444b62c37' // A unique string value of your choice that is hard to guess. Used to prevent CSRF
+            ]
+        ,'google' => 
+            ['name' => 'Google'
+            ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-google.png'
+            ,'authBase' => 'https://accounts.google.com/o/oauth2/auth'
+            ,'redirectUrl' => 'https://[server]/api/v1/oauthlogin/callback/google'
+            ,'clientId' => '[string]'
+            ,'clientSecret' => '[string]'
+            ,'tokenUrl' => 'https://accounts.google.com/o/oauth2/token'
+            ,'apiUrl' => 'https://www.googleapis.com/userinfo/v2/me'
+            ,'scope' => 'https://www.googleapis.com/auth/userinfo.email'
             ,'state' => '4b253460f09386c8a5f42dfec2522ecf2d0083e25b2284806af0f1c444b62c37' // A unique string value of your choice that is hard to guess. Used to prevent CSRF
             ]
         ,'github' =>

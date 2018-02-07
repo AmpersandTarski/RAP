@@ -1,0 +1,10 @@
+CONTEXT "RAP3" IN ENGLISH
+
+-- This file specifies models and interfaces required for the OAuthLogin extension
+
+--[SYSTEM INTERFACES]------------------------------------------------------------------------------
+INTERFACE "AccountForUserid" FOR SYSTEM : accUserid~ BOX [ "ignore" : I]
+
+--INTERFACE "DomainOrgs" FOR SYSTEM : orgDomain~ BOX [ "ignore" : I]
+
+ENDCONTEXT

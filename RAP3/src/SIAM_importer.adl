@@ -3,6 +3,7 @@ CONTEXT SIAMv2_1 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
 
 --[Required/imported SIAM functionality]--
 
+   INCLUDE "../../SIAM/SIAM_OAuth.adl"               -- toegevoegd op 26 jan 2018 m.m.v. Michiel Stornebrink
 -- INCLUDE "../../SIAM/SIAM_Module-versioning.adl"   -- the version definition for this module
    INCLUDE "../../SIAM/SIAM_PersonReg.adl"           -- a basic/minimalistic Person registration (just first- and last names).
 -- INCLUDE "../../SIAM/SIAM_OrgReg.adl"              -- a basic/minimalistic Organization registration (just abbreviated and full names).
