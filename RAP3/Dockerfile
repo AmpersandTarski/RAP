@@ -5,7 +5,7 @@ RUN mkdir -p ~/git \
  && cd ~/git \
  && git clone --depth=1 --branch master https://github.com/AmpersandTarski/RAP \
 # build RAP3 application
- && ampersand --atlas-without-expressions --meta-tables --add-semantic-metamodel -p/var/www/html/RAP3 ~/git/RAP/RAP3/RAP3.adl --verbose \
+ && ampersand ~/git/RAP/RAP3/RAP3prod.adl --config=RAP/RAP3/RAP3prod.yaml -p/var/www/html/RAP3 \
  && mkdir -p /var/www/html/RAP3/log \
  && chown -R www-data:www-data /var/www/html/RAP3
 

@@ -14,10 +14,10 @@ date_default_timezone_set('Europe/Amsterdam');
  *************************************************************************************************/
 error_reporting(E_ALL & ~E_NOTICE);
 // After deployment test: change 'true' in the following line into 'false'
-ini_set("display_errors", false);   // meant for diagnosis (We would call this "fatals", but then for PHP.)
+ini_set("display_errors", true);   // meant for diagnosis (We would call this "fatals", but then for PHP.)
 
 // After deployment test: change 'true' in the following line into 'false'
-Config::set('debugMode', 'global', false);
+Config::set('debugMode', 'global', true);
 
 // Log file handler
 $fileHandler = new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/log/error.log', 0, \Monolog\Logger::WARNING);
@@ -52,7 +52,7 @@ Logger::registerHandlerForChannel('USERLOG', new NotificationHandler(\Monolog\Lo
  * SERVER settings
  *************************************************************************************************/
 // The serverURL is used in OAuth, for the purpose of (for example) logging in with your facebook account.
-Config::set('serverURL', 'global', 'http://rap.cs.ou.nl/RAP3'); // this is {APPURL} as defined in the SPREG deployment text
+// Config::set('serverURL', 'global', 'http://rap.cs.ou.nl/RAP3'); // this is {APPURL} as defined in the SPREG deployment text
 
 
 // After deployment test: change 'false' to 'true'
@@ -65,7 +65,7 @@ Config::set('productionEnv', 'global', false); // Set to 'true' to disable the d
 Config::set('dbUser', 'mysqlDatabase', 'ampersand');     // typically: 'ampersand'
 Config::set('dbPassword', 'mysqlDatabase', 'ampersand');   // typically: 'ampersand'
 // Config::set('dbName', 'mysqlDatabase', '{SQLDB}');       // typically: '' or 'ampersand_rap3'
-Config::set('dbHost', 'mysqlDatabase', 'db');     // typically: 'localhost' on personal computers or 'db' on docker-containers
+Config::set('dbHost', 'mysqlDatabase', 'localhost');     // typically: 'localhost' on personal computers or 'db' on docker-containers
 //Config::set('dbHost', 'mysqlDatabase', getenv('AMPERSAND_DB_HOST'));     // this should probably be done with an environment variable... 
 
 /**************************************************************************************************
@@ -98,4 +98,35 @@ require_once(__DIR__ . '/extensions/ExcelImport/ExcelImport.php'); // Enable Exc
 // After deployment test: uncomment the following line
 Config::set('allowedRolesForExcelImport','excelImport', ['ExcelImporter']); // Role(s) for accounts that are allowed to import excel files.
 
+require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
+	Config::set('redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account');
+	Config::set('identityProviders', 'OAuthLogin',
+	                   ['linkedin' => 
+							    ['name' => 'LinkedIn'
+                                ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-linkedin.png'
+                                ,'authBase' => 'https://www.linkedin.com/uas/oauth2/authorization'
+								,'redirectUrl' => 'http://example.com/AmpersandPrototypes/RAP3/api/v1/oauthlogin/callback/linkedin'
+								,'clientId' => '86s07m9hyin5fg'
+								,'clientSecret' => 'wJHIRIQms5d2Sx1C'
+								,'tokenUrl' => 'https://www.linkedin.com/uas/oauth2/accessToken'
+								,'apiUrl' => 'https://api.linkedin.com/v1/people/~:(emailAddress)?format=json'
+								,'scope' => 'r_emailaddress'
+								,'state' => '4b253460f09386c8a5f42dfec2522ecf2d0083e25b2284806af0f1c444b62c37' // A unique string value of your choice that is hard to guess. Used to prevent CSRF
+								,'emailField' => 'emailAddress'
+                                ]
+			   ,'github' =>
+                                ['name' => 'GitHub'
+                                ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-github.png'
+                                ,'authBase' => 'https://github.com/login/oauth/authorize'
+                                ,'redirectUrl' => 'http://example.com/AmpersandPrototypes/RAP3/api/v1/oauthlogin/callback/github'
+                                ,'clientId' => 'c5a0bae9b2a78e478346'
+                                ,'clientSecret' => '6ab971bc6b1e34cc9b1b8662005586c635c7a067'
+                                ,'tokenUrl' => 'https://github.com/login/oauth/access_token'
+                                ,'apiUrl' => 'https://api.github.com/user/emails'
+                                ,'scope' => 'user:email'
+                                ,'state' => '4b253460f09386c8a5f42dfec2522ecf2d0083e25b2284806af0f1c444b62c37' // A unique string value of your choice that is hard to guess. Used to prevent CSRF
+                                ]
+                           ]
+				);
+				
 ?>
