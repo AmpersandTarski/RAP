@@ -39,10 +39,10 @@ INTERFACE "Nieuw script" FOR Student, User : I[Script] CRUd BOX <ROWSNL>
                            , property : funcSpecRequest cRUd
                            ]
 -- Atlas kan erg lang duren. Wellicht in combinatie met het niet goed werken van multiuser functionaliteit? Uitzoeken! HJO, 20170423
---         , "Atlas" :      I BOX <PropertyButton>
---                           [ disabled : (I/\loadedInRAP3Ok)\/(I-funcSpec;funcSpec~) cRud -- Only active if there are graphics to display.
---                           , property : loadRequest cRUd
---                           ]
+         , "Atlas" :      I BOX <PropertyButton>
+                           [ disabled : (I/\loadedInRAP3Ok)\/(I-funcSpec;funcSpec~) cRud -- Only active if there are graphics to display.
+                           , property : loadRequest cRUd
+                           ]
          , "Prototype" :  I BOX <PropertyButton>
                            [ disabled : I/\protoOk        cRud
                            , property : protoRequest cRUd
