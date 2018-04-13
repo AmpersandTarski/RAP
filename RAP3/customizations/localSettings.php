@@ -99,10 +99,15 @@ Config::set('allowedRolesForImporter', 'global', ['ExcelImporter']); // list of 
 /**************************************************************************************************
  * EXTENSIONS
  *************************************************************************************************/
-require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
-    Config::set('redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account');
-    Config::set('redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/')
-	Config::set('identityProviders', 'OAuthLogin',
+require_once __DIR__ . '/extensions/OAuthLogin/OAuthLogin.php' ;
+    Config::set(
+        'redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account'
+    );
+    Config::set(
+        'redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/'
+    );
+    Config::set(
+        'identityProviders', 'OAuthLogin',
         ['linkedin' => 
             ['name' => 'LinkedIn'
             ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-linkedin.png'
@@ -128,4 +133,4 @@ require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
             ,'state' => '4b253460f09386c8a5f42dfec2522ecf2d0083e25b2284806af0f1c444b62c37' // A unique string value of your choice that is hard to guess. Used to prevent CSRF
             ]
         ]
-	);
+    );
