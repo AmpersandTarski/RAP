@@ -24,26 +24,26 @@ INTERFACE "Nieuw script" FOR Student, User : I[Script] CRUd BOX <ROWSNL>
       ]
    , "Content":  content cRUd
    , "Actual info": I cRud ROWS
-      [ compile : I BOX <PropertyButton>
+      [ compile : I BOX <PROPBUTTON>
                   [ disabled : I-I            cRud
                   , property : compileRequest cRUd
                   ]
       , "Compiler message"  : compileresponse cRud
       , controls: seqFirstItem ; I[ScriptVersion] cRud COLS
-         [ "Diagnosis" :  I BOX <PropertyButton>
+         [ "Diagnosis" :  I BOX <PROPBUTTON>
                            [ disabled : I/\diag;diag~          cRud
                            , property : diagRequest cRUd
                            ]
-         , "Func. spec + pictures" : I BOX <PropertyButton>
+         , "Func. spec + pictures" : I BOX <PROPBUTTON>
                            [ disabled : I/\funcSpec;funcSpec~  cRud
                            , property : funcSpecRequest cRUd
                            ]
 -- Atlas kan erg lang duren. Wellicht in combinatie met het niet goed werken van multiuser functionaliteit? Uitzoeken! HJO, 20170423
-         , "Atlas" :      I BOX <PropertyButton>
+         , "Atlas" :      I BOX <PROPBUTTON>
                            [ disabled : (I/\loadedInRAP3Ok)\/(I-funcSpec;funcSpec~) cRud -- Only active if there are graphics to display.
                            , property : loadRequest cRUd
                            ]
-         , "Prototype" :  I BOX <PropertyButton>
+         , "Prototype" :  I BOX <PROPBUTTON>
                            [ disabled : I/\protoOk        cRud
                            , property : protoRequest cRUd
                            ]

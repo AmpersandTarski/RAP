@@ -100,7 +100,7 @@ VIOLATION (TXT "{EX} NewStruct;Account"
           )
 
 --[Login and Registration Interface]--
-{- BOX <PropertyButton> -- is a custom HTML Template (i.e. it is in the local templates/views directory)
+{- BOX <PROPBUTTON> -- is a custom HTML Template (i.e. it is in the local templates/views directory)
    [ disabled : <expr1> -- The button is disabled when `expr1` has one or more target atoms.
    , property : <expr2> -- `expr2` **must be a [PROP]-type relation**; it gets populated whenever the button is clicked. 
    ]
@@ -134,7 +134,7 @@ INTERFACE "{U/PW Login}": "_SESSION"[SESSION] cRud COLS
    [ "Userid": loginUserid cRUd
    , "Password": loginPassword crUd -- crUd is needed for Passwords
    , " ": I cRud BOX <ROWSNL>
-      [ "Login": I cRud BOX <PropertyButton> 
+      [ "Login": I cRud BOX <PROPBUTTON> 
          [ property : loginReq cRUd 
          , disabled : I - (loginUserid;loginUserid~ /\ loginPassword;loginPassword~) cRud
    ]  ]  ]

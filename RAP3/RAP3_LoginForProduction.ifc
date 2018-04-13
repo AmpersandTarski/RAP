@@ -12,14 +12,14 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
       , "Email" :      regEmail cRUd
       , "Wachtwoord" : regPassword1 crUd -- crUd is needed for Passwords
       , "(herhaal)" :  regPassword2 crUd -- crUd is needed for Passwords
-      , "Registreer" : I BOX <PropertyButton>
+      , "Registreer" : I BOX <PROPBUTTON>
                           [ disabled : I-(regPassword1;regPassword2~ /\ regUserID;regUserID~) cRud -- Only active if there are two equal passwords.
                           , property : regCreateAccount cRUd
                           ]
       ]
    , "Logout": I /\ sessionAccount;sessionAccount~ cRud BOX <ROWSNL>
       [ "Logout": I cRud BOX <HCOLS>
-         [ "Logout?": I BOX <PropertyButton>
+         [ "Logout?": I BOX <PROPBUTTON>
                                [ disabled : I-I
                                , property : logoutRequest cRUd
                                ]

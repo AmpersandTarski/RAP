@@ -30,14 +30,14 @@ POPULATION IfcText CONTAINS [ "Auth. level ="]
 INTERFACE "Login/Register": "_SESSION"[SESSION] cRud BOX <ROWSNL>
 [ "A user is logged in": I[SESSION] /\ sessionAccount;sessionAccount~ cRud BOX <ROWSNL>
    [ "Row:Logout Buttons": I[SESSION] cRud BOX <COLSNL>
-      [ "Logout" : I[SESSION] cRud BOX <PropertyButton> [ property : logoutRequest cRUd ]
+      [ "Logout" : I[SESSION] cRud BOX <PROPBUTTON> [ property : logoutRequest cRUd ]
       , "Current Auth. level text": V;'Auth. level ='[IfcText] cRud <STRONG>
       , "Current Auth. level value": sessionAuthISOLevel cRud
---      , "->Developer": I-sessionDev cRud BOX <PropertyButton> [ property : sessionDev cRUd ]
---      , "Normal User":   sessionDev cRud BOX <PropertyButton> [ property : sessionDev cRUd ]
+--      , "->Developer": I-sessionDev cRud BOX <PROPBUTTON> [ property : sessionDev cRUd ]
+--      , "Normal User":   sessionDev cRud BOX <PROPBUTTON> [ property : sessionDev cRUd ]
 -- The 'Autologin' does not work with another account, for various reasons. It should be tried when Michiel's refactoring branch is operational.
---      , "Show active accounts": I-sessionLogoutAssist cRud BOX <PropertyButton> [ property : sessionLogoutAssist cRUd ]
-      , "Hide active accounts":   sessionLogoutAssist cRud BOX <PropertyButton> [ property : sessionLogoutAssist cRUd ]
+--      , "Show active accounts": I-sessionLogoutAssist cRud BOX <PROPBUTTON> [ property : sessionLogoutAssist cRUd ]
+      , "Hide active accounts":   sessionLogoutAssist cRud BOX <PROPBUTTON> [ property : sessionLogoutAssist cRUd ]
       ]
    , "Row:AlternateLogin": sessionLogoutAssist cRud BOX <COLSNL>
       [ "Active accounts": V;accIsActive cRud INTERFACE "ShowAcc" ]
@@ -48,7 +48,7 @@ INTERFACE "Login/Register": "_SESSION"[SESSION] cRud BOX <ROWSNL>
          [ "Userid": loginUserid cRUd
          , "Password": loginPassword crUd -- crUd is needed for Passwords
          , " ": I cRud BOX <ROWSNL>
-            [ "Login": I cRud BOX <PropertyButton> 
+            [ "Login": I cRud BOX <PROPBUTTON> 
                [ property : loginReq cRUd 
                , disabled : I - (loginUserid;loginUserid~ /\ loginPassword;loginPassword~) cRud
          ]  ]  ]
@@ -59,7 +59,7 @@ INTERFACE "Login/Register": "_SESSION"[SESSION] cRud BOX <ROWSNL>
       , "Your (full) name" : sessionPersonRef cRUd
       , "Your organization" : registerOrgRef cRUd
       , " ": I cRud BOX <COLSNL>
-         [ "Register" : I cRud BOX <PropertyButton>
+         [ "Register" : I cRud BOX <PROPBUTTON>
             [ disabled : "_SESSION" - -- The button is disabled when we have a session without
                          (  loginUserid;loginUserid~           -- a specified userid 
                          /\ registerPassword;registerPassword~ -- a specified  password
@@ -67,20 +67,20 @@ INTERFACE "Login/Register": "_SESSION"[SESSION] cRud BOX <ROWSNL>
                          ) cRud 
             , property : loginCreateAccount cRUd 
             ]
-         , "Cancel" : I cRud BOX <PropertyButton> [ property : sessionSRI cRUd ]
+         , "Cancel" : I cRud BOX <PROPBUTTON> [ property : sessionSRI cRUd ]
          ]   
       ]
    , "Row:Buttons": I-sessionSRI cRud BOX <COLSNL>
-      [ "Show active accounts": I-sessionLoginAssist cRud BOX <PropertyButton> 
+      [ "Show active accounts": I-sessionLoginAssist cRud BOX <PROPBUTTON> 
          [ property : sessionLoginAssist cRUd 
          , disabled : V[SESSION]-(V;I[Account];V) cRud
          ]
-      , "Hide active accounts": sessionLoginAssist cRud BOX <PropertyButton> [ property : sessionLoginAssist cRUd ]
-      , "Show inactive accounts": (V;(I-accIsActive);V) /\ I-sessionSIA cRud BOX <PropertyButton> [ property : sessionSIA cRUd ]
-      , "Hide inactive accounts": (V;(I-accIsActive);V) /\   sessionSIA cRud BOX <PropertyButton> [ property : sessionSIA cRUd ]
+      , "Hide active accounts": sessionLoginAssist cRud BOX <PROPBUTTON> [ property : sessionLoginAssist cRUd ]
+      , "Show inactive accounts": (V;(I-accIsActive);V) /\ I-sessionSIA cRud BOX <PROPBUTTON> [ property : sessionSIA cRUd ]
+      , "Hide inactive accounts": (V;(I-accIsActive);V) /\   sessionSIA cRud BOX <PROPBUTTON> [ property : sessionSIA cRUd ]
       , "set authentication level": V;'Auth.Level:'[IfcText] cRud <STRONG>
       , "Auth. level": loginISOLevel cRUd
-      , "Register": (I[SESSION]-(sessionSRI \/ sessionSIA \/ sessionLoginAssist)) cRud BOX <PropertyButton> [ property : sessionSRI cRUd ]
+      , "Register": (I[SESSION]-(sessionSRI \/ sessionSIA \/ sessionLoginAssist)) cRud BOX <PROPBUTTON> [ property : sessionSRI cRUd ]
       ]
    , "Row:LoginAssist": sessionLoginAssist-sessionSIA cRud BOX <COLSNL>
       [ "Active accounts": V;accIsActive cRud INTERFACE "ShowAcc" ]
@@ -97,7 +97,7 @@ POPULATION IfcText CONTAINS [ "Auth.Level:"]
 
 INTERFACE "ShowAcc": I[Account] cRud BOX <SHCOLS>
    [ " ": I[Account] cRud BOX <COLSNL>
-      [ "Login": accIsActive cRud BOX <PropertyButton> [ property : autoLoginAccount cRUd ]
+      [ "Login": accIsActive cRud BOX <PROPBUTTON> [ property : autoLoginAccount cRUd ]
       ]
     , "Userid": accUserid cRud
     , "Person": accPersonRef cRud
@@ -109,8 +109,8 @@ INTERFACE "ShowAcc": I[Account] cRud BOX <SHCOLS>
  -- , "Allowed roles": accAllowedRoles cRUd
  -- , "Default roles": accDefaultRoles cRUd
    , "  ": I[Account] cRud BOX <COLSNL>
-      [ "Deactivate": accIsActive cRud BOX <PropertyButton> [ property : accDeactivateReq cRUd ]
-      , "Activate": I-accIsActive cRud BOX <PropertyButton> [ property : accIsActive cRUd ]
+      [ "Deactivate": accIsActive cRud BOX <PROPBUTTON> [ property : accDeactivateReq cRUd ]
+      , "Activate": I-accIsActive cRud BOX <PROPBUTTON> [ property : accIsActive cRUd ]
       ]
    ]
 

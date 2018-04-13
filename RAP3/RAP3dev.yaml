@@ -18,7 +18,7 @@ switches:
   # - proto[=DIRECTORY]
 
   ### include a directory into the generated prototype, instead of the default.:
-  - include=include-dev
+  - customizations=customizations
 
   ### database name (This overrules environment variable CCdbName, defaults to filename):
   # - dbName=NAME
@@ -117,7 +117,7 @@ switches:
   # - gen-as-rap-model
 
   ### Temporary switch to create Atlas without expressions. (for RAP3):
-  - atlas-without-expressions
+  # - atlas-without-expressions
 
   ### Do not generate static files into the prototype directory:
   # - no-static-files
