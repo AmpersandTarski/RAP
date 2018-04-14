@@ -7,6 +7,7 @@ use Ampersand\Core\Atom;
 use Ampersand\Core\Concept;
 use Ampersand\Session;
 use Ampersand\Transaction;
+use Ampersand\Rule\ExecEngine;
 
 /* Ampersand commando's mogen niet in dit bestand worden aangepast. 
 De manier om je eigen commando's te regelen is door onderstaande regels naar jouw localSettings.php te copieren en te veranderen
@@ -34,13 +35,12 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
         $GLOBALS['RapAtoms']=[];
         set_time_limit(600);
 
-        $scriptVersionInfo = CompileToNewVersion($scriptAtomId, $studentNumber);
+        $scriptVersionInfo = call_user_func(ExecEngine::getFunction('CompileToNewVersion'), $scriptAtomId, $studentNumber);
         if ($scriptVersionInfo === false) {
-            $logger->error("Error while compiling new script version");
-            die;
+            throw new Exception("Error while compiling new script version", 500);
         }
         
-        CompileWithAmpersand('loadPopInRAP3', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
+        call_user_func(ExecEngine::getFunction('CompileWithAmpersand'), 'loadPopInRAP3', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
         
         $logger->debug("Compiling {$i}/{$total}: end");
         
