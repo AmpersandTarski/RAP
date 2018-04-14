@@ -1,11 +1,10 @@
 <?php
 
 use Ampersand\Log\Logger;
-use Ampersand\Config;
+use Ampersand\Misc\Config;
 use Ampersand\Core\Relation;
 use Ampersand\Core\Atom;
 use Ampersand\Core\Concept;
-use Ampersand\Session;
 use Ampersand\Transaction;
 use Ampersand\Rule\ExecEngine;
 
@@ -206,8 +205,6 @@ ExecEngine::registerFunction('Prototype', function ($path, $scriptAtom, $scriptV
 });
 
 ExecEngine::registerFunction('loadPopInRAP3', function ($path, $scriptVersionAtom, $outputDir) use ($logger) {
-    $session = Session::singleton();
-
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
