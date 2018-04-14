@@ -82,7 +82,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
     $cmd = $exefile . " " . basename($absPath);
     Execute($cmd, $response, $exitcode, dirname($absPath));
-    saveCompileResponse($scriptAtom, $response);
+    $scriptAtom->link($response, 'compileresponse[Script*CompileResponse]')->add();
     
     if ($exitcode == 0) { // script ok
         // Create new script version atom and add to rel version[Script*ScriptVersion]
@@ -156,7 +156,7 @@ ExecEngine::registerFunction('FuncSpec', function ($path, $scriptVersionAtom, $o
     // Execute cmd, and populate 'funcSpecOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
     setProp('funcSpecOk', $scriptVersionAtom, $exitcode == 0);
-    saveCompileResponse($scriptVersionAtom, $response);
+    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Functional specification');
@@ -176,7 +176,7 @@ ExecEngine::registerFunction('Diagnosis', function ($path, $scriptVersionAtom, $
     // Execute cmd, and populate 'diagOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
     setProp('diagOk', $scriptVersionAtom, $exitcode == 0);
-    saveCompileResponse($scriptVersionAtom, $response);
+    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create diagnose and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Diagnosis');
@@ -197,7 +197,7 @@ ExecEngine::registerFunction('Prototype', function ($path, $scriptAtom, $scriptV
     // Execute cmd, and populate 'protoOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
     setProp('protoOk', $scriptVersionAtom, $exitcode == 0);
-    saveCompileResponse($scriptVersionAtom, $response);
+    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create proto and link to scriptAtom
     $foObject = createFileObject("{$outputDir}", 'Launch prototype');
@@ -217,7 +217,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function ($path, $scriptVersionAto
     // Execute cmd, and populate 'loadedInRAP3Ok' upon success
     Execute($cmd, $response, $exitcode, $workDir);
     setProp('loadedInRAP3Ok', $scriptVersionAtom, $exitcode == 0);
-    saveCompileResponse($scriptVersionAtom, $response);
+    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     if ($exitcode == 0) {
         $cpt_Concept = Concept::getConceptByLabel('Context');
@@ -409,13 +409,4 @@ function createFileObject($relPath, $displayName)
     Relation::getRelation('originalFileName[FileObject*FileName]')->addLink($foAtom, new Atom($displayName, $cptFileName));
     
     return $foAtom;
-}
-
-// saving the response in  RELATION compileresponse[ScriptVersion*CompileResponse] [UNI]
-function saveCompileResponse($atom, $compileResponse)
-{
-    $cptCompileResponse = Concept::getConceptByLabel("CompileResponse");
-    $responseAtom = new Atom($compileResponse, $cptCompileResponse);
-    
-    $relCompileResponse = Relation::getRelation('compileresponse', $atom->concept, $cptCompileResponse)->addLink($atom, $responseAtom, false, 'COMPILEENGINE');
 }
