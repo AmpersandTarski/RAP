@@ -6,7 +6,7 @@ use Ampersand\Core\Relation;
 use Ampersand\Core\Atom;
 use Ampersand\Core\Concept;
 use Ampersand\Session;
-use Ampersand\Database\Database;
+use Ampersand\Transaction;
 
 /* Ampersand commando's mogen niet in dit bestand worden aangepast. 
 De manier om je eigen commando's te regelen is door onderstaande regels naar jouw localSettings.php te copieren en te veranderen
@@ -27,7 +27,6 @@ RELATION loadedInRAP3[Script*Script] [PROP]
 */
 
 function PerformanceTest($scriptAtomId,$studentNumber){
-    $db = Database::singleton();
     $logger = Logger::getLogger('CLI');
     $total = 5;
     
@@ -47,7 +46,7 @@ function PerformanceTest($scriptAtomId,$studentNumber){
         
         $logger->debug("Compiling {$i}/{$total}: end");
         
-        $db->closeTransaction("PerformanceRun {$i} ok", true); // also kicks EXECENGINE
+        Transaction::getCurrentTransaction()->close(); // also kicks EXECENGINE
     }
 }
 
