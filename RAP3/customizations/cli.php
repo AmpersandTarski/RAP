@@ -48,9 +48,8 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
     }
 });
 
-function CompileToNewVersion($scriptAtomId, $studentNumber)
-{
-    Logger::getLogger('EXECENGINE')->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
+ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $studentNumber) use ($logger) {
+    $logger->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
     
     $scriptConcept = Concept::getConceptByLabel("Script");
     $scriptVersion = Concept::getConceptByLabel("ScriptVersion");
@@ -102,11 +101,9 @@ function CompileToNewVersion($scriptAtomId, $studentNumber)
     } else { // script not ok
         return false;
     }
-}
+});
 
-function CompileWithAmpersand($action, $script, $scriptVersion, $relSourcePath)
-{
-
+ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $script, $scriptVersion, $relSourcePath) use ($logger) {
     $scriptConcept = Concept::getConceptByLabel("Script");
     $scriptAtom = new Atom($script, $scriptConcept);
 
@@ -145,11 +142,9 @@ function CompileWithAmpersand($action, $script, $scriptVersion, $relSourcePath)
             Logger::getLogger('EXECENGINE')->error("Unknown action ({$action}) specified");
             break;
     }
-}
+});
 
-function FuncSpec($path, $scriptVersionAtom, $outputDir)
-{
-    
+ExecEngine::registerFunction('FuncSpec', function ($path, $scriptVersionAtom, $outputDir) use ($logger) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -167,11 +162,9 @@ function FuncSpec($path, $scriptVersionAtom, $outputDir)
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Functional specification');
     Relation::getRelation('funcSpec[ScriptVersion*FileObject]')->addLink($scriptVersionAtom, $foObject, false, 'COMPILEENGINE');
-}
+});
 
-function Diagnosis($path, $scriptVersionAtom, $outputDir)
-{
-
+ExecEngine::registerFunction('Diagnosis', function ($path, $scriptVersionAtom, $outputDir) use ($logger) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -189,11 +182,9 @@ function Diagnosis($path, $scriptVersionAtom, $outputDir)
     // Create diagnose and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Diagnosis');
     Relation::getRelation('diag[ScriptVersion*FileObject]')->addLink($scriptVersionAtom, $foObject, false, 'COMPILEENGINE');
-}
+});
 
-function Prototype($path, $scriptAtom, $scriptVersionAtom, $outputDir)
-{
-
+ExecEngine::registerFunction('Prototype', function ($path, $scriptAtom, $scriptVersionAtom, $outputDir) use ($logger) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -212,10 +203,9 @@ function Prototype($path, $scriptAtom, $scriptVersionAtom, $outputDir)
     // Create proto and link to scriptAtom
     $foObject = createFileObject("{$outputDir}", 'Launch prototype');
     Relation::getRelation('proto[Script*FileObject]')->addLink($scriptAtom, $foObject, false, 'COMPILEENGINE');
-}
+});
 
-function loadPopInRAP3($path, $scriptVersionAtom, $outputDir)
-{
+ExecEngine::registerFunction('loadPopInRAP3', function ($path, $scriptVersionAtom, $outputDir) use ($logger) {
     $session = Session::singleton();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
@@ -261,10 +251,9 @@ function loadPopInRAP3($path, $scriptVersionAtom, $outputDir)
             }
         }
     }
-}
+});
 
-function Cleanup($atomId, $cptId)
-{
+ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) use ($logger) {
     static $skipRelations = ['context[ScriptVersion*Context]'];
     $logger = Logger::getLogger('RAP3_CLEANUP');
     $logger->debug("Cleanup called for {$atomId}[{$cptId}]");
@@ -339,7 +328,7 @@ function Cleanup($atomId, $cptId)
             Cleanup($atomId, $cpt);
         }
     }
-}
+});
 
 function getRAPAtom($atomId, $concept)
 {
