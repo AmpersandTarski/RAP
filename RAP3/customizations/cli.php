@@ -53,9 +53,7 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
 ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $studentNumber) use ($logger) {
     $logger->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
     
-    $scriptConcept = Concept::getConceptByLabel("Script");
-    $scriptVersion = Concept::getConceptByLabel("ScriptVersion");
-    $scriptAtom = new Atom($scriptAtomId, $scriptConcept);
+    $scriptAtom = Atom::makeAtom($scriptAtomId, 'Script');
 
     // The relative path of the source file must be something like:
     //   scripts/<studentNumber>/sources/<scriptId>/Version<timestamp>.adl
@@ -64,40 +62,37 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     $versionId = date('Y-m-d\THis');
     $fileName = "Version{$versionId}.adl";
     $relPathSources = "scripts/{$studentNumber}/sources/{$scriptAtom->id}/{$fileName}";
+    $absPath = realpath(Config::get('absolutePath')) . "/" . $relPathSources;
     
     //construct the path for the relation basePath[ScriptVersion*FilePath]
     $relPathGenerated = "scripts/{$studentNumber}/generated/{$scriptAtom->id}/Version{$versionId}/fSpec/";
-
-    $absPath = realpath(Config::get('absolutePath')) . "/" . $relPathSources;
     
     // Script content ophalen en schrijven naar bestandje
-    $tgts = $scriptAtom->ifc('ScriptContent')->getTgtAtoms();
-    if (empty($tgts)) {
+    $links = $scriptAtom->getLinks('content[Script*ScriptContent]');
+    if (empty($links)) {
         throw new Exception("No script content provided", 500);
     }
-    $scriptContent = current($tgts)->id;
     if (!file_exists(dirname($absPath))) {
         mkdir(dirname($absPath), 0777, true);
     }
-    file_put_contents($absPath, $scriptContent);
+    file_put_contents($absPath, current($links)->tgt()->id);
 
     // Compile the file, only to check for errors.
     $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
-    $cmd = $exefile . " " . basename($absPath);
-    Execute($cmd, $response, $exitcode, dirname($absPath));
+    Execute($exefile . " " . basename($absPath), $response, $exitcode, dirname($absPath));
     $scriptAtom->link($response, 'compileresponse[Script*CompileResponse]')->add();
     
     if ($exitcode == 0) { // script ok
         // Create new script version atom and add to rel version[Script*ScriptVersion]
-        $version = $scriptVersion->createNewAtom();
-        Relation::getRelation('version[Script*ScriptVersion]')->addLink($scriptAtom, $version, false, 'COMPILEENGINE');
-        setProp('scriptOk', $version, true);
+        $version = Atom::makeNewAtom('ScriptVersion');
+        $scriptAtom->link($version, 'version[Script*ScriptVersion]')->add();
+        $version->link($version, 'scriptOk[ScriptVersion*ScriptVersion]')->add();
         
         $sourceFO = createFileObject($relPathSources, $fileName);
-        Relation::getRelation('source[ScriptVersion*FileObject]')->addLink($version, $sourceFO, false, 'COMPILEENGINE');
+        $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed for graphics)
-        Relation::getRelation('basePath[ScriptVersion*FilePath]')->addLink($version, new Atom($relPathGenerated, Concept::getConceptByLabel('FilePath')));
+        $version->link($relPathGenerated, 'basePath[ScriptVersion*FilePath]')->add();
         
         return ['id' => $version->id, 'relpath' => $relPathSources];
     } else { // script not ok
