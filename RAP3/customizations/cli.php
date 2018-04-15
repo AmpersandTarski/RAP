@@ -10,6 +10,7 @@ use Ampersand\Core\Atom;
 use Ampersand\Core\Concept;
 use Ampersand\Transaction;
 use Ampersand\Rule\ExecEngine;
+use Ampersand\Core\Link;
 
 /* Ampersand commando's mogen niet in dit bestand worden aangepast. 
 De manier om je eigen commando's te regelen is door onderstaande regels naar jouw localSettings.php te copieren en te veranderen
@@ -100,12 +101,9 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     }
 });
 
-ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $script, $scriptVersion, $relSourcePath) use ($logger) {
-    $scriptConcept = Concept::getConceptByLabel("Script");
-    $scriptAtom = new Atom($script, $scriptConcept);
-
-    $scriptVersionConcept = Concept::getConceptByLabel("ScriptVersion");
-    $scriptVersionAtom = new Atom($scriptVersion, $scriptVersionConcept);
+ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $relSourcePath) use ($logger) {
+    $scriptAtom = Atom::makeAtom($scriptId, 'Script');
+    $scriptVersionAtom = Atom::makeAtom($scriptVersionId, 'ScriptVersion');
 
     // The relative path of the source file will be something like:
     //   scripts/<studentNumber>/sources/<scriptId>/Version<timestamp>.adl
@@ -117,31 +115,29 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $script,
     $scriptId      = basename(dirname($relSourcePath));
     $version       = pathinfo($relSourcePath, PATHINFO_FILENAME);
     $relDir        = "scripts/{$studentNumber}/generated/{$scriptId}/{$version}";
-    $absDir = realpath(Config::get('absolutePath')) . "/" . $relDir;
-    
-    
+    $absDir        = realpath(Config::get('absolutePath')) . "/" . $relDir;
     
     // Script bestand voeren aan Ampersand compiler
     switch ($action) {
         case 'diagnosis':
-            Diagnosis($relSourcePath, $scriptVersionAtom, $relDir.'/diagnosis');
+            call_user_func(ExecEngine::getFunction('Diagnosis'), $relSourcePath, $scriptVersionAtom, $relDir . '/diagnosis');
             break;
         case 'loadPopInRAP3':
-            loadPopInRAP3($relSourcePath, $scriptVersionAtom, $relDir.'/atlas');
+            call_user_func(ExecEngine::getFunction('loadPopInRAP3'), $relSourcePath, $scriptVersionAtom, $relDir . '/atlas');
             break;
         case 'fspec':
-            FuncSpec($relSourcePath, $scriptVersionAtom, $relDir.'/fSpec');
+            call_user_func(ExecEngine::getFunction('FuncSpec'), $relSourcePath, $scriptVersionAtom, $relDir . '/fSpec');
             break;
         case 'prototype':
-            Prototype($relSourcePath, $scriptAtom, $scriptVersionAtom, $relDir.'/../prototype');
+            call_user_func(ExecEngine::getFunction('Prototype'), $relSourcePath, $scriptAtom, $scriptVersionAtom, $relDir . '/../prototype');
             break;
         default:
-            Logger::getLogger('EXECENGINE')->error("Unknown action ({$action}) specified");
+            $logger->error("Unknown action '{$action}' specified");
             break;
     }
 });
 
-ExecEngine::registerFunction('FuncSpec', function ($path, $scriptVersionAtom, $outputDir) use ($logger) {
+ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -158,10 +154,10 @@ ExecEngine::registerFunction('FuncSpec', function ($path, $scriptVersionAtom, $o
 
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Functional specification');
-    Relation::getRelation('funcSpec[ScriptVersion*FileObject]')->addLink($scriptVersionAtom, $foObject, false, 'COMPILEENGINE');
+    $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
 });
 
-ExecEngine::registerFunction('Diagnosis', function ($path, $scriptVersionAtom, $outputDir) use ($logger) {
+ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -178,10 +174,10 @@ ExecEngine::registerFunction('Diagnosis', function ($path, $scriptVersionAtom, $
     
     // Create diagnose and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Diagnosis');
-    Relation::getRelation('diag[ScriptVersion*FileObject]')->addLink($scriptVersionAtom, $foObject, false, 'COMPILEENGINE');
+    $scriptVersionAtom->link($foObject, 'diag[ScriptVersion*FileObject]')->add();
 });
 
-ExecEngine::registerFunction('Prototype', function ($path, $scriptAtom, $scriptVersionAtom, $outputDir) use ($logger) {
+ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -199,10 +195,10 @@ ExecEngine::registerFunction('Prototype', function ($path, $scriptAtom, $scriptV
     
     // Create proto and link to scriptAtom
     $foObject = createFileObject("{$outputDir}", 'Launch prototype');
-    Relation::getRelation('proto[Script*FileObject]')->addLink($scriptAtom, $foObject, false, 'COMPILEENGINE');
+    $scriptAtom->link($foObject, 'proto[Script*FileObject]')->add();
 });
 
-ExecEngine::registerFunction('loadPopInRAP3', function ($path, $scriptVersionAtom, $outputDir) use ($logger) {
+ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -218,20 +214,20 @@ ExecEngine::registerFunction('loadPopInRAP3', function ($path, $scriptVersionAto
     $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     if ($exitcode == 0) {
-        $cpt_Concept = Concept::getConceptByLabel('Context');
-        $relContextScriptV = Relation::getRelation('context', $scriptVersionAtom->concept, $cpt_Concept);
         // Open and decode generated metaPopulation.json file
         $pop = file_get_contents("{$absOutputDir}/generics/metaPopulation.json");
         $pop = json_decode($pop, true);
     
         // Add atoms to database
         foreach ($pop['atoms'] as $atomPop) {
-            $concept = Concept::getConceptByLabel($atomPop['concept']);
+            $concept = Concept::getConcept($atomPop['concept']);
             foreach ($atomPop['atoms'] as $atomId) {
-                $a = getRAPAtom($atomId, $concept);
-                $a->addAtom(); // Add to database
-                if ($concept == $cpt_Concept) {
-                    $relContextScriptV->addLink($scriptVersionAtom, $a);
+                $atom = getRAPAtom($atomId, $concept);
+                $atom->add(); // Add to database
+
+                // Link Context atom to the ScriptVersion
+                if ($concept->getId() == 'Context') {
+                    $scriptVersionAtom->link($atom, 'context[ScriptVersion*Context]')->add();
                 }
             }
         }
@@ -239,10 +235,13 @@ ExecEngine::registerFunction('loadPopInRAP3', function ($path, $scriptVersionAto
         // Add links to database
         foreach ($pop['links'] as $linkPop) {
             $relation = Relation::getRelation($linkPop['relation']);
-            foreach ($linkPop['links'] as $link) {
-                $src = getRAPAtom($link['src'], $relation->srcConcept);
-                $tgt = getRAPAtom($link['tgt'], $relation->tgtConcept);
-                $relation->addLink($src, $tgt); // Add link to database
+            foreach ($linkPop['links'] as $pair) {
+                $link = new Link(
+                    $relation, 
+                    getRAPAtom($pair['src'], $relation->srcConcept), 
+                    getRAPAtom($pair['tgt'], $relation->tgtConcept)
+                );
+                $link->add();
             }
         }
     }
