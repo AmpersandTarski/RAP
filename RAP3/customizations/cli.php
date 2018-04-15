@@ -363,53 +363,64 @@ function getRAPAtom($atomId, $concept)
 }
 
 /**
+ * Undocumented function
+ * 
  * @param string $cmd command that needs to be executed
  * @param string &$response reference to textual output of executed command
  * @param int &$exitcode reference to exitcode of executed command
-
+ * @param string|null $workingDir
+ * @return void
  */
 function Execute($cmd, &$response, &$exitcode, $workingDir = null)
 {
-
-    Logger::getLogger('COMPILEENGINE')->debug("cmd:'{$cmd}'");
-    Logger::getLogger('COMPILEENGINE')->debug("workingDir:'{$workingDir}'");
-    $output = array();
+    $logger = Logger::getLogger('RAP3CLI');
+    $logger->debug("cmd:'{$cmd}' (workingDir:'{$workingDir}')");
+    
+    $output = [];
     if (isset($workingDir)) {
         chdir($workingDir);
     }
+
     exec($cmd, $output, $exitcode);
-    if ($exitcode==1) {
-        throw new Exception("Error occurred while attempting to execute `{$cmd}`. Exitcode={$exitcode}", 500);
+    
+    if ($exitcode == 1) {
+        throw new Exception("Error occurred while attempting to execute '{$cmd}'. Exitcode={$exitcode}", 500);
     }
   
     // format execution output
     $response = implode("\n", $output);
-    Logger::getLogger('COMPILEENGINE')->debug("exitcode:'{$exitcode}' response:'{$response}'");
+    $logger->debug("exitcode:'{$exitcode}' response:'{$response}'");
 }
 
 /**
- * @param string $proprelname name of ampersand property relation that must be (de)populated upon success/failure
- * @param Atom $atom ampersand atom used for populating
+ * Undocumented function
+ * 
+ * @param string $propertyRelationSignature name of ampersand property relation that must be (de)populated
+ * @param \Ampersand\Core\Atom $atom
+ * @param bool $bool specifies if property must be populated (true) or depopulated (false)
+ * @return void
  */
-function setProp($proprelname, $atom, $bool)
+function setProp(string $propertyRelationSignature, Atom $atom, bool $bool)
 {
-    // Set property '$proprelname[Script*Script] [PROP]' depending on $bool
-    $proprel = Relation::getRelation($proprelname, $atom->concept, $atom->concept);
-    $proprel->addLink($atom, $atom, false, 'COMPILEENGINE');
     // Before deleteLink always addLink (otherwise Exception will be thrown when link does not exist)
+    $atom->link($atom, $propertyRelationSignature)->add();
     if (!$bool) {
-        $proprel->deleteLink($atom, $atom, false, 'COMPILEENGINE');
+        $atom->link($atom, $propertyRelationSignature)->delete();
     }
 }
 
-function createFileObject($relPath, $displayName)
+/**
+ * Undocumented function
+ *
+ * @param string $relPath
+ * @param string $displayName
+ * @return \Ampersand\Core\Atom
+ */
+function createFileObject(string $relPath, string $displayName): Atom
 {
-    $foAtom = Concept::getConceptByLabel('FileObject')->createNewAtom();
-    $cptFilePath = Concept::getConceptByLabel('FilePath');
-    $cptFileName = Concept::getConceptByLabel('FileName');
-    
-    Relation::getRelation('filePath[FileObject*FilePath]')->addLink($foAtom, new Atom($relPath, $cptFilePath));
-    Relation::getRelation('originalFileName[FileObject*FileName]')->addLink($foAtom, new Atom($displayName, $cptFileName));
+    $foAtom = Atom::makeNewAtom('FileObject');
+    $foAtom->link($relPath, 'filePath[FileObject*FilePath]')->add();
+    $foAtom->link($displayName, 'originalFileName[FileObject*FileName]')->add();
     
     return $foAtom;
 }
