@@ -4,23 +4,6 @@
 - "SIAM_Login.ifc", and/or
 - "SIAM_LoginWithAssistance.adl"
 
-Note that it still is necessary to adjust the `localSettings.php` file, as follows:
-- **set `loginEnabled` to `false`** by making sure you have the text: 
-  Config::set('loginEnabled', 'global', false);
-- **ensure that the ExcelImport function works**, by commenting out the line that starts with:
-  Config::set('allowedRolesForExcelImport', 'excelImport', (etc.)
-- **ensure you can run the ExecEngine from the menu bar**, by commenting out the line that has:
-  Config::set('allowedRolesForRunFunction', 'ExecEngine', (etc.)
 -}
-
--- Below two lines to be discarded when branch_#228 is fully functional.
---RELATION sessionUser[SESSION*User] [UNI]
---INTERFACE "SessionUser" FOR SYSTEM : sessionUser[SESSION*User] cRud BOX [ "ignored": I]
-
-RELATION sessionAccount[SESSION*Account] [UNI]
-INTERFACE "SessionAccount" FOR SYSTEM : sessionAccount[SESSION*Account] cRud BOX [ "ignored": I]
-
-RELATION sessionActiveRoles[SESSION*Role]
-INTERFACE "SessionRoles" FOR SYSTEM : sessionActiveRoles[SESSION*Role] cRud BOX [ "ignored": I]
 
 ENDCONTEXT
