@@ -1,5 +1,8 @@
 <?php
 
+namespace RAP3;
+
+use Exception;
 use Ampersand\Log\Logger;
 use Ampersand\Misc\Config;
 use Ampersand\Core\Relation;
