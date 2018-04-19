@@ -248,81 +248,68 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
 });
 
 ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) use ($logger) {
+    $atom = Atom::makeAtom($atomId, $cptId);
+    deleteAtomAndLinks($atom);
+});
+
+function deleteAtomAndLinks(Atom $atom)
+{
     static $skipRelations = ['context[ScriptVersion*Context]'];
-    $logger = Logger::getLogger('RAP3_CLEANUP');
-    $logger->debug("Cleanup called for {$atomId}[{$cptId}]");
-    
-    $concept = Concept::getConceptByLabel($cptId);
+    global $logger;
+
+    $logger->debug("Cleanup called for '{$atom}'");
     
     // Don't cleanup atoms with REPRESENT type
-    if (!$concept->isObject) {
-        $logger->debug("'{$concept->name}' is not an object, so it will not be cleaned up.");
+    if (!$atom->concept->isObject()) {
+        $logger->debug("Skip cleanup: concept '{$atom->concept}' is not an object");
         return;
     };
-    $atom = new Atom($atomId, $concept);
     
     // Skip cleanup if atom does not exists (anymore)
-    if (!$atom->atomExists()) {
-        $logger->debug("'{$atom->id}' does not exist any longer.");
+    if (!$atom->exists()) {
+        $logger->debug("Skip cleanup: atom '{$atom}' does not exist (anymore)");
         return;
     };
+
+    // List for additional atoms that must be removed
+    $cleanup = [];
+    
     // Walk all relations
-    $allrelations = Relation::getAllRelations();
-    $logger->debug("found " . count($allrelations) . " relations.");
     foreach (Relation::getAllRelations() as $rel) {
         if (in_array($rel->signature, $skipRelations)) {
             continue; // Skip relations that are explicitly excluded
         }
         
         // If cleanup-concept is in same typology as relation src concept
-        if ($rel->srcConcept->inSameClassificationTree($concept)) {
-            $logger->debug("Inspecting relation {$rel->signature} (current atom is src)");
-            $allLinks = $rel->getAllLinks();
-            $logger->debug("found " . count($allLinks) . " links in this relation:");
-            foreach ($rel->getAllLinks() as $link) {
-                if ($link['src'] == $atom->id) {
-                    // Delete link
-                    $rel->deleteLink(new Atom($atom->id, $rel->srcConcept), new Atom($link['tgt'], $rel->tgtConcept));
-                    
-                    // tgt atom in cleanup set
-                    $logger->debug("To be cleaned up later: {$link['tgt']}[{$rel->tgtConcept->name}]");
-                    $cleanup[$rel->tgtConcept->name][] = $link['tgt'];
-                }
+        if ($atom->concept->inSameClassificationTree($rel->srcConcept)) {
+            foreach ($atom->getLinks($rel) as $link) {
+                // Tgt atom in cleanup set
+                $logger->debug("Also cleanup atom: {$link->tgt()}");
+                $cleanup[] = $link->tgt();
             }
+            $rel->deleteAllLinks($atom, 'src');
         }
         
         // If cleanup-concept is in same typology as relation tgt concept
-        if ($rel->tgtConcept->inSameClassificationTree($concept)) {
-            $logger->debug("Inspecting relation {$rel->signature} (current atom is trg)");
-            foreach ($rel->getAllLinks() as $link) {
-                if ($link['tgt'] == $atom->id) {
-                    // Delete link
-                    $rel->deleteLink(new Atom($link['src'], $rel->srcConcept), new Atom($atom->id, $rel->tgtConcept));
-                    
-                    // tgt atom in cleanup set
-                    $logger->debug("To be cleaned up later: {$link['src']}[{$rel->srcConcept->name}]");
-                    $cleanup[$rel->srcConcept->name][] = $link['src'];
-                }
+        if ($atom->concept->inSameClassificationTree($rel->tgtConcept)) {
+            foreach ($atom->getLinks($rel, true) as $link) {
+                // Tgt atom in cleanup set
+                $logger->debug("Also cleanup atom: {$link->src()}");
+                $cleanup[] = $link->src();
             }
+            $rel->deleteAllLinks($atom, 'tgt');
         }
     }
     
     // Delete atom
-    $atom->deleteAtom();
+    $atom->delete();
     
-    // Cleanup filter double values
-    $logger->debug("cleanup is now: {$cleanup} ");
-    foreach ($cleanup as $cpt => &$list) {
-        $list = array_unique($list);
-    }
+    // Remove duplicates
+    $cleanup = array_map('array_unique', $cleanup);
     
-    // Call Cleanup recursive
-    foreach ($cleanup as $cpt => $list) {
-        foreach ($list as $atomId) {
-            Cleanup($atomId, $cpt);
-        }
-    }
-});
+    // Delete atom and links recursive
+    array_map('deleteAtomAndLinks', $cleanup);
+}
 
 function getRAPAtom($atomId, $concept)
 {
