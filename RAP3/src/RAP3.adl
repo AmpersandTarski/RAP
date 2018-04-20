@@ -1,13 +1,17 @@
 CONTEXT RAP3 IN ENGLISH
 
    INCLUDE "SIAM_importer.adl"
-   INCLUDE "../Sequences/SeqOntology.adl"       -- Basic notions
+   INCLUDE "../../Sequences/SeqOntology.adl"       -- Basic notions
 
    INCLUDE "Scripts.adl"
    INCLUDE "Scripts.docadl"
    INCLUDE "Scripts.ifc"
 
    INCLUDE "Analyse.ifc"
+
+   INCLUDE "RAP3_AccountMgt.ifc"            -- RAP Account management interface
+   INCLUDE "RAP3.xlsx"                      -- Initial, minimal set of people and accounts 
+   INCLUDE "RAP3_Login.ifc"                 -- RAP Login/Logout interface
 
 REPRESENT Language TYPE ALPHANUMERIC
 REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC

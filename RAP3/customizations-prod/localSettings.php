@@ -21,11 +21,11 @@ ini_set("display_errors", false);
  *************************************************************************************************/
 set_time_limit(60);
 
-Config::set('debugMode', 'global', true); // default mode = false
+Config::set('debugMode', 'global', false); // default mode = false
 
 // Log file handler
 $fileHandler = new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/log/error.log', 0, \Monolog\Logger::DEBUG);
-//$fileHandler->pushProcessor(new \Monolog\Processor\WebProcessor()); // Adds IP adres and url info to log records
+$fileHandler->pushProcessor(new \Monolog\Processor\WebProcessor()); // Adds IP adres and url info to log records
 $wrapper = new \Monolog\Handler\FingersCrossedHandler($fileHandler, \Monolog\Logger::ERROR, 0, true, true, \Monolog\Logger::WARNING);
 Logger::registerGenericHandler($wrapper);
 
@@ -39,7 +39,7 @@ if (Config::get('debugMode')) {
     //Logger::registerGenericHandler($browserHandler);
 }
 
-$execEngineHandler = new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/log/execengine.log', 0, \Monolog\Logger::DEBUG);
+$execEngineHandler = new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/log/execengine.log', 0, \Monolog\Logger::INFO);
 Logger::registerHandlerForChannel('EXECENGINE', $execEngineHandler);
 
 // User log handler
@@ -48,8 +48,9 @@ Logger::registerHandlerForChannel('USERLOG', new NotificationHandler(\Monolog\Lo
 /**************************************************************************************************
  * SERVER settings
  *************************************************************************************************/
-// Config::set('serverURL', 'global', 'http://rap.cs.ou.nl/RAP3'); // defaults to http://localhost/<ampersand context name>
+Config::set('serverURL', 'global', 'http://rap.cs.ou.nl/RAP3'); // defaults to http://localhost/<ampersand context name>
 // Config::set('apiPath', 'global', '/api/v1'); // relative path to api
+Config::set('productionEnv', 'global', true); // set environment as production deployment (or not = default)
 
 
 /**************************************************************************************************
@@ -58,8 +59,8 @@ Logger::registerHandlerForChannel('USERLOG', new NotificationHandler(\Monolog\Lo
 // Before deployment test: uncomment the lines below, AND replace the variables {SQLUSER}, {SQLPW}, {SQLDB}, {SQLHOST} with appropriate values
 Config::set('dbUser', 'mysqlDatabase', 'ampersand');     // typically: 'ampersand'
 Config::set('dbPassword', 'mysqlDatabase', 'ampersand');   // typically: 'ampersand'
-// Config::set('dbName', 'mysqlDatabase', '{SQLDB}');       // typically: '' or 'ampersand_rap3'
-// Config::set('dbHost', 'mysqlDatabase', 'db');     // typically: 'localhost' on personal computers or 'db' on docker-containers
+Config::set('dbName', 'mysqlDatabase', '{SQLDB}');       // typically: '' or 'ampersand_rap3'
+Config::set('dbHost', 'mysqlDatabase', 'db');     // typically: 'localhost' on personal computers or 'db' on docker-containers
 // Config::set('dbHost', 'mysqlDatabase', getenv('AMPERSAND_DB_HOST'));     // this should probably be done with an environment variable... 
 
 $container['mysql_database'] = function ($c) {
@@ -92,22 +93,18 @@ Config::set('allowedRolesForImporter', 'global', ['ExcelImporter']); // list of 
 // Config::set('execEngineRoleNames', 'execEngine', ['ExecEngine']);
 // Config::set('autoRerun', 'execEngine', true);
 // Config::set('maxRunCount', 'execEngine', 10);
-
-// require_once(__DIR__ . DIRECTORY_SEPARATOR . 'cli.php');
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'ExecEngineFunctions.php');
 
 
 /**************************************************************************************************
  * EXTENSIONS
  *************************************************************************************************/
 require_once __DIR__ . '/extensions/OAuthLogin/OAuthLogin.php' ;
+    Config::set('redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account');
+    Config::set('redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/');
     Config::set(
-        'redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account'
-    );
-    Config::set(
-        'redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/'
-    );
-    Config::set(
-        'identityProviders', 'OAuthLogin',
+        'identityProviders',
+        'OAuthLogin',
         ['linkedin' => 
             ['name' => 'LinkedIn'
             ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-linkedin.png'

@@ -8,8 +8,8 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
       ]
    , "Registreer een nieuw account": I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
       [ "Studentnummer" : regUserID cRUd
-      , "Naam" :       regPerson CRUD    -- The CRUD does not work in COLS mode, so we'll leave it for the time being.
       , "Email" :      regEmail cRUd
+      , "Naam" :       regPerson cRud
       , "Wachtwoord" : regPassword1 crUd -- crUd is needed for Passwords
       , "(herhaal)" :  regPassword2 crUd -- crUd is needed for Passwords
       , "Registreer" : I BOX <PROPBUTTON>
