@@ -18,7 +18,7 @@ switches:
   # - proto[=DIRECTORY]
 
   ### include a directory into the generated prototype, instead of the default.:
-  - customizations=customizations
+  - customizations=customizations;customizations-dev
 
   ### database name (This overrules environment variable CCdbName, defaults to filename):
   # - dbName=NAME

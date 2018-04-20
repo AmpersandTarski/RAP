@@ -6,7 +6,7 @@
 
 switches:
   ### verbose error message format.:
-  - verbose
+  # - verbose
 
   ### Allow to build a prototype, even if there are invariants that are being violated. (See https://github.com/AmpersandTarski/Ampersand/issues/728):
   # - dev
@@ -18,7 +18,7 @@ switches:
   # - proto[=DIRECTORY]
 
   ### include a directory into the generated prototype, instead of the default.:
-  - include=include-prod
+  - customizations=customizations;customizations-prod
 
   ### database name (This overrules environment variable CCdbName, defaults to filename):
   # - dbName=NAME
@@ -117,7 +117,7 @@ switches:
   # - gen-as-rap-model
 
   ### Temporary switch to create Atlas without expressions. (for RAP3):
-  - atlas-without-expressions
+  # - atlas-without-expressions
 
   ### Do not generate static files into the prototype directory:
   # - no-static-files
