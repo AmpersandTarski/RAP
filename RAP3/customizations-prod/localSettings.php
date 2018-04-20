@@ -93,7 +93,7 @@ Config::set('allowedRolesForImporter', 'global', ['ExcelImporter']); // list of 
 // Config::set('execEngineRoleNames', 'execEngine', ['ExecEngine']);
 // Config::set('autoRerun', 'execEngine', true);
 // Config::set('maxRunCount', 'execEngine', 10);
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'cli.php');
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'ExecEngineFunctions.php');
 
 
 /**************************************************************************************************
