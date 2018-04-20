@@ -1,4 +1,3 @@
 CONTEXT RAP3 IN ENGLISH
     INCLUDE "src/RAP3.adl"
-    INCLUDE "src/RAP3_LoginForProduction.ifc"          -- RAP Login/Logout for production environment
 ENDCONTEXT

@@ -11,6 +11,7 @@ CONTEXT RAP3 IN ENGLISH
 
    INCLUDE "RAP3_AccountMgt.ifc"            -- RAP Account management interface
    INCLUDE "RAP3.xlsx"                      -- Initial, minimal set of people and accounts 
+   INCLUDE "RAP3_Login.ifc"                 -- RAP Login/Logout interface
 
 REPRESENT Language TYPE ALPHANUMERIC
 REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC
