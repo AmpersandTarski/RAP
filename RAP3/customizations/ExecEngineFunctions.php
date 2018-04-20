@@ -149,7 +149,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 
     // Execute cmd, and populate 'funcSpecOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('funcSpecOk', $scriptVersionAtom, $exitcode == 0);
+    setProp('funcSpecOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
     $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 
     // Create fSpec and link to scriptVersionAtom
@@ -169,7 +169,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
 
     // Execute cmd, and populate 'diagOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('diagOk', $scriptVersionAtom, $exitcode == 0);
+    setProp('diagOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
     $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create diagnose and link to scriptVersionAtom
@@ -190,7 +190,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     // Execute cmd, and populate 'protoOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('protoOk', $scriptVersionAtom, $exitcode == 0);
+    setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
     $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create proto and link to scriptAtom
@@ -210,7 +210,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
 
     // Execute cmd, and populate 'loadedInRAP3Ok' upon success
     Execute($cmd, $response, $exitcode, $workDir);
-    setProp('loadedInRAP3Ok', $scriptVersionAtom, $exitcode == 0);
+    setProp('loadedInRAP3Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
     $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     if ($exitcode == 0) {
