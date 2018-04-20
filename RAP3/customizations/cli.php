@@ -35,7 +35,7 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
     for ($i = 0; $i < $total; $i++) {
         $logger->debug("Compiling {$i}/{$total}: start");
         
-        $GLOBALS['RapAtoms']=[];
+        $GLOBALS['rapAtoms'] = [];
         set_time_limit(600);
 
         $scriptVersionInfo = call_user_func(ExecEngine::getFunction('CompileToNewVersion'), $scriptAtomId, $studentNumber);
@@ -237,8 +237,8 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
             $relation = Relation::getRelation($linkPop['relation']);
             foreach ($linkPop['links'] as $pair) {
                 $link = new Link(
-                    $relation, 
-                    getRAPAtom($pair['src'], $relation->srcConcept), 
+                    $relation,
+                    getRAPAtom($pair['src'], $relation->srcConcept),
                     getRAPAtom($pair['tgt'], $relation->tgtConcept)
                 );
                 $link->add();
@@ -311,41 +311,43 @@ function deleteAtomAndLinks(Atom $atom)
     array_map('deleteAtomAndLinks', $cleanup);
 }
 
-function getRAPAtom($atomId, $concept)
+/**
+ * Undocumented function
+ *
+ * @param string $atomId
+ * @param \Ampersand\Core\Concept $concept
+ * @return \Ampersand\Core\Atom
+ */
+function getRAPAtom(string $atomId, Concept $concept): Atom
 {
-    if (!isset($GLOBALS['RapAtoms'])) {
-        $GLOBALS['RapAtoms']=[];
+    // Instantiate an array only the first time the function is
+    if (!isset($GLOBALS['rapAtoms'])) {
+        $GLOBALS['rapAtoms'] = [];
     }
 
-    switch ($concept->isObject) {
-        case true: // non-scalar atoms get a new unique identifier
-            // Caching of atom identifier is done by its largest concept
-            $largestC = $concept->getLargestConcept();
-            
-            // If atom is already changed earlier, use new id from cache
-            if (isset($GLOBALS['RapAtoms'][$largestC->name]) && array_key_exists($atomId, $GLOBALS['RapAtoms'][$largestC->name])) {
-                $atom = new Atom($GLOBALS['RapAtoms'][$largestC->name][$atomId], $concept); // Atom itself is instantiated with $concept (!not $largestC)
-            
-            // Else create new id and store in cache
-            } else {
-                $atom = $concept->createNewAtom(); // Create new atom (with generated id)
-                // TODO: Guarantee that we have a new id. (Issue #528) (for now, the next logger statement seems to take enough time, which is great as workaround.)
-                Logger::getLogger('COMPILEENGINE')->debug("concept:'{$concept->name}' --> atomId: '{$atomId}': {$atom->id}");
-                $GLOBALS['RapAtoms'][$largestC->name][$atomId] = $atom->id; // Cache pair of old and new atom identifier
-            }
-            break;
+    // Non-scalar atoms get a new unique identifier
+    if ($concept->isObject()) {
+        // Caching of atom identifier is done by its largest concept
+        $largestC = $concept->getLargestConcept()->getId();
         
-        default: // All other atoms are left untouched
-            $atom = new Atom($atomId, $concept);
-            break;
+        // If atom is already changed earlier, use new id from cache
+        if (isset($GLOBALS['rapAtoms'][$largestC]) && array_key_exists($atomId, $GLOBALS['rapAtoms'][$largestC])) {
+            return Atom::makeAtom($GLOBALS['rapAtoms'][$largestC][$atomId], $concept->getId()); // Atom itself is instantiated with $concept (!not $largestC)
+        
+        // Else create new id and store in cache
+        } else {
+            $atom = $concept->createNewAtom(); // Create new atom (with generated id)
+            $GLOBALS['rapAtoms'][$largestC][$atomId] = $atom->id; // Cache pair of old and new atom identifier
+            return $atom;
+        }
+    } else {
+        return new Atom($atomId, $concept);
     }
-        
-    return $atom;
 }
 
 /**
  * Undocumented function
- * 
+ *
  * @param string $cmd command that needs to be executed
  * @param string &$response reference to textual output of executed command
  * @param int &$exitcode reference to exitcode of executed command
@@ -354,7 +356,7 @@ function getRAPAtom($atomId, $concept)
  */
 function Execute($cmd, &$response, &$exitcode, $workingDir = null)
 {
-    $logger = Logger::getLogger('RAP3CLI');
+    global $logger;
     $logger->debug("cmd:'{$cmd}' (workingDir:'{$workingDir}')");
     
     $output = [];
@@ -375,7 +377,7 @@ function Execute($cmd, &$response, &$exitcode, $workingDir = null)
 
 /**
  * Undocumented function
- * 
+ *
  * @param string $propertyRelationSignature name of ampersand property relation that must be (de)populated
  * @param \Ampersand\Core\Atom $atom
  * @param bool $bool specifies if property must be populated (true) or depopulated (false)
