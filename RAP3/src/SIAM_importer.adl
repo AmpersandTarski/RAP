@@ -3,6 +3,7 @@ CONTEXT SIAMv2_1 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
 
 --[Required/imported SIAM functionality]--
 
+   INCLUDE "../../SIAM/SIAM_OAuth.adl"               -- toegevoegd op 26 jan 2018 m.m.v. Michiel Stornebrink
 -- INCLUDE "../../SIAM/SIAM_Module-versioning.adl"   -- the version definition for this module
    INCLUDE "../../SIAM/SIAM_PersonReg.adl"           -- a basic/minimalistic Person registration (just first- and last names).
 -- INCLUDE "../../SIAM/SIAM_OrgReg.adl"              -- a basic/minimalistic Organization registration (just abbreviated and full names).
@@ -16,6 +17,10 @@ CONTEXT SIAMv2_1 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
 -- INCLUDE "../../SIAM/SIAM_GodAccounts.adl"         -- Extension that implements the 'God-accounts' feature (accounts that have all roles).
 -- INCLUDE "../../SIAM/SIAM_SessionSuspension.adl"   -- Extension that allows sessions to temporarily be suspended.
 -- INCLUDE "../../SIAM/SIAM_LoginISOAuthLevels.adl"  -- Extension that introduces ISO authentication levels in a basic fashion.
+
+--[RAP3 initial set of people and accounts]--
+
+   INCLUDE "RAP3.xlsx"                            -- Initial, minimal set of people and accounts 
 
 --[RAP3 interfaces for SIAM-related stuff]--
 -- INCLUDE "../../SIAM/SIAM_PersonReg.ifc"           -- a basic/minimalistic interface to edit Persons
