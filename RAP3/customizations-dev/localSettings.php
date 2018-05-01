@@ -97,6 +97,18 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'ExecEngineFunctions.php');
 
 /**************************************************************************************************
  * EXTENSIONS
+ * Tijdelijk commentaar tijdens het mobiliseren van SAML2 code: We kijken naar SimpleSAML...
+ * (Ik volg de instructie op https://simplesamlphp.org/docs/development/simplesamlphp-install-repo)
+ * 
+ * In C:\Program Files\PHP\php.ini heb ik pdo_sqlite ge-enabled:
+ *        extension=pdo_sqlite
+ * 
+ * Op een afzonderlijke directory heb ik een kloon van simplesamlphp gemaakt:
+ * D:\var\simpleSAML>git clone git@github.com:simplesamlphp/simplesamlphp.git simplesamlphp
+ * 
+ * Vervolgens heb ik opgezocht waar ik mijn composer.phar bestand heb staan, en heb php verteld om simplesamlphp te installeren.
+ * (Ik moest php vanuit de directory draaien waar composer.json staat, omdat daarin staat wat php moet doen.)
+ * D:\var\simpleSAML\simplesamlphp-master>php /c/ProgramData/ComposerSetup/bin/composer.phar install
  *************************************************************************************************/
 require_once __DIR__ . '/extensions/OAuthLogin/OAuthLogin.php' ;
     Config::set(
