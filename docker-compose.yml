@@ -3,7 +3,7 @@ version: '2'
 services:
   rap3:
     restart: always
-    image: ampersandtarski/rap3:latest
+    image: ampersandtarski/ampersand-rap:latest
     ports:
       - "80:80"
     links:
@@ -21,6 +21,6 @@ services:
   phptools:
     image: phpmyadmin/phpmyadmin
     ports:
-       - "8080:80"
+      - "8080:80"
     links:
       - db
