@@ -1,4 +1,5 @@
-$if(verbose)$<!-- View-ACE.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$) -->
+$if(verbose)$
+<!-- View-ACE.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$) -->
 <!-- Requires Ampersand statements: 
     CONCEPT <PickSomething> ""
     REPRESENT <PickSomething> TYPE BIGALPHANUMERIC
@@ -10,17 +11,23 @@ $if(verbose)$<!-- View-ACE.html "$label$" : $expAdl$ :: $source$ * $target$ $if(
     * script to add ui-ace as dependency to Angular app: 
         var app = angular.module('AmpersandApp'); 
         app.requires[app.requires.length] = 'ui.ace';
--->
-$endif$$if(crudR)$<div ng-controler="static_aceController" ng-init="ifcName='$name$'">
-	$if(exprIsUni)$
-        $if(crudU)$
-            <input input-sm" type="file" fileread="resource['$name$']" />
-            <div style="min-height:300px;" data-ui-ace="{mode : 'xml', onBlur:saveAceContent}" data-ng-model="resource['$name$']" ></div>
-            <button type="button" class="btn btn-sm btn-primary" data-ng-click="saveItem(resource, '$name$', patchResource)">Beware to save your work before leaving the editor field!</button>
-        $else$
-            <div data-ui-ace="{mode : 'xml'}" data-ng-model="::resource['$name$']" readonly></div>
-        $endif$
-    $else$
-        <span>template not suitable for non-uni expressions</span>
-    $endif$
-</div>$else$<span><i>not readable</i></span>$endif$
+-->$endif$ $if(crudR)$
+<div class="xml-code" ng-controller="AceEditorController" ng-init="ifc = '$name$'">$if(crudU)$$if(exprIsUni)$
+    <input class="input-sm" type="file" fileread="resource['$name$']" />
+    <div data-ui-ace="{mode: 'haskell', onBlur: onBlurSave}" data-ng-model="resource['$name$']" style="min-height:300px;"></div>$else$
+    <div ng-repeat="row in resource['$name$'] track by \$index" style="margin-bottom: 10px;">
+        <span my-showonhover-box class="glyphicon glyphicon-minus" style="margin-right: 5px;" ng-click="removeItem(resource, '$name$', \$index, patchResource)" uib-tooltip="Remove" tooltip-trigger="mouseenter" tooltip-placement="left"></span>
+        <div data-ui-ace="{mode: 'haskell'}" readonly data-ng-model="::row" style="min-height:300px;"></div>
+    </div>
+    <div>
+        <span><strong>Add new example:</strong></span>
+        <div data-ui-ace="{mode: 'haskell', onBlur: onBlurAdd}" data-ng-model="selected.value" style="min-height:300px;"></div>
+    </div>$endif$$else$$if(exprIsUni)$
+    <div data-ui-ace="{mode: 'haskell'}" readonly data-ng-model="::resource['$name$']" style="min-height:300px;"></div>$else$
+    <div ng-repeat="row in resource['$name$'] track by \$index" style="margin-bottom: 10px;">
+        <div data-ui-ace="{mode: 'haskell'}" readonly data-ng-model="::row" style="min-height:300px;"></div>
+    </div>$endif$$endif$
+</div>$else$
+<span>
+    <i>not readable</i>
+</span>$endif$
