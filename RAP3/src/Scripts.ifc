@@ -57,6 +57,4 @@ INTERFACE "Nieuw script" FOR Student, User : I[Script] CRUd BOX <ROWSNL>
       ]
    ]
 
-INTERFACE "ScriptContent" FOR SYSTEM : I[Script];content BOX []
-
 ENDCONTEXT
