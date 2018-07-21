@@ -5,6 +5,10 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
    [ "Login met een bestaand account" : I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
       [ "Studentnummer": loginUserid cRUd
       , "Password": loginPassword crUd -- crUd is needed for Passwords
+      , "Login" : I BOX <PROPBUTTON>
+                          [ disabled : I-(loginUserid;loginUserid~ /\ loginPassword;loginPassword~) cRud -- Only active if name and password are entered
+                          , property : loginButton cRUd
+                          ]
       ]
    , "Registreer een nieuw account": I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
       [ "Studentnummer" : regUserID cRUd
@@ -14,7 +18,7 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
       , "(herhaal)" :  regPassword2 crUd -- crUd is needed for Passwords
       , "Registreer" : I BOX <PROPBUTTON>
                           [ disabled : I-(regPassword1;regPassword2~ /\ regUserID;regUserID~) cRud -- Only active if there are two equal passwords.
-                          , property : regCreateAccount cRUd
+                          , property : registerButton cRUd
                           ]
       ]
    , "Logout": I /\ sessionAccount;sessionAccount~ cRud BOX <ROWSNL>

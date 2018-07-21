@@ -1,4 +1,5 @@
-FROM ampersandtarski/ampersand-prototype:latest
+# This script is meant to build from the root directory of your RAP-repo.
+FROM ampersandtarski/ampersand-prototype:texlive
 
 ENV AMPERSAND_DB_HOST=db
 

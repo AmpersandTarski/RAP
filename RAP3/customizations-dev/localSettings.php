@@ -60,7 +60,7 @@ Config::set('dbUser', 'mysqlDatabase', 'ampersand');     // typically: 'ampersan
 Config::set('dbPassword', 'mysqlDatabase', 'ampersand');   // typically: 'ampersand'
 // Config::set('dbName', 'mysqlDatabase', '{SQLDB}');       // typically: '' or 'ampersand_rap3'
 // Config::set('dbHost', 'mysqlDatabase', 'db');     // typically: 'localhost' on personal computers or 'db' on docker-containers
-// Config::set('dbHost', 'mysqlDatabase', getenv('AMPERSAND_DB_HOST'));     // this should probably be done with an environment variable... 
+Config::set('dbHost', 'mysqlDatabase', getenv('AMPERSAND_DB_HOST'));     // this should probably be done with an environment variable... 
 
 $container['mysql_database'] = function ($c) {
     $dbHost = Config::get('dbHost', 'mysqlDatabase');

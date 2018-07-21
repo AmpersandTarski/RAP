@@ -95,17 +95,19 @@ INTERFACE "My Account" FOR "User": "_SESSION" cRud BOX <ROWSNL>
 POPULATION LoginMessage CONTAINS [ "Editing your account requires that you are logged in" ]
 
 --[Studenten mogen een eigen account aanmaken door dat aan te vinken bij de login]--
-regUserID        :: SESSION * UserID [UNI] -- Studentnummer waarmee de student zich wil registreren
-regPassword1     :: SESSION * Password [UNI]
-regPassword2     :: SESSION * Password [UNI]
-regEmail         :: SESSION * Emailaddress [UNI] -- OU Emailaccount (kunnen we later met Messaging gebruiken)
-regPerson        :: SESSION * Person [UNI]
-regCreateAccount :: SESSION * SESSION [PROP] -- knopje om expliciet te zeggen dat met deze gegevens geregistreerd moet gaan worden.
+RELATION regUserID      [SESSION * UserID]       [UNI] -- Studentnummer waarmee de student zich wil registreren
+RELATION regPassword1   [SESSION * Password]     [UNI]
+RELATION regPassword2   [SESSION * Password]     [UNI]
+RELATION regEmail       [SESSION * Emailaddress] [UNI] -- OU Emailaccount (kunnen we later met Messaging gebruiken)
+RELATION regPerson      [SESSION * Person]       [UNI]
+RELATION registerButton [SESSION * SESSION]      [PROP] -- knopje om expliciet te zeggen dat met deze gegevens geregistreerd moet gaan worden.
+RELATION loginButton    [SESSION * SESSION]      [PROP]      -- knopje om expliciet te zeggen dat de gebruiker wil inloggen.
 
 ROLE ExecEngine MAINTAINS "Login upon request"
 RULE "Login upon request": 
    ("_SESSION" - sessionAccount;sessionAccount~)
    /\ loginUserid;accUserid~;accPassword;loginPassword~
+   /\ loginButton
 |-     sessionAccount;sessionAccount~
 VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC loginUserid;accUserid~ 
           ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";UserID;", SRC loginUserid
@@ -115,20 +117,15 @@ VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", S
 --[Studenten mogen een eigen account aanmaken middels een specifieke interface]--
 ROLE ExecEngine MAINTAINS "Login on a new account when registering"
 RULE "Login on a new account when registering": 
-   (regCreateAccount - sessionAccount;sessionAccount~)
-   /\ regUserID;-accUserid~;V[Account*SESSION]
-   /\ regPassword1;regPassword2~
+   (registerButton - sessionAccount;sessionAccount~)  -- button is pushed with no-one logged in
+   /\ regUserID;-accUserid~;V[Account*SESSION]        -- the new userID does not exist
+   /\ regPassword1;regPassword2~                      -- both passwords are equal
 |-    sessionAccount;sessionAccount~
 VIOLATION (TXT "{EX} NewStruct;Account"
-               ,TXT ";sessionAccount;SESSION;", SRC I, TXT ";Account;_NEW"
-          )
-
---[Studenten mogen een eigen account aanmaken middels een specifieke interface]--
-ROLE ExecEngine MAINTAINS "Register a new account"
-RULE "Register a new account":
-   sessionAccount~;regUserID |- accUserid
-VIOLATION (TXT "{EX} InsPair;accUserid;Account;", SRC I, TXT ";UserID;", TGT I
-          ,TXT "{EX} DelPair;regUserID;SESSION;", SRC sessionAccount~, TXT ";UserID;", TGT I
+               , TXT ";accUserid;Account;_NEW;UserID;", TGT regUserID
+               , TXT ";sessionAccount;SESSION;", SRC I, TXT ";Account;_NEW"
+          , TXT "{EX} DelPair;regUserID;SESSION;", SRC I, TXT ";UserID;", TGT regUserID
+          , TXT "{EX} DelPair;registerButton;SESSION;", SRC I, TXT ";SESSION;", TGT I
           )
 
 --[Users may change their password when logged in]--
@@ -142,16 +139,16 @@ VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Pa
           ,TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
           )
 
-RULE CopyEmail : sessionAccount~;regCreateAccount;regEmail |- accEmail
+RULE CopyEmail : sessionAccount~;registerButton;regEmail |- accEmail
 VIOLATION ( TXT "{EX} InsPair;accEmail;Account;",  SRC I, TXT ";Emailaddress;", TGT I )
 RULE EmptyRegEmail : sessionAccount;accEmail |- -regEmail
 VIOLATION ( TXT "{EX} DelPair;regEmail;SESSION;",  SRC I, TXT ";Emailaddress;", TGT I )
-RULE CopyPerson : sessionAccount~;regCreateAccount;regPerson |- accPerson
+RULE CopyPerson : sessionAccount~;registerButton;regPerson |- accPerson
 VIOLATION ( TXT "{EX} InsPair;accPerson;Account;",  SRC I, TXT ";Person;", TGT I )
 RULE EmptyRegPerson : sessionAccount;accPerson |- -regPerson
 VIOLATION ( TXT "{EX} DelPair;regPerson;SESSION;",  SRC I, TXT ";Person;", TGT I )
-RULE ResetCreateAccount : (regCreateAccount /\ sessionAccount;sessionAccount~)-(regEmail;regEmail~\/regPerson;regPerson~) |- -regCreateAccount
-VIOLATION ( TXT "{EX} DelPair;regCreateAccount;SESSION;", SRC I, TXT ";SESSION;", TGT I )
+RULE ResetCreateAccount : (registerButton /\ sessionAccount;sessionAccount~)-(regEmail;regEmail~\/regPerson;regPerson~) |- -registerButton
+VIOLATION ( TXT "{EX} DelPair;registerButton;SESSION;", SRC I, TXT ";SESSION;", TGT I )
 
 PURPOSE RULE RefuseExistingStudentnumber
 {+Registering a student number that is already known yields an error message,
@@ -170,7 +167,7 @@ ROLE ExecEngine MAINTAINS CopyEmail, EmptyRegEmail, CopyPerson, EmptyRegPerson, 
 3	"_SESSION";(I/\regPassword1;regPassword2~);V	Two equal passwords have been entered in this session's register menu. So, this is the password for the new account
 3	"_SESSION";(I/\regPassword1;-I;regPassword2~);V	Two unequal passwords have been entered in this session's register menu. Apparently, the user has mis-typed the password.
 4	"_SESSION";regEmail;V	An e-mail address has been entered in this session's register menu. This email address will be used for the new account
-5	"_SESSION";regCreateAccount;V	The "Registreer"-button has been clicked on in this session's register menu. So, the user is done and wishes to make the new account
+5	"_SESSION";registerButton;V	The "Registreer"-button has been clicked on in this session's register menu. So, the user is done and wishes to make the new account
 6	"_SESSION";(I/\sessionAccount;sessionAccount~);V	This session is logged in.
 7	"_SESSION";(I-sessionAccount;sessionAccount~);V	This session is not logged in.
 8	"_SESSION";(I/\loginUserid;accUserid~;accPassword;loginPassword~);V	The user has provided the username/password combination of an existing account. So, we can log this user into the system.
