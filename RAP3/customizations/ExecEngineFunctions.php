@@ -364,11 +364,8 @@ function Execute($cmd, &$response, &$exitcode, $workingDir = null)
         chdir($workingDir);
     }
 
+    $cmd .= ' 2>&1'; // appends STDERR to STDOUT, which is then available in $output below.
     exec($cmd, $output, $exitcode);
-    
-    if ($exitcode == 1) {
-        throw new Exception("Error occurred while attempting to execute '{$cmd}'. Exitcode={$exitcode}", 500);
-    }
   
     // format execution output
     $response = implode("\n", $output);
