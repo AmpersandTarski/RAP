@@ -47,6 +47,7 @@ INTERFACE "Nieuw script" FOR Student, User : I[Script] CRUd BOX <ROWSNL>
                            [ disabled : I/\protoOk        cRud
                            , property : protoRequest cRUd
                            ]
+         , "Message" : compileresponse[ScriptVersion*CompileResponse] cRud
          ]
       , "links to your results": seqFirstItem ; I[ScriptVersion] cRud BOX <COLSNL>
          [ "Diagnosis"  : diag cRud
