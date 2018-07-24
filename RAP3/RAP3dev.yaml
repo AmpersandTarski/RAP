@@ -17,6 +17,12 @@ switches:
   ### generate a functional prototype (This overrules environment variable CCdirPrototype).:
   # - proto[=DIRECTORY]
 
+  ### tag, branch or SHA of the prototype framework on Github.:
+  - prototype-framework-version=development
+
+  ### re-install the prototype framework. This discards any previously installed version.:
+  # - force-reinstall-framework
+
   ### include a directory into the generated prototype, instead of the default.:
   - customizations=customizations;customizations-dev
 
