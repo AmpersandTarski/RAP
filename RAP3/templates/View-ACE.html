@@ -13,7 +13,7 @@ $if(verbose)$
         app.requires[app.requires.length] = 'ui.ace';
 -->$endif$ $if(crudR)$
 <div class="xml-code" ng-controller="AceEditorController" ng-init="ifc = '$name$'">$if(crudU)$$if(exprIsUni)$
-    <input class="input-sm" type="file" fileread="resource['$name$']" />
+    <input class="input-sm" type="file" fileread resource="resource" ifc="'$name$'" patch-resource="patchResource"/>
     <div data-ui-ace="{mode: 'haskell', onBlur: onBlurSave}" data-ng-model="resource['$name$']" style="min-height:300px;"></div>$else$
     <div ng-repeat="row in resource['$name$'] track by \$index" style="margin-bottom: 10px;">
         <span my-showonhover-box class="glyphicon glyphicon-minus" style="margin-right: 5px;" ng-click="removeItem(resource, '$name$', \$index, patchResource)" uib-tooltip="Remove" tooltip-trigger="mouseenter" tooltip-placement="left"></span>
