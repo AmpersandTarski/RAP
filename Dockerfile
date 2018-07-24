@@ -15,6 +15,17 @@ ADD ./Sequences /Sequences
 RUN ampersand /src/RAP3dev.adl --config=/src/RAP3dev.yaml -p/var/www/html/RAP3 \
  && mkdir -p /var/www/html/RAP3/log \
  && chown -R www-data:www-data /var/www/html/RAP3
+ && cd /var/www/html/RAP3 \
+ && apt update \
+ && apt install -y gnupg \
+ && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
+ && apt-get install -y nodejs \
+ && rm -rf /var/lib/apt/lists/* \
+ && npm i -g gulp-cli \
+ && npm i gulp \
+ && npm install \
+ && gulp build-ampersand \
+ && gulp build-project \
 
 VOLUME /var/www/html/RAP3
 
