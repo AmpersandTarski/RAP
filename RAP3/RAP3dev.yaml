@@ -18,7 +18,7 @@ switches:
   # - proto[=DIRECTORY]
 
   ### include a directory into the generated prototype, instead of the default.:
-  - include=include-dev
+  # - include=include-dev
 
   ### database name (This overrules environment variable CCdbName, defaults to filename):
   # - dbName=NAME
