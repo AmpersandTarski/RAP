@@ -6,7 +6,7 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
       [ "Studentnummer": loginUserid cRUd
       , "Password": loginPassword crUd -- crUd is needed for Passwords
       , "Login" : I BOX <PROPBUTTON>
-                          [ disabled : I-(loginUserid;loginUserid~ /\ loginPassword;loginPassword~) cRud -- Only active if name and password are entered
+                          [ disabled : I-I   -- was:   I-(loginUserid;loginUserid~ /\ loginPassword;loginPassword~) cRud -- Only active if name and password are entered
                           , property : loginButton cRUd
                           ]
       ]
