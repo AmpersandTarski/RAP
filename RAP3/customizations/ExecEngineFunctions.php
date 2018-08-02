@@ -144,7 +144,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     $absOutputDir = realpath(Config::get('absolutePath')) . "/" . $outputDir;
 
     $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
-    $default = $exefile . " {$basename} -fl --language=NL --outputDir=\"{$absOutputDir}\" ";
+    $default = $exefile . " {$basename} -fpdf --language=NL --outputDir=\"{$absOutputDir}\" ";
     $cmd = is_null(Config::get('FuncSpecCmd', 'RAP3')) ? $default : Config::get('FuncSpecCmd', 'RAP3');
 
     // Execute cmd, and populate 'funcSpecOk' upon success
@@ -164,7 +164,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     $absOutputDir = realpath(Config::get('absolutePath')) . "/" . $outputDir;
 
     $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
-    $default = $exefile . " {$basename} -fl --diagnosis --language=NL --outputDir=\"{$absOutputDir}\" ";
+    $default = $exefile . " {$basename} -fpdf --diagnosis --language=NL --outputDir=\"{$absOutputDir}\" ";
     $cmd = is_null(Config::get('DiagCmd', 'RAP3')) ? $default : Config::get('DiagCmd', 'RAP3');
 
     // Execute cmd, and populate 'diagOk' upon success

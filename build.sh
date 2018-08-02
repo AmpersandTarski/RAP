@@ -11,6 +11,4 @@ set -e   ## stops the script upon the first error.
 echo "Building RAP3 from ampersandtarski/ampersand-rap"
 git clone https://github.com/AmpersandTarski/docker-ampersand/ /home/$(whoami)/docker-ampersand
 cd /home/$(whoami)/docker-ampersand/
-docker build --tag ampersandtarski/ampersand-prototype-db:latest RAP3DB
-docker build --tag ampersandtarski/ampersand:latest ampersand
-docker build --tag ampersandtarski/ampersand-rap:latest RAP3
+docker build --tag ampersandtarski/ampersand-rap:latest .
