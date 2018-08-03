@@ -1,4 +1,4 @@
-CONTEXT "Login" IN ENGLISH LATEX
+CONTEXT "Login" IN ENGLISH
 -----------------------------------------------------------
 
 INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
