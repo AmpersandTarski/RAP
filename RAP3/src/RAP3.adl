@@ -52,7 +52,7 @@ VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT";", TGT I
 --[Functional specifiations]--
 RELATION funcSpecRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested the script to be converted into a functional specification
 RELATION funcSpecOk[ScriptVersion*ScriptVersion] [PROP] -- a functional specification has actually been generated (no errors)
-RELATION funcSpec[ScriptVersion*FileObject] [UNI] -- the file containing the funcspec of the script, it has the property 'funcSpecOk'
+RELATION funcSpec[ScriptVersion*FileObject] [UNI] -- the file **containing** the funcspec of the script, it has the property 'funcSpecOk'
 
 ROLE ExecEngine MAINTAINS "Create fspec" -- reset funcSpecRequest after an attempt to create it has been performed.
 --RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor

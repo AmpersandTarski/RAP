@@ -21,7 +21,7 @@ ini_set("display_errors", false);
  *************************************************************************************************/
 set_time_limit(60);
 
-Config::set('debugMode', 'global', false); // default mode = false
+Config::set('debugMode', 'global', false); // development mode = true, production mode = false
 
 // Log file handler
 $fileHandler = new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/log/error.log', 0, \Monolog\Logger::DEBUG);
@@ -100,15 +100,15 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'ExecEngineFunctions.php');
  * EXTENSIONS
  *************************************************************************************************/
 require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
-    Config::set('redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account'); // path 'redirect-after-login' triggers frontend to route back to page where status 401 was raised.
-    Config::set('redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/');
+    Config::set('redirectAfterLogin', 'OAuthLogin', 'http://rap.cs.ou.nl/RAP3/#/My_32_Account'); // path 'redirect-after-login' triggers frontend to route back to page where status 401 was raised.
+    Config::set('redirectAfterLoginFailure', 'OAuthLogin', 'http://rap.cs.ou.nl/RAP3/#/');
     Config::set(
         'identityProviders', 'OAuthLogin', 
         ['linkedin' => 
             ['name' => 'LinkedIn'
             ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-linkedin.png'
             ,'authBase' => 'https://www.linkedin.com/uas/oauth2/authorization'
-            ,'redirectUrl' => 'http://example.com/AmpersandPrototypes/RAP3/api/v1/oauthlogin/callback/linkedin'
+            ,'redirectUrl' => 'http://rap.cs.ou.nl/RAP3/api/v1/oauthlogin/callback/linkedin'
             ,'clientId' => '86s07m9hyin5fg'
             ,'clientSecret' => 'wJHIRIQms5d2Sx1C'
             ,'tokenUrl' => 'https://www.linkedin.com/uas/oauth2/accessToken'
@@ -132,7 +132,7 @@ require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
             ['name' => 'GitHub'
             ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-github.png'
             ,'authBase' => 'https://github.com/login/oauth/authorize'
-            ,'redirectUrl' => 'http://example.com/AmpersandPrototypes/RAP3/api/v1/oauthlogin/callback/github'
+            ,'redirectUrl' => 'http://rap.cs.ou.nl/RAP3/api/v1/oauthlogin/callback/github'
             ,'clientId' => 'c5a0bae9b2a78e478346'
             ,'clientSecret' => '6ab971bc6b1e34cc9b1b8662005586c635c7a067'
             ,'tokenUrl' => 'https://github.com/login/oauth/access_token'

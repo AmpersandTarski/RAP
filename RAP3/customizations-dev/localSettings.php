@@ -14,14 +14,14 @@ date_default_timezone_set('Europe/Amsterdam'); // See http://php.net/manual/en/t
  * LOGGING functionality
  *************************************************************************************************/
 error_reporting(E_ALL & ~E_NOTICE);
-ini_set("display_errors", false);
+ini_set("display_errors", true);
 
 /**************************************************************************************************
  * Execution time limit is set to a default of 30 seconds. Use 0 to have no time limit. (not advised)
  *************************************************************************************************/
 set_time_limit(60);
 
-Config::set('debugMode', 'global', true); // default mode = false
+Config::set('debugMode', 'global', true);  // development mode = true, production mode = false
 
 // Log file handler
 $fileHandler = new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/log/error.log', 0, \Monolog\Logger::DEBUG);
@@ -50,6 +50,7 @@ Logger::registerHandlerForChannel('USERLOG', new NotificationHandler(\Monolog\Lo
  *************************************************************************************************/
 // Config::set('serverURL', 'global', 'http://rap.cs.ou.nl/RAP3'); // defaults to http://localhost/<ampersand context name>
 // Config::set('apiPath', 'global', '/api/v1'); // relative path to api
+Config::set('productionEnv', 'global', false); // true for a production deployment, false (=default) for a development deployment
 
 
 /**************************************************************************************************
@@ -59,7 +60,7 @@ Logger::registerHandlerForChannel('USERLOG', new NotificationHandler(\Monolog\Lo
 Config::set('dbUser', 'mysqlDatabase', 'ampersand');     // typically: 'ampersand'
 Config::set('dbPassword', 'mysqlDatabase', 'ampersand');   // typically: 'ampersand'
 // Config::set('dbName', 'mysqlDatabase', '{SQLDB}');       // typically: '' or 'ampersand_rap3'
-// Config::set('dbHost', 'mysqlDatabase', 'db');     // typically: 'localhost' on personal computers or 'db' on docker-containers
+Config::set('dbHost', 'mysqlDatabase', 'db');     // typically: 'localhost' on personal computers or 'db' on docker-containers
 Config::set('dbHost', 'mysqlDatabase', getenv('AMPERSAND_DB_HOST'));     // this should probably be done with an environment variable... 
 
 $container['mysql_database'] = function ($c) {
@@ -99,15 +100,15 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'ExecEngineFunctions.php');
  * EXTENSIONS
  *************************************************************************************************/
 require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
-    Config::set('redirectAfterLogin', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/My_32_Account'); // path 'redirect-after-login' triggers frontend to route back to page where status 401 was raised.
-    Config::set('redirectAfterLoginFailure', 'OAuthLogin', 'http://example.com/AmpersandPrototypes/RAP3/#/');
+    Config::set('redirectAfterLogin', 'OAuthLogin', 'http://rap.cs.ou.nl/RAP3/#/My_32_Account'); // path 'redirect-after-login' triggers frontend to route back to page where status 401 was raised.
+    Config::set('redirectAfterLoginFailure', 'OAuthLogin', 'http://rap.cs.ou.nl/RAP3/#/');
     Config::set(
         'identityProviders', 'OAuthLogin', 
         ['linkedin' => 
             ['name' => 'LinkedIn'
             ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-linkedin.png'
             ,'authBase' => 'https://www.linkedin.com/uas/oauth2/authorization'
-            ,'redirectUrl' => 'http://example.com/AmpersandPrototypes/RAP3/api/v1/oauthlogin/callback/linkedin'
+            ,'redirectUrl' => 'http://rap.cs.ou.nl/RAP3/api/v1/oauthlogin/callback/linkedin'
             ,'clientId' => '86s07m9hyin5fg'
             ,'clientSecret' => 'wJHIRIQms5d2Sx1C'
             ,'tokenUrl' => 'https://www.linkedin.com/uas/oauth2/accessToken'
@@ -131,7 +132,7 @@ require_once(__DIR__ . '/extensions/OAuthLogin/OAuthLogin.php');
             ['name' => 'GitHub'
             ,'logoUrl' => 'extensions/OAuthLogin/ui/images/logo-github.png'
             ,'authBase' => 'https://github.com/login/oauth/authorize'
-            ,'redirectUrl' => 'http://example.com/AmpersandPrototypes/RAP3/api/v1/oauthlogin/callback/github'
+            ,'redirectUrl' => 'http://rap.cs.ou.nl/RAP3/api/v1/oauthlogin/callback/github'
             ,'clientId' => 'c5a0bae9b2a78e478346'
             ,'clientSecret' => '6ab971bc6b1e34cc9b1b8662005586c635c7a067'
             ,'tokenUrl' => 'https://github.com/login/oauth/access_token'
