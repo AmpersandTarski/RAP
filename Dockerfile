@@ -32,6 +32,6 @@ RUN ampersand /src/RAP3/RAP3dev.adl --config=/src/RAP3/RAP3dev.yaml -p/var/www/h
 VOLUME /var/www/html/RAP3
 
 # build Enrollment demo, which is being used in the Ampersand-tutorial
-RUN ampersand -p/var/www/html/Enroll /src/Demos/Enroll/Enrollment.adl --verbose \
+RUN ampersand -p/var/www/html/Enroll /src/Demos/Enroll/Enrollment.adl --verbose --sqlHost=db --sqlLogin=ampersand --sqlPwd=ampersand \
  && mkdir -p /var/www/html/Enroll/log \
  && chown -R www-data:www-data /var/www/html/Enroll
