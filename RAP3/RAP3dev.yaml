@@ -1,6 +1,6 @@
  # Sample config file for Ampersand
  # This file contains a list of all command line options that can be set using a config file
- # It can be used by specifying:  ampersand.exe --config=myConfig.yaml myModel.adl
+ # It can be used by specifying:  ampersand.exe --config=myConfig.yaml myModel.adl (defaults to <filename>.yaml)
  # remove the comment character (`#`) in front of the switches you want to activate.
  # Note: Make sure that the minus (`-`) characters are in exactly the same column. Yaml format is picky about that.
 
@@ -123,7 +123,7 @@ switches:
   # - gen-as-rap-model
 
   ### Temporary switch to create Atlas without expressions. (for RAP3):
-  - atlas-without-expressions
+  # - atlas-without-expressions
 
   ### Do not generate static files into the prototype directory:
   # - no-static-files
