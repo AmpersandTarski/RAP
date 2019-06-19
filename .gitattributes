@@ -1,2 +1,2 @@
-.xlsx diff=excel 
-.xls diff=excel
+*.xlsx diff=excel 
+*.xls diff=excel
