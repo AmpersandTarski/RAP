@@ -8,6 +8,7 @@ services:
       - "80:80"
     links:
       - db
+      - latex
     volumes:
       - ./volumes/log:/var/www/html/RAP3/log
       - ./volumes/scripts:/var/www/html/RAP3/scripts
@@ -24,3 +25,14 @@ services:
       - "8080:80"
     links:
       - db
+
+  vscode:
+    image: codercom/code-server
+    command: --password=zoepersecreet
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./volumes/scripts:/var/www/html/RAP3/scripts
+
+  latex:
+    image: thomasweise/docker-texlive-full
