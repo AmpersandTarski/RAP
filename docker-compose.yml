@@ -1,29 +1,44 @@
-version: '3'
+version: '3.7'
 
 services:
   rap3:
-    restart: always
-    image: ampersandtarski/ampersand-rap:latest
+    image: docker.pkg.github.com/AmpersandTarski/rap/RAP3:latest
+    container_name: rap3
+    build:
+      context: .
+      dockerfile: ./RAP3/Dockerfile
+    restart: unless-stopped
     ports:
       - "80:80"
-    links:
-      - db
-      - latex
     volumes:
-      - ./volumes/log:/var/www/html/RAP3/log
-      - ./volumes/scripts:/var/www/html/RAP3/scripts
+      - ./volumes/log:/var/www/log
+      - ./volumes/data:/var/www/data
+      - ./volumes/scripts:/var/www/scripts
+    networks:
+      - rap3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
+  # demo application
+  # enroll:
  
   db:
     restart: always
     image: ampersandtarski/rap3-db
     volumes:
       - ./volumes/mysql:/var/lib/mysql
+    networks:
+      - rap3
+      - db
 
   phptools:
     image: phpmyadmin/phpmyadmin
     ports:
       - "8080:80"
-    links:
+    networks:
       - db
 
   vscode:
@@ -36,3 +51,9 @@ services:
 
   latex:
     image: thomasweise/docker-texlive-full
+    networks:
+      - rap3
+
+networks:
+  rap3:
+  db:
