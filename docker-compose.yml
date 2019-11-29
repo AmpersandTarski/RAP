@@ -22,8 +22,27 @@ services:
         max-size: "200k"
         max-file: "100"
 
-  # demo application
-  # enroll:
+  # demo application Enrollment
+  enroll:
+    image: docker.pkg.github.com/AmpersandTarski/rap/enroll:latest
+    container_name: enroll
+    build:
+      context: .
+      dockerfile: ./Enroll/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./volumes/enroll/log:/var/www/log
+      - ./volumes/enroll/data:/var/www/data
+      - ./volumes/enroll/scripts:/var/www/scripts
+    networks:
+      - enroll
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
  
   db:
     restart: always
@@ -33,6 +52,7 @@ services:
     networks:
       - rap3
       - db
+      - enroll
 
   phptools:
     image: phpmyadmin/phpmyadmin
@@ -57,3 +77,4 @@ services:
 networks:
   rap3:
   db:
+  enroll:
