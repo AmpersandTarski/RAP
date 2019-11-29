@@ -11,9 +11,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./volumes/log:/var/www/log
-      - ./volumes/data:/var/www/data
-      - ./volumes/scripts:/var/www/scripts
+      - ./volumes/rap3/log:/var/www/log
+      - ./volumes/rap3/data:/var/www/data
+      - ./volumes/rap3/scripts:/var/www/scripts
     networks:
       - rap3
     logging:
