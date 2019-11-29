@@ -41,18 +41,18 @@ services:
     networks:
       - db
 
-  vscode:
-    image: codercom/code-server
-    command: --password=zoepersecreet
-    ports:
-      - "8443:8443"
-    volumes:
-      - ./volumes/scripts:/var/www/html/RAP3/scripts
+  # vscode:
+  #   image: codercom/code-server
+  #   command: --password=zoepersecreet
+  #   ports:
+  #     - "8443:8443"
+  #   volumes:
+  #     - ./volumes/scripts:/var/www/html/RAP3/scripts
 
-  latex:
-    image: thomasweise/docker-texlive-full
-    networks:
-      - rap3
+  # latex:
+  #   image: thomasweise/docker-texlive-full
+  #   networks:
+  #     - rap3
 
 networks:
   rap3:
