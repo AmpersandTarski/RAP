@@ -56,7 +56,7 @@ Note: setting the property `accIsActive` will automatically also set `accIsIniti
 RELATION personMiddle[Person*Middlepart] [UNI]
 
 --[Roles]--
-RELATION name[Role*RoleName] [UNI,TOT]
+RELATION name[Role*RoleName] [UNI] -- TODO: add TOT constraint. First issue AmpersandTarski/Ampersand#1016 in proto framework must be fixed that causes Invariant violation on meta population
 POPULATION name[Role*RoleName] CONTAINS [ ("SystemAdmin","SystemAdmin");("User","User") ]
 VIEW Role : Role(name)
 REPRESENT RoleName TYPE ALPHANUMERIC
