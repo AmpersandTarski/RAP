@@ -1,5 +1,11 @@
 version: '3.7'
 
+volumes:
+  rap3-logs:
+  rap3-data:
+  rap3-scripts:
+  db-data:
+
 services:
   rap3:
     image: ampersandtarski/ampersand-rap:latest
@@ -12,9 +18,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./volumes/rap3/log:/var/www/log
-      - ./volumes/rap3/data:/var/www/data
-      - ./volumes/rap3/scripts:/var/www/scripts
+      - rap3-logs:/var/www/log
+      - rap3-data:/var/www/data
+      - rap3-scripts:/var/www/scripts
     networks:
       - rap3
     logging:
@@ -32,10 +38,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-    volumes:
-      - ./volumes/enroll/log:/var/www/log
-      - ./volumes/enroll/data:/var/www/data
-      - ./volumes/enroll/scripts:/var/www/scripts
     networks:
       - enroll
     logging:
@@ -48,7 +50,7 @@ services:
     restart: always
     image: ampersandtarski/rap3-db
     volumes:
-      - ./volumes/mysql:/var/lib/mysql
+      - db-data:/var/lib/mysql
     container_name: rap3-db
     build:
       context: RAP3DB
