@@ -5,8 +5,7 @@ services:
     image: ampersandtarski/ampersand-rap:latest
     container_name: rap3
     build:
-      context: .
-      dockerfile: ./RAP3/Dockerfile
+      context: RAP3
     restart: unless-stopped
     depends_on:
       - db
@@ -29,8 +28,7 @@ services:
     image: ampersandtarski/enroll:latest
     container_name: enroll
     build:
-      context: .
-      dockerfile: ./Demos/Enroll/Dockerfile
+      context: Demos/Enroll
     restart: unless-stopped
     depends_on:
       - db
