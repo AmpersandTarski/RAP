@@ -1,6 +1,15 @@
 CONTEXT "Login" IN ENGLISH
 -----------------------------------------------------------
 
+ROLE ExecEngine MAINTAINS "Add role Anonymous to sessions"
+RULE "Add role Anonymous to sessions": I[SESSION]-(sessionAccount;sessionAccount~) |- sessionAllowedRoles;"Anonymous";sessionAllowedRoles~
+VIOLATION (TXT "{EX}InsPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;Anonymous")
+-- When a user logs in, this role is removed by rule 'Clear allowed session roles'
+
+ROLE ExecEngine MAINTAINS "Activate Anonymous by default"
+RULE "Activate Anonymous by default": sessionAllowedRoles;"Anonymous" |- sessionActiveRoles;"Anonymous"
+VIOLATION (TXT "{EX}InsPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;Anonymous")
+
 INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
    [ "Login met een bestaand account" : I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
       [ "Studentnummer": loginUserid cRUd
