@@ -5,8 +5,25 @@ volumes:
   rap3-data:
   rap3-scripts:
   db-data:
+  proxy-cert:
 
 services:
+  proxy:
+    build: ./HAProxy
+    restart: unless-stopped
+    networks:
+      - rap3
+      - enroll
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - proxy-cert:/srv/is-certificate
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
   rap3:
     image: ampersandtarski/ampersand-rap:latest
     container_name: rap3
@@ -15,8 +32,7 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-    ports:
-      - "80:80"
+      - proxy
     volumes:
       - rap3-logs:/var/www/log
       - rap3-data:/var/www/data
@@ -38,6 +54,7 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+      - proxy
     networks:
       - enroll
     logging:
