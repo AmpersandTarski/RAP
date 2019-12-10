@@ -51,6 +51,9 @@ services:
     image: ampersandtarski/rap3-db
     volumes:
       - ./volumes/mysql:/var/lib/mysql
+    container_name: rap3-db
+    build:
+      context: RAP3DB
     networks:
       - rap3
       - db
