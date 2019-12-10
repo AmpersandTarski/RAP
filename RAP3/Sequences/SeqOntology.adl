@@ -1,4 +1,4 @@
-﻿CONTEXT SequencesOntology IN ENGLISH MARKDOWN
+CONTEXT SequencesOntology IN ENGLISH MARKDOWN
 PURPOSE CONTEXT SequencesOntology
 {+This script defines the basic constraints for sequences. A 'graphical' view of such sequences is presented in the below figure:
 

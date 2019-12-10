@@ -20,8 +20,8 @@ CONCEPT Assignment "An assignment is the name of a piece of work that a student 
   REPRESENT Assignment TYPE ALPHANUMERIC
 
 CONCEPT FileObject ""
-  --  IDENT FileObjectName 	: FileObject (filePath)
-  VIEW FileObject 		: FileObject DEFAULT {filePath : filePath, fileName : originalFileName} HTML TEMPLATE "View-FILEOBJECT.html" ENDVIEW
+  --  IDENT FileObjectName : FileObject (filePath)
+  VIEW FileObject : FileObject DEFAULT {filePath : filePath, fileName : originalFileName} HTML TEMPLATE "View-FILEOBJECT.html" ENDVIEW
   RELATION filePath[FileObject*FilePath] [UNI] --,TOT]
     REPRESENT FilePath TYPE BIGALPHANUMERIC
   RELATION originalFileName[FileObject*FileName] [UNI] --,TOT]

@@ -10,7 +10,7 @@ WORKDIR /src
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y netbase ca-certificates
 
-RUN ampersand Enrollment.adl --proto=/build --skip-composer --verbose --sqlHost=db
+RUN ampersand ./Demos/Enroll/Enrollment.adl --proto=/build --skip-composer --verbose --sqlHost=db
 
 # Build stage 2
 FROM composer:1.8 AS composer-builder

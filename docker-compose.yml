@@ -2,12 +2,14 @@ version: '3.7'
 
 services:
   rap3:
-    image: docker.pkg.github.com/AmpersandTarski/rap/RAP3:latest
+    image: ampersandtarski/ampersand-rap:latest
     container_name: rap3
     build:
       context: .
       dockerfile: ./RAP3/Dockerfile
     restart: unless-stopped
+    depends_on:
+      - db
     ports:
       - "80:80"
     volumes:
@@ -24,14 +26,14 @@ services:
 
   # demo application Enrollment
   enroll:
-    image: docker.pkg.github.com/AmpersandTarski/rap/enroll:latest
+    image: ampersandtarski/enroll:latest
     container_name: enroll
     build:
       context: .
-      dockerfile: ./Enroll/Dockerfile
+      dockerfile: ./Demos/Enroll/Dockerfile
     restart: unless-stopped
-    ports:
-      - "80:80"
+    depends_on:
+      - db
     volumes:
       - ./volumes/enroll/log:/var/www/log
       - ./volumes/enroll/data:/var/www/data
@@ -56,6 +58,8 @@ services:
 
   phptools:
     image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
     ports:
       - "8080:80"
     networks:
