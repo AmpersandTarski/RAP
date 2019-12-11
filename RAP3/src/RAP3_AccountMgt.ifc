@@ -5,17 +5,17 @@ VIEW Accounts: Account DEFAULT { "uid": accUserid } ENDVIEW
 
 --[Account extensions]--
 
---CLASSIFY Studentnummer ISA UserID   -- NOTE: UserID is of TYPE ALPHANUMERIC, which Studentnummer inherits
-accUserid :: Account * UserID [INJ,UNI] -- At most one account for every Studentnummer and vice versa
+--CLASSIFY Studentnummer ISA Userid   -- NOTE: Userid is of TYPE ALPHANUMERIC, which Studentnummer inherits
+accUserid :: Account * Userid [INJ,UNI] -- At most one account for every Studentnummer and vice versa
 accPerson :: Account * Person [UNI] -- At most one name for every Studentnummer and vice versa
 accEmail :: Account * Emailaddress [UNI] REPRESENT Emailaddress TYPE ALPHANUMERIC -- dit kan later een CEP-adres worden
 
-ROLE ExecEngine MAINTAINS "Accounts with a UserID are assigned the role of 'Student'"
-RULE "Accounts with a UserID are assigned the role of 'Student'": accUserid # "Student"[Role] |- accAllowedRoles
+ROLE ExecEngine MAINTAINS "Accounts with a Userid are assigned the role of 'Student'"
+RULE "Accounts with a Userid are assigned the role of 'Student'": accUserid # "Student"[Role] |- accAllowedRoles
 VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I)
 
-ROLE ExecEngine MAINTAINS "Accounts without a UserID may not be assigned the role of 'Student'"
-RULE "Accounts without a UserID may not be assigned the role of 'Student'": accAllowedRoles;"Student" |- accUserid;V
+ROLE ExecEngine MAINTAINS "Accounts without a Userid may not be assigned the role of 'Student'"
+RULE "Accounts without a Userid may not be assigned the role of 'Student'": accAllowedRoles;"Student" |- accUserid;V
 VIOLATION (TXT "{EX}DelPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I)
 
 --ROLE ExecEngine MAINTAINS "'Student' role is always a default role"
@@ -95,7 +95,7 @@ INTERFACE "My Account" FOR "User": "_SESSION" cRud BOX <ROWSNL>
 POPULATION LoginMessage CONTAINS [ "Editing your account requires that you are logged in" ]
 
 --[Studenten mogen een eigen account aanmaken door dat aan te vinken bij de login]--
-RELATION regUserID      [SESSION * UserID]       [UNI] -- Studentnummer waarmee de student zich wil registreren
+RELATION regUserID      [SESSION * Userid]       [UNI] -- Studentnummer waarmee de student zich wil registreren
 RELATION regPassword1   [SESSION * Password]     [UNI]
 RELATION regPassword2   [SESSION * Password]     [UNI]
 RELATION regEmail       [SESSION * Emailaddress] [UNI] -- OU Emailaccount (kunnen we later met Messaging gebruiken)
@@ -110,7 +110,7 @@ RULE "Login upon request":
    /\ loginButton
 |-     sessionAccount;sessionAccount~
 VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC loginUserid;accUserid~ 
-          ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";UserID;", SRC loginUserid
+          ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
           ,TXT "{EX} DelPair;loginPassword;SESSION;", SRC I, TXT ";Password;", SRC loginPassword
           )
 
@@ -122,9 +122,9 @@ RULE "Login on a new account when registering":
    /\ regPassword1;regPassword2~                      -- both passwords are equal
 |-    sessionAccount;sessionAccount~
 VIOLATION (TXT "{EX} NewStruct;Account"
-               , TXT ";accUserid;Account;_NEW;UserID;", TGT regUserID
+               , TXT ";accUserid;Account;_NEW;Userid;", TGT regUserID
                , TXT ";sessionAccount;SESSION;", SRC I, TXT ";Account;_NEW"
-          , TXT "{EX} DelPair;regUserID;SESSION;", SRC I, TXT ";UserID;", TGT regUserID
+          , TXT "{EX} DelPair;regUserID;SESSION;", SRC I, TXT ";Userid;", TGT regUserID
           , TXT "{EX} DelPair;registerButton;SESSION;", SRC I, TXT ";SESSION;", TGT I
           )
 

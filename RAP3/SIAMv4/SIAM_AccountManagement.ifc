@@ -1,0 +1,70 @@
+CONTEXT "AccountAndRoleMgt" IN ENGLISH
+-- No support yet for Persona's.
+-----------------------------------------------------------
+
+VIEW Accounts: Account DEFAULT { "uid": accUserid } ENDVIEW
+
+POPULATION Role CONTAINS [ "AccountMgr" ]
+
+accNewPassword :: Account * Password [UNI]
+ROLE ExecEngine MAINTAINS "(Re)set the password of an account"
+RULE "(Re)set the password of an account": 
+   accNewPassword /\ (sessionAccount~ \/ V[Account*Role];"AccountMgr";sessionActiveRoles~);"_SESSION";V |- -V
+MEANING "(Re)setting the password for an account can only be done by an AccountMgr or the account user."
+VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC I, TXT ";Password;", TGT I
+          ,TXT "{EX} DelPair;accNewPassword;Account;", SRC I, TXT ";Password;", TGT I
+          )
+RULE "(Re)setting the password for an account can only be done by an AccountMgr or the account user":
+   accNewPassword |- (sessionAccount~ \/ V[Account*Role];"AccountMgr";sessionActiveRoles~);"_SESSION";V
+
+INTERFACE "Accounts" FOR "AccountMgr": V[SESSION*Account] cRud BOX <SCOLS>
+   [ "Userid": I cRud LINKTO INTERFACE "Account"
+   , "Person": accPersonRef cRud
+-- , "Person": accPerson cRUd
+   , "Organization": accOrgRef cRud
+-- , "Organization": accOrg cRUd
+   , "Allowed roles": accAllowedRoles cRud
+   , "Default roles": accDefaultRoles cRud 
+--#IFNOT NoActivationButtons
+   , " ": I BOX <DIV>
+      [ "Activate" : I-accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
+      , "Deactivate" : accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
+      ]
+--#ENDIF
+   ]
+           
+INTERFACE "Account" FOR "AccountMgr": I[Account] cRud ROWS
+   [ "Userid": accUserid cRUd
+   , "(Re)set password": accNewPassword cRUd -- crUd is needed for Passwords
+   , "Person": accPersonRef cRUd
+-- , "Person": accPerson cRUd
+   , "Organization": accOrgRef cRUd
+-- , "Organization": accOrg cRUd
+   , "Allowed roles": accAllowedRoles cRUd
+   , "Default roles": accDefaultRoles cRUd
+   , " ": I BOX <DIV>
+      [ "Activate" : I-accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
+      , "Deactivate" : accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
+      ]
+   ]
+
+INTERFACE "My Account" FOR User: "_SESSION";sessionAccount cRud ROWS
+   [ "Userid": accUserid cRUd
+   , "New password": accNewPassword cRUd -- crUd is needed for Passwords
+   , "Person": accPersonRef cRud
+-- , "Person": accPerson cRud
+   , "Organization": accOrgRef cRud
+-- , "Organization": accOrg cRud
+   , "Allowed roles": accAllowedRoles cRud
+   , "Default roles": accDefaultRoles cRUd
+   ]
+
+--[Roles]--
+
+INTERFACE "Roles" FOR "AccountMgr": V[SESSION*Role] CRud BOX <SCOLS>
+   [ "Role": I cRud
+   , "Assigned to": accAllowedRoles~ cRUd
+   , "Default for": accDefaultRoles~ cRUd
+   ]
+
+ENDCONTEXT

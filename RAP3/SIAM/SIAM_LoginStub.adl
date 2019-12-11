@@ -1,9 +1,0 @@
-﻿CONTEXT "LoginStub" IN ENGLISH
-{- The purpose of this file is to be included in any script that must run without a functioning LOGIN facility, while it is enabled in `localSettings.php`. It is a stub for:
-- "SIAM_Login.adl", and/or
-- "SIAM_Login.ifc", and/or
-- "SIAM_LoginWithAssistance.adl"
-
--}
-
-ENDCONTEXT

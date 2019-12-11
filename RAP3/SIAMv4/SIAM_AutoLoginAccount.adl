@@ -1,0 +1,24 @@
+CONTEXT "AutoLogin" IN ENGLISH
+-- This file implements the auto-login feature, i.e. it defines the property `accAutoLoginReq`.
+
+RELATION accAutoLoginReq[Account*Account] [PROP] -- An account that has this property is automatically logged in.
+
+ROLE ExecEngine MAINTAINS "Reset `accAutoLoginReq` when account is inactive"
+RULE "Reset `accAutoLoginReq` when account is inactive": accAutoLoginReq |- accIsActive
+VIOLATION (TXT "{EX} DelPair;accAutoLoginReq;Account;", SRC I, TXT ";Account;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Reset `accAutoLoginReq` when a user has already logged in"
+RULE "Reset `accAutoLoginReq` when a user has already logged in": accAutoLoginReq |- V;"_SESSION";sessionIsAnon;V
+VIOLATION (TXT "{EX} DelPair;accAutoLoginReq;Account;", SRC I, TXT ";Account;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Auto login" -- When multiple accounts have this property, only one will be selected.
+RULE "Auto login": sessionIsAnon;V;(accAutoLoginReq /\ accIsActive) |- sessionIsUser;sessionAccount
+VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", TGT I
+          ,TXT "{EX} DelPair;accAutoLoginReq;Account;", TGT I, TXT ";Account;", TGT I
+          ,TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          ,TXT "{EX} DelPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          ,TXT "{EX} SetNavToOnCommit;", SRC sessionUserIfc -- Setup for default user interface
+          ,TXT "{EX} SetNavToOnCommit;", TGT accUserIfc -- Override if Account has a specific setting
+          )
+
+ENDCONTEXT

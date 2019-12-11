@@ -1,0 +1,26 @@
+CONTEXT "Register an Account based on a third party UID" IN ENGLISH
+PURPOSE CONTEXT "Register an Account based on a third party UID"
+{+ When a user logs in using a third party IdP, 
+the (authenticated) UID may not be known,
+and/or may exist, but not be associated with an account.
+This extension contains the rules for automatically creating
+a UID and an associated account.
++}
+
+INCLUDE "./SIAM_LoginWithUID.adl"
+
+ROLE ExecEngine MAINTAINS "Create UID for authenticated IdP-Userid pair" -- whenever an UID is authenticated, it must exist
+RULE "Create UID for authenticated IdP-Userid pair": loginIdP~;loginUserid |- uidIssuer~;uidUserid
+VIOLATION (TXT "{EX} InsAtom;UID"
+               ,TXT "{EX} InsPair;uidIssuer;UID;_NEW;IdP;", SRC I
+               ,TXT "{EX} InsPair;uidUserid;UID;_NEW;Userid;", TGT I
+          )
+
+ROLE ExecEngine MAINTAINS "Create Account for authenticated UID" -- whenever an authenticated UID exists, there must be an associated Account
+RULE "Create Account for authenticated UID": 
+   "_SESSION";sessionIsAnon;(loginIdP;uidIssuer~ /\ loginUserid;uidUserid~) |- V;accUID
+VIOLATION (TXT "{EX} InsAtom;Account"
+               ,TXT "{EX} InsPair;accUID;Account;_NEW;UID;", TGT I
+          )
+
+ENDCONTEXT

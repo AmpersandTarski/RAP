@@ -1,0 +1,33 @@
+CONTEXT "Login with Username and Password" IN ENGLISH
+PURPOSE CONTEXT "Login with Username and Password"
+{+Het 'inloggen' (van een user in een session) met Username en Password bestaat uit 
+\begin{itemize}
+\item het identificeren van een Account en 
+\item het vaststellen dat de gebruiker van de sessie bij dit Account hoort (authenticeren)
+\end{itemize}
+Als dat is gebeurd kan dat Account met de session worden geassocieerd, om vervolgens de session context hiermee op te bouwen. Het 'uitloggen' (van een user uit een session) bestaat uit het verwijderen van de session (en daarmee de hele context). Daarmee wordt voorkomen dat een andere user later in die session zal gaan inloggen en mogelijk misbruik zou kunnen maken van wat er zoal in de context is bepaald. Dit is ook wenselijk omdat hiermee altijd ondubbelzinnig duidelijk is wie voor (de handelingen in) welke session verantwoordelijk is. Dit hoofdstuk beschrijft de betreffende functionaliteit, die (op het inloggen na) volledig geautomatiseerd verloopt.+}
+
+--[U/PW Login]--
+sessionLoginReq :: SESSION * SESSION [PROP] -- Request to login
+loginUserid     :: SESSION * Userid   [UNI] -- Userid as specified by the user
+loginPassword   :: SESSION * Password [UNI] -- Password as specified by the user
+
+RULE "Authenticate user": loginUserid~;sessionIsAnon;sessionLoginReq;loginPassword |- accUserid~;accPassword
+MESSAGE "You may only login with valid credentials (username/password)."
+VIOLATION (TXT "The Userid or Password do not match. Please try again.")
+--VIOLATION (TXT "Voor de combinatie UID/PW = ('", SRC I, TXT "','", TGT I, TXT "') bestaat geen account.")
+
+ROLE ExecEngine MAINTAINS "U/PW Login"
+RULE "U/PW Login": sessionIsAnon;sessionLoginReq;(loginUserid;accUserid~ /\ loginPassword;accPassword~);accIsActive |- sessionIsUser;sessionAccount
+MEANING "When a user is authenticated, the corresponding Account will become the sessionAccount (provided it is active)."
+VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", TGT I
+          ,TXT "{EX} DelPair;sessionLoginReq;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
+          ,TXT "{EX} DelPair;loginPassword;SESSION;", SRC I, TXT ";Password;", SRC loginPassword -- Do not remember login passwords.
+          ,TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          ,TXT "{EX} DelPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          ,TXT "{EX} SetNavToOnCommit;", SRC sessionUserIfc -- Setup for default user interface
+          ,TXT "{EX} SetNavToOnCommit;", TGT accUserIfc -- Override if Account has a specific setting
+          )
+
+ENDCONTEXT

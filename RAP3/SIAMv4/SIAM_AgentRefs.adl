@@ -1,0 +1,45 @@
+CONTEXT "Agent References" IN ENGLISH
+{- The purpose of this file is to provide 'AgentRef's, 
+i.e. textstrings that may be used to refer to an Agent.
+-}
+-----------------------------------------------------------
+agaccAgentRef  :: AgentAccount * AgentRef  [UNI] -- a text that refers to the Agent associated with the AgentAccount.
+MEANING "An AgentAccount may have a textstring that refers to the Agent for which the AgentAccount has attributes"
+agaccPersonRef :: AgentAccount * PersonRef [UNI] -- a text that refers to the Agent associated with the AgentAccount.
+MEANING "An AgentAccount may have a textstring that refers to the Person on whose behalf the Agent described by the AgentAccount works"
+agaccOrgRef    :: AgentAccount * OrgRef    [UNI] -- a text that refers to the Agent associated with the AgentAccount.
+MEANING "An AgentAccount may have a textstring that refers to the Organization on whose behalf the Agent described by the AgentAccount works"
+
+sessionAgentRef :: SESSION * AgentRef [UNI]
+MEANING "In a SESSION, a textstring that refers to the user (i.e. the Agent that acts 'at the other side') may be known."
+ROLE ExecEngine MAINTAINS "Determine the AgentRef in a session"
+RULE "Determine the AgentRef in a session": sessionAgentAccount;agaccAgentRef |- sessionAgentRef
+VIOLATION (TXT "{EX} InsPair;sessionAgentRef;SESSION;", SRC I, TXT ";AgentRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear the AgentRef in a session"
+RULE "Clear the AgentRef in a session": sessionIsAgent;sessionAgentRef |- sessionAgentAccount;agaccAgentRef
+VIOLATION (TXT "{EX} DelPair;sessionAgentRef;SESSION;", SRC I, TXT ";AgentRef;", TGT I)
+
+sessionPersonRef :: SESSION * PersonRef [UNI]
+MEANING "In a SESSION, a textstring that refers to the Person (on whose behalf the Agent works) may be known."
+ROLE ExecEngine MAINTAINS "Determine the PersonRef in an Agent session"
+RULE "Determine the PersonRef in an Agent session": sessionAgentAccount;agaccPersonRef |- sessionPersonRef
+VIOLATION (TXT "{EX} InsPair;sessionPersonRef;SESSION;", SRC I, TXT ";PersonRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear the PersonRef in an Agent session"
+RULE "Clear the PersonRef in an Agent session": sessionIsAgent;sessionPersonRef |- sessionAgentAccount;agaccPersonRef
+VIOLATION (TXT "{EX} DelPair;sessionPersonRef;SESSION;", SRC I, TXT ";PersonRef;", TGT I)
+
+sessionOrgRef :: SESSION * OrgRef [UNI]
+MEANING "In a SESSION, a textstring that refers to the Organization (on whose behalf the Agent works) may be known."
+ROLE ExecEngine MAINTAINS "Determine the OrgRef in an Agent session"
+RULE "Determine the OrgRef in an Agent session": sessionAgentAccount;agaccOrgRef |- sessionOrgRef
+VIOLATION (TXT "{EX} InsPair;sessionOrgRef;SESSION;", SRC I, TXT ";OrgRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear the OrgRef in an Agent session"
+RULE "Clear the OrgRef in an Agent session": sessionIsAgent;sessionOrgRef |- sessionAgentAccount;agaccOrgRef
+VIOLATION (TXT "{EX} DelPair;sessionOrgRef;SESSION;", SRC I, TXT ";OrgRef;", TGT I)
+
+--[Glossary]--
+CONCEPT AgentRef "text used to refer to an Agent"
+REPRESENT AgentRef TYPE ALPHANUMERIC
+
+-----------------------------------------------------------
+ENDCONTEXT

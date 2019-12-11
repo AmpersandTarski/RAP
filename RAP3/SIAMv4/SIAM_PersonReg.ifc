@@ -1,0 +1,37 @@
+CONTEXT "Person Registration Interfaces" IN ENGLISH
+-----------------------------------------------------------
+
+VIEW Persons : Person DEFAULT
+{ "name" : personRef
+} ENDVIEW
+
+POPULATION Role CONTAINS [ "PersonMgr" ]
+
+INTERFACE "Person" FOR "Person Manager": I[Person] cRud COLS
+   [ "First name"   : personFirstName cRUd
+   , "Middle name"  : personMiddleName cRUd
+   , "Last name"    : personLastName cRUd
+   , "Initials"     : personInitials cRUd
+   , "Name"         : personRef cRud
+   ]
+
+INTERFACE "People" FOR "Person Manager": V[SESSION*Person]  cRuD COLS
+   [ "First name"   : personFirstName cRUd
+   , "Middle name"  : personMiddleName cRUd
+   , "Last name"    : personLastName cRUd
+   , "Initials"     : personInitials cRUd
+   , "Name"         : personRef cRud
+   , "Account"      : accPerson~ cRud
+   ]
+
+INTERFACE "Me" FOR User: "_SESSION";sessionPerson cRud COLS
+   [ "First name"   : personFirstName cRUd
+   , "Middle name"  : personMiddleName cRUd
+   , "Last name"    : personLastName cRUd
+   , "Initials"     : personInitials cRUd
+   , "Name"         : personRef cRud
+   , "Account"      : accPerson~ cRud
+   ]
+
+-----------------------------------------------------------
+ENDCONTEXT

@@ -36,7 +36,7 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
                                [ disabled : I-I
                                , property : logoutRequest cRUd
                                ]
-         , "UserID": sessionUserid cRud
+         , "Userid": sessionUserid cRud
 --       , "Organization": accOrg cRud
 --       , "Person": accPerson CRUD
          , "Email": sessionAccount;accEmail cRud

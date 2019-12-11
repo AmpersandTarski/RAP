@@ -1,6 +1,6 @@
 CONTEXT RAP3 IN ENGLISH
 
-   INCLUDE "SIAM_importer.adl"
+   INCLUDE "SIAMv4_importer.adl"
    INCLUDE "../Sequences/SeqOntology.adl"       -- Basic notions
 
    INCLUDE "Scripts.adl"
@@ -11,7 +11,7 @@ CONTEXT RAP3 IN ENGLISH
 
    INCLUDE "RAP3_AccountMgt.ifc"            -- RAP Account management interface
    INCLUDE "RAP3.xlsx"                      -- Initial, minimal set of people and accounts 
-   INCLUDE "RAP3_Login.ifc"                 -- RAP Login/Logout interface
+-- INCLUDE "RAP3_Login.ifc"                 -- RAP Login/Logout interface
 
 REPRESENT Language TYPE ALPHANUMERIC
 REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC
@@ -43,7 +43,7 @@ ROLE ExecEngine MAINTAINS "Check script"
    en dat is wel zo netjes.
 -}
 --RULE "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Check script" : compileRequest;submittor;accUserid |- -V
+RULE "Check script" : compileRequest;submittor;accUserid |- -V[Script*Userid]
 VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT";", TGT I
           , TXT "{EX}DelPair;compileRequest;Script;", SRC I, TXT";Script;", SRC I
           )
@@ -55,7 +55,7 @@ RELATION funcSpec[ScriptVersion*FileObject] [UNI] -- the file **containing** the
 
 ROLE ExecEngine MAINTAINS "Create fspec" -- reset funcSpecRequest after an attempt to create it has been performed.
 --RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V
+RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V[ScriptVersion*FilePath]
 VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I
           , TXT "{EX}DelPair;funcSpecRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
