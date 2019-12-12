@@ -16,7 +16,7 @@ INCLUDE "./SIAM_RegisterWithUPW.ifc"     -- Interface for RegisterWithUPW Extens
 
 POPULATION LoginMessage CONTAINS [ "You are currently logged in as " ]           REPRESENT LoginMessage TYPE ALPHANUMERIC
 POPULATION PopoverText  CONTAINS [ "Click this button to create your account" ]  REPRESENT PopoverText  TYPE ALPHANUMERIC
-POPULATION isInvisible CONTAINS [ ("Login", "Login") ]
+-- POPULATION isInvisible CONTAINS [ ("Login", "Login") ]
 INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
    [ "Login": I-sessionAccRegForm;sessionAccRegForm~ cRud BOX <HCOLS>
       [ "Userid": loginUserid cRUd

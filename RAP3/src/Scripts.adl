@@ -7,7 +7,7 @@ CONCEPT Script "A script is a piece of UTF-8 encoded text that is meant to be co
   RELATION assignment[Script*Assignment] [UNI]
   RELATION submitted[Script*DateTime] [UNI] -- The data/time that the file was uploaded. 
    REPRESENT DateTime TYPE DATETIME
-  RELATION content[Script*ScriptContent] [UNI,INJ]
+  RELATION content[Script*ScriptContent] [UNI]
    MEANING "The actual text of the script (as seen in the editor)."
 --  uncommented in an attempt to diagnose issue RAP#30 (retain for future testing/diagnosis)
 --  ROLE ExecEngine MAINTAINS "SURscriptContent"
