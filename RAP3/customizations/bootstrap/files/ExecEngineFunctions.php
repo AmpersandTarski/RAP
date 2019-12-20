@@ -3,7 +3,6 @@
 namespace RAP3;
 
 use Exception;
-use Ampersand\Log\Logger;
 use Ampersand\Misc\Config;
 use Ampersand\Core\Relation;
 use Ampersand\Core\Atom;
@@ -27,13 +26,11 @@ E.e.a. staat onder het kopje
 RELATION loadedInRAP3[Script*Script] [PROP] 
 */
 
-$logger = Logger::getLogger('RAP3CLI');
-
-ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studentNumber) use ($logger) {
+ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studentNumber) {
     $total = 5;
     
     for ($i = 0; $i < $total; $i++) {
-        $logger->debug("Compiling {$i}/{$total}: start");
+        $this->debug("Compiling {$i}/{$total}: start");
         
         $GLOBALS['rapAtoms'] = [];
         set_time_limit(600);
@@ -45,14 +42,14 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
         
         call_user_func(ExecEngine::getFunction('CompileWithAmpersand'), 'loadPopInRAP3', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
         
-        $logger->debug("Compiling {$i}/{$total}: end");
+        $this->debug("Compiling {$i}/{$total}: end");
         
         Transaction::getCurrentTransaction()->close(); // also kicks EXECENGINE
     }
 });
 
-ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $studentNumber) use ($logger) {
-    $logger->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
+ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $studentNumber) {
+    $this->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
     
     $scriptAtom = Atom::makeAtom($scriptAtomId, 'Script');
 
@@ -101,7 +98,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     }
 });
 
-ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $relSourcePath) use ($logger) {
+ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $relSourcePath) {
     $scriptAtom = Atom::makeAtom($scriptId, 'Script');
     $scriptVersionAtom = Atom::makeAtom($scriptVersionId, 'ScriptVersion');
 
@@ -132,12 +129,12 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
             call_user_func(ExecEngine::getFunction('Prototype'), $relSourcePath, $scriptAtom, $scriptVersionAtom, $relDir . '/../prototype');
             break;
         default:
-            $logger->error("Unknown action '{$action}' specified");
+            $this->error("Unknown action '{$action}' specified");
             break;
     }
 });
 
-ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
+ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -157,7 +154,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
 });
 
-ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
+ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -177,7 +174,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     $scriptVersionAtom->link($foObject, 'diag[ScriptVersion*FileObject]')->add();
 });
 
-ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
+ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $outputDir) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -198,7 +195,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptAtom->link($foObject, 'proto[Script*FileObject]')->add();
 });
 
-ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom, string $outputDir) use ($logger) {
+ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -247,7 +244,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     }
 });
 
-ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) use ($logger) {
+ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) {
     $atom = Atom::makeAtom($atomId, $cptId);
     deleteAtomAndLinks($atom);
 });
@@ -255,7 +252,7 @@ ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) use ($logger)
 function deleteAtomAndLinks(Atom $atom)
 {
     static $skipRelations = ['context[ScriptVersion*Context]'];
-    global $logger;
+    $logger; // TODO: use logger of exec-engine
 
     $logger->debug("Cleanup called for '{$atom}'");
     
@@ -356,7 +353,7 @@ function getRAPAtom(string $atomId, Concept $concept): Atom
  */
 function Execute($cmd, &$response, &$exitcode, $workingDir = null)
 {
-    global $logger;
+    $logger; // TODO: use logger of exec-engine
     $logger->debug("cmd:'{$cmd}' (workingDir:'{$workingDir}')");
     
     $output = [];
