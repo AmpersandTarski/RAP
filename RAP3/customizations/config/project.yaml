@@ -1,0 +1,70 @@
+# Ampersand Prototype Framework project specific settings
+# This file contains a list of all settings that overwrite the default settings
+# This file is automatically loaded when located at '/config/project.yaml'
+# See defaultSettings.yaml for list of all possible settings
+
+## Key/value pair list of config settings
+settings:
+    ### Application global settings
+    global.productionEnv: false # set environment as production deployment (or not = default)
+    global.debugMode: true # set debugMode (or not = default). Impacts the way errors are returned by API
+    global.scriptTimeout: 30 # number of seconds for php to run. Use 0 to have no time limit (not advised)
+    # global.defaultTimezone: Europe/Amsterdam # see http://php.net/manual/en/timezones.php for a list of supported timezones
+    # global.serverURL: set in customizations.yaml
+    # global.apiPath: api/v1 # relative path to current api
+    # global.absolutePath: null # is set during application bootstrap
+    # global.uploadDir: uploads # folder for user uploads in 'data' directory
+
+    # global.allowedMimeTypes:
+    #   - application/vnd.ms-excel
+    #   - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    #   - application/excel
+    #   - application/pdf
+    #   - text/xml
+
+    # global.version: v3
+
+    ### Mysql settings (provided by compiler)
+    # mysql.dbHost: set in project.yaml or project.prod.yaml
+    # mysql.dbName: set in customizations.yaml
+    # mysql.dbUser: set in customizations.yaml
+    # mysql.dbPass: set in customizations.yaml
+    
+    ### RBAC (Role Based Access Control)
+    # null implies that everyone has access, use empty list [] to disable for all, or specify a list with allowed roles
+    rbac.importerRoles: [Administrator]
+    rbac.adminRoles: [Administrator]
+    rbac.accessibleInterfacesIfcId: AccessibleInterfaces
+
+    ### Session
+    session.expirationTime: 14400 # expiration time in seconds 14400 sec = 4h
+    session.loginEnabled: true # enable/disable login functionality (requires SIAM module)
+    session.loginPage: "/Login"
+
+    ### Transaction settings
+    # transactions.ignoreInvariantViolations: false # for debugging can be set to true (transactions will be committed regardless off invariant violations)
+    # transactions.skipUniInjConjuncts: true # TODO: remove after fix for issue #535
+    # transactions.interfaceAutoSaveChanges: true # specifies whether changes in interface are directly communicated (saved) to server
+
+    ### Notification settings
+    # notifications.defaultShowSignals: true
+    # notifications.defaultShowInfos: true
+    # notifications.defaultShowWarnings: true
+    # notifications.defaultShowSuccesses: true
+    # notifications.defaultAutoHideSuccesses: true
+    # notifications.defaultShowErrors: true
+    # notifications.defaultShowInvariants: true
+
+    ### ExecEngine settings
+    # execengine.execEngineRoleNames: [ExecEngine]
+    # execengine.autoRerun: true
+    # execengine.maxRunCount: 10
+    
+## List of other config files
+config:
+    # - config/some-other-file.yaml
+
+extensions:
+    # OAuthLogin:
+    #     bootstrap: extensions/OAuthLogin/bootstrap.php
+    #     config: config/oauth.yaml

@@ -6,15 +6,13 @@ FROM ampersandtarski/ampersand:latest as ampersand-builder
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y netbase ca-certificates
 
-ENV YAML_FILE=RAP3prod.yaml
-
 COPY . /RAP3
 # COPY ./SIAM /SIAM
 # COPY ./Sequences /Sequences
 
 WORKDIR /RAP3
 
-RUN ampersand RAP3.adl --config=./${YAML_FILE} --proto=/build --skip-composer --verbose --sqlHost=db
+RUN ampersand RAP3.adl --proto=/build --skip-composer --verbose --sqlHost=db
 
 # Build stage 2
 FROM composer:1.8 AS composer-builder
