@@ -86,6 +86,9 @@ RULE "(Additional) (re)authentication must be for the same user account": sessio
 ROLE ExecEngine MAINTAINS "Determine the session's Userid"
 RULE "Determine the session's Userid": sessionAccount;accUserid |- sessionUserid
 VIOLATION (TXT "{EX} InsPair;sessionUserid;SESSION;", SRC I, TXT ";Userid;", TGT I)
+ROLE ExecEngine MAINTAINS "Remove the session's Userid"
+RULE "Remove the session's Userid": sessionUserid |- sessionAccount;accUserid
+VIOLATION (TXT "{EX} DelPair;sessionUserid;SESSION;", SRC I, TXT ";Userid;", TGT I)
 
 ROLE ExecEngine MAINTAINS "Sessions with an inactive sessionaccount may not exist"
 RULE "Sessions with an inactive sessionaccount may not exist": sessionAccount |- sessionAccount;accIsActive
@@ -137,7 +140,7 @@ RULE "Clear allowed session roles in User sessions":
 VIOLATION (TXT "{EX} DelPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;", TGT I[Role])
 
 PURPOSE RELATION sessionActiveRoles
-{+the set of active roles in a session determine what can(not) be done in a sessionthe user can and cannot do. 
+{+the set of active roles in a session determine what the user can and cannot do. 
 The account of the user specifies the default of roles that should be activated at the moment the user succesfully logs in.
 A role can only be activated in a session if the session-account specifies it as an allowed role.+}
 sessionActiveRoles :: SESSION * Role

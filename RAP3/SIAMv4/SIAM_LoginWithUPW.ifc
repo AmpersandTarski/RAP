@@ -25,7 +25,8 @@ INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
       --$Button that allows user to login
       , "Login": I cRud BOX <PROPBUTTON> 
          [ "property": sessionLoginReq cRUd
-         , "disabled": I - (loginUserid;loginUserid~ /\ loginPassword;loginPassword~) cRud
+         -- Waiting for the password (i.e. `loginPassword;loginPassword~`) has been disabled while issue #872 is still open.
+         , "disabled": I - (loginUserid;loginUserid~ {- /\ loginPassword;loginPassword~ -}) cRud
          ]
 
 --#IFNOT NoRegistrationWithLogin

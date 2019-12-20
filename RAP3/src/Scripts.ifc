@@ -1,8 +1,13 @@
 CONTEXT RAP3 IN ENGLISH
 
-INTERFACE MyScripts FOR Tutor,Student: "_SESSION";sessionAccount;submittor~ cRuD BOX <SHCOLS>
--- Notice that the cRuD on line 3 must not be CRuD, because the green '+' generates a Slim error at run time. See issue #704.
-    [ content  : I cRud
+PURPOSE INTERFACE MyScripts
+{+ Ik wil als student een overzicht krijgen van mijn scripts,
+waarin ik scripts kan maken, verwijderen en naar het script kan navigeren om erin te wijzigen,
+om zodoende volwaardig beheer over mijn eigen scripts te kunnen doen.
++}
+INTERFACE MyScripts FOR Student: "_SESSION";sessionAccount;submittor~ cRud BOX <SHCOLS>
+-- Notice that the cRuD on line 8 must not be CRuD, because the green '+' generates a Slim error at run time. See issue #704.
+    [ content  : I
     , opdracht : assignment
     , tijdstip : submitted cRud
     ]
@@ -16,7 +21,7 @@ INTERFACE StudentScripts FOR Tutor : "_SESSION"[SESSION]#(I[Account]/\submittor~
        ]
     ]
 
-INTERFACE "Nieuw script" FOR Student, User : I[Script] cRud BOX <ROWSNL>
+INTERFACE "Nieuw script" FOR Student, User : I[Script] CRuD BOX <ROWSNL>
    [ "Meta-info": I cRud BOX <SCOLS>
       [ indiener  : submittor cRud
       , opdracht  : assignment CRUd

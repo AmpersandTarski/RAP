@@ -32,7 +32,7 @@ VIOLATION (TXT "{EX}InsPair;accPassword;Account;", SRC I, TXT ";Password;welkom"
 --ROLE User MAINTAINS "Wilt u uw wachtwoord veranderen?"
 --RULE "Wilt u uw wachtwoord veranderen?": "_SESSION";sessionAccount;accPassword;"welkom" |- -V
 --MESSAGE "Het wachtwoord 'welkom' dient te worden aangepast."
---VIOLATION (TXT "U dient uw wachtwoord te wijzigen in de interface 'My Account' in de menubalk.")
+--VIOLATION (TXT "U dient uw wachtwoord te wijzigen in de interface 'MyAccount' in de menubalk.")
 
 accNewPassword :: Account * Password [UNI]
 ROLE ExecEngine MAINTAINS "(Re)set the password of an account"
@@ -78,7 +78,7 @@ INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <SCOLS
 
 --[User account management]--
 
-INTERFACE "My Account" FOR "User": "_SESSION" cRud BOX <ROWSNL>
+INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <ROWSNL>
    [ "no session account": (I-sessionAccount;sessionAccount~);V;"Editing your account requires that you are logged in"[LoginMessage] cRud
    , "session account": sessionAccount cRUd ROWS
       [ "Userid": accUserid cRud

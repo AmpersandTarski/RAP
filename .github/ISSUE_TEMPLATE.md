@@ -1,12 +1,9 @@
-<!-- Dank voor je bijdrage aan Ampersand! Vergeet niet een duidelijke titel te maken... -->
+<!-- Dank voor je bijdrage aan RAP! Vergeet niet een duidelijke titel te maken... -->
 
-#### Versie van Ampersand (in de CLI:  >  ampersand --version)
-
-
-#### Wat ik verwachtte
+#### De situatie
 
 
-#### Wat er gebeurde
+#### Wat er gebeurde er en wat had je verwacht?
 
 
 #### Stappen om dit te reproduceren

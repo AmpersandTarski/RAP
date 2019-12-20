@@ -84,11 +84,11 @@ Note: setting the property `accIsActive` will automatically also set `accIsIniti
 
 --[[The following RULEs are listed here so that developers may (cherry)pick them as necessary:]]--
 --[Set default interfaces for anonymous sessions and user sessions]
-{-    ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
+   ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
    RULE "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
-   VIOLATION (TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/UserHome" --<-- Deze interface verschijnt als je net bent ingelogd
---           ,TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- de `Login` interface(s) kun je importeren vanuit SIAMv4
-             ,TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/AnonHome" -- Hier kun je inloggen.
+   VIOLATION (TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/MyAccount" --<-- Deze interface verschijnt als je net bent ingelogd
+--           ,TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- Name of default interface for anonymous sessions
+             ,TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- Hier kun je inloggen.
              ) --}
 
 --[Auto activate auto-login accounts]

@@ -48,7 +48,7 @@ INTERFACE "Account" FOR "AccountMgr": I[Account] cRud ROWS
       ]
    ]
 
-INTERFACE "My Account" FOR User: "_SESSION";sessionAccount cRud ROWS
+INTERFACE "MyAccount" FOR User: "_SESSION";sessionAccount cRud ROWS
    [ "Userid": accUserid cRUd
    , "New password": accNewPassword cRUd -- crUd is needed for Passwords
    , "Person": accPersonRef cRud
