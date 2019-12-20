@@ -24,6 +24,9 @@ settings:
 
     # global.version: v3
 
+    ### Frontend settings
+    frontend.homePage: "/page/home" # Angular route. Don't put a '#' in front of the path
+
     ### Mysql settings (provided by compiler)
     # mysql.dbHost: set in project.yaml or project.prod.yaml
     # mysql.dbName: set in customizations.yaml
