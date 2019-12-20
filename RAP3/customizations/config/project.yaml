@@ -37,7 +37,6 @@ settings:
     # null implies that everyone has access, use empty list [] to disable for all, or specify a list with allowed roles
     rbac.importerRoles: [Administrator]
     rbac.adminRoles: [Administrator]
-    rbac.accessibleInterfacesIfcId: AccessibleInterfaces
 
     ### Session
     session.expirationTime: 14400 # expiration time in seconds 14400 sec = 4h
