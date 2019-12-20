@@ -1,0 +1,139 @@
+CONTEXT "Account Registration" IN ENGLISH
+PURPOSE CONTEXT "Account Registration"
+{+ This file specifies a basic Account Registration Form (AccRegForm or ARF), as well as
+- the means to use it in various INTERFACEs, and
+- a means for processing such forms, i.e. create Accounts when appropriate,
+  using the data specified in the form to populate the Account.
+  
+The setup is such that an AccRegForm can be expanded (as can Accounts)
++}
+
+INCLUDE "./SIAM_LoginWithUPW.adl"
+
+--[AccRegForms - General]
+RELATION arfUserid[AccRegForm*Userid]       [UNI] -- Requested Userid
+RELATION arfPassword[AccRegForm*Password]   [UNI] -- Requested Password
+
+RELATION arfIsClean[AccRegForm*AccRegForm] [PROP] -- AccRegForm has property that a valid account can be created
+ROLE ExecEngine MAINTAINS "InsPair arfIsClean"
+RULE "InsPair arfIsClean": I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~ |- arfIsClean
+VIOLATION (TXT "{EX} InsPair;arfIsClean;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
+ROLE ExecEngine MAINTAINS "DelPair arfIsClean"
+RULE "DelPair arfIsClean": arfIsClean |- I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~
+VIOLATION (TXT "{EX} DelPair;arfIsClean;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
+
+RELATION arfCancelReq[AccRegForm*AccRegForm] [PROP]
+ROLE ExecEngine MAINTAINS "Delete canceled AccRegForms"
+RULE "Delete canceled AccRegForms": arfCancelReq |- -V
+VIOLATION (TXT "{EX} DelAtom;AccRegForm;", SRC I)
+
+ROLE ExecEngine MAINTAINS "Delete orphaned AccRegForms"
+RULE "Delete orphaned AccRegForms": I |- sessionAccRegForm~;sessionAccRegForm \/ accRegForm~;accRegForm
+VIOLATION (TXT "{EX} DelAtom;AccRegForm;", SRC I)
+
+--[[Account creation]]--
+RELATION accRegForm[Account*AccRegForm] [INJ,UNI] -- An Account may (still) know about the AccRegForm it was created form
+RELATION arfCreateAccountReq[AccRegForm*AccRegForm] [PROP] -- Request the creation of a new Account
+RULE "An account may only be created if it has not been previously registered": 
+   arfCreateAccountReq;arfUserid;accUserid~ |- accRegForm~
+
+ROLE ExecEngine MAINTAINS "Service Account create request"
+RULE "Service Account create request": arfCreateAccountReq /\ arfIsClean |- accRegForm~;accRegForm
+VIOLATION (TXT "{EX} InsAtom;Account" 
+          ,TXT "{EX} InsPair;accRegForm;Account;_NEW;AccRegForm;", SRC I
+          )
+ROLE ExecEngine MAINTAINS "Reset arfCreateARFReq"
+RULE "Reset arfCreateARFReq": I /\ accRegForm~;accRegForm |- -arfCreateAccountReq
+VIOLATION (TXT "{EX} DelPair;arfCreateAccountReq;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
+
+--[Copy required fields to Account]
+--$Userid (required)
+ROLE ExecEngine MAINTAINS "Carbon copy accUserid from its AccRegForm"
+RULE "Carbon copy accUserid from its AccRegForm": accRegForm;arfUserid |- accUserid
+VIOLATION (TXT "{EX} InsPair;accUserid;Account;", SRC I, TXT ";Userid;", TGT I)
+--Note: you can change a userid, but you cannot discard it.
+
+--$Password (required)
+ROLE ExecEngine MAINTAINS "Carbon copy accPassword from its AccRegForm"
+RULE "Carbon copy accPassword from its AccRegForm": accRegForm;arfPassword |- accPassword
+VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC I, TXT ";Password;", TGT I)
+--Note: you can change a Password, but you cannot discard it.
+
+--[Copy optional fields to Account]
+-- The constructs as they are specified here can be used as a template for adding fields to AccRegForms
+--$PersonRef (optional) -- other stuff can be populated into accounts in a similar fashion
+RELATION arfPersonRef[AccRegForm*PersonRef] [UNI] -- Name of the Person associated with requested account
+ROLE ExecEngine MAINTAINS "Copy existing arfPersonRef to associated accPersonRef"
+RULE "Copy existing arfPersonRef to associated accPersonRef": accRegForm;arfPersonRef |- accPersonRef
+VIOLATION (TXT "{EX} InsPair;accPersonRef;Account;", SRC I, TXT ";PersonRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Delete accPersonRef when arfPersonRef does not exist"
+RULE "Delete accPersonRef when arfPersonRef does not exist": accRegForm;(I-arfPersonRef;arfPersonRef~) |- -(accPersonRef;V)
+VIOLATION (TXT "{EX} DelPair;accPersonRef;Account;", SRC I, TXT ";PersonRef;", SRC accPersonRef)
+
+--$OrgRef (optional; this requires INCLUDE "SIAM_OrgRefs.adl")
+-- Other stuff can be populated into accounts in a similar fashion
+-- RELATION arfOrgRef[AccRegForm*OrgRef] [UNI] -- Name of the Organization associated with requested account
+-- ROLE ExecEngine MAINTAINS "Copy existing arfOrgRef to associated accOrgRef"
+-- RULE "Copy existing arfOrgRef to associated accOrgRef": accRegForm;arfOrgRef |- accOrgRef
+-- VIOLATION (TXT "{EX} InsPair;accOrgRef;Account;", SRC I, TXT ";OrgRef;", TGT I)
+-- ROLE ExecEngine MAINTAINS "Delete accOrgRef when arfOrgRef does not exist"
+-- RULE "Delete accOrgRef when arfOrgRef does not exist": accRegForm;(I-arfOrgRef;arfOrgRef~) |- -(accOrgRef[Account*OrgRef];V[Orgref*AccRegForm])
+-- VIOLATION (TXT "{EX} DelPair;accOrgRef;Account;", SRC I, TXT ";OrgRef;", SRC accOrgRef)
+
+--[[AccRegForms and SESSIONS]]--
+RELATION sessionCreateARFReq[SESSION*SESSION] [PROP] -- This allows a button in an interface to create an ARF
+RELATION sessionAccRegForm[SESSION*AccRegForm] [INJ,UNI] -- An AccRegForm may be filled in from some session.
+
+ROLE ExecEngine MAINTAINS "Service AccRegForm create request"
+RULE "Service AccRegForm create request": sessionCreateARFReq |- sessionAccRegForm;sessionAccRegForm~
+VIOLATION (TXT "{EX} InsAtom;AccRegForm"
+          ,TXT "{EX} InsPair;sessionAccRegForm;SESSION;", SRC I, TXT ";AccRegForm;_NEW"
+          )
+ROLE ExecEngine MAINTAINS "Reset sessionCreateARFReq"
+RULE "Reset sessionCreateARFReq": I /\ sessionAccRegForm;sessionAccRegForm~ |- -sessionCreateARFReq
+VIOLATION (TXT "{EX} DelPair;sessionCreateARFReq;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+--[AccRegForms and auto Login]
+
+INCLUDE "./SIAM_AutoLoginAccount.adl"
+RELATION arfAutoLoginReq[AccRegForm*AccRegForm] [PROP]
+
+RULE "Creation of accounts that auto login can only be requested when nobody is logged in": arfAutoLoginReq |- V;(V[SESSION*Account] - "_SESSION";sessionAccount);V
+RULE "Creation of accounts that auto login can only be requested when AccRegForm is clean": arfAutoLoginReq |- arfIsClean
+
+ROLE ExecEngine MAINTAINS "Request creation of auto-login account"
+RULE "Request creation of auto-login account": arfAutoLoginReq /\ arfIsClean |- arfCreateAccountReq
+VIOLATION (TXT "{EX} InsPair;arfCreateAccountReq;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Move arfAutoLoginReq to associated accAutoLoginReq"
+RULE "Move arfAutoLoginReq to associated accAutoLoginReq": accRegForm;arfAutoLoginReq |- accAutoLoginReq;accRegForm;(I-arfAutoLoginReq)
+VIOLATION (TXT "{EX} InsPair;accAutoLoginReq;Account;", SRC I, TXT ";Account;", SRC I
+          ,TXT "{EX} DelPair;arfAutoLoginReq;AccRegForm;", TGT I, TXT ";AccRegForm;", TGT I
+          )
+
+ROLE ExecEngine MAINTAINS "Service request to create an auto-login account"
+RULE "Service request to create an auto-login account": 
+   arfAutoLoginReq;arfIsClean - accRegForm~;accRegForm |- arfCreateAccountReq
+VIOLATION (TXT "{EX} InsPair;arfCreateAccountReq;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
+
+--[Example interfaces]
+
+{- -- Account creation in an admin session
+INTERFACE "Create Account" FOR AccountManager: I[AccRegForm] cRud BOX <DIV>
+   [ "Form to fill in": I cRud ROWS
+      [ "Userid"      : arfUserid cRUd
+      , "Password"    : arfPassword 
+      , "Name"        : arfPersonRef
+      , "Organization": arfOrgRef
+      ]
+   , "Buttons": I cRud BOX <DIV>
+      [ "Create": I cRud BOX <PROPBUTTON>
+         [ "property": arfCreateAccountReq cRUd
+         , "disabled": I-arfIsClean cRud
+--       , "hide": <expression> cRud
+--       , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
+         ]
+      ]
+   ]
+-}
+ENDCONTEXT

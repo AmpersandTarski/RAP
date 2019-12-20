@@ -1,4 +1,4 @@
-﻿CONTEXT RAP IN DUTCH
+CONTEXT RAP IN DUTCH
 
 -- VIEW Context : Context(TXT "Context")
 
@@ -35,9 +35,8 @@ INTERFACE "Relations" FOR User, Student,Tutor : I[Relation] cRud BOX <SHCOLS>
   [ "Relation:" : I cRud -- name[Relation*RelationName] cRud en daar moet dan nog een view bij.
   , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
   , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
-  , "Meaning:" : decmean[Relation*Meaning] cRud 
+  , "Meaning:" : decMean[Relation*Meaning] cRud 
   ]
-
 INTERFACE "Relation" FOR User, Student,Tutor : I[Relation] cRud BOX
   [ "Relation:" : I cRud
   , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
@@ -45,7 +44,7 @@ INTERFACE "Relation" FOR User, Student,Tutor : I[Relation] cRud BOX
   , "Eigenschappen:" : propertyRule;declaredthrough cRud
   , "Properties:" : prop [Relation * Property] cRud
   , "Purpose:" : purpose[Relation*Purpose];markupText cRud 
-  , "Meaning:" : decmean[Relation*Meaning] cRud 
+  , "Meaning:" : decMean[Relation*Meaning] cRud 
   ]
 
 INTERFACE "Rules" FOR User, Student,Tutor : I[Rule] cRud BOX <SHCOLS>
@@ -63,6 +62,8 @@ INTERFACE "Rule" FOR User, Student,Tutor : I[Rule] cRud BOX
 --  , "origin" : origin cRud  
   , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
   ]
+
+CLASSIFY PropertyRule ISA Rule
 
 INTERFACE "Patterns" FOR User, Student,Tutor : I[Pattern] cRud BOX <SHCOLS>
   [ "Thema's:" : I cRud
@@ -87,8 +88,8 @@ INTERFACE "Language" FOR User, Student, Tutor : I[Pattern] cRud BOX
   [ "Theme:" : I cRud
   , "Purpose:" : purpose[Pattern*Purpose];markupText cRud
   , "Definitions:" : concepts[Pattern*Concept] cRud BOX
-         [ "Concept" : name
-         , "Purpose" : purpose
+         [ "Concept" : name[Concept*ConceptName]
+         , "Purpose" : purpose[Concept*Purpose];markupText cRud
          ]
   ]
 

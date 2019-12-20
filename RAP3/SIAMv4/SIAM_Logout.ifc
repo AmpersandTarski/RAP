@@ -1,0 +1,15 @@
+CONTEXT "Logout"
+-- This interface can be used as part of various other interfaces.
+
+POPULATION isInvisible CONTAINS [ ("Logout", "Logout") ]
+INTERFACE "Logout" FOR User: "_SESSION"[SESSION];sessionIsUser cRud BOX <HCOLS>
+   [ "Userid": sessionUserid cRud
+   , "Person": sessionPersonRef cRud
+-- , "Organization": sessionOrgRef cRud
+-- , "Active roles": sessionActiveRoles cRud
+-- , "Auth.level": sessionAuthLoA cRud
+   , "Logout": I cRud BOX <PROPBUTTON> [ "property": sessionLogoutReq cRUd ]
+   ]
+
+-----------------------------------------------------------
+ENDCONTEXT

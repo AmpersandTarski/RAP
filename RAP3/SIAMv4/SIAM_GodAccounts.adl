@@ -1,0 +1,12 @@
+CONTEXT "GodAccounts" IN ENGLISH
+-- This file implements the 'God-accounts' feature, i.e. it defines the property `accIsGodAccount`.
+
+PURPOSE RELATION accIsGodAccount
+{+There may be a need to have one (or a few) Account(s) that are allowed to activate all roles. We call an Account that has this property a 'god account'. Every Account that has the property of being a 'god account' will be assigned all available roles. This implies that whenever the property is revoked, the Account will still have all roles assigned - deassignment thereof is left as a manual task (otherwise, additional code in SIAM_Roles.adl would be required, which violates the idea of scripts not interfering with one another.+}
+accIsGodAccount :: Account * Account [PROP] -- An account may have the property of being a God-account
+
+ROLE ExecEngine MAINTAINS "Set allowed session roles for god account"
+RULE "Set allowed session roles for god account": accIsGodAccount;V;(I[Role]-systemRole) |- accAllowedRoles
+VIOLATION (TXT "{EX} InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I)
+
+ENDCONTEXT

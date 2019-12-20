@@ -1,0 +1,22 @@
+CONTEXT "LoginLoggingService" IN ENGLISH
+{- This service maintains the following rules:
+* `accMostRecentLogin` contains the time at which the latest login has been performed.
+* `accLoginTimestamps` contains all times at which a login took place (in a new session).
+-}
+
+accMostRecentLogin :: Account * DateTime [UNI]
+accLoginTimestamps :: Account * DateTime           REPRESENT DateTime TYPE DATETIME
+
+sessionLoginTimestamp :: SESSION * DateTime [UNI]
+ROLE ExecEngine MAINTAINS "Login Timestamping"
+RULE "Login Timestamping": sessionAccount |- sessionLoginTimestamp;V
+VIOLATION (TXT "{EX} InsPair;sessionLoginTimestamp;SESSION;", SRC I, TXT ";DateTime;{php}date(DATE_ISO8601)")
+
+{- The below rule awaits resolution of issue #285 (https://github.com/AmpersandTarski/ampersand/issues/285)
+ROLE ExecEngine MAINTAINS "Login Logging"
+RULE "Login Logging": sessionAccount~;sessionLoginTimestamp |- accMostRecentLogin
+VIOLATION (TXT "{EX} InsPair;accMostRecentLogin;Account;", SRC I, TXT ";DateTime;", TGT I
+          ,TXT "{EX} InsPair;accLoginTimestamps;Account;", SRC I, TXT ";DateTime;", TGT I
+          )
+-}
+ENDCONTEXT

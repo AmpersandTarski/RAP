@@ -1,0 +1,49 @@
+CONTEXT "Login" IN ENGLISH LATEX
+-----------------------------------------------------------
+{- This file contains an INTERFACE by which a user can:
+- Login (with a username and password)
+- Register himself (i.e. just the username and password)
+This interface is here for the following purposes:
+- Testing the SIAM module
+- providing a template that Ampersand modelers can draw inspiration from
+-}
+
+INCLUDE "./SIAM_LoginWithUPW.adl"        -- Ensure login functionality is available.
+--#IFNOT NoRegistrationWithLogin
+INCLUDE "./SIAM_RegisterWithUPW.adl"     -- Extension that registers not-yet existing users that specify a U/PW.
+INCLUDE "./SIAM_RegisterWithUPW.ifc"     -- Interface for RegisterWithUPW Extension
+--#ENDIF
+
+POPULATION LoginMessage CONTAINS [ "You are currently logged in as " ]           REPRESENT LoginMessage TYPE ALPHANUMERIC
+POPULATION PopoverText  CONTAINS [ "Click this button to create your account" ]  REPRESENT PopoverText  TYPE ALPHANUMERIC
+-- POPULATION isInvisible CONTAINS [ ("Login", "Login") ]
+INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
+   [ "Login": I-sessionAccRegForm;sessionAccRegForm~ cRud BOX <HCOLS>
+      [ "Userid": loginUserid cRUd
+      , "Password": loginPassword cRUd -- crUd is needed for Passwords
+
+      --$Button that allows user to login
+      , "Login": I cRud BOX <PROPBUTTON> 
+         [ "property": sessionLoginReq cRUd
+         , "disabled": I - (loginUserid;loginUserid~ /\ loginPassword;loginPassword~) cRud
+         ]
+
+--#IFNOT NoRegistrationWithLogin
+      --$Button that allows account-registration in anonymous sessions      
+      , "   ": I-sessionLoginAssist cRud BOX <DIV> -- Only allow registration when we're not trying to login.
+         [ "Register": I BOX <PROPBUTTON> 
+            [ "property": sessionCreateARFReq cRUd
+--          , "hide": I /\ sessionAccRegForm;sessionAccRegForm~ cRud
+            , "disabled": I /\ sessionAccRegForm;sessionAccRegForm~ cRud
+            , "popovertext": V;"Click this button to create your account"[PopoverText] cRud
+            ]
+         ]
+--#ENDIF
+      ]
+--#IFNOT NoRegistrationWithLogin
+   , "Register": sessionIsAnon;sessionAccRegForm INTERFACE "Register"
+--#ENDIF
+   ]
+
+-----------------------------------------------------------
+ENDCONTEXT

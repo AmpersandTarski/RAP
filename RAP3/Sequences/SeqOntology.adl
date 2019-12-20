@@ -1,0 +1,90 @@
+CONTEXT SequencesOntology IN ENGLISH MARKDOWN
+PURPOSE CONTEXT SequencesOntology
+{+This script defines the basic constraints for sequences. A 'graphical' view of such sequences is presented in the below figure:
+
+-------------------------------------------------------------
+|     Item     |     Item     |     Item     |     Item     |
+-------------------------------------------------------------
+ ^        ‼-nextItem-^   ‼-nextItem-^   ‼-nextItem-^      ^
+ |                                                        |
+ First Item of the sequence                       Last Item
+
+In words: 
+- A sequence is a set of items that are linked together with the `nextItem` relation:
+  * For every pair (i1,i2) in `nextItem`, we say that i2 is the successor of i1
+  * For every pair (i1,i2) in `nextItem`, we say that i1 is the predecessor of i2
+- The item that has no predecessor is called the first item in the sequence.
+- The item that has no successor is called the last item in the sequence.
+- A sequence may be empty (i.e.: have no items), in which case is does not have a first nor a last item.
+
+In our design, we have chosen to use Items that belong to at most one sequence, for the following reasons:
+1) If an item were allowed to be part of multiple sequences, it might also have multiple successors and/or predecessors, depending on the sequences it is an element of. This would make the handling of (items) in a sequence much more difficult.
+2) If an item were required to always be part of a sequence, that would prohibit the practical use of CLASSIFYing concepts as Items, since such other concepts might serve purposes other than that of being part of the sequence. In particular, it would prohibit tree construction along the lines of `CLASSIFY Tree ISA Sequence` and `CLASSIFY Tree ISA Item`, because the root Tree would be an Item of which the `itemInSeq` relation would not be populated.
+
+Our definitions of `Sequence` and `Item` differ from what is traditionally used in computer science (see e.g. section 7.2 of Gordon J. Pace, "Mathematics of Discrete structures for Computer Science", Springer, 2012, ISBN 9783642298394). Computer science says that:
+- The 'head' of a sequence is defined as what we call the first item of the sequence;
+- The 'tail' of a sequence is the sequence without its first item, for which we do not have a representation;
+- Items are numbered (sequentially), starting at the head, which is item 0 (per definition).
++}
+
+--[Items and Sequences]--
+
+RELATION seqName[Sequence*SeqName] [UNI] REPRESENT SeqName TYPE ALPHANUMERIC -- A sequence may have a name.
+RELATION seqFirstItem[Sequence*Item] [UNI] -- For the purpose of initializing a sequence, `seqFirstItem` may not be total.
+RELATION seqLastItem[Sequence*Item] [UNI] -- For the purpose of initializing a sequence, `seqLastItem` may not be total.
+
+RELATION itemName[Item*ItemName] [UNI] REPRESENT ItemName TYPE ALPHANUMERIC -- An item may have a name.
+RELATION itemInSeq[Item*Sequence] [UNI] -- Not having the TOT-multiplicity allows the use of concepts that might CLASSIFY as Items, but also have other purposes than to be part of a Sequence. 
+RELATION nextItem[Item*Item] [UNI,INJ,IRF] -- an item may have a successor (not being itself)
+
+RULE "The first item of a sequence has no predecessor": -(seqFirstItem;nextItem~)
+RULE "A non-first item of a sequence has a predecessor": (itemInSeq;seqFirstItem)-I |- nextItem~;V
+RULE "The last item of a sequence has no successor": -(seqLastItem;nextItem)
+RULE "A non-last item of a sequence has a successor": (itemInSeq;seqLastItem)-I |- nextItem;V
+RULE "A non-empty sequence has a first item and a last item": itemInSeq~;itemInSeq |- seqFirstItem;V;seqLastItem~
+RULE "Successors/predecessors are part of the same sequence": nextItem |- itemInSeq;itemInSeq~
+
+ROLE ExecEngine MAINTAINS "Automatically set first Item of Sequence"
+RULE "Automatically set first Item of Sequence": itemInSeq-(nextItem~;itemInSeq) |- seqFirstItem~
+VIOLATION (TXT "{EX} InsPair;seqFirstItem;Sequence;", TGT I, TXT ";Item;", SRC I)
+
+ROLE ExecEngine MAINTAINS "Automatically set last Item of Sequence"
+RULE "Automatically set last Item of Sequence": itemInSeq-(nextItem;itemInSeq) |- seqLastItem~
+VIOLATION (TXT "{EX} InsPair;seqLastItem;Sequence;", TGT I, TXT ";Item;", SRC I)
+
+ROLE ExecEngine MAINTAINS "Automatically detect emptiness of a Sequence"
+RULE "Automatically detect emptiness of a Sequence": seqFirstItem \/ seqLastItem |- itemInSeq~;V
+VIOLATION (TXT "{EX} DelPair;seqFirstItem;Sequence;", SRC I, TXT ";Item;", SRC seqFirstItem
+          ,TXT "{EX} DelPair;seqLastItem;Sequence;", SRC I, TXT ";Item;", SRC seqLastItem
+          )
+
+ROLE ExecEngine MAINTAINS "Automatically remove next-item-link from orphaned items"
+RULE "Automatically remove next-item-link from orphaned items": I[Item]-(itemInSeq;itemInSeq~) |- (V[Item]-nextItem);V
+VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem
+          )
+-- While the following line should not fire, it may so happen that people use this Ontology and make their own SeqInterfacing service that does not take care of this condition.
+ROLE ExecEngine MAINTAINS "Automatically remove next-item-link that points outside sequence"
+RULE "Automatically remove next-item-link that points outside sequence": nextItem |- itemInSeq;itemInSeq~
+VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem
+          )
+
+--[Option: Transitive Closures for `nextItem`]--
+{- 
+    RELATION succStar[Item*Item] -- Transitive, reflexive closure of nextItem, aka nextItem*
+    MEANING "`succStar` is the reflexive, transitive closure of `nextItem`."
+    RELATION succPlus[Item*Item] -- Transitive closure of nextItem, aka nextItem+
+--  MEANING "`succPlus` is the transitive closure of `nextItem`."
+
+    RELATION succCopy[Item*Item] -- necessary only for calling the Transitive closure function.
+    ROLE ExecEngine MAINTAINS "Compute transitive closure of nextItem"
+    RULE "Compute transitive closure of nextItem" : nextItem = succCopy
+    VIOLATION (TXT "{EX} TransitiveClosure;nextItem;Item;succCopy;succPlus")
+
+    ROLE ExecEngine MAINTAINS "Compute transitive closure of nextItem by Ins", "Compute transitive closure of nextItem by Del"
+    RULE "Compute transitive closure of nextItem by Ins" : succPlus\/I |- succStar
+    VIOLATION (TXT "{EX} InsPair;succStar;Item;", SRC I, TXT ";Item;", TGT I)
+    RULE "Compute transitive closure of nextItem by Del" : succStar |- succPlus\/I
+    VIOLATION (TXT "{EX} DelPair;succStar;Item;", SRC I, TXT ";Item;", TGT I)
+-}
+
+ENDCONTEXT

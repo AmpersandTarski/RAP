@@ -1,38 +1,106 @@
-version: '3'
+version: '3.7'
+
+volumes:
+  rap3-logs:
+  rap3-data: 
+  rap3-scripts:
+  db-data:
+  proxy-cert:
 
 services:
-  rap3:
-    restart: always
-    image: ampersandtarski/ampersand-rap:latest
+  # the gatekeeper to the internet. It serves both http and https.
+  proxy:
+    build: ./HAProxy
+    restart: unless-stopped
+    networks:
+      - rap3
+      - enroll
     ports:
-      - "80:80"
-    links:
-      - db
-      - latex
+      - 80:80
+      - 443:443
     volumes:
-      - ./volumes/log:/var/www/html/RAP3/log
-      - ./volumes/scripts:/var/www/html/RAP3/scripts
+      - proxy-cert:/srv/is-certificate
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+  rap3:
+    image: ampersandtarski/ampersand-rap:latest
+    container_name: rap3
+    build:
+      context: RAP3
+    restart: unless-stopped
+    depends_on:
+      - db
+      - proxy
+    volumes:
+      - rap3-logs:/var/www/log
+      - rap3-data:/var/www/data
+      - rap3-scripts:/var/www/scripts
+    networks:
+      - rap3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
+  # demo application Enrollment
+  enroll:
+    image: ampersandtarski/enroll:latest
+    container_name: enroll
+    build:
+      context: Demos/Enroll
+    restart: unless-stopped
+    depends_on:
+      - db
+      - proxy
+    networks:
+      - enroll
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
  
   db:
     restart: always
     image: ampersandtarski/rap3-db
     volumes:
-      - ./volumes/mysql:/var/lib/mysql
+      - db-data:/var/lib/mysql
+    container_name: rap3-db
+    build:
+      context: RAP3DB
+    networks:
+      - rap3
+      - db
+      - enroll
 
   phptools:
     image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
     ports:
       - "8080:80"
-    links:
+    networks:
       - db
 
-  vscode:
-    image: codercom/code-server
-    command: --password=zoepersecreet
-    ports:
-      - "8443:8443"
-    volumes:
-      - ./volumes/scripts:/var/www/html/RAP3/scripts
+  # vscode:
+  #   image: codercom/code-server
+  #   command: --password=zoepersecreet
+  #   ports:
+  #     - "8443:8443"
+  #   volumes:
+  #     - ./volumes/scripts:/var/www/html/RAP3/scripts
 
-  latex:
-    image: thomasweise/docker-texlive-full
+  # latex:
+  #   image: thomasweise/docker-texlive-full
+  #   networks:
+  #     - rap3
+
+networks:
+  rap3:
+  db:
+  enroll:

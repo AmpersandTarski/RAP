@@ -1,0 +1,35 @@
+CONTEXT "Person References" IN ENGLISH
+{- The purpose of this file is to provide 'PersonRef's, 
+i.e. textstrings that may be used to refer to a person.
+-}
+-----------------------------------------------------------
+PURPOSE RELATION accPersonRef 
+{+A common need is to associate information objects to people.
+An example is to associate a contract to a person (customer).
+While the SIAM_PeronReg module allows for the creation of Person objects,
+this is sometimes overkill. Many times, it suffices to have a simple text
+that refers to some person, the details of which are apparent from the
+context in which the object is being used. 
+An example of this is a Car Rental case, where it does not matter all that
+much who the renter or driver is, as long as a valid driving permit number
+is available. 
+For such purposes, we need a relation that allows us to simply refer to a person.
++}
+accPersonRef :: Account * PersonRef [UNI] -- a text that refers to the person associated with the account.
+MEANING "An Account may have a textstring that refers to the Person for which the account has attributes"
+
+sessionPersonRef :: SESSION * PersonRef [UNI]
+MEANING "In a SESSION, a textstring that refers to the user (i.e. the Person that acts 'at the other side') may be known."
+ROLE ExecEngine MAINTAINS "Determine the personRef in a session"
+RULE "Determine the personRef in a session": sessionAccount;accPersonRef |- sessionPersonRef
+VIOLATION (TXT "{EX} InsPair;sessionPersonRef;SESSION;", SRC I, TXT ";PersonRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear the personRef in a session"
+RULE "Clear the personRef in a session": sessionIsUser;sessionPersonRef |- sessionAccount;accPersonRef
+VIOLATION (TXT "{EX} DelPair;sessionPersonRef;SESSION;", SRC I, TXT ";PersonRef;", TGT I)
+
+--[Glossary]--
+CONCEPT PersonRef "text used to refer to a person"
+REPRESENT PersonRef TYPE ALPHANUMERIC
+
+-----------------------------------------------------------
+ENDCONTEXT
