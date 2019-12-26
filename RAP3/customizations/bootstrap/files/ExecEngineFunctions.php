@@ -49,8 +49,6 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
         ExecEngine::getFunction('CompileWithAmpersand')->call($this, 'loadPopInRAP3', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
         
         $this->debug("Compiling {$i}/{$total}: end");
-        
-        Transaction::getCurrentTransaction()->close(); // also kicks EXECENGINE
     }
 });
 
