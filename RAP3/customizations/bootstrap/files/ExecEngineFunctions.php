@@ -91,9 +91,10 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     if ($command->getExitcode() == 0) { // script ok
         // Create new script version atom and add to rel version[Script*ScriptVersion]
         $version = $model->getConceptByLabel('ScriptVersion')->createNewAtom();
-        $scriptAtom->link($version, 'version[Script*ScriptVersion]')->add();
         $version->link($version, 'scriptOk[ScriptVersion*ScriptVersion]')->add();
+        $scriptAtom->link($version, 'version[Script*ScriptVersion]')->add();
         
+        // Create representation of file object and link to script version
         $sourceFO = createFileObject($model->getConceptByLabel('FileObject'), $relPathSources, $fileName);
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
