@@ -53,4 +53,9 @@ COPY --from=frontend-builder /src /var/www
 
 RUN mkdir -p /var/www/data \
  && mkdir -p /var/www/log \
- && chown -R www-data:www-data /var/www
+ && mkdir -p /var/www/scripts \
+ && chown -R www-data:www-data /var/www/data /var/www/log /var/www/scripts /var/www/generics
+
+# Copy Ampersand compiler (needed for RAP3 to compile student scripts)
+COPY --from=ampersand-builder /bin/ampersand /usr/local/bin
+RUN chmod +x /usr/local/bin/ampersand

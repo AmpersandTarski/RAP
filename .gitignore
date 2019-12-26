@@ -8,3 +8,4 @@ NewFrontend/History/make.bat
 *.epp
 volumes
 redundant temporary copy of src
+prototype-src/
