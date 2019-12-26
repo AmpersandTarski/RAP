@@ -67,6 +67,6 @@ config:
     # - config/some-other-file.yaml
 
 extensions:
-    # OAuthLogin:
-    #     bootstrap: extensions/OAuthLogin/bootstrap.php
-    #     config: config/oauth.yaml
+    RAP3:
+        bootstrap: extensions/RAP3/bootstrap.php
+        # config: config/extension.yaml
