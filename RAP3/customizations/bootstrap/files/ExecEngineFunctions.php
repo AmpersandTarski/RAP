@@ -3,11 +3,8 @@
 namespace RAP3;
 
 use Exception;
-use Ampersand\Misc\Config;
-use Ampersand\Core\Relation;
 use Ampersand\Core\Atom;
 use Ampersand\Core\Concept;
-use Ampersand\Transaction;
 use Ampersand\Rule\ExecEngine;
 use Ampersand\Core\Link;
 use Ampersand\Extension\RAP3\Command;
@@ -53,10 +50,11 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
 ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $studentNumber) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
+    $model = $ee->getApp()->getModel();
     
     $this->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
     
-    $scriptAtom = Atom::makeAtom($scriptAtomId, 'Script');
+    $scriptAtom = $model->getConceptByLabel('Script')->makeAtom($scriptAtomId);
 
     // The relative path of the source file must be something like:
     //   scripts/<studentNumber>/sources/<scriptId>/Version<timestamp>.adl
@@ -93,11 +91,11 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     
     if ($command->getExitcode() == 0) { // script ok
         // Create new script version atom and add to rel version[Script*ScriptVersion]
-        $version = Atom::makeNewAtom('ScriptVersion');
+        $version = $model->getConceptByLabel('ScriptVersion')->createNewAtom();
         $scriptAtom->link($version, 'version[Script*ScriptVersion]')->add();
         $version->link($version, 'scriptOk[ScriptVersion*ScriptVersion]')->add();
         
-        $sourceFO = createFileObject($relPathSources, $fileName);
+        $sourceFO = createFileObject($model->getConceptByLabel('FileObject'), $relPathSources, $fileName);
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed for graphics)
@@ -116,9 +114,10 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
 ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $relSourcePath) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
+    $model = $ee->getApp()->getModel();
 
-    $scriptAtom = Atom::makeAtom($scriptId, 'Script');
-    $scriptVersionAtom = Atom::makeAtom($scriptVersionId, 'ScriptVersion');
+    $scriptAtom = $model->getConceptByLabel('Script')->makeAtom($scriptId);
+    $scriptVersionAtom = $model->getConceptByLabel('ScriptVersion')->makeAtom($scriptVersionId);
 
     // The relative path of the source file will be something like:
     //   scripts/<studentNumber>/sources/<scriptId>/Version<timestamp>.adl
@@ -159,6 +158,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
 ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
+    $model = $ee->getApp()->getModel();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
@@ -178,7 +178,11 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
 
     // Create fSpec and link to scriptVersionAtom
-    $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Functional specification');
+    $foObject = createFileObject(
+        $model->getConceptByLabel('FileObject'),
+        "{$outputDir}/{$filename}.pdf",
+        "Functional specification"
+    );
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
 });
 
@@ -189,6 +193,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
+    $model = $ee->getApp()->getModel();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
@@ -208,7 +213,11 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create diagnose and link to scriptVersionAtom
-    $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Diagnosis');
+    $foObject = createFileObject(
+        $model->getConceptByLabel('FileObject'),
+        "{$outputDir}/{$filename}.pdf",
+        "Diagnosis"
+    );
     $scriptVersionAtom->link($foObject, 'diag[ScriptVersion*FileObject]')->add();
 });
 
@@ -219,6 +228,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
 ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $outputDir) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
+    $model = $ee->getApp()->getModel();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
@@ -244,7 +254,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create proto and link to scriptAtom
-    $foObject = createFileObject("{$outputDir}", 'Launch prototype');
+    $foObject = createFileObject(
+        $model->getConceptByLabel('FileObject'),
+        "{$outputDir}",
+        "Launch prototype"
+    );
     $scriptAtom->link($foObject, 'proto[Script*FileObject]')->add();
 });
 
@@ -255,6 +269,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
+    $model = $ee->getApp()->getModel();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
@@ -284,7 +299,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     
         // Add atoms to database
         foreach ($pop['atoms'] as $atomPop) {
-            $concept = Concept::getConcept($atomPop['concept']);
+            $concept = $model->getConcept($atomPop['concept']);
             foreach ($atomPop['atoms'] as $atomId) {
                 $atom = getRAPAtom($atomId, $concept);
                 $atom->add(); // Add to database
@@ -298,7 +313,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     
         // Add links to database
         foreach ($pop['links'] as $linkPop) {
-            $relation = Relation::getRelation($linkPop['relation']);
+            $relation = $model->getRelation($linkPop['relation']);
             foreach ($linkPop['links'] as $pair) {
                 $link = new Link(
                     $relation,
@@ -319,13 +334,15 @@ ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
-    $atom = Atom::makeAtom($atomId, $cptId);
+    $atom = $ee->getApp()->getModel()->getConcept($cptId)->makeAtom($atomId);
     deleteAtomAndLinks($atom, $ee);
 });
 
 function deleteAtomAndLinks(Atom $atom, ExecEngine $ee)
 {
     static $skipRelations = ['context[ScriptVersion*Context]'];
+
+    $model = $ee->getApp()->getModel();
 
     $ee->debug("Cleanup called for '{$atom}'");
     
@@ -345,7 +362,7 @@ function deleteAtomAndLinks(Atom $atom, ExecEngine $ee)
     $cleanup = [];
     
     // Walk all relations
-    foreach (Relation::getAllRelations() as $rel) {
+    foreach ($model->getRelations() as $rel) {
         if (in_array($rel->signature, $skipRelations)) {
             continue; // Skip relations that are explicitly excluded
         }
@@ -404,7 +421,7 @@ function getRAPAtom(string $atomId, Concept $concept): Atom
         
         // If atom is already changed earlier, use new id from cache
         if (isset($GLOBALS['rapAtoms'][$largestC]) && array_key_exists($atomId, $GLOBALS['rapAtoms'][$largestC])) {
-            return Atom::makeAtom($GLOBALS['rapAtoms'][$largestC][$atomId], $concept->getId()); // Atom itself is instantiated with $concept (!not $largestC)
+            return $concept->makeAtom($GLOBALS['rapAtoms'][$largestC][$atomId]); // Atom itself is instantiated with $concept (!not $largestC)
         
         // Else create new id and store in cache
         } else {
@@ -413,7 +430,7 @@ function getRAPAtom(string $atomId, Concept $concept): Atom
             return $atom;
         }
     } else {
-        return new Atom($atomId, $concept);
+        return $concept->makeAtom($atomId);
     }
 }
 
@@ -437,13 +454,14 @@ function setProp(string $propertyRelationSignature, Atom $atom, bool $bool)
 /**
  * Undocumented function
  *
+ * @param \Ampersand\Core\Concept $cpt
  * @param string $relPath
  * @param string $displayName
  * @return \Ampersand\Core\Atom
  */
-function createFileObject(string $relPath, string $displayName): Atom
+function createFileObject(Concept $cpt, string $relPath, string $displayName): Atom
 {
-    $foAtom = Atom::makeNewAtom('FileObject');
+    $foAtom = $cpt->createNewAtom();
     $foAtom->link($relPath, 'filePath[FileObject*FilePath]')->add();
     $foAtom->link($displayName, 'originalFileName[FileObject*FileName]')->add();
     
