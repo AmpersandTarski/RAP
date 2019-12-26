@@ -11,20 +11,17 @@ use Ampersand\Transaction;
 use Ampersand\Rule\ExecEngine;
 use Ampersand\Core\Link;
 
-/* Ampersand commando's mogen niet in dit bestand worden aangepast.
-De manier om je eigen commando's te regelen is door onderstaande regels naar jouw localSettings.php te copieren en te veranderen
-Nu kan dat nog niet, omdat zulke strings niet de paden e.d. kunnen doorgeven.
-   Config::set('FuncSpecCmd', 'RAP3', 'value');
-   Config::set('DiagCmd', 'RAP3', 'value');
-   Config::set('ProtoCmd', 'RAP3', 'value');
-   Config::set('LoadInRap3Cmd', 'RAP3', 'value');
-Verder moet in localSettings.php ook worden verteld waar ampersand zelf staat.
-E.e.a. staat onder het kopje
+/* Ampersand commando's mogen niet in dit bestand worden aangepast
+ *
+ * Gebruik een configuratie yaml bestand om de volgnde settings te specificeren:
+ * rap3.ampersand       : [ampersand compiler executable locatie]
+ * rap3.funcSpecCmd     :
+ * rap3.diagCmd         :
+ * rap3.protoCmd        :
+ * rap3.loadInRap3Cmd   :
+ *
+ */
 
-// Required Ampersand script
-/*
-RELATION loadedInRAP3[Script*Script] [PROP]
-*/
 /**
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
@@ -70,8 +67,9 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     // Now we will construct the relative path
     $versionId = date('Y-m-d\THis');
     $fileName = "Version{$versionId}.adl";
+    $scriptDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath'));
     $relPathSources = "scripts/{$studentNumber}/sources/{$scriptAtom->id}/{$fileName}";
-    $absPath = realpath(Config::get('absolutePath')) . "/" . $relPathSources;
+    $absPath = "{$scriptDir}/{$relPathSources}";
     
     //construct the path for the relation basePath[ScriptVersion*FilePath]
     $relPathGenerated = "scripts/{$studentNumber}/generated/{$scriptAtom->id}/Version{$versionId}/fSpec/";
@@ -87,7 +85,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     file_put_contents($absPath, current($links)->tgt()->id);
 
     // Compile the file, only to check for errors.
-    $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
+    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
     Execute($exefile . " " . basename($absPath), $response, $exitcode, dirname($absPath));
     $scriptAtom->link($response, 'compileresponse[Script*CompileResponse]')->add();
     
@@ -130,7 +128,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
     $scriptId      = basename(dirname($relSourcePath));
     $version       = pathinfo($relSourcePath, PATHINFO_FILENAME);
     $relDir        = "scripts/{$studentNumber}/generated/{$scriptId}/{$version}";
-    $absDir        = realpath(Config::get('absolutePath')) . "/" . $relDir;
+    $absDir        = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
     
     // Script bestand voeren aan Ampersand compiler
     switch ($action) {
@@ -162,12 +160,12 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath(Config::get('absolutePath')) . "/" . $outputDir;
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
+    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
 
-    $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
+    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
     $default = $exefile . " {$basename} -fpdf --language=NL --outputDir=\"{$absOutputDir}\" ";
-    $cmd = is_null(Config::get('FuncSpecCmd', 'RAP3')) ? $default : Config::get('FuncSpecCmd', 'RAP3');
+    $cmd = $ee->getApp()->getSettings()->get('rap3.funcSpecCmd', $default);
 
     // Execute cmd, and populate 'funcSpecOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
@@ -189,12 +187,12 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath(Config::get('absolutePath')) . "/" . $outputDir;
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
+    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
 
-    $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
+    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
     $default = $exefile . " {$basename} -fpdf --diagnosis --language=NL --outputDir=\"{$absOutputDir}\" ";
-    $cmd = is_null(Config::get('DiagCmd', 'RAP3')) ? $default : Config::get('DiagCmd', 'RAP3');
+    $cmd = $ee->getApp()->getSettings()->get('rap3.diagCmd', $default);
 
     // Execute cmd, and populate 'diagOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
@@ -216,13 +214,13 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath(Config::get('absolutePath')) . "/" . $outputDir;
-    $sqlHost = is_null(Config::get('dbHost', 'mysqlDatabase')) ? "localhost" : Config::get('dbHost', 'mysqlDatabase');
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
+    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
+    $sqlHost = $ee->getApp()->getSettings()->get('mysql.dbHost', 'localhost');
 
-    $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
+    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
     $default = $exefile . " {$basename} --proto=\"{$absOutputDir}\" --dbName=\"ampersand_{$scriptAtom->id}\" --sqlHost={$sqlHost} --language=NL ";
-    $cmd = is_null(Config::get('ProtoCmd', 'RAP3')) ? $default : Config::get('ProtoCmd', 'RAP3');
+    $cmd = $ee->getApp()->getSettings()->get('rap3.protoCmd', $default);
 
     // Execute cmd, and populate 'protoOk' upon success
     Execute($cmd, $response, $exitcode, $workDir);
@@ -244,12 +242,12 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath(Config::get('absolutePath')) . "/" . $outputDir;
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
+    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
 
-    $exefile = is_null(Config::get('ampersand', 'RAP3')) ? "ampersand" : Config::get('ampersand', 'RAP3');
+    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
     $default = $exefile . " {$basename} --proto=\"{$absOutputDir}\" --language=NL --gen-as-rap-model";
-    $cmd = is_null(Config::get('LoadInRap3Cmd', 'RAP3')) ? $default : Config::get('LoadInRap3Cmd', 'RAP3');
+    $cmd = $ee->getApp()->getSettings()->get('rap3.loadInRap3Cmd', $default);
 
     // Execute cmd, and populate 'loadedInRAP3Ok' upon success
     Execute($cmd, $response, $exitcode, $workDir);
