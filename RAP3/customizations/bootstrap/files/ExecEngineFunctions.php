@@ -25,8 +25,14 @@ E.e.a. staat onder het kopje
 /*
 RELATION loadedInRAP3[Script*Script] [PROP]
 */
-
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studentNumber) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+    
     $total = 5;
     
     for ($i = 0; $i < $total; $i++) {
@@ -48,7 +54,14 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
     }
 });
 
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $studentNumber) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+    
     $this->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
     
     $scriptAtom = Atom::makeAtom($scriptAtomId, 'Script');
@@ -98,7 +111,14 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     }
 });
 
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $relSourcePath) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+
     $scriptAtom = Atom::makeAtom($scriptId, 'Script');
     $scriptVersionAtom = Atom::makeAtom($scriptVersionId, 'ScriptVersion');
 
@@ -134,7 +154,14 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
     }
 });
 
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -154,7 +181,14 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
 });
 
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -174,7 +208,14 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     $scriptVersionAtom->link($foObject, 'diag[ScriptVersion*FileObject]')->add();
 });
 
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $outputDir) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -195,7 +236,14 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptAtom->link($foObject, 'proto[Script*FileObject]')->add();
 });
 
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath(Config::get('absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
@@ -244,7 +292,14 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     }
 });
 
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
+ */
 ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+
     $atom = Atom::makeAtom($atomId, $cptId);
     deleteAtomAndLinks($atom);
 });
