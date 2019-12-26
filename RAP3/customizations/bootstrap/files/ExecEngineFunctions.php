@@ -29,7 +29,6 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
     for ($i = 0; $i < $total; $i++) {
         $this->debug("Compiling {$i}/{$total}: start");
         
-        $GLOBALS['rapAtoms'] = [];
         set_time_limit(600);
 
         $scriptVersionInfo = ExecEngine::getFunction('CompileToNewVersion')->call($this, $scriptAtomId, $studentNumber);
@@ -409,10 +408,7 @@ function deleteAtomAndLinks(Atom $atom, ExecEngine $ee)
  */
 function getRAPAtom(string $atomId, Concept $concept): Atom
 {
-    // Instantiate an array only the first time the function is
-    if (!isset($GLOBALS['rapAtoms'])) {
-        $GLOBALS['rapAtoms'] = [];
-    }
+    static $rapAtoms = []; // instantiate only the first time the function is called
 
     // Non-scalar atoms get a new unique identifier
     if ($concept->isObject()) {
@@ -420,13 +416,13 @@ function getRAPAtom(string $atomId, Concept $concept): Atom
         $largestC = $concept->getLargestConcept()->getId();
         
         // If atom is already changed earlier, use new id from cache
-        if (isset($GLOBALS['rapAtoms'][$largestC]) && array_key_exists($atomId, $GLOBALS['rapAtoms'][$largestC])) {
-            return $concept->makeAtom($GLOBALS['rapAtoms'][$largestC][$atomId]); // Atom itself is instantiated with $concept (!not $largestC)
+        if (isset($rapAtoms[$largestC]) && array_key_exists($atomId, $rapAtoms[$largestC])) {
+            return $concept->makeAtom($rapAtoms[$largestC][$atomId]); // Atom itself is instantiated with $concept (!not $largestC)
         
         // Else create new id and store in cache
         } else {
             $atom = $concept->createNewAtom(); // Create new atom (with generated id)
-            $GLOBALS['rapAtoms'][$largestC][$atomId] = $atom->id; // Cache pair of old and new atom identifier
+            $rapAtoms[$largestC][$atomId] = $atom->id; // Cache pair of old and new atom identifier
             return $atom;
         }
     } else {
