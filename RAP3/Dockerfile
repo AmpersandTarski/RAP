@@ -53,4 +53,4 @@ COPY --from=frontend-builder /src /var/www
 
 RUN mkdir -p /var/www/data \
  && mkdir -p /var/www/log \
- && chown -R www-data:www-data /var/www
+ && chown -R www-data:www-data /var/www/data /var/www/log /var/www/scripts /var/www/generics
