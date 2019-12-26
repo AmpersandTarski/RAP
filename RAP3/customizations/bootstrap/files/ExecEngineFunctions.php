@@ -297,25 +297,24 @@ ExecEngine::registerFunction('Cleanup', function ($atomId, $cptId) {
     $ee = $this; // because autocomplete does not work on $this
 
     $atom = Atom::makeAtom($atomId, $cptId);
-    deleteAtomAndLinks($atom);
+    deleteAtomAndLinks($atom, $ee);
 });
 
-function deleteAtomAndLinks(Atom $atom)
+function deleteAtomAndLinks(Atom $atom, ExecEngine $ee)
 {
     static $skipRelations = ['context[ScriptVersion*Context]'];
-    $logger; // TODO: use logger of exec-engine
 
-    $logger->debug("Cleanup called for '{$atom}'");
+    $ee->debug("Cleanup called for '{$atom}'");
     
     // Don't cleanup atoms with REPRESENT type
     if (!$atom->concept->isObject()) {
-        $logger->debug("Skip cleanup: concept '{$atom->concept}' is not an object");
+        $ee->debug("Skip cleanup: concept '{$atom->concept}' is not an object");
         return;
     };
     
     // Skip cleanup if atom does not exists (anymore)
     if (!$atom->exists()) {
-        $logger->debug("Skip cleanup: atom '{$atom}' does not exist (anymore)");
+        $ee->debug("Skip cleanup: atom '{$atom}' does not exist (anymore)");
         return;
     };
 
@@ -332,7 +331,7 @@ function deleteAtomAndLinks(Atom $atom)
         if ($atom->concept->inSameClassificationTree($rel->srcConcept)) {
             foreach ($atom->getLinks($rel) as $link) {
                 // Tgt atom in cleanup set
-                $logger->debug("Also cleanup atom: {$link->tgt()}");
+                $ee->debug("Also cleanup atom: {$link->tgt()}");
                 $cleanup[] = $link->tgt();
             }
             $rel->deleteAllLinks($atom, 'src');
@@ -342,7 +341,7 @@ function deleteAtomAndLinks(Atom $atom)
         if ($atom->concept->inSameClassificationTree($rel->tgtConcept)) {
             foreach ($atom->getLinks($rel, true) as $link) {
                 // Tgt atom in cleanup set
-                $logger->debug("Also cleanup atom: {$link->src()}");
+                $ee->debug("Also cleanup atom: {$link->src()}");
                 $cleanup[] = $link->src();
             }
             $rel->deleteAllLinks($atom, 'tgt');
@@ -356,7 +355,9 @@ function deleteAtomAndLinks(Atom $atom)
     $cleanup = array_map('array_unique', $cleanup);
     
     // Delete atom and links recursive
-    array_map('deleteAtomAndLinks', $cleanup);
+    foreach ($cleanup as $item) {
+        call_user_func('deleteAtomAndLinks', $item, $ee);
+    }
 }
 
 /**
