@@ -62,11 +62,11 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     $versionId = date('Y-m-d\THis');
     $fileName = "Version{$versionId}.adl";
     $scriptDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath'));
-    $relPathSources = "scripts/{$studentNumber}/sources/{$scriptAtom->id}/{$fileName}";
+    $relPathSources = "scripts/{$studentNumber}/sources/{$scriptAtom->getId()}/{$fileName}";
     $absPath = "{$scriptDir}/{$relPathSources}";
     
     //construct the path for the relation basePath[ScriptVersion*FilePath]
-    $relPathGenerated = "scripts/{$studentNumber}/generated/{$scriptAtom->id}/Version{$versionId}/fSpec/";
+    $relPathGenerated = "scripts/{$studentNumber}/generated/{$scriptAtom->getId()}/Version{$versionId}/fSpec/";
     
     // Script content ophalen en schrijven naar bestandje
     $links = $scriptAtom->getLinks('content[Script*ScriptContent]');
@@ -76,7 +76,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     if (!file_exists(dirname($absPath))) {
         mkdir(dirname($absPath), 0777, true);
     }
-    file_put_contents($absPath, current($links)->tgt()->id);
+    file_put_contents($absPath, current($links)->tgt()->getId());
 
     // Compile the file, only to check for errors.
     $command = new Command(
@@ -101,7 +101,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed for graphics)
         $version->link($relPathGenerated, 'basePath[ScriptVersion*FilePath]')->add();
         
-        return ['id' => $version->id, 'relpath' => $relPathSources];
+        return ['id' => $version->getId(), 'relpath' => $relPathSources];
     } else { // script not ok
         return false;
     }
@@ -241,7 +241,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
         [ $basename,
           "--proto=\"{$absOutputDir}\"",
-          "--dbName=\"ampersand_{$scriptAtom->id}\"",
+          "--dbName=\"ampersand_{$scriptAtom->getId()}\"",
           "--sqlHost={$sqlHost}",
           "--language=NL"
         ],
@@ -423,7 +423,7 @@ function getRAPAtom(string $atomId, Concept $concept): Atom
         // Else create new id and store in cache
         } else {
             $atom = $concept->createNewAtom(); // Create new atom (with generated id)
-            $rapAtoms[$largestC][$atomId] = $atom->id; // Cache pair of old and new atom identifier
+            $rapAtoms[$largestC][$atomId] = $atom->getId(); // Cache pair of old and new atom identifier
             return $atom;
         }
     } else {
