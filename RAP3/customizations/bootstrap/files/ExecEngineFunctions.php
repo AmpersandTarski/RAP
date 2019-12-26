@@ -11,7 +11,7 @@ use Ampersand\Transaction;
 use Ampersand\Rule\ExecEngine;
 use Ampersand\Core\Link;
 
-/* Ampersand commando's mogen niet in dit bestand worden aangepast. 
+/* Ampersand commando's mogen niet in dit bestand worden aangepast.
 De manier om je eigen commando's te regelen is door onderstaande regels naar jouw localSettings.php te copieren en te veranderen
 Nu kan dat nog niet, omdat zulke strings niet de paden e.d. kunnen doorgeven.
    Config::set('FuncSpecCmd', 'RAP3', 'value');
@@ -19,11 +19,11 @@ Nu kan dat nog niet, omdat zulke strings niet de paden e.d. kunnen doorgeven.
    Config::set('ProtoCmd', 'RAP3', 'value');
    Config::set('LoadInRap3Cmd', 'RAP3', 'value');
 Verder moet in localSettings.php ook worden verteld waar ampersand zelf staat.
-E.e.a. staat onder het kopje 
+E.e.a. staat onder het kopje
 
 // Required Ampersand script
 /*
-RELATION loadedInRAP3[Script*Script] [PROP] 
+RELATION loadedInRAP3[Script*Script] [PROP]
 */
 
 ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studentNumber) {
