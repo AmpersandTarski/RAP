@@ -10,15 +10,12 @@ use Ampersand\Core\Concept;
 use Ampersand\Transaction;
 use Ampersand\Rule\ExecEngine;
 use Ampersand\Core\Link;
+use Ampersand\Extension\RAP3\Command;
 
 /* Ampersand commando's mogen niet in dit bestand worden aangepast
  *
  * Gebruik een configuratie yaml bestand om de volgnde settings te specificeren:
  * rap3.ampersand       : [ampersand compiler executable locatie]
- * rap3.funcSpecCmd     :
- * rap3.diagCmd         :
- * rap3.protoCmd        :
- * rap3.loadInRap3Cmd   :
  *
  */
 
@@ -85,11 +82,16 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     file_put_contents($absPath, current($links)->tgt()->id);
 
     // Compile the file, only to check for errors.
-    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
-    Execute($exefile . " " . basename($absPath), $response, $exitcode, dirname($absPath));
-    $scriptAtom->link($response, 'compileresponse[Script*CompileResponse]')->add();
+    $command = new Command(
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
+        [basename($absPath)],
+        $ee->getLogger()
+    );
+    $command->execute(dirname($absPath));
     
-    if ($exitcode == 0) { // script ok
+    $scriptAtom->link($command->getResponse(), 'compileresponse[Script*CompileResponse]')->add();
+    
+    if ($command->getExitcode() == 0) { // script ok
         // Create new script version atom and add to rel version[Script*ScriptVersion]
         $version = Atom::makeNewAtom('ScriptVersion');
         $scriptAtom->link($version, 'version[Script*ScriptVersion]')->add();
@@ -163,14 +165,17 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
     $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
 
-    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
-    $default = $exefile . " {$basename} -fpdf --language=NL --outputDir=\"{$absOutputDir}\" ";
-    $cmd = $ee->getApp()->getSettings()->get('rap3.funcSpecCmd', $default);
+    // Compile the file, only to check for errors.
+    $command = new Command(
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
+        [$basename, "-fpdf", "--language=NL", "--outputDir=\"{$absOutputDir}\"" ],
+        $ee->getLogger()
+    );
+    $command->execute($workDir);
 
-    // Execute cmd, and populate 'funcSpecOk' upon success
-    Execute($cmd, $response, $exitcode, $workDir);
-    setProp('funcSpecOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
-    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
+    // Populate 'funcSpecOk' upon success
+    setProp('funcSpecOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
 
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Functional specification');
@@ -190,14 +195,17 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
     $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
 
-    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
-    $default = $exefile . " {$basename} -fpdf --diagnosis --language=NL --outputDir=\"{$absOutputDir}\" ";
-    $cmd = $ee->getApp()->getSettings()->get('rap3.diagCmd', $default);
+    // Create fspec with diagnosis chapter
+    $command = new Command(
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
+        [$basename, "-fpdf", "--language=NL", "--diagnosis", "--outputDir=\"{$absOutputDir}\"" ],
+        $ee->getLogger()
+    );
+    $command->execute($workDir);
 
-    // Execute cmd, and populate 'diagOk' upon success
-    Execute($cmd, $response, $exitcode, $workDir);
-    setProp('diagOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
-    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
+    // Populate 'diagOk' upon success
+    setProp('diagOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create diagnose and link to scriptVersionAtom
     $foObject = createFileObject("{$outputDir}/{$filename}.pdf", 'Diagnosis');
@@ -218,14 +226,22 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
     $sqlHost = $ee->getApp()->getSettings()->get('mysql.dbHost', 'localhost');
 
-    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
-    $default = $exefile . " {$basename} --proto=\"{$absOutputDir}\" --dbName=\"ampersand_{$scriptAtom->id}\" --sqlHost={$sqlHost} --language=NL ";
-    $cmd = $ee->getApp()->getSettings()->get('rap3.protoCmd', $default);
+    // Create prototype application
+    $command = new Command(
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
+        [ $basename,
+          "--proto=\"{$absOutputDir}\"",
+          "--dbName=\"ampersand_{$scriptAtom->id}\"",
+          "--sqlHost={$sqlHost}",
+          "--language=NL"
+        ],
+        $ee->getLogger()
+    );
+    $command->execute($workDir);
 
-    // Execute cmd, and populate 'protoOk' upon success
-    Execute($cmd, $response, $exitcode, $workDir);
-    setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
-    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
+    // Populate 'protoOk' upon success
+    setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     // Create proto and link to scriptAtom
     $foObject = createFileObject("{$outputDir}", 'Launch prototype');
@@ -245,16 +261,23 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
     $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
 
-    $exefile = $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand');
-    $default = $exefile . " {$basename} --proto=\"{$absOutputDir}\" --language=NL --gen-as-rap-model";
-    $cmd = $ee->getApp()->getSettings()->get('rap3.loadInRap3Cmd', $default);
+    // Create RAP3 population
+    $command = new Command(
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
+        [ $basename,
+          "--proto=\"{$absOutputDir}\"",
+          "--language=NL",
+          "--gen-as-rap-model"
+        ],
+        $ee->getLogger()
+    );
+    $command->execute($workDir);
 
-    // Execute cmd, and populate 'loadedInRAP3Ok' upon success
-    Execute($cmd, $response, $exitcode, $workDir);
-    setProp('loadedInRAP3Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $exitcode == 0);
-    $scriptVersionAtom->link($response, 'compileresponse[ScriptVersion*CompileResponse]')->add();
+    // Populate 'loadedInRAP3Ok' upon success
+    setProp('loadedInRAP3Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
-    if ($exitcode == 0) {
+    if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file
         $pop = file_get_contents("{$absOutputDir}/generics/metaPopulation.json");
         $pop = json_decode($pop, true);
@@ -392,33 +415,6 @@ function getRAPAtom(string $atomId, Concept $concept): Atom
     } else {
         return new Atom($atomId, $concept);
     }
-}
-
-/**
- * Undocumented function
- *
- * @param string $cmd command that needs to be executed
- * @param string &$response reference to textual output of executed command
- * @param int &$exitcode reference to exitcode of executed command
- * @param string|null $workingDir
- * @return void
- */
-function Execute($cmd, &$response, &$exitcode, $workingDir = null)
-{
-    $logger; // TODO: use logger of exec-engine
-    $logger->debug("cmd:'{$cmd}' (workingDir:'{$workingDir}')");
-    
-    $output = [];
-    if (isset($workingDir)) {
-        chdir($workingDir);
-    }
-
-    $cmd .= ' 2>&1'; // appends STDERR to STDOUT, which is then available in $output below.
-    exec($cmd, $output, $exitcode);
-  
-    // format execution output
-    $response = implode("\n", $output);
-    $logger->debug("exitcode:'{$exitcode}' response:'{$response}'");
 }
 
 /**
