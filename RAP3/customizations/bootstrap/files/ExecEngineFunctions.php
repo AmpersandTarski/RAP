@@ -41,12 +41,12 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
         $GLOBALS['rapAtoms'] = [];
         set_time_limit(600);
 
-        $scriptVersionInfo = call_user_func(ExecEngine::getFunction('CompileToNewVersion'), $scriptAtomId, $studentNumber);
+        $scriptVersionInfo = ExecEngine::getFunction('CompileToNewVersion')->call($this, $scriptAtomId, $studentNumber);
         if ($scriptVersionInfo === false) {
             throw new Exception("Error while compiling new script version", 500);
         }
         
-        call_user_func(ExecEngine::getFunction('CompileWithAmpersand'), 'loadPopInRAP3', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
+        ExecEngine::getFunction('CompileWithAmpersand')->call($this, 'loadPopInRAP3', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
         
         $this->debug("Compiling {$i}/{$total}: end");
         
@@ -137,16 +137,16 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
     // Script bestand voeren aan Ampersand compiler
     switch ($action) {
         case 'diagnosis':
-            call_user_func(ExecEngine::getFunction('Diagnosis'), $relSourcePath, $scriptVersionAtom, $relDir . '/diagnosis');
+            ExecEngine::getFunction('Diagnosis')->call($this, $relSourcePath, $scriptVersionAtom, $relDir . '/diagnosis');
             break;
         case 'loadPopInRAP3':
-            call_user_func(ExecEngine::getFunction('loadPopInRAP3'), $relSourcePath, $scriptVersionAtom, $relDir . '/atlas');
+            ExecEngine::getFunction('loadPopInRAP3')->call($this, $relSourcePath, $scriptVersionAtom, $relDir . '/atlas');
             break;
         case 'fspec':
-            call_user_func(ExecEngine::getFunction('FuncSpec'), $relSourcePath, $scriptVersionAtom, $relDir . '/fSpec');
+            ExecEngine::getFunction('FuncSpec')->call($this, $relSourcePath, $scriptVersionAtom, $relDir . '/fSpec');
             break;
         case 'prototype':
-            call_user_func(ExecEngine::getFunction('Prototype'), $relSourcePath, $scriptAtom, $scriptVersionAtom, $relDir . '/../prototype');
+            ExecEngine::getFunction('Prototype')->call($this, $relSourcePath, $scriptAtom, $scriptVersionAtom, $relDir . '/../prototype');
             break;
         default:
             $this->error("Unknown action '{$action}' specified");
