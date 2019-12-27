@@ -67,7 +67,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     // ./scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
     $basePath = "scripts/{$studentNumber}/{$scriptAtom->getId()}/{$version->getId()}";
     $srcRelPath = "{$basePath}/script.adl";
-    $srcAbsPath = realpath($ee->getApp()->getSettings()->get('global.absolutePath') . '/data/' . $srcRelPath);
+    $srcAbsPath = $ee->getApp()->getSettings()->get('global.absolutePath') . '/data/' . $srcRelPath;
     
     // Script content ophalen en schrijven naar bestandje
     $links = $scriptAtom->getLinks('content[Script*ScriptContent]');
@@ -158,7 +158,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $relDir    = pathinfo($path, PATHINFO_DIRNAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
 
     // Compile the file, only to check for errors.
     $command = new Command(
@@ -191,7 +191,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $relDir    = pathinfo($path, PATHINFO_DIRNAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
 
     // Create fspec with diagnosis chapter
     $command = new Command(
@@ -223,7 +223,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $ee = $this; // because autocomplete does not work on $this
 
     $relDir    = pathinfo($path, PATHINFO_DIRNAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
     $sqlHost = $ee->getApp()->getSettings()->get('mysql.dbHost', 'localhost');
 
     // Create prototype application
@@ -262,7 +262,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     $model = $ee->getApp()->getModel();
 
     $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . pathinfo($path, PATHINFO_DIRNAME);
 
     // Create RAP3 population
     $command = new Command(
