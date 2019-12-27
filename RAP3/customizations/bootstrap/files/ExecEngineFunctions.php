@@ -15,6 +15,12 @@ use Ampersand\Extension\RAP3\Command;
  * Gebruik een configuratie yaml bestand om de volgnde settings te specificeren:
  * rap3.ampersand       : [ampersand compiler executable locatie]
  *
+ * Student scripts and generated content are stored in
+ * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
+ * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/diagnosis
+ * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/atlas
+ * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/fSpec
+ * /var/www/data/scripts/<studentNumber>/<scriptId>/prototype # only the last generated proto is kept
  */
 
 /**
@@ -112,7 +118,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $relSourcePath) {
+ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $srcRelPath) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
     $model = $ee->getApp()->getModel();
@@ -120,31 +126,23 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
     $scriptAtom = $model->getConceptByLabel('Script')->makeAtom($scriptId);
     $scriptVersionAtom = $model->getConceptByLabel('ScriptVersion')->makeAtom($scriptVersionId);
 
-    // The relative path of the source file will be something like:
-    //   scripts/<studentNumber>/sources/<scriptId>/Version<timestamp>.adl
-    //   This is constructed elsewhere in cli.php
-    // Now we will decompose this path to construct the output directory
-    // The output directory will be as follows:
-    //   scripts/<studentNumber>/generated/<scriptId>/Version<timestamp>/<actionbased>/
-    $studentNumber = basename(dirname(dirname(dirname($relSourcePath))));
-    $scriptId      = basename(dirname($relSourcePath));
-    $version       = pathinfo($relSourcePath, PATHINFO_FILENAME);
-    $relDir        = "scripts/{$studentNumber}/generated/{$scriptId}/{$version}";
-    $absDir        = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
+    // The relative path of the source file must be something like:
+    // ./scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
+    $relDir = dirname($srcRelPath);
     
     // Script bestand voeren aan Ampersand compiler
     switch ($action) {
         case 'diagnosis':
-            ExecEngine::getFunction('Diagnosis')->call($this, $relSourcePath, $scriptVersionAtom, $relDir . '/diagnosis');
+            ExecEngine::getFunction('Diagnosis')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'loadPopInRAP3':
-            ExecEngine::getFunction('loadPopInRAP3')->call($this, $relSourcePath, $scriptVersionAtom, $relDir . '/atlas');
+            ExecEngine::getFunction('loadPopInRAP3')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'fspec':
-            ExecEngine::getFunction('FuncSpec')->call($this, $relSourcePath, $scriptVersionAtom, $relDir . '/fSpec');
+            ExecEngine::getFunction('FuncSpec')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'prototype':
-            ExecEngine::getFunction('Prototype')->call($this, $relSourcePath, $scriptAtom, $scriptVersionAtom, $relDir . '/../prototype');
+            ExecEngine::getFunction('Prototype')->call($this, $srcRelPath, $scriptAtom, $scriptVersionAtom);
             break;
         default:
             $this->error("Unknown action '{$action}' specified");
@@ -156,19 +154,18 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
+ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
-    $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
+    $relDir    = pathinfo($path, PATHINFO_DIRNAME);
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
 
     // Compile the file, only to check for errors.
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
-        [$basename, "-fpdf", "--language=NL", "--outputDir=\"{$absOutputDir}\"" ],
+        ['script.adl', '-fpdf', '--language=NL', '--outputDir="./fspec"' ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -180,7 +177,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$outputDir}/{$filename}.pdf",
+        "{$relDir}/fspec/{$filename}.pdf",
         "Functional specification"
     );
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
@@ -190,19 +187,18 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
+ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
-    $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
+    $relDir    = pathinfo($path, PATHINFO_DIRNAME);
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
 
     // Create fspec with diagnosis chapter
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
-        [$basename, "-fpdf", "--language=NL", "--diagnosis", "--outputDir=\"{$absOutputDir}\"" ],
+        ['script.adl', '-fpdf', '--language=NL', '--diagnosis', '--outputDir="./diagnosis"' ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -214,7 +210,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     // Create diagnose and link to scriptVersionAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$outputDir}/{$filename}.pdf",
+        "{$relDir}/diagnosis/{$filename}.pdf",
         "Diagnosis"
     );
     $scriptVersionAtom->link($foObject, 'diag[ScriptVersion*FileObject]')->add();
@@ -224,21 +220,19 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $outputDir) {
+ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
-    $filename  = pathinfo($path, PATHINFO_FILENAME);
-    $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
+    $relDir    = pathinfo($path, PATHINFO_DIRNAME);
+    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $relDir;
     $sqlHost = $ee->getApp()->getSettings()->get('mysql.dbHost', 'localhost');
 
     // Create prototype application
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
-        [ $basename,
-          "--proto=\"{$absOutputDir}\"",
+        [ 'script.adl',
+          '--proto="../proto"', // install in parent directory
           "--dbName=\"ampersand_{$scriptAtom->getId()}\"",
           "--sqlHost={$sqlHost}",
           "--language=NL"
@@ -254,7 +248,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     // Create proto and link to scriptAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$outputDir}",
+        dirname($path, 2) . "/proto",
         "Launch prototype"
     );
     $scriptAtom->link($foObject, 'proto[Script*FileObject]')->add();
@@ -264,21 +258,19 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
+ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
     $model = $ee->getApp()->getModel();
 
-    $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . pathinfo($path, PATHINFO_DIRNAME);
-    $absOutputDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/" . $outputDir;
 
     // Create RAP3 population
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
         [ $basename,
-          "--proto=\"{$absOutputDir}\"",
+          '--proto="./atlas"',
           "--language=NL",
           "--gen-as-rap-model"
         ],
@@ -292,7 +284,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     
     if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file
-        $pop = file_get_contents("{$absOutputDir}/generics/metaPopulation.json");
+        $pop = file_get_contents("{$workDir}/atlas/generics/metaPopulation.json");
         $pop = json_decode($pop, true);
     
         // Add atoms to database
