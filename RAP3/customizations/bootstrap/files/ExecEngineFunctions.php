@@ -2,6 +2,7 @@
 
 namespace RAP3;
 
+use Ampersand\AmpersandApp;
 use Exception;
 use Ampersand\Core\Atom;
 use Ampersand\Core\Concept;
@@ -95,7 +96,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
         $scriptAtom->link($version, 'version[Script*ScriptVersion]')->add();
         
         // Create representation of file object and link to script version
-        $sourceFO = createFileObject($model->getConceptByLabel('FileObject'), $relPathSources, $fileName);
+        $sourceFO = createFileObject($ee->getApp(), $srcRelPath, basename($srcRelPath));
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed for graphics)
@@ -158,7 +159,6 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
 ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
-    $model = $ee->getApp()->getModel();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
@@ -179,7 +179,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject(
-        $model->getConceptByLabel('FileObject'),
+        $ee->getApp(),
         "{$outputDir}/{$filename}.pdf",
         "Functional specification"
     );
@@ -193,7 +193,6 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVersionAtom, string $outputDir) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
-    $model = $ee->getApp()->getModel();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
@@ -214,7 +213,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     
     // Create diagnose and link to scriptVersionAtom
     $foObject = createFileObject(
-        $model->getConceptByLabel('FileObject'),
+        $ee->getApp(),
         "{$outputDir}/{$filename}.pdf",
         "Diagnosis"
     );
@@ -228,7 +227,6 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
 ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $outputDir) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
-    $model = $ee->getApp()->getModel();
 
     $filename  = pathinfo($path, PATHINFO_FILENAME);
     $basename  = pathinfo($path, PATHINFO_BASENAME);
@@ -255,7 +253,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     
     // Create proto and link to scriptAtom
     $foObject = createFileObject(
-        $model->getConceptByLabel('FileObject'),
+        $ee->getApp(),
         "{$outputDir}",
         "Launch prototype"
     );
@@ -451,14 +449,14 @@ function setProp(string $propertyRelationSignature, Atom $atom, bool $bool)
 /**
  * Undocumented function
  *
- * @param \Ampersand\Core\Concept $cpt
+ * @param \Ampersand\AmpersandApp $app
  * @param string $relPath
  * @param string $displayName
  * @return \Ampersand\Core\Atom
  */
-function createFileObject(Concept $cpt, string $relPath, string $displayName): Atom
+function createFileObject(AmpersandApp $app, string $relPath, string $displayName): Atom
 {
-    $foAtom = $cpt->createNewAtom();
+    $foAtom = $app->getModel()->getConceptByLabel('FileObject')->createNewAtom();
     $foAtom->link($relPath, 'filePath[FileObject*FilePath]')->add();
     $foAtom->link($displayName, 'originalFileName[FileObject*FileName]')->add();
     
