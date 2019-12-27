@@ -61,43 +61,40 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     $this->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
     
     $scriptAtom = $model->getConceptByLabel('Script')->makeAtom($scriptAtomId);
+    $version = $model->getConceptByLabel('ScriptVersion')->createNewAtom();
 
     // The relative path of the source file must be something like:
-    //   scripts/<studentNumber>/sources/<scriptId>/Version<timestamp>.adl
-    //   This is decomposed elsewhere in cli.php, based on this assumption.
-    // Now we will construct the relative path
-    $versionId = date('Y-m-d\THis');
-    $fileName = "Version{$versionId}.adl";
-    $scriptDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath'));
-    $relPathSources = "scripts/{$studentNumber}/sources/{$scriptAtom->getId()}/{$fileName}";
-    $absPath = "{$scriptDir}/{$relPathSources}";
-    
-    //construct the path for the relation basePath[ScriptVersion*FilePath]
-    $relPathGenerated = "scripts/{$studentNumber}/generated/{$scriptAtom->getId()}/Version{$versionId}/fSpec/";
+    // ./scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
+    $basePath = "scripts/{$studentNumber}/{$scriptAtom->getId()}/{$version->getId()}";
+    $srcRelPath = "{$basePath}/script.adl";
+    $srcAbsPath = realpath($ee->getApp()->getSettings()->get('global.absolutePath') . '/data/' . $srcRelPath);
     
     // Script content ophalen en schrijven naar bestandje
     $links = $scriptAtom->getLinks('content[Script*ScriptContent]');
     if (empty($links)) {
         throw new Exception("No script content provided", 500);
     }
-    if (!file_exists(dirname($absPath))) {
-        mkdir(dirname($absPath), 0777, true);
+    // Make sure that script(version) folder exists
+    if (!file_exists(dirname($srcAbsPath))) {
+        mkdir(dirname($srcAbsPath), 0777, true);
     }
-    file_put_contents($absPath, current($links)->tgt()->getId());
+    // Write script content to script.adl
+    file_put_contents($srcAbsPath, current($links)->tgt()->getId());
 
     // Compile the file, only to check for errors.
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
-        [basename($absPath)],
+        [basename($srcAbsPath)],
         $ee->getLogger()
     );
-    $command->execute(dirname($absPath));
+    $command->execute(dirname($srcAbsPath));
     
+    // Save compile output
     $scriptAtom->link($command->getResponse(), 'compileresponse[Script*CompileResponse]')->add();
     
-    if ($command->getExitcode() == 0) { // script ok
+    // Script ok (exitcode 0)
+    if ($command->getExitcode() == 0) {
         // Create new script version atom and add to rel version[Script*ScriptVersion]
-        $version = $model->getConceptByLabel('ScriptVersion')->createNewAtom();
         $version->link($version, 'scriptOk[ScriptVersion*ScriptVersion]')->add();
         $scriptAtom->link($version, 'version[Script*ScriptVersion]')->add();
         
@@ -106,10 +103,11 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed for graphics)
-        $version->link($relPathGenerated, 'basePath[ScriptVersion*FilePath]')->add();
+        $version->link($basePath . '/fspec', 'basePath[ScriptVersion*FilePath]')->add();
         
-        return ['id' => $version->getId(), 'relpath' => $relPathSources];
-    } else { // script not ok
+        return ['id' => $version->getId(), 'relpath' => $srcRelPath];
+    // Script not ok (exitcode != 0)
+    } else {
         return false;
     }
 });

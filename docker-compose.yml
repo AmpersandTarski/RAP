@@ -39,7 +39,7 @@ services:
     volumes:
       - rap3-logs:/var/www/log
       - rap3-data:/var/www/data
-      - rap3-scripts:/var/www/scripts
+      - rap3-scripts:/var/www/data/scripts
     networks:
       - rap3
     logging:
@@ -95,7 +95,7 @@ services:
   #   ports:
   #     - "8443:8443"
   #   volumes:
-  #     - ./volumes/scripts:/var/www/html/RAP3/scripts
+  #     - ./volumes/scripts:/var/www/html/RAP3/data/scripts
 
   # latex:
   #   image: thomasweise/docker-texlive-full
