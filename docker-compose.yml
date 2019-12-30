@@ -1,4 +1,7 @@
 version: '3.7'
+# to visualize this docker-compose.yml file, run:
+#      docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -f -m image docker-compose.yml
+# run it literally (change NOTHING!) and expect the result in docker-compose.png
 
 volumes:
   rap3-logs:
