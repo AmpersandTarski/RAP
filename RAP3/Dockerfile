@@ -1,6 +1,6 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Build stage 1
-FROM ampersandtarski/ampersand:latest as ampersand-builder
+FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:development as ampersand-builder
 
 # somehow needed
 ARG DEBIAN_FRONTEND=noninteractive
@@ -12,10 +12,13 @@ COPY . /RAP3
 
 WORKDIR /RAP3
 
-RUN ampersand RAP3.adl --proto=/build --skip-composer --verbose --sqlHost=db
+RUN ampersand proto RAP3.adl --proto=/build --skip-composer --verbose --sqlHost=db
 
 # Build stage 2
 FROM composer:1.8 AS composer-builder
+
+RUN apk update && apk add --no-cache libzip-dev
+RUN docker-php-ext-install mysqli zip
 
 COPY --from=ampersand-builder /build /app
 RUN composer update --prefer-dist --no-dev --profile
