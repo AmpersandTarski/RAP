@@ -14,6 +14,7 @@ services:
   # the gatekeeper to the internet. It serves both http and https.
   proxy:
     build: ./HAProxy
+    container_name: proxy
     restart: unless-stopped
     networks:
       - rap3
@@ -84,6 +85,7 @@ services:
 
   phptools:
     image: phpmyadmin/phpmyadmin
+    container_name: phptools
     restart: unless-stopped
     depends_on:
       - db
@@ -99,11 +101,6 @@ services:
   #     - "8443:8443"
   #   volumes:
   #     - ./volumes/scripts:/var/www/html/RAP3/data/scripts
-
-  # latex:
-  #   image: thomasweise/docker-texlive-full
-  #   networks:
-  #     - rap3
 
 networks:
   rap3:
