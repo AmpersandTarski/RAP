@@ -16,6 +16,9 @@ services:
     build: ./HAProxy
     container_name: proxy
     restart: unless-stopped
+    depends_on:
+      - rap3
+      - enroll
     networks:
       - rap3
       - enroll
@@ -37,7 +40,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-      - proxy
     environment:
       - AMP_PROTO_ENV_NAME=default # use configured environments (e.g. default, dev, prod)
     volumes:
@@ -61,7 +63,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-      - proxy
     networks:
       - enroll
     logging:
