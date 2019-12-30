@@ -1,4 +1,4 @@
-FROM mariadb:10.3
+FROM mariadb:10.4
 
 ENV MYSQL_ROOT_PASSWORD si1IqHMBbWsDyktB
 ENV MYSQL_DATABASE ampersand_rap3
