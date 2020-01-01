@@ -12,7 +12,14 @@ COPY . /RAP3
 
 WORKDIR /RAP3
 
-RUN ampersand proto RAP3.adl --output-directory=/build --skip-composer --verbose --sqlHost=db
+RUN ampersand proto RAP3.adl \
+  --output-directory=/build \
+  --skip-composer \
+  --verbose \
+  --sqlHost=db \
+  # --addMetaModel=FormalAmpersand \ # not sure if this is really needed
+  --prototype-framework-version=development \
+  --customizations=customizations
 
 # Build stage 2
 FROM composer:1.8 AS composer-builder
