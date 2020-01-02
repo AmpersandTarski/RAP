@@ -17,7 +17,7 @@ RUN ampersand proto RAP3.adl \
   --skip-composer \
   --verbose \
   --sqlHost=db \
-  # --addMetaModel=FormalAmpersand \ # not sure if this is really needed
+  --build-recipe RAP \
   --prototype-framework-version=development \
   --customizations=customizations
 
