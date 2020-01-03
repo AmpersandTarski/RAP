@@ -63,8 +63,6 @@ INTERFACE "Rule" FOR User, Student,Tutor : I[Rule] cRud BOX
   , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
   ]
 
-CLASSIFY PropertyRule ISA Rule
-
 INTERFACE "Patterns" FOR User, Student,Tutor : I[Pattern] cRud BOX <SHCOLS>
   [ "Thema's:" : I cRud
   , "Purpose:" : purpose[Pattern*Purpose];markupText cRud 
