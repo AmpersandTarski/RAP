@@ -1,6 +1,6 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Build stage 1
-FROM ampersandtarski/ampersand:latest as ampersand-builder
+FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:latest as ampersand-builder
 
 COPY . /src
 
@@ -10,10 +10,22 @@ WORKDIR /src
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y netbase ca-certificates
 
-RUN ampersand Enrollment.adl --proto=/build --skip-composer --verbose --sqlHost=db
+# was (before Ampersand 4.0.0) RUN ampersand Enrollment.adl --proto=/build --skip-composer --verbose --sqlHost=db
+RUN ampersand proto Enrollment.adl \
+  --output-directory=/build \
+  --skip-composer \
+  --verbose \
+  --sqlHost=db \
+  # --addMetaModel=FormalAmpersand \ # not sure if this is really needed
+  --prototype-framework-version=development
+  # --customizations=customizations
+
 
 # Build stage 2
 FROM composer:1.8 AS composer-builder
+
+RUN apk update && apk add --no-cache libzip-dev
+RUN docker-php-ext-install mysqli zip
 
 COPY --from=ampersand-builder /build /app
 RUN composer update --prefer-dist --no-dev --profile
