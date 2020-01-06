@@ -17,7 +17,7 @@ RUN ampersand proto RAP3.adl \
   --skip-composer \
   --verbose \
   --sqlHost=db \
-  --build-recipe RAP \
+  # --build-recipe RAP \
   --prototype-framework-version=development \
   --customizations=customizations
 
