@@ -1,6 +1,6 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Build stage 1
-FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:development as ampersand-builder
+FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:latest as ampersand-builder
 
 # somehow needed
 ARG DEBIAN_FRONTEND=noninteractive
@@ -17,7 +17,8 @@ RUN ampersand proto RAP3.adl \
   --skip-composer \
   --verbose \
   --sqlHost=db \
-  # --build-recipe RAP \
+  --build-recipe RAP \
+  # --addMetaModel=FormalAmpersand \ # not sure if this is really needed \
   --prototype-framework-version=development \
   --customizations=customizations
 
@@ -66,5 +67,6 @@ RUN mkdir -p /var/www/data \
  && chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics
 
 # Copy Ampersand compiler (needed for RAP3 to compile student scripts)
-COPY --from=ampersand-builder /root/.local/bin/ampersand /usr/local/bin
+COPY --from=ampersand-builder /bin/ampersand /usr/local/bin
+RUN ls -al /usr/local/bin
 RUN chmod +x /usr/local/bin/ampersand

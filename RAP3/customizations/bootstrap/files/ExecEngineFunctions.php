@@ -10,10 +10,10 @@ use Ampersand\Rule\ExecEngine;
 use Ampersand\Core\Link;
 use Ampersand\Extension\RAP3\Command;
 
-/* Ampersand commando's mogen niet in dit bestand worden aangepast
+/* Ampersand commands must not be changed in this file, but in a configuration yaml file.
  *
- * Gebruik een configuratie yaml bestand om de volgnde settings te specificeren:
- * rap3.ampersand       : [ampersand compiler executable locatie]
+ * Use the configuration yaml file to specify the following settings:
+ *  rap3.ampersand       : [ampersand compiler executable location]
  *
  * Student scripts and generated content are stored in
  * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
@@ -83,7 +83,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
 
     // Compile the file, only to check for errors.
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand check'),
         [basename($srcAbsPath)],
         $ee->getLogger()
     );
@@ -162,8 +162,8 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 
     // Compile the file, only to check for errors.
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
-        ['script.adl', '-fpdf', '--language=NL', '--outputDir="./fspec"' ],
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
+        ['script.adl', '--format docx', '--language=NL', '--outputDir="./fspec"' ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -195,8 +195,8 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
 
     // Create fspec with diagnosis chapter
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
-        ['script.adl', '-fpdf', '--language=NL', '--diagnosis', '--outputDir="./diagnosis"' ],
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
+        ['script.adl', '--format docx', '--language=NL', '--Diagnosis', '--outputDir="./diagnosis"' ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -228,9 +228,9 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     // Create prototype application
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand proto'),
         [ 'script.adl',
-          '--proto="../proto"', // install in parent directory
+          '--outputDir="../proto"', // install in parent directory
           "--dbName=\"ampersand_{$scriptAtom->getId()}\"",
           "--sqlHost={$sqlHost}",
           "--language=NL"
