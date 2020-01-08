@@ -175,7 +175,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$relDir}/fspec/{$filename}.pdf",
+        "{$relDir}/fspec/{$filename}.docx",
         "Functional specification"
     );
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
@@ -208,7 +208,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     // Create diagnose and link to scriptVersionAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$relDir}/diagnosis/{$filename}.pdf",
+        "{$relDir}/diagnosis/{$filename}.docx",
         "Diagnosis"
     );
     $scriptVersionAtom->link($foObject, 'diag[ScriptVersion*FileObject]')->add();
