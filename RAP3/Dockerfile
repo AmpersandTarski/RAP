@@ -52,12 +52,38 @@ ENV APACHE_DOCUMENT_ROOT /var/www/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN apt update;apt install -y libzip-dev zlib1g-dev
+RUN apt-get update \
+ && apt-get install -y \
+       curl \
+       libzip-dev \
+       zlib1g-dev \
+       vim \
+       apt-transport-https \
+       ca-certificates \
+       gnupg2 \
+       software-properties-common
 
 # Install additional php/apache extensions
 # enable ZipArchive for importing .xlsx files on runtime
 RUN docker-php-ext-install mysqli zip\
  && a2enmod rewrite
+
+# Install composer (php's package manager)
+RUN php  -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+ && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+ && php -r "unlink('composer-setup.php');" \
+ && rm -rf /var/lib/apt/lists/*
+ENV COMPOSER_HOME /usr/local/bin/
+
+# Install docker so RAP can use docker.
+# Details on https://getintodevops.com/blog/the-simple-way-to-run-docker-in-docker-for-ci
+RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey \
+ && add-apt-repository \
+       "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+       $(lsb_release -cs) \
+       stable" \
+ && apt-get update \
+ && apt-get -y install docker-ce
 
 # Copy output files of frontend builder
 COPY --from=frontend-builder /src /var/www
