@@ -74,7 +74,7 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SR
 
 --[Loading of the script]--
 RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP3
-RELATION loadedInRAP3Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
+RELATION loadedInRAP3Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script,.
 RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP when it is loaded into the meta tables
 
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.

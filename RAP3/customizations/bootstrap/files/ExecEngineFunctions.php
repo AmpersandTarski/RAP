@@ -163,7 +163,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Compile the file, only to check for errors.
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
-        ['script.adl', '--format docx', '--language=NL', '--outputDir="./fspec"' ],
+        ['script.adl', '--format docx', '--language=NL', '--outputDir="./fspec"', "--verbosity warn" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -196,7 +196,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     // Create fspec with diagnosis chapter
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
-        ['script.adl', '--format docx', '--language=NL', '--Diagnosis', '--outputDir="./diagnosis"' ],
+        ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--outputDir "./diagnosis"', "--verbosity warn" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -230,10 +230,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand proto'),
         [ 'script.adl',
-          '--outputDir="../proto"', // install in parent directory
-          "--dbName=\"ampersand_{$scriptAtom->getId()}\"",
-          "--sqlHost={$sqlHost}",
-          "--language=NL"
+          '--outputDir "../proto"', // install in parent directory
+          "--dbName \"ampersand_{$scriptAtom->getId()}\"",
+          "--sqlHost {$sqlHost}",
+          "--language NL",
+          "--verbosity warn"
         ],
         $ee->getLogger()
     );
@@ -266,23 +267,26 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
 
     // Create RAP3 population
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand'),
-        [ $basename,
-          '--proto="./atlas"',
-          "--language=NL",
-          "--gen-as-rap-model"
+        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand population'),
+        [ $basename
+        , '--outputDir="./atlas"'
+        , "--build-recipe AtlasPopulation"
+        , "--outputFormat json"
+        , "--verbosity warn"
         ],
         $ee->getLogger()
     );
+    # mkdir("atlas", 0755, true);
     $command->execute($workDir);
+    // upon success, the generated file is: ./atlas/populations.json
 
-    // Populate 'loadedInRAP3Ok' upon success
+    // Populate 'loadedInRAP3Ok' to signal success to the ExecEngine
     setProp('loadedInRAP3Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
     $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file
-        $pop = file_get_contents("{$workDir}/atlas/generics/metaPopulation.json");
+        $pop = file_get_contents("{$workDir}/atlas/populations.json");
         $pop = json_decode($pop, true);
     
         // Add atoms to database

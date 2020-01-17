@@ -43,9 +43,11 @@ services:
     environment:
       - AMP_PROTO_ENV_NAME=default # use configured environments (e.g. default, dev, prod)
     volumes:
-      - rap3-logs:/var/www/log
-      - rap3-data:/var/www/data
-      - rap3-scripts:/var/www/data/scripts
+      - ~/volumes/rap3-logs:/var/www/log
+      - ~/volumes/rap3-data:/var/www/data
+      - ~/volumes/rap3-scripts:/var/www/data/scripts
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/:/usr/bin/docker
     networks:
       - rap3
     logging:
