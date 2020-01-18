@@ -18,8 +18,6 @@ REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC
 REPRESENT Message TYPE BIGALPHANUMERIC
 REPRESENT Population TYPE BIGALPHANUMERIC
 REPRESENT ShowADL TYPE BIGALPHANUMERIC
-RELATION markupText[Purpose*MarkupText] [UNI,TOT]
-VIEW Purpose : Purpose(markupText)  --TODO: Op een of ander manier werkt deze view niet (HJO, 20161024)
 
 RELATION compileresponse[Script*CompileResponse] [UNI] -- the most recent stdout message of compiling a script
 RELATION compileresponse[ScriptVersion*CompileResponse] [UNI]
@@ -107,7 +105,6 @@ ENDPATTERN
 PATTERN "Relations from FormalAmpersand"
     REPRESENT ConceptDefinition TYPE BIGALPHANUMERIC
 
-    REPRESENT MarkupText TYPE BIGALPHANUMERIC    
     RELATION meaning[Rule*Meaning] -- e.g. 'bfOUprop[BusinessFunction] is antisymmetric'
     MEANING "The meanings of a relation."
     RELATION decMean[Relation * Meaning]

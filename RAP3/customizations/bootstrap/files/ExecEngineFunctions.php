@@ -196,9 +196,10 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     // Create fspec with diagnosis chapter
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
-        ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--outputDir "./diagnosis"', "--verbosity warn" ],
+        ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--outputDir ./diagnosis', "--verbosity warn" ],
         $ee->getLogger()
     );
+    mkdir("diagnosis", 0755, true);
     $command->execute($workDir);
 
     // Populate 'diagOk' upon success
