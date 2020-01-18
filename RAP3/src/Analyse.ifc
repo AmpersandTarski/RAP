@@ -1,4 +1,6 @@
 CONTEXT RAP IN DUTCH
+RELATION markup[Purpose*Markup][UNI,TOT]
+RELATION asMarkdown[Markup*Text][UNI,TOT]
 
 -- VIEW Context : Context(TXT "Context")
 
@@ -19,12 +21,12 @@ INTERFACE "Context" FOR User, Student,Tutor : I[Context] cRud BOX<ROWSNL>
 
 INTERFACE "Concepts" FOR User, Student,Tutor : I[Concept] cRud BOX <SHCOLS>
   [ "Concepts:" : I cRud LINKTO INTERFACE "Concept"
-  , "Purpose:" : purpose[Concept*Purpose] cRud 
+  , "Purpose:" : purpose[Concept*Purpose];markup;asMarkdown cRud 
   ]
 
 INTERFACE "Concept" FOR User, Student,Tutor : I[Concept] cRud BOX
   [ "Concept:" : I cRud
-  , "Purpose:" : purpose[Concept*Purpose] cRud 
+  , "Purpose:" : purpose[Concept*Purpose];markup;asMarkdown cRud 
   , "used in (relations):" : source~ \/ target~ cRud LINKTO INTERFACE "Relation"
   , "More generic concepts:" : genspc[Isa*Concept]~;gengen[Isa*Concept] \/ genspc[IsE*Concept]~;gengen[IsE*Concept] cRud LINKTO INTERFACE "Concept"
   , "More specific concepts:" :gengen[Isa*Concept]~;genspc[Isa*Concept] \/ gengen[IsE*Concept]~;genspc[IsE*Concept] cRud LINKTO INTERFACE "Concept"
@@ -43,7 +45,7 @@ INTERFACE "Relation" FOR User, Student,Tutor : I[Relation] cRud BOX
   , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
   , "Eigenschappen:" : propertyRule;declaredthrough cRud
   , "Properties:" : prop [Relation * Property] cRud
-  , "Purpose:" : purpose[Relation*Purpose] cRud 
+  , "Purpose:" : purpose[Relation*Purpose];markup;asMarkdown cRud 
   , "Meaning:" : decMean[Relation*Meaning] cRud 
   ]
 
@@ -51,14 +53,14 @@ INTERFACE "Rules" FOR User, Student,Tutor : I[Rule] cRud BOX <SHCOLS>
   [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
   , "Formele expressie:" : formalExpression cRud
   , "Meaning:" : meaning[Rule*Meaning] cRud 
-  , "Purpose:" : purpose[Rule*Purpose] cRud 
+  , "Purpose:" : purpose[Rule*Purpose];markup;asMarkdown cRud 
   ]
 
 INTERFACE "Rule" FOR User, Student,Tutor : I[Rule] cRud BOX
   [ "Regel:" : I[Rule] cRud
   , "Formele expressie:" : formalExpression cRud
   , "Meaning:" : meaning[Rule*Meaning] cRud 
-  , "Purpose:" : purpose[Rule*Purpose] cRud 
+  , "Purpose:" : purpose[Rule*Purpose];markup;asMarkdown cRud 
 --  , "origin" : origin cRud  
   , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
   ]
@@ -67,7 +69,7 @@ CLASSIFY PropertyRule ISA Rule
 
 INTERFACE "Patterns" FOR User, Student,Tutor : I[Pattern] cRud BOX <SHCOLS>
   [ "Thema's:" : I cRud
-  , "Purpose:" : purpose[Pattern*Purpose] cRud 
+  , "Purpose:" : purpose[Pattern*Purpose];markup;asMarkdown cRud 
   ]
 
 INTERFACE "Pattern" FOR User, Student,Tutor : I[Pattern] cRud BOX
@@ -86,10 +88,10 @@ It must correspond with chapter 2, the business language chapter, from the funct
 +}
 INTERFACE "Language" FOR User, Student, Tutor : I[Pattern] cRud BOX
   [ "Theme:" : I cRud
-  , "Purpose:" : purpose[Pattern*Purpose] cRud
+  , "Purpose:" : purpose[Pattern*Purpose];markup;asMarkdown cRud
   , "Definitions:" : concepts[Pattern*Concept] cRud BOX
          [ "Concept" : name[Concept*ConceptName]
-         , "Purpose" : purpose[Concept*Purpose] cRud
+         , "Purpose" : purpose[Concept*Purpose];markup;asMarkdown cRud
          ]
   ]
 

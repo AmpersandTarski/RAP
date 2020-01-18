@@ -277,7 +277,6 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
         ],
         $ee->getLogger()
     );
-    # mkdir("atlas", 0755, true);
     $command->execute($workDir);
     // upon success, the generated file is: ./atlas/populations.json
 

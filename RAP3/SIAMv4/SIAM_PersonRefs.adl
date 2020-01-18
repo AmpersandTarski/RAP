@@ -3,7 +3,7 @@ CONTEXT "Person References" IN ENGLISH
 i.e. textstrings that may be used to refer to a person.
 -}
 -----------------------------------------------------------
-PURPOSE RELATION accPersonRef 
+PURPOSE RELATION accPersonRef MARKDOWN
 {+A common need is to associate information objects to people.
 An example is to associate a contract to a person (customer).
 While the SIAM_PeronReg module allows for the creation of Person objects,
