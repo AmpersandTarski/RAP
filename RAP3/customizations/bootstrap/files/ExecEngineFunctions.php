@@ -15,7 +15,7 @@ use Ampersand\Extension\RAP3\Command;
  * Use the configuration yaml file to specify the following settings:
  *  rap3.ampersand       : [ampersand compiler executable location]
  *
- * Student scripts and generated content are stored in
+ * User scripts and generated content are stored in
  * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
  * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/diagnosis
  * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/atlas
@@ -279,10 +279,6 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     );
     $command->execute($workDir);
     // upon success, the generated file is: ./atlas/populations.json
-
-    // Populate 'loadedInRAP3Ok' to signal success to the ExecEngine
-    setProp('loadedInRAP3Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
-    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
     
     if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file
@@ -316,6 +312,10 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
             }
         }
     }
+
+    // Populate 'loadedInRAP3Ok' to signal success to the ExecEngine
+    setProp('loadedInRAP3Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
 
 /**

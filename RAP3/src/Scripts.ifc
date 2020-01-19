@@ -5,7 +5,7 @@ PURPOSE INTERFACE MyScripts
 waarin ik scripts kan maken, verwijderen en naar het script kan navigeren om erin te wijzigen,
 om zodoende volwaardig beheer over mijn eigen scripts te kunnen doen.
 +}
-INTERFACE MyScripts FOR Student: "_SESSION";sessionAccount;submittor~ cRud BOX <SHCOLS>
+INTERFACE MyScripts FOR User: "_SESSION";sessionAccount;submittor~ cRud BOX <SHCOLS>
 -- Notice that the cRuD on line 8 must not be CRuD, because the green '+' generates a Slim error at run time. See issue #704.
     [ content  : I
     , opdracht : assignment
@@ -21,7 +21,7 @@ INTERFACE StudentScripts FOR Tutor : "_SESSION"[SESSION]#(I[Account]/\submittor~
        ]
     ]
 
-INTERFACE "Nieuw script" FOR Student, User : I[Script] CRuD BOX <ROWSNL>
+INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <ROWSNL>
    [ "Meta-info": I cRud BOX <SCOLS>
       [ indiener  : submittor cRud
       , opdracht  : assignment CRUd
@@ -30,27 +30,35 @@ INTERFACE "Nieuw script" FOR Student, User : I[Script] CRuD BOX <ROWSNL>
    , "Content":  content cRUd
    , "Actual info": I cRud ROWS
       [ compile : I BOX <PROPBUTTON>
-                  [ disabled : I-I            cRud
-                  , property : compileRequest cRUd
+                  [ disabled : I-I
+                  , property : compileRequest
                   ]
       , "Compiler message"  : compileresponse cRud
       , controls: seqFirstItem ; I[ScriptVersion] cRud COLS
          [ "Diagnosis" :  I BOX <PROPBUTTON>
-                           [ disabled : (I/\diag;diag~) \/ (I-scriptOk)  cRud
-                           , property : diagRequest cRUd
+                           [ property : diagRequest cRUd
+                           , disabled : I /\ diag;diag~  cRud
+--                         , "hide": <expression> cRud
+--                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]
          , "Func. spec + pictures" : I BOX <PROPBUTTON>
-                           [ disabled : (I/\funcSpec;funcSpec~) \/ (I-scriptOk)  cRud
-                           , property : funcSpecRequest cRUd
+                           [ property : funcSpecRequest cRUd
+                           , disabled : I /\ funcSpec;funcSpec~  cRud
+--                         , "hide": <expression> cRud
+--                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]
 -- Atlas kan erg lang duren. Wellicht in combinatie met het niet goed werken van multiuser functionaliteit? Uitzoeken! HJO, 20170423
          , "Atlas" :      I BOX <PROPBUTTON>
-                           [ disabled : (I/\loadedInRAP3Ok) \/ (I-scriptOk) cRud -- Only active if there population has been loaded.
-                           , property : loadRequest cRUd
+                           [ property : loadRequest cRUd
+                           , disabled : I /\ loadedInRAP3Ok  cRud
+--                         , "hide": <expression> cRud
+--                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]
          , "Prototype" :  I BOX <PROPBUTTON>
-                           [ disabled : (I/\protoOk) \/ (I-scriptOk)        cRud
-                           , property : protoRequest cRUd
+                           [ property : protoRequest cRUd
+                           , disabled : I /\ protoOk  cRud
+--                         , "hide": <expression> cRud
+--                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]
          , "Message" : compileresponse[ScriptVersion*CompileResponse] cRud
          ]
