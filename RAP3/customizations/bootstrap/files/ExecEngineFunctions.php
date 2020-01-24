@@ -231,7 +231,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand proto'),
         [ 'script.adl',
-          '--outputDir "../proto"', // install in parent directory
+          '--output-directory "../proto"', // install in parent directory
           "--dbName \"ampersand_{$scriptAtom->getId()}\"",
           "--sqlHost {$sqlHost}",
           "--language NL",
