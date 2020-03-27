@@ -1,0 +1,5 @@
+CONTEXT "Test"
+
+    CONCEPT "A" ""
+
+ENDCONTEXT
