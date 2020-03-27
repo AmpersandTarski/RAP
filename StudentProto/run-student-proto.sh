@@ -15,7 +15,5 @@ ampersand proto /script.adl \
 # Start Apache webserver to run/serve prototype
 docker-php-entrypoint apache2-foreground &
 
-echo "hier zijn we"
-
 # Sleep/wait 3600 sec
 sleep 3600
