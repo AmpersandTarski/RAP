@@ -9,5 +9,3 @@
 If no container exists with name=student123, docker gives an error. This is not a problem. Just ignore.
 > `docker container stop $(docker container ls -q --filter name=student123)`
 
-
-TODO: stop script when Amperand gives exitcode other than 0
