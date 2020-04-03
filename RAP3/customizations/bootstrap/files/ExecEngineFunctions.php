@@ -78,8 +78,9 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $st
     if (!file_exists(dirname($srcAbsPath))) {
         mkdir(dirname($srcAbsPath), 0777, true);
     }
-    // Write script content to script.adl
-    file_put_contents($srcAbsPath, current($links)->tgt()->getId());
+    // Write script content to script.adl and ScriptVersion
+    file_put_contents($srcAbsPath, $scriptContent = current($links)->tgt()->getId());
+    $version->link($scriptContent, 'content[ScriptVersion*ScriptContent]')->add();
 
     // Compile the file, only to check for errors.
     $command = new Command(
@@ -223,35 +224,36 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
-    $relDir    = pathinfo($path, PATHINFO_DIRNAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
-    $sqlHost = $ee->getApp()->getSettings()->get('mysql.dbHost', 'localhost');
+    $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
 
-    // Create prototype application
+    if (count($scriptContentPairs) != 1) {
+        throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
+    }
+
+    $scriptContent = $scriptContentPairs[0]->tgt()->getId();
+    $scriptContentForCommandline = addslashes($scriptContent);
+
+    // Run student prototype with Docker
+    // cat test.adl | docker run --name student123 --rm -i -a stdin -p 80:80 --network rap_db -e AMPERSAND_DBHOST=db -e AMPERSAND_DBNAME=student123 rap3-student-proto
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand proto'),
-        [ 'script.adl',
-          '--output-directory "../proto"', // install in parent directory
-          "--dbName \"ampersand_{$scriptAtom->getId()}\"",
-          "--sqlHost {$sqlHost}",
-          "--language NL",
-          "--verbosity warn"
+        "echo \"{$scriptContentForCommandline}\" | docker run",
+        [ '--name student123', // TODO: replace student name
+          '--rm',
+          '-i',
+          '-a stdin',
+          '-p 8081:80', // TODO: remove this argument, because we don't want to expose directly on host, but use reverse-proxy instead
+          '--network rap_db',
+          '-e AMPERSAND_DBHOST=db',
+          '-e AMPERSAND_DBNAME=student123', // TODO: replace student name
+          'rap3-student-proto' // image name to run
         ],
         $ee->getLogger()
     );
-    $command->execute($workDir);
+    $command->execute();
 
     // Populate 'protoOk' upon success
     setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
     $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
-    
-    // Create proto and link to scriptAtom
-    $foObject = createFileObject(
-        $ee->getApp(),
-        dirname($path, 2) . "/proto",
-        "Launch prototype"
-    );
-    $scriptAtom->link($foObject, 'proto[Script*FileObject]')->add();
 });
 
 /**

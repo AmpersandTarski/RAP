@@ -35,6 +35,9 @@ VIEW ScriptContent : ScriptContent DEFAULT HTML TEMPLATE "View-ACE.html" ENDVIEW
 CONCEPT ScriptVersion ""
   RELATION source[ScriptVersion*FileObject] -- [UNI]?
   RELATION version[Script*ScriptVersion] [INJ]
+  
+  RELATION content[ScriptVersion*ScriptContent] [UNI]
+
   ROLE ExecEngine MAINTAINS "SURversion"
   RULE "SURversion": I[ScriptVersion] |- version~;version
   MEANING "Every ScriptVersion must have a Script in the relation version."
