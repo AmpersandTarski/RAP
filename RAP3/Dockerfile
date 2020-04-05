@@ -79,18 +79,12 @@ ENV COMPOSER_HOME /usr/local/bin/
 # To install docker so RAP can use docker:
 # I used the instruction on docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only
 # However, this requires a volume link to the static docker binary, i.c. /usr/local/bin.
-# It effectively gives RAP access to many binaries on the host machine, which might increase the security risk.
-# If that is a problem, you can alternatively remove that volume link from docker-compose.yml
+# This is a security risk because RAP now has access to binaries on the host machine.
+
+# Alternatively, you can remove that volume link from docker-compose.yml
 # and install docker-ce in the image instead.
 # Details are described on https://getintodevops.com/blog/the-simple-way-to-run-docker-in-docker-for-ci.
-# Uncomment the following to do that installation:
-# RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey \
-#  && add-apt-repository \
-#        "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-#        $(lsb_release -cs) \
-#        stable" \
-#  && apt-get update \
-#  && apt-get -y install docker-ce
+# I could not get this done (yet), so we live with the security risk.
 
 # Copy output files of frontend builder
 COPY --from=frontend-builder /src /var/www
