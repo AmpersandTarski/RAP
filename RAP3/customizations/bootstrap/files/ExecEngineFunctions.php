@@ -234,10 +234,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptContentForCommandline = addslashes($scriptContent);
 
     // Run student prototype with Docker
-    // cat test.adl | docker run --name student123 --rm -i -a stdin -p 80:80 --network rap_db -e AMPERSAND_DBHOST=db -e AMPERSAND_DBNAME=student123 rap3-student-proto
+    // cat test.adl | docker run -v /var/run/docker.sock:/var/run/docker.sock --name student123 --rm -i -a stdin -p 80:80 --network rap_db -e AMPERSAND_DBHOST=db -e AMPERSAND_DBNAME=student123 rap3-student-proto
     $command = new Command(
-        "echo \"{$scriptContentForCommandline}\" | docker run",
-        [ '--name student123', // TODO: replace student name
+        "echo \"{$scriptContentForCommandline}\" | /usr/bin/docker/docker run",
+        [ '-v /var/run/docker.sock:/var/run/docker.sock', // for communicating with the docker repo outside this container
+          '--name student123', // TODO: replace student name
           '--rm',
           '-i',
           '-a stdin',

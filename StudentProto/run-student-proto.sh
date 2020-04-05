@@ -3,6 +3,9 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Add the path to docker executable to $PATH, following the volume link in docker-compose.yml
+export PATH=$PATH:/usr/bin/docker
+
 # Put content of stdin to file script.adl
 cp /dev/stdin /script.adl
 
