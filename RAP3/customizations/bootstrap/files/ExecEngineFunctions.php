@@ -16,18 +16,18 @@ use Ampersand\Extension\RAP3\Command;
  *  rap3.ampersand       : [ampersand compiler executable location]
  *
  * User scripts and generated content are stored in
- * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
- * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/diagnosis
- * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/atlas
- * /var/www/data/scripts/<studentNumber>/<scriptId>/<versionId>/fSpec
- * /var/www/data/scripts/<studentNumber>/<scriptId>/prototype # only the last generated proto is kept
+ * /var/www/data/scripts/<userId>/<scriptId>/<versionId>/script.adl
+ * /var/www/data/scripts/<userId>/<scriptId>/<versionId>/diagnosis
+ * /var/www/data/scripts/<userId>/<scriptId>/<versionId>/atlas
+ * /var/www/data/scripts/<userId>/<scriptId>/<versionId>/fSpec
+ * /var/www/data/scripts/<userId>/<scriptId>/prototype # only the last generated proto is kept
  */
 
 /**
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studentNumber) {
+ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $userId) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
     
@@ -38,7 +38,7 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
         
         set_time_limit(600);
 
-        $scriptVersionInfo = ExecEngine::getFunction('CompileToNewVersion')->call($this, $scriptAtomId, $studentNumber);
+        $scriptVersionInfo = ExecEngine::getFunction('CompileToNewVersion')->call($this, $scriptAtomId, $userId);
         if ($scriptVersionInfo === false) {
             throw new Exception("Error while compiling new script version", 500);
         }
@@ -53,19 +53,19 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $studen
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $studentNumber) {
+ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $userId) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
     $model = $ee->getApp()->getModel();
     
-    $this->info("CompileToNewVersion({$scriptAtomId},$studentNumber)");
+    $this->info("CompileToNewVersion({$scriptAtomId},$userId)");
     
     $scriptAtom = $model->getConceptByLabel('Script')->makeAtom($scriptAtomId);
     $version = $model->getConceptByLabel('ScriptVersion')->createNewAtom();
 
     // The relative path of the source file must be something like:
-    // ./scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
-    $basePath = "scripts/{$studentNumber}/{$scriptAtom->getId()}/{$version->getId()}";
+    // ./scripts/<userId>/<scriptId>/<versionId>/script.adl
+    $basePath = "scripts/{$userId}/{$scriptAtom->getId()}/{$version->getId()}";
     $srcRelPath = "{$basePath}/script.adl";
     $srcAbsPath = $ee->getApp()->getSettings()->get('global.absolutePath') . '/data/' . $srcRelPath;
     
@@ -126,7 +126,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
     $scriptVersionAtom = $model->getConceptByLabel('ScriptVersion')->makeAtom($scriptVersionId);
 
     // The relative path of the source file must be something like:
-    // ./scripts/<studentNumber>/<scriptId>/<versionId>/script.adl
+    // ./scripts/<userId>/<scriptId>/<versionId>/script.adl
     $relDir = dirname($srcRelPath);
     
     // Script bestand voeren aan Ampersand compiler
@@ -232,20 +232,21 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = addslashes($scriptContent);
-
+    $userName = 'stefj';  // TODO get the proper user name that is associated with the current session.
+    
     // Run student prototype with Docker
-    // cat test.adl | docker run -v /var/run/docker.sock:/var/run/docker.sock --name student123 --rm -i -a stdin -p 80:80 --network rap_db -e AMPERSAND_DBHOST=db -e AMPERSAND_DBNAME=student123 rap3-student-proto
+    // cat test.adl | docker run -v /var/run/docker.sock:/var/run/docker.sock --name $userName --rm -i -a stdin -p 80:80 --network rap_db -e AMPERSAND_DBHOST=db -e AMPERSAND_DBNAME=$userName rap3-student-proto
     $command = new Command(
         "echo \"{$scriptContentForCommandline}\" | /usr/bin/docker/docker run",
         [ '-v /var/run/docker.sock:/var/run/docker.sock', // for communicating with the docker repo outside this container
-          '--name student123', // TODO: replace student name
+          '--name \"{$userName}\"',
           '--rm',
           '-i',
           '-a stdin',
           '-p 8081:80', // TODO: remove this argument, because we don't want to expose directly on host, but use reverse-proxy instead
           '--network rap_db',
           '-e AMPERSAND_DBHOST=db',
-          '-e AMPERSAND_DBNAME=student123', // TODO: replace student name
+          '-e AMPERSAND_DBNAME=$userName',
           'rap3-student-proto' // image name to run
         ],
         $ee->getLogger()
@@ -306,12 +307,12 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
         foreach ($pop['links'] as $linkPop) {
             $relation = $model->getRelation($linkPop['relation']);
             foreach ($linkPop['links'] as $pair) {
-                $link = new Link(
+                $pair = new Link(
                     $relation,
                     getRAPAtom($pair['src'], $relation->srcConcept),
                     getRAPAtom($pair['tgt'], $relation->tgtConcept)
                 );
-                $link->add();
+                $pair->add();
             }
         }
     }
