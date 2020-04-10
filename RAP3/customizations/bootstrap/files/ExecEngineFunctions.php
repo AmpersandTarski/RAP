@@ -232,22 +232,22 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = addslashes($scriptContent);
-    $userName = 'stefj';  // TODO get the proper user name that is associated with the current session.
+    $userName = "stefj";  // TODO get the proper user name that is associated with the current session.
     
     // Run student prototype with Docker
     // cat test.adl | docker run -v /var/run/docker.sock:/var/run/docker.sock --name $userName --rm -i -a stdin -p 80:80 --network rap_db -e AMPERSAND_DBHOST=db -e AMPERSAND_DBNAME=$userName rap3-student-proto
     $command = new Command(
         "echo \"{$scriptContentForCommandline}\" | docker run",
-        [ '-v /var/run/docker.sock:/var/run/docker.sock', // for communicating with the docker repo outside this container
-          '--name \"{$userName}\"',
-          '--rm',
-          '-i',
-          '-a stdin',
-          '-p 8081:80', // TODO: remove this argument, because we don't want to expose directly on host, but use reverse-proxy instead
-          '--network rap_db',
-          '-e AMPERSAND_DBHOST=db',
-          '-e AMPERSAND_DBNAME="stefj"',
-          'rap3-student-proto' // image name to run
+        [ "-v /var/run/docker.sock:/var/run/docker.sock", // for communicating with the docker repo outside this container
+          "--name \"{$userName}\"",
+     //   "--rm",
+          "-i",
+          "-a stdin stderr",  // stderr ensures that fatals reach the end user. Without stderr, the end user sees the container id, which is not useful.
+          "-p 8081:80", // TODO: remove this argument, because we don't want to expose directly on host, but use reverse-proxy instead
+          "--network rap_db",
+          "-e AMPERSAND_DBHOST=db",
+          "-e AMPERSAND_DBNAME=\"{$userName}\"",
+          "rap3-student-proto" // image name to run
         ],
         $ee->getLogger()
     );
