@@ -47,7 +47,6 @@ services:
       - ~/volumes/rap3-data:/var/www/data
       - ~/volumes/rap3-scripts:/var/www/data/scripts
       - /var/run/docker.sock:/var/run/docker.sock # link to the docker repo
-      - /usr/local/bin/:/usr/bin/docker # the path to the docker executable
     networks:
       - rap3
     logging:
