@@ -12,4 +12,4 @@ RUN chmod +x /run-student-proto.sh
 #  # && gulp build-ampersand \
 #  # && gulp build-project
 
-ENTRYPOINT /run-student-proto.sh
+ENTRYPOINT bash /run-student-proto.sh

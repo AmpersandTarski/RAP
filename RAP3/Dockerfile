@@ -105,3 +105,11 @@ RUN mkdir -p /var/www/data \
 COPY --from=ampersand-builder /bin/ampersand /usr/local/bin
 RUN ls -al /usr/local/bin
 RUN chmod +x /usr/local/bin/ampersand
+
+# Make sure the custom entrypoint is available in the container and executed:
+# NOTE: The entrypoint should be updated if the FROM image changes (currently php:7.3-apache)
+COPY run-rap3.sh /
+
+RUN chmod +x /run-rap3.sh
+
+ENTRYPOINT ./run-rap3.sh
