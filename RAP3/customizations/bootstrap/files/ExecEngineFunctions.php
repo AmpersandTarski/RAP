@@ -242,7 +242,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
           "--name \"{$userName}\"",
      //   "--rm",
           "-i",
-          "-a stdin stderr",  // stderr ensures that fatals reach the end user. Without stderr, the end user sees the container id, which is not useful.
+          "-a stdin",  // stdin ensures that the content of the script is available in the container.
           "-p 8081:80", // TODO: remove this argument, because we don't want to expose directly on host, but use reverse-proxy instead
           "--network rap_db",
           "-e AMPERSAND_DBHOST=db",

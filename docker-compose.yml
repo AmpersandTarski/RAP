@@ -32,6 +32,11 @@ services:
       options:
         max-size: "200k"
         max-file: "100"
+  rap3-user:
+    image: rap3-student-proto:latest
+    container_name: rap3-user
+    build:
+      context: RAP3USER
   rap3:
     image: ampersandtarski/ampersand-rap:latest
     container_name: rap3
@@ -40,6 +45,7 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+      - rap3-user
     environment:
       - AMP_PROTO_ENV_NAME=default # use configured environments (e.g. default, dev, prod)
     volumes:
