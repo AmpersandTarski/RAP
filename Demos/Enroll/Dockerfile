@@ -12,8 +12,7 @@ RUN apt update && apt install -y netbase ca-certificates
 
 # was (before Ampersand 4.0.0) RUN ampersand Enrollment.adl --proto=/build --skip-composer --verbose --sqlHost=db
 RUN ampersand proto Enrollment.adl \
-  --output-directory=/build \
-  --skip-composer \
+  --proto-dir=/build \
   --verbose \
   --sqlHost=db \
   # --addMetaModel=FormalAmpersand \ # not sure if this is really needed
