@@ -15,7 +15,7 @@ cat /script.adl
 
 # First generate Ampersand proto from student script
 ampersand proto /script.adl \
-    --output-directory /var/www \
+    --proto-dir=/var/www \
     --verbose \
     --skip-composer
 

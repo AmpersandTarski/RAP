@@ -14,8 +14,7 @@ COPY . /RAP3
 WORKDIR /RAP3
 
 RUN ampersand proto RAP3.adl \
-  --output-directory=/build \
-  --skip-composer \
+  --proto-dir=/build \
   --verbose \
   --sqlHost=db \
   --build-recipe RAP \
