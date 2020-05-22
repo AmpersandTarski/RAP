@@ -1,8 +1,8 @@
 # This script is meant to build from the root directory of your RAP-repo.
-# Build stage 1
+
+# AMPERSAND COMPILER (build stage 1)
 FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:latest as ampersand-builder
 
-# somehow needed
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y netbase ca-certificates
 
@@ -15,13 +15,14 @@ WORKDIR /RAP3
 RUN ampersand proto RAP3.adl \
   --proto-dir=/build \
   --verbose \
-  --sqlHost=db \
   --build-recipe RAP \
-  # --addMetaModel=FormalAmpersand \ # not sure if this is really needed \
-  --prototype-framework-version=development \
-  --customizations=customizations
+  --prototype-framework-version=development
 
-# Build stage 2
+# Copy customizations into generated application
+COPY customizations /build/
+
+
+# FRONTEND BUILDER (build stage 2)
 FROM node:12 as frontend-builder
 
 RUN npm i -g gulp-cli
@@ -38,13 +39,9 @@ RUN npm update --loglevel silent \
  && gulp build-ampersand \
  && gulp build-project
 
-# Image to run
-FROM php:7.3-apache
 
-# Change doc root. Let's move to apache conf file when more configuration is needed
-ENV APACHE_DOCUMENT_ROOT /var/www/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# RUNTIME ENVIRONMENT
+FROM php:7.4-apache
 
 # Install core libraries, needed for php extensions below
 RUN apt update \
@@ -69,6 +66,11 @@ RUN php  -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
  && php -r "unlink('composer-setup.php');" \
  && rm -rf /var/lib/apt/lists/*
 ENV COMPOSER_HOME /usr/local/bin/
+
+# Change doc root. Let's move to apache conf file when more configuration is needed
+ENV APACHE_DOCUMENT_ROOT /var/www/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Copy output files of frontend builder
 COPY --from=frontend-builder /src /var/www
