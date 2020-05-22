@@ -78,7 +78,6 @@ COPY --from=frontend-builder /src /var/www
 WORKDIR /var/www
 
 # Install external backend libraries
-COPY composer.json composer.lock /var/www/
 RUN composer install --prefer-dist --no-dev --profile --optimize-autoloader
 
 RUN mkdir -p /var/www/data \
