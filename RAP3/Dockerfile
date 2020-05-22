@@ -22,21 +22,12 @@ RUN ampersand proto RAP3.adl \
   --customizations=customizations
 
 # Build stage 2
-FROM composer:1.8 AS composer-builder
-
-RUN apk update && apk add --no-cache libzip-dev
-RUN docker-php-ext-install mysqli zip
-
-COPY --from=ampersand-builder /build /app
-RUN composer update --prefer-dist --no-dev --profile
-
-# Build stage 3
 FROM node:12 as frontend-builder
 
 RUN npm i -g gulp-cli
 
 # Copy output files of ampersand builder
-COPY --from=composer-builder /app /src
+COPY --from=ampersand-builder /build /src
 
 WORKDIR /src
 RUN npm update --loglevel silent \
@@ -77,6 +68,12 @@ ENV COMPOSER_HOME /usr/local/bin/
 
 # Copy output files of frontend builder
 COPY --from=frontend-builder /src /var/www
+
+WORKDIR /var/www
+
+# Install external backend libraries
+COPY composer.json composer.lock /var/www/
+RUN composer install --prefer-dist --no-dev --profile --optimize-autoloader
 
 RUN mkdir -p /var/www/data \
  && mkdir -p /var/www/log \
