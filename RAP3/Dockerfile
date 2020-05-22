@@ -29,8 +29,12 @@ RUN npm i -g gulp-cli
 # Copy output files of ampersand builder
 COPY --from=ampersand-builder /build /src
 
+# Build frontend using gulp. Repeat npm audit fix and update two times to fix as many vulnerabilites
 WORKDIR /src
 RUN npm update --loglevel silent \
+ && npm audit fix \
+ && npm update \
+ && npm audit fix \
  && gulp build-ampersand \
  && gulp build-project
 
