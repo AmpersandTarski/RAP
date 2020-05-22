@@ -1,7 +1,6 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Build stage 1
-ARG AMPERSAND_IMAGE_VERSION=latest
-FROM ampersandtarski/ampersand:${AMPERSAND_IMAGE_VERSION} as ampersand-builder
+FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:latest as ampersand-builder
 
 # somehow needed
 ARG DEBIAN_FRONTEND=noninteractive
