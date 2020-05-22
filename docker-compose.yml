@@ -47,12 +47,11 @@ services:
       - db
       - rap3-user
     environment:
-      - AMP_PROTO_ENV_NAME=default # use configured environments (e.g. default, dev, prod)
+      - AMPERSAND_DBHOST=db # refers to database service below
     volumes:
       - ~/volumes/rap3-logs:/var/www/log
       - ~/volumes/rap3-data:/var/www/data
       - ~/volumes/rap3-scripts:/var/www/data/scripts
-      - /var/run/docker.sock:/var/run/docker.sock # link to the docker repo
     networks:
       - rap3
     logging:
