@@ -52,20 +52,21 @@ ENV APACHE_DOCUMENT_ROOT /var/www/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN apt-get update \
- && apt-get install -y \
-       curl \
-       libzip-dev \
-       zlib1g-dev \
-       vim \
-       apt-transport-https \
-       ca-certificates \
-       gnupg2 \
-       software-properties-common
+# Install core libraries, needed for php extensions below
+RUN apt update \
+ && apt install -y \
+  # libzip and zlin needed for php-ext zip below
+  libzip-dev \
+  zlib1g-dev \
+  # lubcurl needed for php-ext curl below
+  libcurl4-gnutls-dev \
+  # libpng needed for php-ext gd below
+  libpng-dev \
+  # add vim for editing when executing into the container
+  vim
 
-# Install additional php/apache extensions
-# enable ZipArchive for importing .xlsx files on runtime
-RUN docker-php-ext-install mysqli zip\
+# Install additional php and apache extensions (see composer.json file)
+RUN docker-php-ext-install mysqli curl gd fileinfo zip \
  && a2enmod rewrite
 
 # Install composer (php's package manager)
