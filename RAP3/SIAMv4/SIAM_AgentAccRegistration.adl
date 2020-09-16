@@ -104,15 +104,15 @@ VIOLATION (TXT "{EX} DelPair;sessionCreateAARFReq;SESSION;", SRC I, TXT ";SESSIO
 --[Example interfaces]
 
 {- -- AgentAccount creation in an admin session
-INTERFACE "Create AgentAccount" FOR AgentAccountManager: I[AARForm] cRud BOX <DIV>
-   [ "Form to fill in": I cRud ROWS
+INTERFACE "Create AgentAccount" FOR AgentAccountManager: I[AARForm] cRud BOX <RAW>
+   [ "Form to fill in": I cRud BOX
       [ "APIKey" : aarformAPIKey cRUd
       , "Password" : aarformPassword 
       , "Agent Name" : aarformAgentRef
       , "Represents Person"  : aarformPersonRef
       , "Represents Organization": aarformOrgRef
       ]
-   , "Buttons": I cRud BOX <DIV>
+   , "Buttons": I cRud BOX <RAW>
       [ "Create": I cRud BOX <PROPBUTTON>
          [ "property": aarformCreateAgentAccountReq cRUd
          , "disabled": I-aarformIsClean cRud

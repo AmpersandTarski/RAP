@@ -1,7 +1,7 @@
 # This script is meant to build from the root directory of your RAP-repo.
 
 # AMPERSAND COMPILER (build stage 1)
-FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:latest as ampersand-builder
+FROM ampersandtarski/ampersand:latest as ampersand-builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y netbase ca-certificates

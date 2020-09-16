@@ -6,7 +6,7 @@ PURPOSE CONTEXT "LoginWithUID"
 INCLUDE "./SIAM_LoginWithUID.adl"        -- Ensure login functionality is available.
 
 POPULATION isInvisible CONTAINS [ ("Login", "Login") ]
-INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <HCOLS>
+INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <TABLE hideOnNoRecords>
    [ "Userid" : loginUserid cRUd    -- Userid that has been authenticated by the IdP
    , "IdP"    : loginIdP cRUd       -- Identifier for the IdP that did the authentication
    , "LoA"    : loginLoA cRUd       -- Level of Assurance with which the login took place

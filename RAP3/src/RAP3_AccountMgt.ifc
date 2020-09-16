@@ -37,7 +37,7 @@ RULE "(Re)setting the password for an account can only be done by an AccountMana
 
 POPULATION Role CONTAINS [ "AccountManager" ]
 
-INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX <SCOLS>
+INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX <TABLE sortable>
    [ "Userid": I cRud LINKTO INTERFACE "Account"
    , "Persoon"           : accPerson CRUD
    , "Toegestane rollen" : accAllowedRoles cRud
@@ -45,7 +45,7 @@ INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX 
    , "Persoonlijk ID"    : accUserid CRUD
    ]
            
-INTERFACE "Account" FOR AccountManager: I[Account] cRud ROWS
+INTERFACE "Account" FOR AccountManager: I[Account] cRud BOX
    [ "Userid": accUserid cRUd
    , "(Re)set password": accNewPassword crUd -- crUd is needed for Passwords
 -- , "Organization": accOrg cRUd
@@ -57,7 +57,7 @@ INTERFACE "Account" FOR AccountManager: I[Account] cRud ROWS
 PURPOSE INTERFACE "Roles"
 {+This interface allows account manager to change assigned roles to accounts.
 +}
-INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <SCOLS>
+INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <TABLE sortable>
    [ "Role": I cRud
    , "Assigned to": accAllowedRoles~ cRUd
    , "Default for": accDefaultRoles~ cRud
@@ -66,11 +66,11 @@ INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <SCOLS
 
 --[User account management]--
 
-INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <ROWSNL>
+INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <FORM hideLabels>
    [ "no session account": (I-sessionAccount;sessionAccount~);V;"Editing your account requires that you are logged in"[LoginMessage] cRud
-   , "session account": sessionAccount cRUd ROWS
+   , "session account": sessionAccount cRUd BOX
       [ "Userid": accUserid cRud
-      , "Nieuw wachtwoord": sessionAccount~ cRud COLS -- crUd is required for Passwords
+      , "Nieuw wachtwoord": sessionAccount~ cRud BOX <TABLE> -- crUd is required for Passwords
          [ "Nieuw": regPassword1 crUd -- crUd is required for Passwords
          , "(herhaal)": regPassword2 crUd -- crUd is required for Passwords
          ]

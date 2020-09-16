@@ -4,7 +4,7 @@ RELATION asMarkdown[Markup*Text][UNI,TOT]
 
 -- VIEW Context : Context(TXT "Context")
 
-INTERFACE "Context" FOR User, Tutor : I[Context] cRud BOX<ROWSNL>
+INTERFACE "Context" FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
       [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
       , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
       , ""     : I[Context] TABS
@@ -19,7 +19,7 @@ INTERFACE "Context" FOR User, Tutor : I[Context] cRud BOX<ROWSNL>
   ]
 
 
-INTERFACE "Concepts" FOR User, Tutor : I[Concept] cRud BOX <SHCOLS>
+INTERFACE "Concepts" FOR User, Tutor : I[Concept] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Concepts:" : I cRud LINKTO INTERFACE "Concept"
   , "Purpose:" : purpose[Concept*Purpose];markup;asMarkdown cRud 
   ]
@@ -33,7 +33,7 @@ INTERFACE "Concept" FOR User, Tutor : I[Concept] cRud BOX
   , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
   ]
 
-INTERFACE "Relations" FOR User, Tutor : I[Relation] cRud BOX <SHCOLS>
+INTERFACE "Relations" FOR User, Tutor : I[Relation] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Relation:" : I cRud -- name[Relation*RelationName] cRud en daar moet dan nog een view bij.
   , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
   , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
@@ -49,7 +49,7 @@ INTERFACE "Relation" FOR User, Tutor : I[Relation] cRud BOX
   , "Meaning:" : decMean[Relation*Meaning] cRud 
   ]
 
-INTERFACE "Rules" FOR User, Tutor : I[Rule] cRud BOX <SHCOLS>
+INTERFACE "Rules" FOR User, Tutor : I[Rule] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
   , "Formele expressie:" : formalExpression cRud
   , "Meaning:" : meaning[Rule*Meaning] cRud 
@@ -67,7 +67,7 @@ INTERFACE "Rule" FOR User, Tutor : I[Rule] cRud BOX
 
 CLASSIFY PropertyRule ISA Rule
 
-INTERFACE "Patterns" FOR User, Tutor : I[Pattern] cRud BOX <SHCOLS>
+INTERFACE "Patterns" FOR User, Tutor : I[Pattern] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Thema's:" : I cRud
   , "Purpose:" : purpose[Pattern*Purpose];markup;asMarkdown cRud 
   ]

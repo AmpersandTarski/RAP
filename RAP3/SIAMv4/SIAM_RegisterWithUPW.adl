@@ -119,14 +119,14 @@ VIOLATION (TXT "{EX} InsPair;arfCreateAccountReq;AccRegForm;", SRC I, TXT ";AccR
 --[Example interfaces]
 
 {- -- Account creation in an admin session
-INTERFACE "Create Account" FOR AccountManager: I[AccRegForm] cRud BOX <DIV>
-   [ "Form to fill in": I cRud ROWS
+INTERFACE "Create Account" FOR AccountManager: I[AccRegForm] cRud BOX <RAW>
+   [ "Form to fill in": I cRud BOX
       [ "Userid"      : arfUserid cRUd
       , "Password"    : arfPassword 
       , "Name"        : arfPersonRef
       , "Organization": arfOrgRef
       ]
-   , "Buttons": I cRud BOX <DIV>
+   , "Buttons": I cRud BOX <RAW>
       [ "Create": I cRud BOX <PROPBUTTON>
          [ "property": arfCreateAccountReq cRUd
          , "disabled": I-arfIsClean cRud

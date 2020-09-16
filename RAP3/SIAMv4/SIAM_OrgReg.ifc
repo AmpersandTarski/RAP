@@ -5,12 +5,12 @@ VIEW Organizations: Organization DEFAULT { "org": orgAbbrName } ENDVIEW
 
 POPULATION Role CONTAINS [ "OrganizationMgr" ]
 
-INTERFACE "New Organization" FOR "OrganizationMgr" : I[Organization] Crud COLS
+INTERFACE "New Organization" FOR "OrganizationMgr" : I[Organization] Crud BOX <TABLE>
    [ "Short name" : orgAbbrName cRUd
    , "Full name"  : orgFullName cRUd
    ]
 
-INTERFACE "Update Organization" FOR "OrganizationMgr" : I[Organization] cRuD COLS
+INTERFACE "Update Organization" FOR "OrganizationMgr" : I[Organization] cRuD BOX <TABLE>
    [ "Short name" : orgAbbrName cRUd
    , "Full name"  : orgFullName cRUd
    ]

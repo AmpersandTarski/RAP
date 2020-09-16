@@ -9,7 +9,7 @@ VIEW Persona: Persona DEFAULT
 
 POPULATION Role CONTAINS [ "PersonaMgr" ]
 
-INTERFACE "Persona" FOR "PersonaMgr" : I[Persona] cRud COLS
+INTERFACE "Persona" FOR "PersonaMgr" : I[Persona] cRud BOX <TABLE>
    [ "Organization" : pParty cRUd
    , "Actor"    : pActor cRUd
    , "Relation" : pRelation cRUd

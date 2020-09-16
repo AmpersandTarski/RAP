@@ -17,7 +17,7 @@ VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC I, TXT ";Password;", TGT
 RULE "(Re)setting the password for an account can only be done by an AccountMgr or the account user":
    accNewPassword |- (sessionAccount~ \/ V[Account*Role];"AccountMgr";sessionActiveRoles~);"_SESSION";V
 
-INTERFACE "Accounts" FOR "AccountMgr": V[SESSION*Account] cRud BOX <SCOLS>
+INTERFACE "Accounts" FOR "AccountMgr": V[SESSION*Account] cRud BOX <TABLE sortable>
    [ "Userid": I cRud LINKTO INTERFACE "Account"
    , "Person": accPersonRef cRud
 -- , "Person": accPerson cRUd
@@ -26,14 +26,14 @@ INTERFACE "Accounts" FOR "AccountMgr": V[SESSION*Account] cRud BOX <SCOLS>
    , "Allowed roles": accAllowedRoles cRud
    , "Default roles": accDefaultRoles cRud 
 --#IFNOT NoActivationButtons
-   , " ": I BOX <DIV>
+   , " ": I BOX <RAW>
       [ "Activate" : I-accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
       , "Deactivate" : accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
       ]
 --#ENDIF
    ]
            
-INTERFACE "Account" FOR "AccountMgr": I[Account] cRud ROWS
+INTERFACE "Account" FOR "AccountMgr": I[Account] cRud BOX
    [ "Userid": accUserid cRUd
    , "(Re)set password": accNewPassword cRUd -- crUd is needed for Passwords
    , "Person": accPersonRef cRUd
@@ -42,13 +42,13 @@ INTERFACE "Account" FOR "AccountMgr": I[Account] cRud ROWS
 -- , "Organization": accOrg cRUd
    , "Allowed roles": accAllowedRoles cRUd
    , "Default roles": accDefaultRoles cRUd
-   , " ": I BOX <DIV>
+   , " ": I BOX <RAW>
       [ "Activate" : I-accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
       , "Deactivate" : accIsActive BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
       ]
    ]
 
-INTERFACE "MyAccount" FOR User: "_SESSION";sessionAccount cRud ROWS
+INTERFACE "MyAccount" FOR User: "_SESSION";sessionAccount cRud BOX
    [ "Userid": accUserid cRUd
    , "New password": accNewPassword cRUd -- crUd is needed for Passwords
    , "Person": accPersonRef cRud
@@ -61,7 +61,7 @@ INTERFACE "MyAccount" FOR User: "_SESSION";sessionAccount cRud ROWS
 
 --[Roles]--
 
-INTERFACE "Roles" FOR "AccountMgr": V[SESSION*Role] CRud BOX <SCOLS>
+INTERFACE "Roles" FOR "AccountMgr": V[SESSION*Role] CRud BOX <TABLE sortable>
    [ "Role": I cRud
    , "Assigned to": accAllowedRoles~ cRUd
    , "Default for": accDefaultRoles~ cRUd

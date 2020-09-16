@@ -38,7 +38,7 @@ services:
     build:
       context: RAP3USER
   rap3:
-    image: ampersandtarski/ampersand-rap:latest
+    image: ampersandtarski/ampersand-rap:2020
     container_name: rap3
     build:
       context: RAP3
@@ -92,6 +92,8 @@ services:
 
   phptools:
     image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
     container_name: phptools
     restart: unless-stopped
     depends_on:

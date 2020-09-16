@@ -48,17 +48,21 @@ VIOLATION (TXT "Student ", SRC I, TXT " enrolled for the module ", TGT I, TXT " 
 ENDPATTERN
 
 INTERFACE Overview : "_SESSION"                  cRud
-TABS [ Students : V[SESSION*Student]             cRuD
-        COLS    [ "Student" : I[Student]         cRud
+BOX <TABS>
+     [ Students : V[SESSION*Student]             cRuD
+       BOX <TABLE>
+                [ "Student" : I[Student]         cRud
                 , "Enrolled for" : isEnrolledFor cRUD
                 , "Course" : takes CRUD
                 ]
      , Course : V[SESSION*Course]                cRuD
-        COLS    [ "Course" : I                   cRud
+       BOX <TABLE>
+                [ "Course" : I                   cRud
                 , "Modules" : isPartOf~          CRUD
                 ]
      , Modules : V[SESSION*Module]               cRud
-        COLS    [ "Modules" : I                  cRuD
+       BOX <TABLE>
+                [ "Modules" : I                  cRuD
                 , "Course" : isPartOf            cRUd
                 , "Students" : isEnrolledFor~    CRUD
                 ]

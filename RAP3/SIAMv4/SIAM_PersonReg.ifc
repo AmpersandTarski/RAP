@@ -7,7 +7,7 @@ VIEW Persons : Person DEFAULT
 
 POPULATION Role CONTAINS [ "PersonMgr" ]
 
-INTERFACE "Person" FOR "Person Manager": I[Person] cRud COLS
+INTERFACE "Person" FOR "Person Manager": I[Person] cRud BOX <TABLE>
    [ "First name"   : personFirstName cRUd
    , "Middle name"  : personMiddleName cRUd
    , "Last name"    : personLastName cRUd
@@ -15,7 +15,7 @@ INTERFACE "Person" FOR "Person Manager": I[Person] cRud COLS
    , "Name"         : personRef cRud
    ]
 
-INTERFACE "People" FOR "Person Manager": V[SESSION*Person]  cRuD COLS
+INTERFACE "People" FOR "Person Manager": V[SESSION*Person]  cRuD BOX <TABLE>
    [ "First name"   : personFirstName cRUd
    , "Middle name"  : personMiddleName cRUd
    , "Last name"    : personLastName cRUd
@@ -24,7 +24,7 @@ INTERFACE "People" FOR "Person Manager": V[SESSION*Person]  cRuD COLS
    , "Account"      : accPerson~ cRud
    ]
 
-INTERFACE "Me" FOR User: "_SESSION";sessionPerson cRud COLS
+INTERFACE "Me" FOR User: "_SESSION";sessionPerson cRud BOX <TABLE>
    [ "First name"   : personFirstName cRUd
    , "Middle name"  : personMiddleName cRUd
    , "Last name"    : personLastName cRUd

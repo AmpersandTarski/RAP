@@ -21,10 +21,10 @@ POPULATION LoginMessage CONTAINS [ "Cannot help - there are no (active) accounts
 POPULATION PopoverText  CONTAINS [ "Click this button to create your account" ]       REPRESENT PopoverText  TYPE ALPHANUMERIC
 
 POPULATION isInvisible CONTAINS [ ("Login", "Login") ]
-INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
+INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <RAW>
 
 --$This section allows users to login or register themselves
-   [ "Login bar": I-sessionAccRegForm;sessionAccRegForm~ cRud BOX <HCOLS>
+   [ "Login bar": I-sessionAccRegForm;sessionAccRegForm~ cRud BOX <TABLE hideOnNoRecords>
       [ "Userid": loginUserid cRUd
       , "Password": loginPassword cRUd -- crUd is needed for Passwords
       , "IdP": loginIdP cRUd
@@ -37,7 +37,7 @@ INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
          ]
 
       --$Button that enables developers to login by selecting an existing account
-      , " ": I BOX <DIV>
+      , " ": I BOX <RAW>
          [ "Show Accounts": I-sessionLoginAssist BOX <PROPBUTTON> [ "property": sessionLoginAssist cRUd ]
          , "Hide Accounts":   sessionLoginAssist BOX <PROPBUTTON> [ "property": sessionLoginAssist cRUd ]
          , " ": sessionLoginAssist;(I-(V;accIsActive;V));V;"Cannot help - there are no (active) accounts"[LoginMessage] cRud
@@ -45,7 +45,7 @@ INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
 
 --#IFNOT NoRegistrationWithLogin
       --$Button that allows account-registration in anonymous sessions      
-      , "  ": I-sessionLoginAssist cRud BOX <DIV> -- Only allow registration when we're not trying to login.
+      , "  ": I-sessionLoginAssist cRud BOX <RAW> -- Only allow registration when we're not trying to login.
          [ "Register": I BOX <PROPBUTTON> 
             [ "property": sessionCreateARFReq cRUd
 --          , "hide": I /\ sessionAccRegForm;sessionAccRegForm~ cRud
@@ -62,7 +62,7 @@ INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
 --#ENDIF
 
 --$This section allows (enabled) developers to login by selecting an exsting account 
-   , "Active accounts": sessionLoginAssist;V;accIsActive cRuD BOX <SHCOLS>
+   , "Active accounts": sessionLoginAssist;V;accIsActive cRuD BOX <TABLE sortable hideOnNoRecords>
       [ "Userid": accUserid cRud
       , "Person": accPersonRef cRud
 --    , "Person": accPerson cRud
@@ -72,12 +72,12 @@ INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <DIV>
 --    , "Persona" : accPersona cRud
 --    , "Allowed roles": accAllowedRoles cRUd
 --    , "Default roles": accDefaultRoles cRUd
-      , "  " : I cRud BOX <DIV> [ "Login":       I cRud BOX <PROPBUTTON> [ "property": accAutoLoginReq cRUd ] ]
-      , " " :  I cRud BOX <DIV> [ "De-activate": I cRud BOX <PROPBUTTON> [ "property": accIsActive cRUd ] ]
+      , "  " : I cRud BOX <RAW> [ "Login":       I cRud BOX <PROPBUTTON> [ "property": accAutoLoginReq cRUd ] ]
+      , " " :  I cRud BOX <RAW> [ "De-activate": I cRud BOX <PROPBUTTON> [ "property": accIsActive cRUd ] ]
       ]
 
 --$This section allows (enabled) developers to activate de-activated accounts (so that they can be used for logging in)
-   , "Inactive accounts": sessionLoginAssist;V;(I-accIsActive) cRuD BOX <SHCOLS>
+   , "Inactive accounts": sessionLoginAssist;V;(I-accIsActive) cRuD BOX <TABLE sortable hideOnNoRecords>
       [ "Activate?" : I cRud BOX <PROPBUTTON> [ "property": accIsActive cRUd ]
       , "Userid": accUserid cRud
       , "Person": accPersonRef cRud
