@@ -1,6 +1,6 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Build stage 1
-FROM docker.pkg.github.com/ampersandtarski/ampersand/ampersand:latest as ampersand-builder
+FROM ampersandtarski/ampersand:latest as ampersand-builder
 
 COPY . /src
 
