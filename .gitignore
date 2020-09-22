@@ -8,3 +8,4 @@ NewFrontend/History/make.bat
 *.epp
 volumes
 prototype-src/
+.env

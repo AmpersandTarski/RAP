@@ -87,22 +87,30 @@ services:
         max-file: "100"
  
   db:
-    restart: always
-    image: ampersandtarski/rap3-db
+    container_name: rap3-db
+    image: mariadb:10.4
+    restart: unless-stopped
+    command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file
+      - MYSQL_USER=${MYSQL_USER} # from .env file
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD} # from .env file
     volumes:
       - db-data:/var/lib/mysql
-    container_name: rap3-db
-    build:
-      context: RAP3DB
     networks:
       - rap3
       - db
       - enroll
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   phptools:
     image: phpmyadmin/phpmyadmin
     environment:
-      PMA_HOST: db
+      PMA_HOST: db # refers to database service above
     container_name: phptools
     restart: unless-stopped
     depends_on:
