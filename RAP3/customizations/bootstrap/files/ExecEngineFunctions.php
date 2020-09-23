@@ -164,7 +164,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Compile the file, only to check for errors.
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
-        ['script.adl', '--format docx', '--language=NL', '--outputDir="./fspec"', "--verbosity warn" ],
+        ['script.adl', '--format docx', '--language=NL', '--output-dir="./fspec"', "--verbosity warn" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -197,7 +197,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     // Create fspec with diagnosis chapter
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
-        ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--outputDir ./diagnosis', "--verbosity warn" ],
+        ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--output-dir ./diagnosis', "--verbosity warn" ],
         $ee->getLogger()
     );
     mkdir("diagnosis", 0755, true);
@@ -274,7 +274,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand population'),
         [ $basename
-        , '--outputDir="./atlas"'
+        , '--output-dir="./atlas"'
         , "--build-recipe AtlasPopulation"
         , "--outputFormat json"
         , "--verbosity warn"
