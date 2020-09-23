@@ -274,10 +274,10 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand population'),
         [ $basename
-        , '--output-dir="./atlas"'
+        , '--output-dir="./"'
         , "--build-recipe AtlasPopulation"
         , "--output-format json"
-        , "--verbosity warn"
+        , "--verbosity debug"
         ],
         $ee->getLogger()
     );
@@ -286,7 +286,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     
     if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file
-        $pop = file_get_contents("{$workDir}/atlas/{$basename}_generated_pop.json");
+        $pop = file_get_contents("{$workDir}/{$basename}_generated_pop.json");
         $pop = json_decode($pop, true);
     
         // Add atoms to database
