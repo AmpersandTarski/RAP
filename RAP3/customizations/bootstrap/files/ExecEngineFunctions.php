@@ -164,7 +164,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Compile the file, only to check for errors.
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
-        ['script.adl', '--format docx', '--language=NL', '--output-dir="./fspec"', "--verbosity warn" ],
+        ['script.adl', '--format docx', '--language=NL', '--output-dir="./fspec"', "--verbosity debug" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -277,7 +277,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
         , '--output-dir="./"'
         , "--build-recipe AtlasPopulation"
         , "--output-format json"
-        , "--verbosity debug"
+        , "--verbosity warn"
         ],
         $ee->getLogger()
     );
