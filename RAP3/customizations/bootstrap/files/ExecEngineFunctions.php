@@ -276,7 +276,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
         [ $basename
         , '--output-dir="./atlas"'
         , "--build-recipe AtlasPopulation"
-        , "--outputFormat json"
+        , "--output-format json"
         , "--verbosity warn"
         ],
         $ee->getLogger()
