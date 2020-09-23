@@ -282,11 +282,11 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
         $ee->getLogger()
     );
     $command->execute($workDir);
-    // upon success, the generated file is: ./atlas/populations.json
+    // upon success, the generated file is: ./atlas/{$basename}_generated_pop.json
     
     if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file
-        $pop = file_get_contents("{$workDir}/atlas/populations.json");
+        $pop = file_get_contents("{$workDir}/atlas/{$basename}_generated_pop.json");
         $pop = json_decode($pop, true);
     
         // Add atoms to database
