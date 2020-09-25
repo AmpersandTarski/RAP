@@ -164,7 +164,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Compile the file, only to check for errors.
     $command = new Command(
         $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
-        ['script.adl', '--format docx', '--language=NL', '--output-dir="./fspec"', "--verbosity debug" ],
+        ['script.adl', '--format docx', '--language=NL', '--output-dir="."', "--verbosity debug" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -176,7 +176,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$relDir}/fspec/{$filename}.docx",
+        "{$relDir}/{$filename}.docx",
         "Functional specification"
     );
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
