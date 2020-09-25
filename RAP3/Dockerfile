@@ -11,6 +11,9 @@ RUN ampersand proto /usr/local/project/RAP3.adl \
   --build-recipe RAP \
   --verbose
 
+# We use graphviz to create drawings in diagnosis and functional specifications.
+RUN apt-get update && apt-get install -y graphviz
+
 # Copy customizations into generated application
 COPY customizations /var/www/
 
