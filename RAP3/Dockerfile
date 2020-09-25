@@ -12,7 +12,9 @@ RUN ampersand proto /usr/local/project/RAP3.adl \
   --verbose
 
 # We use graphviz to create drawings in diagnosis and functional specifications.
-RUN apt-get update && apt-get install -y graphviz
+# and we need epstopdf to create pdf files for images
+RUN apt-get update && apt-get install -y graphviz \
+        texlive-font-utils
 
 # Copy customizations into generated application
 COPY customizations /var/www/
