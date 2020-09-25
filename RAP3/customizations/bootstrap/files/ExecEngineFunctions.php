@@ -103,8 +103,8 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
         $sourceFO = createFileObject($ee->getApp(), $srcRelPath, basename($srcRelPath));
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
-        // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed for graphics)
-        $version->link($basePath . '/fspec', 'basePath[ScriptVersion*FilePath]')->add();
+        // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed by the atlas for its graphics)
+        $version->link($basePath . '/fspec/images', 'basePath[ScriptVersion*FilePath]')->add();
         
         return ['id' => $version->getId(), 'relpath' => $srcRelPath];
     // Script not ok (exitcode != 0)
