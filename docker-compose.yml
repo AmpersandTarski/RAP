@@ -52,6 +52,14 @@ services:
     networks:
       - proxy
       - db
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.rap3-insecure.rule: Host(`rap.cs.ou.nl`) || Host(`rap.localhost`)
+      # traefik.http.routers.rap3-insecure.middlewares: redirectToHttps@file,securityHeaders@file
+      # traefik.http.routers.rap3.tls.certresolver: letsencrypt
+      # traefik.http.routers.rap3.tls.options: safeTLSOptions@file
+      # traefik.http.routers.rap3.middlewares: securityHeaders@file
+      # traefik.http.routers.rap3.rule: Host(`rap.cs.ou.nl`)
     logging:
       driver: "json-file"
       options:
@@ -79,6 +87,14 @@ services:
       - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
       - AMPERSAND_DBNAME=enroll
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.enroll-insecure.rule: Host(`enroll.rap.cs.ou.nl`) || Host(`enroll.localhost`)
+      # traefik.http.routers.enroll-insecure.middlewares: redirectToHttps@file,securityHeaders@file
+      # traefik.http.routers.enroll.tls.certresolver: letsencrypt
+      # traefik.http.routers.enroll.tls.options: safeTLSOptions@file
+      # traefik.http.routers.enroll.middlewares: securityHeaders@file
+      # traefik.http.routers.enroll.rule: Host(`enroll.rap.cs.ou.nl`)
     logging:
       driver: "json-file"
       options:
