@@ -117,14 +117,6 @@ services:
     networks:
       - db
 
-  # vscode:
-  #   image: codercom/code-server
-  #   command: --password=zoepersecreet
-  #   ports:
-  #     - "8443:8443"
-  #   volumes:
-  #     - ./volumes/scripts:/var/www/html/RAP3/data/scripts
-
 networks:
   rap3:
   db:
