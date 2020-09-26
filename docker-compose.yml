@@ -30,11 +30,6 @@ services:
       options:
         max-size: "200k"
         max-file: "100"
-  rap3-user:
-    image: rap3-student-proto:latest
-    container_name: rap3-user
-    build:
-      context: RAP3USER
   rap3:
     image: ampersandtarski/ampersand-rap:2020
     container_name: rap3
