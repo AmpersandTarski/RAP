@@ -6,6 +6,7 @@ version: '3.7'
 volumes:
   rap3-data: 
   db-data:
+  letsencrypt:
 
 networks:
   proxy:
@@ -25,7 +26,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./Traefik/traefik.toml:/etc/traefik/traefik.toml"
       - "./Traefik/conf.d:/etc/traefik/conf.d"
-      - "./Traefik/letsencrypt:/letsencrypt"
+      - "letsencrypt:/letsencrypt"
     networks:
       - proxy
   
