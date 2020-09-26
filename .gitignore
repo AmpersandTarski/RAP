@@ -9,3 +9,4 @@ NewFrontend/History/make.bat
 volumes
 prototype-src/
 .env
+Traefik/letsencrypt/
