@@ -6,30 +6,24 @@ version: '3.7'
 volumes:
   rap3-data: 
   db-data:
-  proxy-cert:
 
 services:
-  # the gatekeeper to the internet. It serves both http and https.
-  proxy:
-    build: ./HAProxy
-    container_name: proxy
+  # reverse proxy
+  traefik:
+    image: "traefik:v2.2"
+    container_name: "traefik"
     restart: unless-stopped
-    depends_on:
-      - rap3
-      - enroll
-    networks:
-      - rap3
-      - enroll
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     volumes:
-      - proxy-cert:/srv/is-certificate
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "100"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./Traefik/traefik.toml:/etc/traefik/traefik.toml"
+      - "./Traefik/conf.d:/etc/traefik/conf.d"
+      - "./Traefik/letsencrypt:/letsencrypt"
+    networks:
+      - proxy
+  
   rap3:
     image: ampersandtarski/ampersand-rap:2020
     container_name: rap3
@@ -50,7 +44,8 @@ services:
     volumes:
       - rap3-data:/var/www/data
     networks:
-      - rap3
+      - proxy
+      - db
     logging:
       driver: "json-file"
       options:
@@ -67,7 +62,8 @@ services:
     depends_on:
       - db
     networks:
-      - enroll
+      - proxy
+      - db
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
       - AMPERSAND_DEBUG_MODE=true
@@ -95,9 +91,7 @@ services:
     volumes:
       - db-data:/var/lib/mysql
     networks:
-      - rap3
       - db
-      - enroll
     logging:
       driver: "json-file"
       options:
@@ -118,6 +112,6 @@ services:
       - db
 
 networks:
-  rap3:
+  proxy:
+    external: true
   db:
-  enroll:
