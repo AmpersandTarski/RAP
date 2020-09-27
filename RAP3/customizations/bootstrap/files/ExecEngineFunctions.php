@@ -235,12 +235,10 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $userName = "stefj";  // TODO get the proper user name that is associated with the current session.
     
     // Run student prototype with Docker
-    // cat test.adl | docker run -v /var/run/docker.sock:/var/run/docker.sock --name $userName --rm -i -a stdin -p 80:80 --network rap_db -e AMPERSAND_DBHOST=db -e AMPERSAND_DBNAME=$userName rap3-student-proto
     $command = new Command(
         "echo \"{$scriptContentForCommandline}\" | docker run",
-        [ "-v /var/run/docker.sock:/var/run/docker.sock", // for communicating with the docker repo outside this container
-          "--name \"{$userName}\"",
-     //   "--rm",
+        [ "--name \"{$userName}\"",
+          "--rm",
           "-i",
           "-a stdin",  // stdin ensures that the content of the script is available in the container.
           "-p 8081:80", // TODO: remove this argument, because we don't want to expose directly on host, but use reverse-proxy instead
