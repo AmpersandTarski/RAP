@@ -241,8 +241,9 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
           "--rm",
           "-i",
           "-a stdin",  // stdin ensures that the content of the script is available in the container.
-          "-p 8081:80", // TODO: remove this argument, because we don't want to expose directly on host, but use reverse-proxy instead
-          "--network rap_db",
+          "--network proxy", // the reverse proxy Traefik is in the proxy network
+          "--label traefik.enable=true", // label for Traefik to route trafic
+          "--label traefik.http.routers.student123-insecure.rule=\"Host(`{$userName}.rap.cs.ou.nl`) || Host(`{$userName}.localhost`)\"",
           "-e AMPERSAND_DBHOST=db",
           "-e AMPERSAND_DBNAME=\"{$userName}\"",
           "rap3-student-proto" // image name to run
@@ -250,6 +251,10 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $ee->getLogger()
     );
     $command->execute();
+    
+    // Add docker container also to rap_db network
+    $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
+    $command2->execute();
 
     // Populate 'protoOk' upon success
     setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
