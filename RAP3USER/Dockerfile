@@ -1,4 +1,4 @@
-FROM docker.pkg.github.com/ampersandtarski/prototype/prototype-framework:latest
+FROM ampersandtarski/prototype-framework:v1.7.0
 
 COPY run-student-proto.sh /
 
