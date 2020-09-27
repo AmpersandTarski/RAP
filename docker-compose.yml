@@ -110,6 +110,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
       - MYSQL_USER=${MYSQL_USER} # from .env file
       - MYSQL_PASSWORD=${MYSQL_PASSWORD} # from .env file
+    # nu nog de autorisaties voor user ${MYSQL_USER} instellen....
     volumes:
       - db-data:/var/lib/mysql
     networks:
