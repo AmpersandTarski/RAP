@@ -4,7 +4,7 @@
 set -e
 
 # Put content of stdin to file script.adl
-cp /dev/stdin /script.adl
+base64 -d /dev/stdin > /script.adl
 
 # Print script for debugging purposes
 cat /script.adl

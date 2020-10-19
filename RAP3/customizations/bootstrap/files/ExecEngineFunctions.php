@@ -233,7 +233,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     }
 
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
-    $scriptContentForCommandline = addslashes($scriptContent);
+    $scriptContentForCommandline = base64_encode($scriptContent);
     $userName = "stefj";  // TODO get the proper user name that is associated with the current session.
 
     // Stop any existing prototype container for this user
