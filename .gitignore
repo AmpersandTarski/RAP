@@ -10,3 +10,5 @@ volumes
 prototype-src/
 .env
 .cache
+
+/vendor/
