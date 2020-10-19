@@ -23,7 +23,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
       - "./Traefik/traefik.toml:/etc/traefik/traefik.toml"
       - "./Traefik/conf.d:/etc/traefik/conf.d"
       - "letsencrypt:/letsencrypt"
