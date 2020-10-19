@@ -56,7 +56,7 @@ services:
       - db
     labels:
       traefik.enable: "true"
-      traefik.http.routers.rap3-insecure.rule: Host(`rap.cs.ou.nl`) || Host(`rap.localhost`)
+      traefik.http.routers.rap3-insecure.rule: Host(`rap.cs.ou.nl`) || Host(`localhost`) || Host(`rap.localhost`)
       # traefik.http.routers.rap3-insecure.middlewares: redirectToHttps@file,securityHeaders@file
       # traefik.http.routers.rap3.tls.certresolver: letsencrypt
       # traefik.http.routers.rap3.tls.options: safeTLSOptions@file
