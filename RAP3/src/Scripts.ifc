@@ -1,5 +1,7 @@
 CONTEXT RAP3 IN ENGLISH
 
+VIEW "ParseAsHtml" : CompileResponse HTML TEMPLATE "View-ParseAsHtml.html" ENDVIEW
+
 PURPOSE INTERFACE MyScripts
 {+ Ik wil als student een overzicht krijgen van mijn scripts,
 waarin ik scripts kan maken, verwijderen en naar het script kan navigeren om erin te wijzigen,
@@ -54,7 +56,7 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
 --                         , "hide": <expression> cRud
 --                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]
-         , "Message" : compileresponse[ScriptVersion*CompileResponse] cRud
+         , "Message" : compileresponse[ScriptVersion*CompileResponse] cRud <ParseAsHtml>
          ]
       , "links to your results": seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
          [ "Download document" : funcSpec cRud
