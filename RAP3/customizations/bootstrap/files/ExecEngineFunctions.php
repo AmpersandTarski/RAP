@@ -232,6 +232,8 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
     }
 
+    // TODO: Stop/remove any container for this user that is already running
+
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = base64_encode($scriptContent);
     $userName = "stefj";  // TODO get the proper user name that is associated with the current session.
@@ -256,6 +258,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
           "--network proxy", // the reverse proxy Traefik is in the proxy network
           "--label traefik.enable=true", // label for Traefik to route trafic
           "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
+          "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
           "-e AMPERSAND_DBHOST=db",
           "-e AMPERSAND_DBNAME=\"{$userName}\"",
           "rap3-student-proto" // image name to run
