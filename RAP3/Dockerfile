@@ -3,9 +3,19 @@
 
 FROM ampersandtarski/prototype-framework:v1.7.0
 
-# Install docker, so students can compile their scripts.
-RUN apt-get update
-RUN apt-get -y install docker
+# Install docker, so students can run their prototypes
+RUN apt-get update \
+ && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+# We only need the docker-cli because we connect to the docker deamon on the host machine using a volume bind to docker.sock
+RUN apt-get update \
+ && apt-get install -y docker-ce-cli
 
 COPY . /usr/local/project/
 
