@@ -36,7 +36,7 @@ To build a docker-image of RAP3 yourself, open a command line interface, clone t
        ```
        Your username will be asked, and you have to supply the generated token as a password. 
 
-### Deploy
+### Deploy (development on localhost)
 
 Now you should be fine to deploy RAP:
  1) let docker do its magic:
@@ -45,4 +45,13 @@ Now you should be fine to deploy RAP:
     docker-compose up -d
     ```
 This will take some time, so sit tight and watch the show.
+
+### Deploy production on rap.cs.ou.nl
+
+> `docker network create proxy`
+
+> `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d`
+
+Don't forget to bring down the php tools
+> `docker stop phptools`
 

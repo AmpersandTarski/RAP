@@ -1,0 +1,22 @@
+services:
+  rap3:
+    labels:
+      traefik.http.routers.rap3-insecure.middlewares: redirectToHttps@file,securityHeaders@file
+      traefik.http.routers.rap3.tls.certresolver: letsencrypt
+      traefik.http.routers.rap3.tls.options: safeTLSOptions@file
+      traefik.http.routers.rap3.middlewares: securityHeaders@file
+      traefik.http.routers.rap3.rule: Host(`rap.cs.ou.nl`)
+  klantkaart:
+    labels:
+      traefik.http.routers.klantkaart-insecure.middlewares: redirectToHttps@file,securityHeaders@file
+      traefik.http.routers.klantkaart.tls.certresolver: letsencrypt
+      traefik.http.routers.klantkaart.tls.options: safeTLSOptions@file
+      traefik.http.routers.klantkaart.middlewares: securityHeaders@file
+      traefik.http.routers.klantkaart.rule: Host(`klantkaart.rap.cs.ou.nl`)
+  enroll:
+    labels:
+      traefik.http.routers.enroll-insecure.middlewares: redirectToHttps@file,securityHeaders@file
+      traefik.http.routers.enroll.tls.certresolver: letsencrypt
+      traefik.http.routers.enroll.tls.options: safeTLSOptions@file
+      traefik.http.routers.enroll.middlewares: securityHeaders@file
+      traefik.http.routers.enroll.rule: Host(`enroll.rap.cs.ou.nl`)
