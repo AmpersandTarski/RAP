@@ -258,7 +258,9 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     // Populate 'protoOk' upon success
     setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
-    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
+
+    $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.rap.cs.ou.nl\">Open prototype</a>" : $command->getResponse();
+    $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
 
 /**
