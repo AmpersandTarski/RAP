@@ -1,4 +1,4 @@
-CONTEXT Enrollment IN DUTCH
+CONTEXT Enrollment IN ENGLISH
 PURPOSE CONTEXT Enrollment
 {+ A complete course consists of several modules.
 Students of a course can enroll for any module that is part of the course.

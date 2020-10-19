@@ -1,0 +1,101 @@
+CONTEXT Klantkaart IN DUTCH
+PURPOSE CONTEXT Klantkaart
+{+ Dit prototype ondersteunt een conceptuele analyse van een klantkaartensysteem
+voor een winkelketen die webshops en fysieke shops combineert.
++}
+
+PATTERN Klantkaarten
+-- The concepts
+CONCEPT Kaart "Een klantkaart die recht geeft op kortingen."
+PURPOSE CONCEPT Kaart 
+{+De winkelketen geeft klantkaarten uit om klantentrouw te stimuleren.+}
+CONCEPT Account "Een account representeert een klant en bevat alle klantspecifieke informatie."
+PURPOSE CONCEPT Persoon 
+{+Het concept Persoon dient om persoonsgegevens bij elkaar te houden.+}
+CONCEPT E_Mail "Een E_Mail is een geldig e-mail adres"
+PURPOSE CONCEPT E_Mail 
+{+De winkelketen gebruikt een e-mail adres als identifier voor een klant binnen de webshop.+}
+CONCEPT Naam "De naam is een string die aangeeft hoe een klant heet binnen de winkelketen."
+PURPOSE CONCEPT Naam 
+{+De winkelketen gebruikt de naam om een klant mee aan te spreken.+}
+
+-- The relations and the initial population
+RELATION account[Kaart*Account] [UNI,TOT]
+MEANING "Aan elke klantkaart is automatisch een account gekoppeld."
+
+POPULATION account CONTAINS
+[ ("1", "1")
+; ("2", "2")
+; ("3", "3")
+]
+
+RELATION eigenaar[Account*Persoon] [UNI]
+MEANING "De relatie eigenaar legt de persoon vast wiens persoonsgegevens in het account zijn opgeslagen."
+
+POPULATION eigenaar CONTAINS
+[ ("1", "304-29945")
+; ("3", "029-69233")
+]
+
+RELATION login[Account*E_Mail] [UNI]
+MEANING "De relatie login legt vast met welke loginnaam een persoon op dit account mag inloggen."
+POPULATION login CONTAINS
+[ ("3", "bdhulk@gmail.com")
+]
+RELATION wachtwoord[Account*Password] [UNI]
+MEANING "De relatie wachtwoord legt vast met welk wachtwoord een persoon op dit account mag inloggen."
+POPULATION wachtwoord CONTAINS
+[ ("3", "welkom")
+]
+RELATION naam[Persoon*Naam] [UNI]
+MEANING "De relatie naam legt de naam vast die een gebruiker heeft opgegeven."
+POPULATION naam CONTAINS
+[ ("304-29945", "Bram de Hulk")
+]
+RELATION email[Persoon*E_Mail] [INJ]
+MEANING "De relatie naam legt de naam vast die een gebruiker heeft opgegeven."
+POPULATION naam CONTAINS
+[ ("304-29945", "Bram de Hulk")
+]
+RELATION geboortedatum[Persoon*Datum] [UNI,TOT]
+MEANING "De relatie geboortedatum legt de geboortedatum vast die een gebruiker heeft opgegeven."
+POPULATION geboortedatum CONTAINS
+[ ("029-69233", "13-01-2005")
+, ("304-29945", "24-10-1986")
+]
+RELATION woonadres[Persoon*Adres] [UNI]
+MEANING "De relatie woonadres legt het woonadres vast die een gebruiker heeft opgegeven."
+POPULATION woonadres CONTAINS
+[ ("029-69233", "1066XY3a")
+, ("304-29945", "7548BE201")
+]
+
+
+-- The one rule in this model
+-- RULE ModuleEnrollment: isEnrolledFor |- takes;isPartOf~
+-- MEANING "A student can enroll for any module that is part of the course the student takes"
+-- MESSAGE "Attempt to enroll student(s) for a module that is not part of the student's course."
+-- VIOLATION (TXT "Student ", SRC I, TXT " enrolled for the module ", TGT I, TXT " which is not part of the course ", SRC I[Student];takes)
+ENDPATTERN
+
+INTERFACE Overview : "_SESSION"                cRud
+BOX <TABS>
+     [ Kaarten : V[SESSION*Kaart]              cRuD
+       BOX <TABLE>
+                [ "Klantkaart" : I[Kaart]      cRud
+                ]
+     , Accounts : V[SESSION*Account]           cRuD
+       BOX <TABLE>
+                [ "Account" : I                cRud
+                , "eigenaar" : eigenaar        cRud
+                ]
+     , Persoon : V[SESSION*Persoon]            cRud
+       BOX <TABLE>
+                [ "Persoonsnummer intern" : I  cRuD
+                , "email" : email              CRUd
+                , "geboortedatum" : naam       CRUd
+                , "adres" : woonadres          CRUD
+                ]
+     ]
+
+ENDCONTEXT
