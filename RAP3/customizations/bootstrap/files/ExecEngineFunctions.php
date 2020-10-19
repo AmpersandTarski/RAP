@@ -297,11 +297,16 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
         $ee->getLogger()
     );
     $command->execute($workDir);
-    // upon success, the generated file is: ./atlas/{$basename}_generated_pop.json
+    // upon success, the generated file is: ./atlas/<scriptname without extension>_generated_pop.json
+
+    $scriptNameWithoutExt = pathinfo($path, PATHINFO_FILENAME);
     
     if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file
-        $pop = file_get_contents("{$workDir}/{$basename}_generated_pop.json");
+        $pop = file_get_contents("{$workDir}/{$scriptNameWithoutExt}_generated_pop.json");
+        if ($pop === false) {
+            throw new Exception("Generated Atlas population file not found for script: '{$path}'");
+        }
         $pop = json_decode($pop, true);
     
         // Add atoms to database
