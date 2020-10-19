@@ -233,6 +233,16 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = addslashes($scriptContent);
     $userName = "stefj";  // TODO get the proper user name that is associated with the current session.
+
+    // Stop any existing prototype container for this user
+    $remove = new Command(
+        "docker rm",
+        [ "-f",
+          "\"{$userName}\""
+        ],
+        $ee->getLogger()
+    );
+    $remove->execute();
     
     // Run student prototype with Docker
     $command = new Command(
