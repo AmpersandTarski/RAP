@@ -22,6 +22,8 @@ COPY customizations /var/www/
 RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
   && cd /var/www \
   && composer install --prefer-dist --no-dev --profile --optimize-autoloader \
+  && npm update \
+  && npm audit fix \
   && npm install \
   && gulp build-ampersand \
   && gulp build-project
