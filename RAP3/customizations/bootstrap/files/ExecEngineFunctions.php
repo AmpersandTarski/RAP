@@ -12,9 +12,6 @@ use Ampersand\Extension\RAP3\Command;
 
 /* Ampersand commands must not be changed in this file, but in a configuration yaml file.
  *
- * Use the configuration yaml file to specify the following settings:
- *  rap3.ampersand       : [ampersand compiler executable location]
- *
  * User scripts and generated content are stored in
  * /var/www/data/scripts/<userId>/<scriptId>/<versionId>/script.adl
  * /var/www/data/scripts/<userId>/<scriptId>/<versionId>/diagnosis
@@ -84,7 +81,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
 
     // Compile the file, only to check for errors.
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand check'),
+        'ampersand check',
         [basename($srcAbsPath)],
         $ee->getLogger()
     );
@@ -163,7 +160,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 
     // Compile the file, only to check for errors.
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
+        'ampersand documentation',
         ['script.adl', '--format docx', '--language=NL', '--output-dir="."', "--verbosity debug" ],
         $ee->getLogger()
     );
@@ -196,7 +193,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
 
     // Create fspec with diagnosis chapter
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand documentation'),
+        'ampersand documentation',
         ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--output-dir ./diagnosis', "--verbosity warn" ],
         $ee->getLogger()
     );
@@ -290,7 +287,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
 
     // Create RAP3 population
     $command = new Command(
-        $ee->getApp()->getSettings()->get('rap3.ampersand', 'ampersand population'),
+        'ampersand population',
         [ $basename
         , '--output-dir="./"'
         , "--build-recipe AtlasPopulation"
