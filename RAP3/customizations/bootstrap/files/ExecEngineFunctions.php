@@ -226,7 +226,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
 
-    $serverName = $ee->getApp()->getSettings()->get('global.serverURL');
+    $serverName = getenv('RAP_HOST_NAME');
 
     if (count($scriptContentPairs) != 1) {
         throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
