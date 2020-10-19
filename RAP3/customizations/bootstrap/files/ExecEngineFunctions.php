@@ -255,7 +255,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
           "-a stdin",  // stdin ensures that the content of the script is available in the container.
           "--network proxy", // the reverse proxy Traefik is in the proxy network
           "--label traefik.enable=true", // label for Traefik to route trafic
-          "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)", // e.g. student123.rap.cs.ou.nl
+          "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
           "-e AMPERSAND_DBHOST=db",
           "-e AMPERSAND_DBNAME=\"{$userName}\"",
           "rap3-student-proto" // image name to run
