@@ -14,6 +14,8 @@ ampersand proto /script.adl \
     --proto-dir=/var/www \
     --verbose
 
+chown -R www-data:www-data /var/www/log /var/www/data /var/www/generics
+
 # Start Apache webserver to run/serve prototype
 docker-php-entrypoint apache2-foreground &
 
