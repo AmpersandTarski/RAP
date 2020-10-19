@@ -78,24 +78,31 @@ POPULATION woonadres CONTAINS
 -- VIOLATION (TXT "Student ", SRC I, TXT " enrolled for the module ", TGT I, TXT " which is not part of the course ", SRC I[Student];takes)
 ENDPATTERN
 
-INTERFACE Overview : "_SESSION"                cRud
+INTERFACE Overview : "_SESSION"                     cRud
 BOX <TABS>
-     [ Kaarten : V[SESSION*Kaart]              cRuD
+     [ Kaarten : V[SESSION*Kaart]                   cRuD
        BOX <TABLE>
-                [ "Klantkaart" : I[Kaart]      cRud
+                [ "Klantkaart" : I[Kaart]           cRud
                 ]
-     , Accounts : V[SESSION*Account]           cRuD
+     , Accounts : V[SESSION*Account]                cRuD
        BOX <TABLE>
-                [ "Account" : I                cRud
-                , "eigenaar" : eigenaar        cRud
+                [ "Account" : I                     cRud
+                , "eigenaar" : eigenaar             cRud
                 ]
-     , Persoon : V[SESSION*Persoon]            cRud
+     , Persoon : V[SESSION*Persoon]                 cRud
        BOX <TABLE>
-                [ "Persoonsnummer intern" : I  cRuD
-                , "email" : email              CRUd
-                , "geboortedatum" : naam       CRUd
-                , "adres" : woonadres          CRUD
+                [ "Persoonsnummer intern" : I       cRuD
+                , "email" : email                   CRUd
+                , "naam" : naam                     CRUd
+                , "geboortedatum" : geboortedatum   CRUd
+                , "woonadres" : woonadres           CRUD
                 ]
      ]
 
+INTERFACE Klantkaart : I[Kaart] cRud
+BOX
+    [ Kaartnummer : I[Kaart]
+    , account : account
+    , persoon : account;eigenaar;naam
+    ]
 ENDCONTEXT
