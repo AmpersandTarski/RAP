@@ -50,7 +50,7 @@ services:
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
     volumes:
       - rap3-data:/var/www/data
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - proxy
       - db
