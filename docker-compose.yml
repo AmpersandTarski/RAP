@@ -30,6 +30,9 @@ services:
     networks:
       - proxy
   
+  dummy-student-prototype:
+    image: ampersandtarski/rap3-student-prototype:v1.0.0
+  
   rap3:
     image: ampersandtarski/ampersand-rap:2020
     container_name: rap3
@@ -39,6 +42,7 @@ services:
     depends_on:
       - db
       - traefik
+      - dummy-student-prototype
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
       - AMPERSAND_DEBUG_MODE=true
@@ -49,6 +53,7 @@ services:
       - AMPERSAND_DBNAME=rap3
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
+      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap3-student-prototype:v1.0.0
     volumes:
       - rap3-data:/var/www/data
       - "/var/run/docker.sock:/var/run/docker.sock"

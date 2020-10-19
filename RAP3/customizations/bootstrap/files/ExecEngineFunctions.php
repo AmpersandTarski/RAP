@@ -227,6 +227,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
 
     $serverName = getenv('RAP_HOST_NAME');
+    $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
 
     if (count($scriptContentPairs) != 1) {
         throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
@@ -258,7 +259,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
           "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
           "-e AMPERSAND_DBHOST=db",
           "-e AMPERSAND_DBNAME=\"{$userName}\"",
-          "rap3-student-proto" // image name to run
+          $studentProtoImage // image name to run
         ],
         $ee->getLogger()
     );
