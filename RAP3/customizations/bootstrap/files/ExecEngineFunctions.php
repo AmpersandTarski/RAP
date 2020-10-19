@@ -238,7 +238,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $command = new Command(
         "echo \"{$scriptContentForCommandline}\" | docker run",
         [ "--name \"{$userName}\"",
-          "--rm",
+          "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
           "-i",
           "-a stdin",  // stdin ensures that the content of the script is available in the container.
           "--network proxy", // the reverse proxy Traefik is in the proxy network

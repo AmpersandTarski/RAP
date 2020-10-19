@@ -3,6 +3,10 @@
 
 FROM ampersandtarski/prototype-framework:v1.7.0
 
+# Install docker, so students can compile their scripts.
+RUN apt-get update
+RUN apt-get -y install docker
+
 COPY . /usr/local/project/
 
 # Generate prototype application from folder
