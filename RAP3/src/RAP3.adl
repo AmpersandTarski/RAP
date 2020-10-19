@@ -54,7 +54,7 @@ RELATION funcSpec[ScriptVersion*FileObject] [UNI] -- the file **containing** the
 ROLE ExecEngine MAINTAINS "Create fspec" -- reset funcSpecRequest after an attempt to create it has been performed.
 --RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V[ScriptVersion*FilePath]
-VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I
+VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;funcSpecRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
@@ -66,7 +66,7 @@ RELATION diag[ScriptVersion*FileObject] [UNI] -- the file containing the diagnos
 ROLE ExecEngine MAINTAINS "Create diagnosis" -- reset diagRequest after an attempt to create it has been performed.
 --RULE "Create diagnosis" : diagRequest-diag;diag~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create diagnosis" : (diagRequest-diag;diag~);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;diagRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
@@ -78,7 +78,7 @@ RELATION context[ScriptVersion*Context][UNI] -- The context that is created in R
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
 --RULE "Load population into meta tables" : loadRequest-loadedInRAP3Ok |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Load population into meta tables" : (loadRequest-loadedInRAP3Ok);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;loadPopInRAP3;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+VIOLATION ( TXT "{EX}CompileWithAmpersand;loadPopInRAP3;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
@@ -90,7 +90,7 @@ RELATION proto[Script*FileObject] [UNI] -- the index.php (or whatever) file that
 ROLE ExecEngine MAINTAINS "Create prototype" -- reset protoRequest after an attempt to create it has been performed.
 --RULE "Create prototype" : protoRequest-proto;proto~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create prototype" : (protoRequest-protoOk;protoOk~);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;protoRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 

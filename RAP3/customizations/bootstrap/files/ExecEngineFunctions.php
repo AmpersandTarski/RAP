@@ -117,7 +117,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $srcRelPath) {
+ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptId, $scriptVersionId, $srcRelPath, $userName) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
     $model = $ee->getApp()->getModel();
@@ -141,7 +141,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
             ExecEngine::getFunction('FuncSpec')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'prototype':
-            ExecEngine::getFunction('Prototype')->call($this, $srcRelPath, $scriptAtom, $scriptVersionAtom);
+            ExecEngine::getFunction('Prototype')->call($this, $srcRelPath, $scriptAtom, $scriptVersionAtom, $userName);
             break;
         default:
             $this->error("Unknown action '{$action}' specified");
@@ -220,7 +220,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom) {
+ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $userName) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
@@ -232,11 +232,8 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
     }
 
-    // TODO: Stop/remove any container for this user that is already running
-
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = base64_encode($scriptContent);
-    $userName = "stefj";  // TODO get the proper user name that is associated with the current session.
 
     // Stop any existing prototype container for this user
     $remove = new Command(
