@@ -12,8 +12,7 @@ cat /script.adl
 # First generate Ampersand proto from student script
 ampersand proto /script.adl \
     --proto-dir=/var/www \
-    --verbose \
-    --skip-composer
+    --verbose
 
 # Start Apache webserver to run/serve prototype
 docker-php-entrypoint apache2-foreground &
