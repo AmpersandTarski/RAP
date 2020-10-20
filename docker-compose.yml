@@ -1,7 +1,7 @@
 version: '3.7'
 # to visualize this docker-compose.yml file, if you are on linux, run:
-#      docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -f -m image docker-compose.yml
-# run it literally (change NOTHING!) and expect the result in docker-compose.png
+#      docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -f -m image docker-compose.yml -o documentation/docker-compose.png
+# run it literally (change NOTHING!) and expect the result in documentation/docker-compose.png
 
 volumes:
   rap3-data: 
@@ -18,7 +18,7 @@ services:
   traefik:
     image: "traefik:v2.2"
     container_name: "traefik"
-    restart: unless-stopped
+    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -62,7 +62,7 @@ services:
       - db
     labels:
       traefik.enable: "true"
-      traefik.http.routers.rap3-insecure.rule: Host(`rap.cs.ou.nl`) || Host(`localhost`) || Host(`rap.localhost`)
+      traefik.http.routers.rap3-insecure.rule: Host(`${SERVER_HOST_NAME}`)
       # more labels added for production, see ./docker-compose.prod.yml file
     logging:
       driver: "json-file"
@@ -94,7 +94,7 @@ services:
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
     labels:
       traefik.enable: "true"
-      traefik.http.routers.klantkaart-insecure.rule: Host(`klantkaart.localhost`) || Host(`klantkaart.rap.cs.ou.nl`)
+      traefik.http.routers.klantkaart-insecure.rule: Host(`klantkaart.${SERVER_HOST_NAME}`)
       # more labels added for production, see ./docker-compose.prod.yml file
     logging:
       driver: "json-file"
@@ -126,7 +126,7 @@ services:
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
     labels:
       traefik.enable: "true"
-      traefik.http.routers.enroll-insecure.rule: Host(`enroll.rap.cs.ou.nl`) || Host(`enroll.localhost`)
+      traefik.http.routers.enroll-insecure.rule: Host(`enroll.${SERVER_HOST_NAME}`)
       # more labels added for production, see ./docker-compose.prod.yml file
     logging:
       driver: "json-file"
@@ -158,11 +158,11 @@ services:
     image: phpmyadmin/phpmyadmin
     environment:
       PMA_HOST: db # refers to database service above
+    ports:
+      - "8080:80"
     container_name: phptools
     restart: unless-stopped
     depends_on:
       - db
-    ports:
-      - "8080:80"
     networks:
       - db
