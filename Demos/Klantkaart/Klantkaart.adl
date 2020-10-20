@@ -50,18 +50,18 @@ POPULATION wachtwoord CONTAINS
 RELATION naam[Persoon*Naam] [UNI]
 MEANING "De relatie naam legt de naam vast die een gebruiker heeft opgegeven."
 POPULATION naam CONTAINS
-[ ("304-29945", "Bram de Hulk")
+[ ("029-69233", "Bram de Hulk")
 ]
 RELATION email[Persoon*E_Mail] [INJ]
 MEANING "De relatie naam legt de naam vast die een gebruiker heeft opgegeven."
-POPULATION naam CONTAINS
-[ ("304-29945", "Bram de Hulk")
+POPULATION email CONTAINS
+[ ("029-69233", "bdhulk@gmail.com")
 ]
 RELATION geboortedatum[Persoon*Datum] [UNI,TOT]
 MEANING "De relatie geboortedatum legt de geboortedatum vast die een gebruiker heeft opgegeven."
 POPULATION geboortedatum CONTAINS
-[ ("029-69233", "13-01-2005")
-, ("304-29945", "24-10-1986")
+[ ("304-29945", "13-01-2005")
+, ("029-69233", "24-10-1986")
 ]
 RELATION woonadres[Persoon*Adres] [UNI]
 MEANING "De relatie woonadres legt het woonadres vast die een gebruiker heeft opgegeven."
@@ -83,11 +83,17 @@ BOX <TABS>
      [ Kaarten : V[SESSION*Kaart]                   cRuD
        BOX <TABLE>
                 [ "Klantkaart" : I[Kaart]           cRud
+                , "account" : account               CRud
                 ]
-     , Accounts : V[SESSION*Account]                cRuD
+     , "Service accounts" : V[SESSION*Account];(I[Account]-(login;login~))                cRuD
        BOX <TABLE>
                 [ "Account" : I                     cRud
-                , "eigenaar" : eigenaar             cRud
+                , "eigenaar" : eigenaar             cRuD
+                ]
+     , "Webshop accounts" : V[SESSION*Account];(I[Account]/\(login;login~))                cRuD
+       BOX <TABLE>
+                [ "Account" : I                     cRud
+                , "eigenaar" : login                cRuD
                 ]
      , Persoon : V[SESSION*Persoon]                 cRud
        BOX <TABLE>
@@ -99,10 +105,13 @@ BOX <TABS>
                 ]
      ]
 
+RULE login |- eigenaar;email
+VIOLATION (TXT "Account ", SRC I, TXT " en/of e-mail adres ", TGT I, TXT " is/zijn niet gekoppeld aan één persoon.")
+
 INTERFACE Klantkaart : I[Kaart] cRud
 BOX
-    [ Kaartnummer : I[Kaart]
-    , account : account
+    [ Kaartnummer : I[Kaart] cRud
+    , account : account CRUD
     , persoon : account;eigenaar;naam
     ]
 ENDCONTEXT
