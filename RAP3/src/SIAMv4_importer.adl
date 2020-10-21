@@ -1,0 +1,117 @@
+CONTEXT SIAMv4_0 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
+-- The purpose of this file is to provide an easy way for users of the module to include SIAM functionality.
+
+--! git@ci.tno.nl:ampersand/ssif.git has the authoratative source of SIAMv4
+
+   INCLUDE "../SIAMv4/SIAM_AccountSessionRoles.adl" -- Core functionality: UIDs, Accounts, Sessions, Roles, Logout.
+-- INCLUDE "../SIAMv4/SIAM_AgentAccountsForAPIs.adl"-- Core functionality: APIKeys, AgentAccounts, and extensions to Sessions and Roles.
+-- INCLUDE "../SIAMv4/SIAM_AgentRefs.adl"           -- a standard way for refering to Agents, not associated with the Agent concept.
+-- INCLUDE "../SIAMv4/SIAM_AgentReg.adl"            -- extension to AgentRefs by a basic/minimalistic Agent Object registration.
+-- INCLUDE "../SIAMv4/SIAM_AgentAccRegistration.adl"-- extension to AgentRefs by a basic/minimalistic Agent Object registration.
+   INCLUDE "../SIAMv4/SIAM_PersonRefs.adl"          -- a standard way for refering to people, not associated with the Person concept.
+   INCLUDE "../SIAMv4/SIAM_PersonReg.adl"           -- extension to PersonRefs by a basic/minimalistic Person Object registration (just first- and last names).
+-- INCLUDE "../SIAMv4/SIAM_PersonRegExts.adl"       -- extensions (relations) for PersonReg that are commonly used.
+-- INCLUDE "../SIAMv4/SIAM_OrgRefs.adl"             -- a standard way for refering to organizations, not associated with the Person concept.
+-- INCLUDE "../SIAMv4/SIAM_OrgReg.adl"              -- extension to OrgRefs by a basic/minimalistic Organization Object registration (just abbr. and full names).
+-- INCLUDE "../SIAMv4/SIAM_PersonOrgs.adl"          -- Extension that defines (and maintains the population of) relation `personOrg`.
+-- INCLUDE "../SIAMv4/SIAM_Persona.adl"             -- Extension that implements Persona (based on Persons and Organizations).
+   INCLUDE "../SIAMv4/SIAM_LoginWithUPW.adl"        -- Login using U/PW (Usernames and Passwords).
+   INCLUDE "../SIAMv4/SIAM_RegisterWithUPW.adl"     -- Extension that registers not-yet existing users that specify a U/PW.
+-- INCLUDE "../SIAMv4/SIAM_LoginWithUID.adl"        -- Login using third party identity providers.
+-- INCLUDE "../SIAMv4/SIAM_RegisterWithUID.adl"     -- Extension that registers authenticated users that do not have an Account.
+-- INCLUDE "../SIAMv4/SIAM_LoginLogging.adl"        -- Extension that keeps track of when logins are done. 
+-- INCLUDE "../SIAMv4/SIAM_ISO_LoA.adl"             -- Extension that introduces ISO authentication levels in a basic fashion.
+-- INCLUDE "../SIAMv4/SIAM_SessionSuspension.adl"   -- Extension that allows sessions to temporarily be suspended.
+-- INCLUDE "../SIAMv4/SIAM_AutoLoginAccount.adl"    -- Extension that implements the `accAutoLoginReq` property for accounts.
+-- INCLUDE "../SIAMv4/SIAM_GodAccounts.adl"         -- Extension that implements the 'God-accounts' feature (accounts that have all roles).
+
+-- INCLUDE "../SIAMv4/SIAM_PersonReg.ifc"           -- a basic/minimalistic interface to edit Persons
+-- INCLUDE "../SIAMv4/SIAM_OrgReg.ifc"              -- a basic/minimalistic interface to edit Organizations
+-- INCLUDE "../SIAMv4/SIAM_Persona.ifc"             -- a basic/minimalistic interface to edit Persona
+-- INCLUDE "../SIAMv4/SIAM_AccountManagement.ifc"   -- a basic/minimalistic interface to edit Accounts
+-- INCLUDE "../SIAMv4/SIAM_Developer.ifc"           -- a basic/minimalistic interface for developers
+
+-- Only one of the following can be active at any time.
+-- INCLUDE "../SIAMv4/SIAM_LoginForDevelopers.ifc"  -- Interface: Login/Register/Logout interface for use by developers
+   INCLUDE "../SIAMv4/SIAM_LoginWithUPW.ifc"        -- Interface: U/PW Login/Register interface for use by non-developers
+-- INCLUDE "../SIAMv4/SIAM_LoginWithUID.ifc"        -- Interface: UID Login interface for use by non-developers
+   INCLUDE "../SIAMv4/SIAM_Logout.ifc"              -- Interface: Logout interface for use by non-developers
+
+--[Identifying constraints for user accounts]
+-- IDENT Accounts: Account(accUserid,accPassword) -- Only needed when accUserid is not [INJ]
+-- accUserid :: Account * Userid [INJ,UNI,TOT] -- By default, `accUserid` is only UNI
+-- RULE "U/PW Unicity": (I /\ accUserid;accUserid~);(accUserid~\accUserid~ /\ accPassword~\accPassword~) |- I -- Only needed when you don't require accounts to have Userids
+
+--[[Examples of possibly useful VIEWs]]--
+-- VIEW Sessions: SESSION(TXT "User is ", sessionUserid \/ (I[SESSION]-(sessionUserid;sessionUserid~));V;"unknown. Please login"[Userid])   POPULATION Userid CONTAINS [ "unknown - please login" ]
+-- VIEW UIDs: UID DEFAULT { "Userid":uidUserid, "at":TXT"@", "IdP":uidIssuer } ENDVIEW
+-- VIEW Persons: Person (personRef)
+-- VIEW Organizations: Organization (orgAbbrName)
+-- VIEW STRONG: IfcText HTML TEMPLATE "View-STRONG.html" ENDVIEW   REPRESENT IfcText TYPE ALPHANUMERIC
+
+--[Session Menu (in)visibility]
+RELATION isVisible[PF_NavMenuItem*PF_NavMenuItem] [PROP] -- Defined in SystemContext.adl
+RELATION isInvisible[PF_NavMenuItem*PF_NavMenuItem] [PROP]
+ROLE ExecEngine MAINTAINS "DelPair `isInvisible`"
+RULE "DelPair `isInvisible`": isInvisible |- I-isVisible
+VIOLATION (TXT "{EX} DelPair;isVisible;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenuItem;", TGT I)
+ROLE ExecEngine MAINTAINS "InsPair `isInvisible`"
+RULE "InsPair `isInvisible`": I-isInvisible |- isVisible
+VIOLATION (TXT "{EX} InsPair;isVisible;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenuItem;", TGT I)
+
+RELATION label[PF_NavMenuItem*PF_Label] [UNI,TOT]    REPRESENT PF_Label TYPE ALPHANUMERIC
+RELATION isPartOf[PF_NavMenuItem*PF_NavMenu] [UNI,TOT]
+-- POPULATION isInvisible CONTAINS [ ("NavMenuItemsTrashBin", "NavMenuItemsTrashBin") ]
+-- INTERFACE NavMenuItemsTrashBin: I[SESSION] cRud BOX [ "Something to please the compiler": I ]
+ROLE ExecEngine MAINTAINS "Fix bugs in PF_NavMenu Stuff"
+RULE "Fix bugs in PF_NavMenu Stuff": I[PF_NavMenuItem] |- isPartOf;isPartOf~ /\ label;label~
+VIOLATION (TXT "{EX} InsPair;isPartOf;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenu;", TGT I
+          ,TXT "{EX} InsPair;label;PF_NavMenuItem;", SRC I, TXT ";PF_Label;", TGT I
+          )
+
+--[[Examples of possibly useful RULEs]]--
+--[Account initialization]--
+{- Creating an account (e.g. when importing through an Excel file) does not make it usable immediately.
+For example, its property `accIsActive` must be set before it can be used to login with.
+The property `accIsInitialized` is defined to help distinguish between Accounts that are, and those that are not initialized.
+Note: setting the property `accIsActive` will automatically also set `accIsInitialized`.-}
+
+   ROLE ExecEngine MAINTAINS "Account activation/initialization"
+   RULE "Account activation/initialization": I[Account] |- accIsInitialized
+   VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
+             -- `accIsInitialized` will now automatically be set by RULE `Active accounts are initialized`
+             )
+
+--[[The following RULEs are listed here so that developers may (cherry)pick them as necessary:]]--
+--[Set default interfaces for anonymous sessions and user sessions]
+   ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
+   RULE "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
+   VIOLATION (TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/MyAccount" --<-- Deze interface verschijnt als je net bent ingelogd
+--           ,TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- Name of default interface for anonymous sessions
+             ,TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- Hier kun je inloggen.
+             ) --}
+
+--[Auto activate auto-login accounts]
+{- ROLE ExecEngine MAINTAINS "Auto activate auto-login accounts"
+   RULE "Auto activate auto-login accounts": accAutoLoginReq |- accIsActive
+   VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I) --}
+
+--[Initially, allowed roles are default Roles]--
+{- ROLE ExecEngine MAINTAINS "Initially, allowed roles are also default roles"
+   RULE "Initially, allowed roles are also default roles": 
+   (I-(accDefaultRoles;(I-"User");accDefaultRoles~));accAllowedRoles |- accDefaultRoles
+   VIOLATION (TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+
+--[Always, allowed roles are default Roles]--
+{- ROLE ExecEngine MAINTAINS "Always, allowed roles are also default roles"
+   RULE "Always, allowed roles are also default roles": accAllowedRoles |- accDefaultRoles
+   VIOLATION (TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+
+--[Organization roles]--
+{- RELATION orgRole[Organization*Role] MEANING "Roles that are applicable to all accounts of the organization"
+   RULE "Systemroles cannot be organization-roles": orgRole;systemRole |- -V
+   ROLE ExecEngine MAINTAINS "Automatically assign organization roles"
+   RULE "Automatically assign organization roles" : accOrg;orgRole |- accAllowedRoles
+   VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+
+ENDCONTEXT

@@ -7,7 +7,7 @@ CONCEPT Script "A script is a piece of UTF-8 encoded text that is meant to be co
   RELATION assignment[Script*Assignment] [UNI]
   RELATION submitted[Script*DateTime] [UNI] -- The data/time that the file was uploaded. 
    REPRESENT DateTime TYPE DATETIME
-  RELATION content[Script*ScriptContent] [UNI,INJ]
+  RELATION content[Script*ScriptContent] [UNI]
    MEANING "The actual text of the script (as seen in the editor)."
 --  uncommented in an attempt to diagnose issue RAP#30 (retain for future testing/diagnosis)
 --  ROLE ExecEngine MAINTAINS "SURscriptContent"
@@ -20,8 +20,8 @@ CONCEPT Assignment "An assignment is the name of a piece of work that a student 
   REPRESENT Assignment TYPE ALPHANUMERIC
 
 CONCEPT FileObject ""
-  --  IDENT FileObjectName 	: FileObject (filePath)
-  VIEW FileObject 		: FileObject DEFAULT {filePath : filePath, fileName : originalFileName} HTML TEMPLATE "View-FILEOBJECT.html" ENDVIEW
+  --  IDENT FileObjectName : FileObject (filePath)
+  VIEW FileObject : FileObject DEFAULT {apiPath : TXT "api/v1/file", filePath : filePath, fileName : originalFileName} HTML TEMPLATE "View-FILEOBJECT.html" ENDVIEW
   RELATION filePath[FileObject*FilePath] [UNI] --,TOT]
     REPRESENT FilePath TYPE BIGALPHANUMERIC
   RELATION originalFileName[FileObject*FileName] [UNI] --,TOT]
@@ -35,6 +35,9 @@ VIEW ScriptContent : ScriptContent DEFAULT HTML TEMPLATE "View-ACE.html" ENDVIEW
 CONCEPT ScriptVersion ""
   RELATION source[ScriptVersion*FileObject] -- [UNI]?
   RELATION version[Script*ScriptVersion] [INJ]
+  
+  RELATION content[ScriptVersion*ScriptContent] [UNI]
+
   ROLE ExecEngine MAINTAINS "SURversion"
   RULE "SURversion": I[ScriptVersion] |- version~;version
   MEANING "Every ScriptVersion must have a Script in the relation version."
@@ -81,13 +84,4 @@ ENDPATTERN
 
 
 
-
---PURPOSE RULE "indienen door studenten"
---{+ Om scripts te kunnen traceren naar de student, worden alleen scripts van ingeschreven studenten toegestaan.
---Daartoe dient de student zijn of haar studentnummer te koppelen aan het account.
---+}
---ROLE Student MAINTAINS "indienen door studenten"
---RULE "indienen door studenten" : submittor |- submittor;(I/\ accUserid;accUserid~ )
---MEANING "Alleen accounts met een studentnummer mogen een script indienen."
---VIOLATION (TXT "Aan uw account is geen studentnummer gekoppeld. Om die reden wordt script ", SRC I, TXT " niet opgeslagen.")
 ENDCONTEXT

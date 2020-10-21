@@ -1,7 +1,7 @@
 CONTEXT RAP3 IN ENGLISH
 
-   INCLUDE "SIAM_importer.adl"
-   INCLUDE "../../Sequences/SeqOntology.adl"       -- Basic notions
+   INCLUDE "SIAMv4_importer.adl"
+   INCLUDE "../Sequences/SeqOntology.adl"       -- Basic notions
 
    INCLUDE "Scripts.adl"
    INCLUDE "Scripts.docadl"
@@ -11,16 +11,13 @@ CONTEXT RAP3 IN ENGLISH
 
    INCLUDE "RAP3_AccountMgt.ifc"            -- RAP Account management interface
    INCLUDE "RAP3.xlsx"                      -- Initial, minimal set of people and accounts 
-   INCLUDE "RAP3_Login.ifc"                 -- RAP Login/Logout interface
+-- INCLUDE "RAP3_Login.ifc"                 -- RAP Login/Logout interface
 
 REPRESENT Language TYPE ALPHANUMERIC
 REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC
 REPRESENT Message TYPE BIGALPHANUMERIC
 REPRESENT Population TYPE BIGALPHANUMERIC
 REPRESENT ShowADL TYPE BIGALPHANUMERIC
-RELATION markupText[Purpose*MarkupText] [UNI,TOT]
-VIEW Purpose : Purpose(markupText)  --TODO: Op een of ander manier werkt deze view niet (HJO, 20161024)
-REPRESENT MarkupText TYPE BIGALPHANUMERIC
 
 RELATION compileresponse[Script*CompileResponse] [UNI] -- the most recent stdout message of compiling a script
 RELATION compileresponse[ScriptVersion*CompileResponse] [UNI]
@@ -44,7 +41,7 @@ ROLE ExecEngine MAINTAINS "Check script"
    en dat is wel zo netjes.
 -}
 --RULE "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Check script" : compileRequest;submittor;accUserid |- -V
+RULE "Check script" : compileRequest;submittor;accUserid |- -V[Script*Userid]
 VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT";", TGT I
           , TXT "{EX}DelPair;compileRequest;Script;", SRC I, TXT";Script;", SRC I
           )
@@ -56,8 +53,8 @@ RELATION funcSpec[ScriptVersion*FileObject] [UNI] -- the file **containing** the
 
 ROLE ExecEngine MAINTAINS "Create fspec" -- reset funcSpecRequest after an attempt to create it has been performed.
 --RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I
+RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V[ScriptVersion*FilePath]
+VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;funcSpecRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
@@ -69,19 +66,19 @@ RELATION diag[ScriptVersion*FileObject] [UNI] -- the file containing the diagnos
 ROLE ExecEngine MAINTAINS "Create diagnosis" -- reset diagRequest after an attempt to create it has been performed.
 --RULE "Create diagnosis" : diagRequest-diag;diag~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create diagnosis" : (diagRequest-diag;diag~);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;diagRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
 --[Loading of the script]--
 RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP3
-RELATION loadedInRAP3Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
+RELATION loadedInRAP3Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script,.
 RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP when it is loaded into the meta tables
 
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
 --RULE "Load population into meta tables" : loadRequest-loadedInRAP3Ok |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Load population into meta tables" : (loadRequest-loadedInRAP3Ok);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;loadPopInRAP3;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+VIOLATION ( TXT "{EX}CompileWithAmpersand;loadPopInRAP3;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
@@ -93,7 +90,7 @@ RELATION proto[Script*FileObject] [UNI] -- the index.php (or whatever) file that
 ROLE ExecEngine MAINTAINS "Create prototype" -- reset protoRequest after an attempt to create it has been performed.
 --RULE "Create prototype" : protoRequest-proto;proto~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create prototype" : (protoRequest-protoOk;protoOk~);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SRC I, TXT ";",TGT I
+VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;protoRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
@@ -103,6 +100,58 @@ ROLE ExecEngine MAINTAINS "Destroy Context"  -- ExecEngine is een echte pyrotech
 RULE "Destroy Context" : requestDestroy |- -V
 VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
           )
+ENDPATTERN
+
+PATTERN "Relations from FormalAmpersand"
+    REPRESENT ConceptDefinition TYPE BIGALPHANUMERIC
+
+    RELATION meaning[Rule*Meaning] -- e.g. 'bfOUprop[BusinessFunction] is antisymmetric'
+    MEANING "The meanings of a relation."
+    RELATION decMean[Relation * Meaning]
+    MEANING "The meanings of a relation."
+    RELATION purpose[Pattern*Purpose]
+    MEANING "The purposes of a pattern."
+    RELATION purpose[Relation * Purpose]
+    MEANING "The purposes of a relation."
+    RELATION meaning[Rule * Meaning]
+    MEANING "The meanings of a rule."
+    RELATION purpose[Rule * Purpose]
+    MEANING "The purposes of a rule."
+    RELATION purpose[Identity * Purpose]
+    MEANING "The purposes of an identity."
+    RELATION purpose[View * Purpose]
+    MEANING "The purposes of a view."
+    RELATION purpose[Concept * Purpose]
+    MEANING "The purposes of a concept."
+    RELATION purpose[Interface * Purpose]
+    MEANING "The purposes of an interface."
+    RELATION purpose[Context * Purpose] [{-This is currently *NOT* INJ, see issue https://github.com/AmpersandTarski/Ampersand/issues/46 -}]
+    MEANING "The purposes of a context."
+    RELATION declaredthrough[PropertyRule*Property] [TOT]
+    MEANING "A property is defined as part of the declaration of relation."
+    RELATION propertyRule[Relation*PropertyRule] [SUR]
+    MEANING "The properties of a relation."
+    RELATION gengen[Isa*Concept] [UNI,TOT]
+    MEANING "A generalization rule refers to one or more generic concepts."
+    RELATION genspc[Isa*Concept] [UNI,TOT]
+    MEANING "A generalization rule refers to one or more specific concepts."
+    RELATION gengen[IsE*Concept] [TOT]
+    MEANING "A generalization rule refers to one or more generic concepts."
+    RELATION genspc[IsE*Concept] [UNI,TOT]
+    MEANING "A generalization rule refers to one or more specific concepts."
+RELATION name[Concept*ConceptName] [UNI]
+RELATION name[Relation*RelationName] [UNI,TOT]
+MEANING "Every relation has a name by which it can be referenced within its Context(s)."
+RELATION source[Relation*Concept] [UNI,TOT]
+RELATION target[Relation*Concept] [UNI,TOT]
+RELATION declaredIn[Relation*Context] -- The context in which a relation is declared
+RELATION prop[Relation*Property]
+RELATION formalExpression[Rule*Expression] [UNI,TOT]
+MEANING "The rule expressed in relation algebra."
+RELATION context[Concept*Context] -- The context that contains the definition of a concept
+RELATION context[Pattern*Context][UNI] -- The context that contains a pattern
+RELATION concepts[Pattern*Concept] -- The concepts that are defined in a pattern
+RELATION allRules[Context*Rule] -- The rules contained by a context
 ENDPATTERN
 
 PATTERN "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)

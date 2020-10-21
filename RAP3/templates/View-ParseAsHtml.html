@@ -1,0 +1,2 @@
+$if(exprIsUni)$<div class="bigalphanumeric wordwrap" ng-bind-html="resource['$name$']"></div>$else$
+<div ng-repeat="row in resource['$name$'] track by \$index" class="bigalphanumeric wordwrap" ng-bind-html="row"></div>$endif$

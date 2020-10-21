@@ -1,0 +1,20 @@
+CONTEXT "Persona Interfaces" IN ENGLISH
+-----------------------------------------------------------
+
+VIEW Persona: Persona DEFAULT
+{ "party org"  : pParty;orgAbbrName
+, ":"          : TXT ":"
+, "party name" : pActor;personRef
+} ENDVIEW
+
+POPULATION Role CONTAINS [ "PersonaMgr" ]
+
+INTERFACE "Persona" FOR "PersonaMgr" : I[Persona] cRud BOX <TABLE>
+   [ "Organization" : pParty cRUd
+   , "Actor"    : pActor cRUd
+   , "Relation" : pRelation cRUd
+   , "Account"  : accPersona~ cRud
+   ]
+
+-----------------------------------------------------------
+ENDCONTEXT

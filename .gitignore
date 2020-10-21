@@ -7,3 +7,8 @@ NewFrontend/History/make.bat
 *.project
 *.epp
 volumes
+prototype-src/
+.env
+.cache
+
+/vendor/

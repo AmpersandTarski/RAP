@@ -1,0 +1,78 @@
+CONTEXT "Person Registration" IN ENGLISH
+{- This extension to `SIAM_PeronRefs.adl` implements a Person registration is a relatively minimalistic fashion.
+The purpose of this file is to provide a set of 'standard' relations that are commonly re-used in different projects.
+Note that it does not contain an IDENT statement, so as to allow for easy extensions of the `Person` concept.
+Also note that relations are UNI, not TOT - this is to allow as much flexibility for re-use as possible.
+
+The file `SIAM_PersonRegExts.adl` has further commonly used `Person`-related relations.
+-}
+-----------------------------------------------------------
+INCLUDE "./SIAM_PersonRefs.adl"
+
+--CLASSIFY Actor ISA PartyOrActor -- Define root of the Party/Actor typology tree
+--CLASSIFY Party ISA PartyOrActor -- Define root of the Party/Actor typology tree
+CLASSIFY Person ISA Actor -- Integration with Persona
+--CLASSIFY Person ISA Party -- Integration with Persona
+
+RELATION personRef[Person*PersonRef] [UNI] -- Note that this relation does NOT (always) identify a Person!
+MEANING "A textstring that represents (but not necessarily identifies) this person"
+
+RELATION personFirstName[Person*FirstName] [UNI]
+MEANING "The first name of a registered Person."
+
+RELATION personLastName[Person*LastName] [UNI]
+MEANING "The last name of a registered Person."
+
+--[Accounts and Sessions]--
+accPerson :: Account * Person [UNI] 
+MEANING "An Account may contain (web)service-specific attributes regarding a specific Person"
+
+sessionPerson :: SESSION * Person [UNI]
+MEANING "In a SESSION, the user (i.e. the Person that acts 'at the other side') may be known."
+ROLE ExecEngine MAINTAINS "Determine the acting person in a session"
+RULE "Determine the acting person in a session": sessionAccount;accPerson |- sessionPerson
+VIOLATION (TXT "{EX} InsPair;sessionPerson;SESSION;", SRC I, TXT ";Person;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear the acting person in a session"
+RULE "Clear the acting person in a session": sessionPerson |- sessionAccount;accPerson
+VIOLATION (TXT "{EX} DelPair;sessionPerson;SESSION;", SRC I, TXT ";Person;", TGT I)
+
+--[Integration with SIAM_PersonRef]--
+--#IFNOT ManualPersonRef
+IDENT SIAMPersonRefComputations: SIAMPersonRefComputation(siamcompFirstName,siamcompLastName)
+siamcompFirstName  :: SIAMPersonRefComputation * FirstName  [UNI]
+siamcompLastName   :: SIAMPersonRefComputation * LastName   [UNI]
+siamcompPersonRef  :: SIAMPersonRefComputation * PersonRef  [UNI]
+
+ROLE ExecEngine MAINTAINS "Auto create SIAMPersonRefComputation"
+RULE "Auto create SIAMPersonRefComputation": personFirstName~;personLastName |- siamcompFirstName~;siamcompLastName
+VIOLATION (TXT "{EX} InsAtom;SIAMPersonRefComputation"
+              ,TXT "{EX} InsPair;siamcompFirstName;SIAMPersonRefComputation;_NEW;FirstName;", SRC I
+              ,TXT "{EX} InsPair;siamcompLastName;SIAMPersonRefComputation;_NEW;LastName;", TGT I
+              ,TXT "{EX} InsPair;siamcompPersonRef;SIAMPersonRefComputation;_NEW;PersonRef;{php}'", SRC I, TXT "'.' '.'", TGT I, TXT "'"
+          )
+
+ROLE ExecEngine MAINTAINS "Auto maintain 'personRef' relation"
+RULE "Auto maintain 'personRef' relation": 
+ (personFirstName;siamcompFirstName~ /\ personLastName;siamcompLastName~);siamcompPersonRef |- personRef
+VIOLATION (TXT "{EX} InsPair;personRef;Person;", SRC I, TXT ";PersonRef;", TGT I)
+--#ENDIF
+
+ROLE ExecEngine MAINTAINS "Auto maintain 'accPerson' relation"
+RULE "Auto maintain 'accPerson' relation": accPersonRef;(personRef~ - personRef~;-I) |- accPerson
+VIOLATION (TXT "{EX} InsPair;accPerson;Account;", SRC I, TXT ";Person;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Auto maintain 'accPersonRef' relation"
+RULE "Auto maintain 'accPersonRef' relation": accPerson;personRef |- accPersonRef
+VIOLATION (TXT "{EX} InsPair;accPersonRef;Account;", SRC I, TXT ";PersonRef;", TGT I)
+
+--[Glossary]--
+CONCEPT Person "A human being regarded as an individual" "Oxford English Dictionary"
+
+CONCEPT FirstName "first name of a person"
+REPRESENT FirstName TYPE ALPHANUMERIC
+
+CONCEPT LastName "last name of a person"
+REPRESENT LastName TYPE ALPHANUMERIC
+
+-----------------------------------------------------------
+ENDCONTEXT

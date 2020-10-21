@@ -1,0 +1,44 @@
+﻿CONTEXT "SeqItemNumberingInterface" IN ENGLISH
+
+INTERFACE "SeqItemNumbering": "_SESSION" cRud BOX
+    [ "New Sequence" : sessionNewSeq cRUd
+    , "Sequences" : V[SESSION*Sequence] cRud BOX <TABLE>
+       [ "Sequence name"  : seqName cRud
+       , "New first item" : seqNewFirstItem cRUd
+       , "New last item"  : seqNewLastItem cRUd
+       , "1st item index" : seqSinFirstValue cRUd
+       ]
+    , "Items" : V[SESSION*Sequence] cRud BOX
+       [ "Sequence" : I cRud BOX <TABLE>
+          [ "Name" : I cRud
+          , "First item" : seqFirstItem cRud
+          , "Last item" : seqLastItem cRud
+          ]
+       , "Items" : itemInSeq~ cRud BOX <TABLE sortable hideOnNoRecords>
+          [ "Prev"     : nextItem~ cRud
+          , "Item"     : I cRud
+          , "Next"     : nextItem cRud
+          , "InsNext"  : itemInsNextItem cRUd
+          , "InsPrev"  : itemInsPrevItem cRUd
+          , "Rmv?"     : itemRmvReq cRUd
+          , "Del?"     : itemDelReq cRUd
+          , "NewNext"  : itemNewNextItem cRUd
+          , "NewPrev"  : itemNewPrevItem cRUd
+          , "Index"    : itemSinValue cRud
+          ]
+       ]
+    , "Orphaned Items" : V[SESSION*Item];(I-itemInSeq;itemInSeq~) cRud BOX <TABLE sortable hideOnNoRecords>
+       [ "Prev"     : nextItem~ cRud
+       , "Item"     : I  cRud
+       , "Next"     : nextItem cRud
+       , "InsNext"  : itemInsNextItem cRUd
+       , "InsPrev"  : itemInsPrevItem cRUd
+       , "Rmv?"     : itemRmvReq cRUd
+       , "Del?"     : itemDelReq cRUd
+       , "NewNext"  : itemNewNextItem cRUd
+       , "NewPrev"  : itemNewPrevItem cRUd
+       , "Index"    : itemSinValue cRud
+       ]
+    ]
+
+ENDCONTEXT

@@ -5,22 +5,10 @@ VIEW Accounts: Account DEFAULT { "uid": accUserid } ENDVIEW
 
 --[Account extensions]--
 
---CLASSIFY Studentnummer ISA UserID   -- NOTE: UserID is of TYPE ALPHANUMERIC, which Studentnummer inherits
-accUserid :: Account * UserID [INJ,UNI] -- At most one account for every Studentnummer and vice versa
+--CLASSIFY Studentnummer ISA Userid   -- NOTE: Userid is of TYPE ALPHANUMERIC, which Studentnummer inherits
+accUserid :: Account * Userid [INJ,UNI] -- At most one account for every Studentnummer and vice versa
 accPerson :: Account * Person [UNI] -- At most one name for every Studentnummer and vice versa
 accEmail :: Account * Emailaddress [UNI] REPRESENT Emailaddress TYPE ALPHANUMERIC -- dit kan later een CEP-adres worden
-
-ROLE ExecEngine MAINTAINS "Accounts with a UserID are assigned the role of 'Student'"
-RULE "Accounts with a UserID are assigned the role of 'Student'": accUserid # "Student"[Role] |- accAllowedRoles
-VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I)
-
-ROLE ExecEngine MAINTAINS "Accounts without a UserID may not be assigned the role of 'Student'"
-RULE "Accounts without a UserID may not be assigned the role of 'Student'": accAllowedRoles;"Student" |- accUserid;V
-VIOLATION (TXT "{EX}DelPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I)
-
---ROLE ExecEngine MAINTAINS "'Student' role is always a default role"
---RULE "'Student' role is always a default role": accAllowedRoles # "Student"[Role] |- accDefaultRoles
---VIOLATION (TXT "{EX}InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I)
 
 --[Password (re)setting]--
 
@@ -32,7 +20,7 @@ VIOLATION (TXT "{EX}InsPair;accPassword;Account;", SRC I, TXT ";Password;welkom"
 --ROLE User MAINTAINS "Wilt u uw wachtwoord veranderen?"
 --RULE "Wilt u uw wachtwoord veranderen?": "_SESSION";sessionAccount;accPassword;"welkom" |- -V
 --MESSAGE "Het wachtwoord 'welkom' dient te worden aangepast."
---VIOLATION (TXT "U dient uw wachtwoord te wijzigen in de interface 'My Account' in de menubalk.")
+--VIOLATION (TXT "U dient uw wachtwoord te wijzigen in de interface 'MyAccount' in de menubalk.")
 
 accNewPassword :: Account * Password [UNI]
 ROLE ExecEngine MAINTAINS "(Re)set the password of an account"
@@ -49,7 +37,7 @@ RULE "(Re)setting the password for an account can only be done by an AccountMana
 
 POPULATION Role CONTAINS [ "AccountManager" ]
 
-INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX <SCOLS>
+INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX <TABLE sortable>
    [ "Userid": I cRud LINKTO INTERFACE "Account"
    , "Persoon"           : accPerson CRUD
    , "Toegestane rollen" : accAllowedRoles cRud
@@ -57,7 +45,7 @@ INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX 
    , "Persoonlijk ID"    : accUserid CRUD
    ]
            
-INTERFACE "Account" FOR AccountManager: I[Account] cRud ROWS
+INTERFACE "Account" FOR AccountManager: I[Account] cRud BOX
    [ "Userid": accUserid cRUd
    , "(Re)set password": accNewPassword crUd -- crUd is needed for Passwords
 -- , "Organization": accOrg cRUd
@@ -69,7 +57,7 @@ INTERFACE "Account" FOR AccountManager: I[Account] cRud ROWS
 PURPOSE INTERFACE "Roles"
 {+This interface allows account manager to change assigned roles to accounts.
 +}
-INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <SCOLS>
+INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <TABLE sortable>
    [ "Role": I cRud
    , "Assigned to": accAllowedRoles~ cRUd
    , "Default for": accDefaultRoles~ cRud
@@ -78,11 +66,11 @@ INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <SCOLS
 
 --[User account management]--
 
-INTERFACE "My Account" FOR "User": "_SESSION" cRud BOX <ROWSNL>
+INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <FORM hideLabels>
    [ "no session account": (I-sessionAccount;sessionAccount~);V;"Editing your account requires that you are logged in"[LoginMessage] cRud
-   , "session account": sessionAccount cRUd ROWS
+   , "session account": sessionAccount cRUd BOX
       [ "Userid": accUserid cRud
-      , "Nieuw wachtwoord": sessionAccount~ cRud COLS -- crUd is required for Passwords
+      , "Nieuw wachtwoord": sessionAccount~ cRud BOX <TABLE> -- crUd is required for Passwords
          [ "Nieuw": regPassword1 crUd -- crUd is required for Passwords
          , "(herhaal)": regPassword2 crUd -- crUd is required for Passwords
          ]
@@ -95,7 +83,7 @@ INTERFACE "My Account" FOR "User": "_SESSION" cRud BOX <ROWSNL>
 POPULATION LoginMessage CONTAINS [ "Editing your account requires that you are logged in" ]
 
 --[Studenten mogen een eigen account aanmaken door dat aan te vinken bij de login]--
-RELATION regUserID      [SESSION * UserID]       [UNI] -- Studentnummer waarmee de student zich wil registreren
+RELATION regUserID      [SESSION * Userid]       [UNI] -- Studentnummer waarmee de student zich wil registreren
 RELATION regPassword1   [SESSION * Password]     [UNI]
 RELATION regPassword2   [SESSION * Password]     [UNI]
 RELATION regEmail       [SESSION * Emailaddress] [UNI] -- OU Emailaccount (kunnen we later met Messaging gebruiken)
@@ -103,6 +91,10 @@ RELATION regPerson      [SESSION * Person]       [UNI]
 RELATION registerButton [SESSION * SESSION]      [PROP] -- knopje om expliciet te zeggen dat met deze gegevens geregistreerd moet gaan worden.
 RELATION loginButton    [SESSION * SESSION]      [PROP]      -- knopje om expliciet te zeggen dat de gebruiker wil inloggen.
 
+PURPOSE RULE "Login upon request"
+{+This rule links the current session to one account,
+being the account that corresponds to the `loginUserid` and `loginPassword` fields.
++}
 ROLE ExecEngine MAINTAINS "Login upon request"
 RULE "Login upon request": 
    ("_SESSION" - sessionAccount;sessionAccount~)
@@ -110,7 +102,7 @@ RULE "Login upon request":
    /\ loginButton
 |-     sessionAccount;sessionAccount~
 VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC loginUserid;accUserid~ 
-          ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";UserID;", SRC loginUserid
+          ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
           ,TXT "{EX} DelPair;loginPassword;SESSION;", SRC I, TXT ";Password;", SRC loginPassword
           )
 
@@ -122,9 +114,9 @@ RULE "Login on a new account when registering":
    /\ regPassword1;regPassword2~                      -- both passwords are equal
 |-    sessionAccount;sessionAccount~
 VIOLATION (TXT "{EX} NewStruct;Account"
-               , TXT ";accUserid;Account;_NEW;UserID;", TGT regUserID
+               , TXT ";accUserid;Account;_NEW;Userid;", TGT regUserID
                , TXT ";sessionAccount;SESSION;", SRC I, TXT ";Account;_NEW"
-          , TXT "{EX} DelPair;regUserID;SESSION;", SRC I, TXT ";UserID;", TGT regUserID
+          , TXT "{EX} DelPair;regUserID;SESSION;", SRC I, TXT ";Userid;", TGT regUserID
           , TXT "{EX} DelPair;registerButton;SESSION;", SRC I, TXT ";SESSION;", TGT I
           )
 
@@ -138,6 +130,15 @@ VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Pa
           ,TXT "{EX} DelPair;regPassword1;SESSION;", SRC I, TXT ";Password;", TGT regPassword1
           ,TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
           )
+
+PURPOSE RULE "Logout without request"
+{+When a session ceases to exist, RAP will break the link between session and account.
+As a consequence, I /\ sessionAccount;sessionAccount~ = "_SESSION" as long as a user is logged in.
++}
+ROLE ExecEngine MAINTAINS "Logout without request"
+RULE "Logout without request":
+   I /\ sessionAccount;sessionAccount~ |- "_SESSION"
+VIOLATION (TXT "{EX} DelPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC sessionAccount)
 
 RULE CopyEmail : sessionAccount~;registerButton;regEmail |- accEmail
 VIOLATION ( TXT "{EX} InsPair;accEmail;Account;",  SRC I, TXT ";Emailaddress;", TGT I )

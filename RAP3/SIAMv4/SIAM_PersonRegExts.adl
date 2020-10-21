@@ -1,0 +1,26 @@
+CONTEXT "Person Registration Extensions" IN ENGLISH
+{- This file contains relations for the concept Person that are not in the minimal set,
+but since they are commonly used, justify to be defined.
+As such, this file  provides a set of 'standard' add-on relations to be re-used in different projects.
+-}
+-----------------------------------------------------------
+INCLUDE "./SIAM_PersonReg.adl"
+
+REPRESENT FirstName TYPE ALPHANUMERIC
+RELATION personFirstName[Person*FirstName] [UNI] -- As defined in SIAM_PersonReg.adl
+MEANING "The first name of a Person that is registered."
+
+REPRESENT MiddleName TYPE ALPHANUMERIC
+RELATION personMiddleName[Person*MiddleName] [UNI]
+MEANING "The middle name of a Person that is registered."
+
+REPRESENT LastName TYPE ALPHANUMERIC
+RELATION personLastName[Person*LastName] [UNI] -- Also defined in SIAM_PersonReg.adl
+MEANING "The last name of a Person that is registered."
+
+REPRESENT Initials TYPE ALPHANUMERIC
+RELATION personInitials[Person*Initials] [UNI]
+MEANING "The initials of a Person that is registered."
+
+-----------------------------------------------------------
+ENDCONTEXT

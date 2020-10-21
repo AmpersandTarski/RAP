@@ -1,0 +1,88 @@
+CONTEXT "SIAM_Testing" IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
+-- This is a stand-alone context used for demonstrating and testing Sessions, Identity and Access Management.
+
+--! git@ci.tno.nl:ampersand/ssif.git has the authoratative source of SIAMv4
+
+   INCLUDE "./SIAM_AccountSessionRoles.adl" -- Core functionality: UIDs, Accounts, Sessions, Roles, Logout.
+   INCLUDE "./SIAM_AgentAccountsForAPIs.adl"-- Core functionality: APIKeys, AgentAccounts, and extensions to Sessions and Roles.
+   INCLUDE "./SIAM_AgentRefs.adl"           -- a standard way for refering to Agents, not associated with the Agent concept.
+   INCLUDE "./SIAM_AgentReg.adl"            -- extension to AgentRefs by a basic/minimalistic Agent Object registration.
+   INCLUDE "./SIAM_AgentAccRegistration.adl"-- extension to AgentRefs by a basic/minimalistic Agent Object registration.
+   INCLUDE "./SIAM_PersonRefs.adl"          -- a standard way for refering to people, not associated with the Person concept.
+   INCLUDE "./SIAM_PersonReg.adl"           -- extension to PersonRefs by a basic/minimalistic Person Object registration (just first- and last names).
+   INCLUDE "./SIAM_PersonRegExts.adl"       -- extensions (relations) for PersonReg that are commonly used.
+   INCLUDE "./SIAM_OrgRefs.adl"             -- a standard way for refering to organizations, not associated with the Person concept.
+   INCLUDE "./SIAM_OrgReg.adl"              -- extension to OrgRefs by a basic/minimalistic Organization Object registration (just abbr. and full names).
+   INCLUDE "./SIAM_PersonOrgs.adl"          -- Extension that defines (and maintains the population of) relation `personOrg`.
+-- INCLUDE "./SIAM_Persona.adl"             -- Extension that implements Persona (based on Persons and Organizations).
+   INCLUDE "./SIAM_LoginWithUPW.adl"        -- Login using U/PW (Usernames and Passwords).
+   INCLUDE "./SIAM_RegisterWithUPW.adl"     -- Extension that registers not-yet existing users that specify a U/PW.
+   INCLUDE "./SIAM_LoginWithUID.adl"        -- Login using third party identity providers.
+   INCLUDE "./SIAM_RegisterWithUID.adl"     -- Extension that registers authenticated users that do not have an Account.
+   INCLUDE "./SIAM_LoginLogging.adl"        -- Extension that keeps track of when logins are done. 
+   INCLUDE "./SIAM_ISO_LoA.adl"             -- Extension that introduces ISO authentication levels in a basic fashion.
+   INCLUDE "./SIAM_SessionSuspension.adl"   -- Extension that allows sessions to temporarily be suspended.
+   INCLUDE "./SIAM_AutoLoginAccount.adl"    -- Extension that implements the `accAutoLoginReq` property for accounts.
+   INCLUDE "./SIAM_GodAccounts.adl"         -- Extension that implements the 'God-accounts' and 'system roles' feature (accounts that have all roles).
+
+   INCLUDE "./SIAM_PersonReg.ifc"           -- a basic/minimalistic interface to edit Persons
+   INCLUDE "./SIAM_OrgReg.ifc"              -- a basic/minimalistic interface to edit Organizations
+-- INCLUDE "./SIAM_Persona.ifc"             -- a basic/minimalistic interface to edit Persona
+   INCLUDE "./SIAM_AccountManagement.ifc"   -- a basic/minimalistic interface to edit Accounts
+   INCLUDE "./SIAM_Developer.ifc"           -- a basic/minimalistic interface for developers
+
+-- Only one of the following can be active at any time.
+   INCLUDE "./SIAM_LoginForDevelopers.ifc"  -- Interface: Login/Register/Logout interface for use by developers
+-- INCLUDE "./SIAM_LoginWithUPW.ifc"        -- Interface: U/PW Login/Register interface for use by non-developers
+-- INCLUDE "./SIAM_LoginWithUID.ifc"        -- Interface: UID Login interface for use by non-developers
+   INCLUDE "./SIAM_Logout.ifc"              -- Interface: Logout interface for use by non-developers
+
+-- Ensure there is a default User that is automatically logged in. As an alternative, you may use an Excel file for this.
+INCLUDE "./_SIAM_pop.xlsx" -- Initial, minimal set of people and accounts 
+
+--[[Examples of possibly useful VIEWs]]--
+-- DEFAULT view voor UIDs:
+   VIEW UIDs: UID DEFAULT 
+   { "Userid":uidUserid, "at":TXT "@", "IdP":uidIssuer 
+   } ENDVIEW  --}
+
+--[[Examples of possibly useful RULEs]]--
+--[Account initialization]
+{- Creating an account (e.g. when importing through an Excel file) does not make it usable immediately.
+For example, its property `accIsActive` must be set before it can be used to login with.
+The property `accIsInitialized` is defined to help distinguish between Accounts that are, and those that are not initialized.
+Note: setting the property `accIsActive` will automatically also set `accIsInitialized`.-}
+
+   ROLE ExecEngine MAINTAINS "Account activation/initialization"
+   RULE "Account activation/initialization": I[Account] |- accIsInitialized
+   VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
+             -- `accIsInitialized` will now automatically be set by RULE `Active accounts are initialized`
+             )
+
+--[Set default interfaces for anonymous sessions and user sessions]
+   ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
+   RULE "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
+   VIOLATION (TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/AnonHome"
+             ,TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/UserHome"
+             ) --}
+
+-- The following RULEs are listed here so that developers may (cherry)pick them as necessary:
+--[Auto activate auto-login accounts]
+{- ROLE ExecEngine MAINTAINS "Auto activate auto-login accounts"
+   RULE "Auto activate auto-login accounts": accAutoLoginReq |- accIsActive
+   VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I) --}
+
+--[Initially, allowed roles are default Roles]--
+{- ROLE ExecEngine MAINTAINS "Initially, allowed roles are also default roles"
+   RULE "Initially, allowed roles are also default roles": 
+   (I-(accDefaultRoles;accDefaultRoles~));accAllowedRoles |- accDefaultRoles
+   VIOLATION (TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+
+--[Organization roles]--
+{- RELATION orgRole[Organization*Role] MEANING "Roles that are applicable to all accounts of the organization"
+   RULE "Systemroles cannot be organization-roles": orgRole;systemRole |- -V
+   ROLE ExecEngine MAINTAINS "Automatically assign organization roles"
+   RULE "Automatically assign organization roles" : accOrg;orgRole |- accAllowedRoles
+   VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
+
+ENDCONTEXT

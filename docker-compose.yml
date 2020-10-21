@@ -1,38 +1,168 @@
-version: '3'
+version: '3.7'
+# to visualize this docker-compose.yml file, if you are on linux, run:
+#      docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -f -m image docker-compose.yml -o documentation/docker-compose.png
+# run it literally (change NOTHING!) and expect the result in documentation/docker-compose.png
+
+volumes:
+  rap3-data: 
+  db-data:
+  letsencrypt:
+
+networks:
+  proxy:
+    external: true
+  db:
 
 services:
-  rap3:
+  # reverse proxy
+  traefik:
+    image: "traefik:v2.2"
+    container_name: "traefik"
     restart: always
-    image: ampersandtarski/ampersand-rap:latest
     ports:
       - "80:80"
-    links:
-      - db
-      - latex
+      - "443:443"
     volumes:
-      - ./volumes/log:/var/www/html/RAP3/log
-      - ./volumes/scripts:/var/www/html/RAP3/scripts
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./Traefik/traefik.toml:/etc/traefik/traefik.toml"
+      - "./Traefik/conf.d:/etc/traefik/conf.d"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - proxy
+  
+  dummy-student-prototype:
+    image: ampersandtarski/rap3-student-prototype:v1.0.0
+  
+  rap3:
+    image: ampersandtarski/ampersand-rap:2020
+    container_name: rap3
+    build:
+      context: RAP3
+    restart: unless-stopped
+    depends_on:
+      - db
+      - traefik
+      - dummy-student-prototype
+    environment:
+      - AMPERSAND_LOG_CONFIG=logging.yaml
+      - AMPERSAND_DEBUG_MODE=true
+      - AMPERSAND_PRODUCTION_MODE=false # false => e.g. enables database reset (in production mode not possible)
+      - AMPERSAND_DBHOST=db # refers to database service below
+      - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
+      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
+      - AMPERSAND_DBNAME=rap3
+      - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
+      - RAP_HOST_NAME=${SERVER_HOST_NAME}
+      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap3-student-prototype:v1.0.0
+    volumes:
+      - rap3-data:/var/www/data
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - proxy
+      - db
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.rap3-insecure.rule: Host(`${SERVER_HOST_NAME}`)
+      # more labels added for production, see ./docker-compose.prod.yml file
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
+  # demo application Klantkaarten
+  klantkaart:
+    image: ampersandtarski/klantkaart:latest
+    container_name: klantkaart
+    build:
+      context: Demos/Klantkaart
+    restart: unless-stopped
+    depends_on:
+      - db
+      - traefik
+    networks:
+      - proxy
+      - db
+    environment:
+      - AMPERSAND_LOG_CONFIG=logging.yaml
+      - AMPERSAND_DEBUG_MODE=true
+      - AMPERSAND_PRODUCTION_MODE=false # false => e.g. enables database reset (in production mode not possible)
+      - AMPERSAND_DBHOST=db # refers to database service below
+      - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
+      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
+      - AMPERSAND_DBNAME=klantkaart
+      - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.klantkaart-insecure.rule: Host(`klantkaart.${SERVER_HOST_NAME}`)
+      # more labels added for production, see ./docker-compose.prod.yml file
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+ 
+  # demo application Enrollment
+  enroll:
+    image: ampersandtarski/enroll:latest
+    container_name: enroll
+    build:
+      context: Demos/Enroll
+    restart: unless-stopped
+    depends_on:
+      - db
+      - traefik
+    networks:
+      - proxy
+      - db
+    environment:
+      - AMPERSAND_LOG_CONFIG=logging.yaml
+      - AMPERSAND_DEBUG_MODE=false
+      - AMPERSAND_PRODUCTION_MODE=true # false => e.g. enables database reset (in production mode not possible)
+      - AMPERSAND_DBHOST=db # refers to database service below
+      - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
+      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
+      - AMPERSAND_DBNAME=enroll
+      - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.enroll-insecure.rule: Host(`enroll.${SERVER_HOST_NAME}`)
+      # more labels added for production, see ./docker-compose.prod.yml file
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
  
   db:
-    restart: always
-    image: ampersandtarski/rap3-db
+    container_name: rap3-db
+    image: mariadb:10.4
+    restart: unless-stopped
+    command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
+      - MYSQL_USER=${MYSQL_USER} # from .env file
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD} # from .env file
+    # nu nog de autorisaties voor user ${MYSQL_USER} instellen....
     volumes:
-      - ./volumes/mysql:/var/lib/mysql
+      - db-data:/var/lib/mysql
+    networks:
+      - db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
 
   phptools:
     image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db # refers to database service above
     ports:
       - "8080:80"
-    links:
+    container_name: phptools
+    restart: unless-stopped
+    depends_on:
       - db
-
-  vscode:
-    image: codercom/code-server
-    command: --password=zoepersecreet
-    ports:
-      - "8443:8443"
-    volumes:
-      - ./volumes/scripts:/var/www/html/RAP3/scripts
-
-  latex:
-    image: thomasweise/docker-texlive-full
+    networks:
+      - db

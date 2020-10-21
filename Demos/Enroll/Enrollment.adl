@@ -1,4 +1,4 @@
-CONTEXT Enrollment IN DUTCH
+CONTEXT Enrollment IN ENGLISH
 PURPOSE CONTEXT Enrollment
 {+ A complete course consists of several modules.
 Students of a course can enroll for any module that is part of the course.
@@ -26,10 +26,10 @@ POPULATION takes CONTAINS
 ; ("John", "Business IT")
 ]
 
-RELATION isPartOf [Module*Course]
+RELATION isPartOf[Module*Course]
 MEANING "A module part of a complete course"
 
-POPULATION isPartOf CONTAINS
+POPULATION isPartOf[Module*Course] CONTAINS
 [ ("Finance", "Management")
 ; ("Business Rules", "Business IT")
 ; ("Business Analytics", "Business IT")
@@ -48,17 +48,21 @@ VIOLATION (TXT "Student ", SRC I, TXT " enrolled for the module ", TGT I, TXT " 
 ENDPATTERN
 
 INTERFACE Overview : "_SESSION"                  cRud
-TABS [ Students : V[SESSION*Student]             cRuD
-        COLS    [ "Student" : I[Student]         CRUd
+BOX <TABS>
+     [ Students : V[SESSION*Student]             cRuD
+       BOX <TABLE>
+                [ "Student" : I[Student]         cRud
                 , "Enrolled for" : isEnrolledFor cRUD
                 , "Course" : takes CRUD
                 ]
      , Course : V[SESSION*Course]                cRuD
-        COLS    [ "Course" : I                   cRud
+       BOX <TABLE>
+                [ "Course" : I                   cRud
                 , "Modules" : isPartOf~          CRUD
                 ]
      , Modules : V[SESSION*Module]               cRud
-        COLS    [ "Modules" : I                  cRuD
+       BOX <TABLE>
+                [ "Modules" : I                  cRuD
                 , "Course" : isPartOf            cRUd
                 , "Students" : isEnrolledFor~    CRUD
                 ]

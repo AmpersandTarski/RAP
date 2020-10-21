@@ -33,4 +33,10 @@ PURPOSE RULE "Submission Timestamping"
 {+To ensure that the submittor of every script is known, the following rule automatically stamps every script with its submittor and a timestamp.
 The account logged in when creating a new script is considered to be the submittor.
 +}
+
+PURPOSE RELATION scriptOk[ScriptVersion*ScriptVersion]
+{+The property scriptOk states that there are no compiler errors in this version of the script.
+(i.e. The compiler has resulted in error code 0)
++}
+
 ENDCONTEXT

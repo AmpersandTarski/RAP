@@ -1,0 +1,54 @@
+﻿CONTEXT SeqItemTextsInterface IN ENGLISH 
+
+INTERFACE "SeqItemTexts": "_SESSION" cRud BOX
+    [ "New Sequence" : sessionNewSeq cRUd
+    , "Sequences" : V[SESSION*Sequence] BOX <TABLE>
+       [ "Sequence name"  : seqName cRud
+       , "New first item" : seqNewFirstItem cRUd
+       , "New last item"  : seqNewLastItem cRUd
+       , "1st item index" : seqSinFirstValue cRUd
+       , "Prefix"   : seqSinPrefix cRUd
+       , "Postfix"  : seqSinPostfix cRUd
+       ]
+    , "Items" : V[SESSION*Sequence] cRud BOX
+       [ "Sequence" : I cRud BOX <TABLE>
+          [ "Name" : I cRud
+          , "First item" : seqFirstItem cRud
+          , "Last item" : seqLastItem cRud
+          ]
+       , "Items" : itemInSeq~ cRud BOX <TABLE sortable hideOnNoRecords>
+          [ "Prev"     : nextItem~ cRud
+          , "Item"     : I cRud
+          , "Next"     : nextItem cRud
+          , "InsNext"  : itemInsNextItem cRUd
+          , "InsPrev"  : itemInsPrevItem cRUd
+          , "Rmv?"     : itemRmvReq cRUd
+          , "Del?"     : itemDelReq cRUd
+          , "NewNext"  : itemNewNextItem cRUd
+          , "NewPrev"  : itemNewPrevItem cRUd
+          , "Index"    : itemSinValue cRud
+          , "Formatted": itemSinText cRud
+--        , "U-Prefix" : itemUsedPrefix cRud
+--        , "U-Value"  : itemUsedValue cRud
+--        , "U-Postfix": itemUsedPostfix cRud
+          ]
+       ]
+    , "Orphaned Items" : V[SESSION*Item];(I-itemInSeq;itemInSeq~) cRud BOX <TABLE sortable hideOnNoRecords>
+       [ "Prev"     : nextItem~ cRud
+       , "Item"     : I  cRud
+       , "Next"     : nextItem cRud
+       , "InsNext"  : itemInsNextItem cRUd
+       , "InsPrev"  : itemInsPrevItem cRUd
+       , "Rmv?"     : itemRmvReq cRUd
+       , "Del?"     : itemDelReq cRUd
+       , "NewNext"  : itemNewNextItem cRUd
+       , "NewPrev"  : itemNewPrevItem cRUd
+       , "Index"    : itemSinValue cRud
+       , "Formatted": itemSinText cRud
+--     , "U-Prefix" : itemUsedPrefix cRud
+--     , "U-Value"  : itemUsedValue cRud
+--     , "U-Postfix": itemUsedPostfix cRud
+       ]
+    ]
+
+ENDCONTEXT

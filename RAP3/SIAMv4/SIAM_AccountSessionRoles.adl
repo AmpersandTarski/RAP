@@ -1,0 +1,304 @@
+CONTEXT "Accounts, Sessions and Roles" IN ENGLISH
+PURPOSE CONTEXT "Accounts, Sessions and Roles"
+{+This context defines Accounts, Sessions and Roles.
+
+A Session is the timeframe within which one party (the 'owner' of the session)
+communicates with another party (who has its own, different, session).
+Typically, that would be client software (e.g. web browser) 
+and server software (e.g. the IT system/web service)
+At any point in time, clients and servers can have multiple sessions,
+each of which being a communication channel with some other party.
+
+A Session is associated with so-called session variables, 
+that together specify the context within which the communication takes place.
+An example of such a variables is `sessionActiveRoles`, which says which roles
+have been activated in a session. Another example is `sessionAccount`,
+which has the Account with which a user has logged in.
+
+An Account is a registration of attributes of people, organizations or persona 
+from a (web)Service Provider's perspective. 
+Examples of such attributes are (user)names, passwords, or roles.
+
+One purpose of such attributes is to configure the context of a session 
+(by (de)populating the 'session variables' that define such contexts). 
+The session context (session-variables) allow us to personalize the way 
+that a user is given access to the system. 
+Examples of session variables are: `sessionPerson`, `sessionAllowedRoles`.
+
+With respect to roles, the following ideas apply:
+- An account can be assigned:
+  - `accAllowedRoles`, i.e. roles that can be activated in a session with that account.
+  - `accDefaultRoles`, i.e. roles that are by default activated in a session with that account.
+  and obviously, `accDefaultRoles` must be a subset of `accAllowedRoles`.
+  An account can NOT be assigned a `systemRole`, which by definition are roles that cannot be assigend to an account.
+- A session can be assigned any role; however:
+  - in a user session, i.e. a session that has a `sessionAccount`, 
+    only those roles can be activated that are in `accAllowedRoles`.
+    Activated roles are in `sessionActiveRoles`.
+    In such a session, the default roles are specifed by `accDefaultRoles`
+  - in an anonymous session, i.e. a session where `sessionAccount` is not populated,
+    the role `Anonymous` is a session role (i.e. in `sessionActiveRoles`).
++}
+
+--[Account basics]--
+{-There is a lot to be said for (not) having properties such as `INJ` or `TOT`
+assocatiated with the relation `accUserid`. In order for this file to be as reusable as possible, 
+**the INJ and TOT properties have been removed from accUserid**;
+You can reinstate them if you feel like it, by (re)defining this relation with such properties
+or by creating rules that express the equivalent. -}
+-- IDENT Accounts: Account(accUserid,accPassword) -- Only needed when accUserid is not [INJ]
+accUserid :: Account * Userid [UNI] -- This Userid is the name of the Account, and identifies the account.
+MEANING "An Account registers a pseudonym for whatever the Account applies to"
+accPassword :: Account * Password [UNI] -- Not TOT, because we want to facilitate external logins.
+MEANING "An Account registers a password for whatever the Account applies to"
+accIsInitialized :: Account * Account [PROP]
+MEANING "An account may have the property that it is initialized (e.g. some default values have been set)"
+accIsActive :: Account * Account [PROP]
+MEANING "An Account may have the property that it is active, meaning that it can be used to login"
+accDeactivateReq :: Account*Account[PROP] -- An Account may have the property of being deactivated once it is not/no longer a sessionAccount
+MEANING "A request may exist to deactivate the account (as soon as it is no longer a sessionAccount)"
+accUserIfc :: Account*NavToIfc [UNI] -- An Account may specify the INTERFACE to navigate to after a succesful login
+MEANING "The INTERFACE that will be navigated to after a succesful login with this account"
+
+ROLE ExecEngine MAINTAINS "Active user accounts are initialized"
+RULE "Active user accounts are initialized": accIsActive |- accIsInitialized
+VIOLATION (TXT "{EX} InsPair;accIsInitialized;Account;", SRC I, TXT ";Account;", TGT I)
+
+--[UIDs]--
+IDENT UIDs: UID(uidIssuer,uidUserid)
+uidUserid :: UID * Userid [UNI,TOT] -- Identifier for the user in the realm of the IdP that issued it.
+uidIssuer :: UID * IdP    [UNI]     -- Identifier for the third-party IdP that issues the uidUserid. If none is given, the Userid is issued by the application itself.
+
+accUID :: Account * UID [INJ] -- A UID may serve as an identifier for an Account.
+MEANING "An Account registers a UID for whatever the Account applies to"
+
+ROLE ExecEngine MAINTAINS "Set default Userid for Accounts if possible"
+RULE "Set default Userid for Accounts if possible": (I-(accUserid;accUserid~));accUID;uidUserid |- accUserid
+VIOLATION (TXT "{EX} InsPair;accUserid;Account;", SRC I, TXT ";Userid;", TGT I)
+
+--[Sessions]--
+sessionAccount :: SESSION * Account [UNI]  -- the Account that holds the default values for SESSION-variables.
+sessionUserid  :: SESSION * Userid  [UNI]  -- the userid (i.e. a name/text that identifies the Account that is used to login)
+sessionUID     :: SESSION * UID            -- Authenticated UID(s) that refer to the sessionAccount
+
+RULE "(Additional) (re)authentication must be for the same user account": sessionUserid;accUserid~ |- sessionAccount
+
+ROLE ExecEngine MAINTAINS "Determine the session's Userid"
+RULE "Determine the session's Userid": sessionAccount;accUserid |- sessionUserid
+VIOLATION (TXT "{EX} InsPair;sessionUserid;SESSION;", SRC I, TXT ";Userid;", TGT I)
+ROLE ExecEngine MAINTAINS "Remove the session's Userid"
+RULE "Remove the session's Userid": sessionUserid |- sessionAccount;accUserid
+VIOLATION (TXT "{EX} DelPair;sessionUserid;SESSION;", SRC I, TXT ";Userid;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Sessions with an inactive sessionaccount may not exist"
+RULE "Sessions with an inactive sessionaccount may not exist": sessionAccount |- sessionAccount;accIsActive
+-- VIOLATION (TXT "{EX} DelAtom;SESSION;", SRC I) -- i.e.: logout.
+VIOLATION (TXT "{EX} InsPair;sessionLogoutReq;SESSION;", SRC I, TXT ";SESSION;", SRC I)
+
+ROLE ExecEngine MAINTAINS "Request to deactivate sessionAccount"
+RULE "Request to deactivate sessionAccount": accDeactivateReq |- sessionAccount~;sessionAccount
+VIOLATION (TXT "{EX} DelPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
+          ,TXT "{EX} DelPair;accDeactivateReq;Account;", SRC I, TXT ";Account;", TGT I
+          )
+
+--[Account Roles]--
+
+accAllowedRoles :: Account * Role
+MEANING "An Account registers the Roles that MAY be activated in a SESSION to which the Account is assigned"
+accDefaultRoles :: Account * Role
+MEANING "An Account registers the Roles that ARE activated in a SESSION once the Account is assigned"
+
+ROLE ExecEngine MAINTAINS "Default roles must be allowed roles"
+RULE "Default roles must be allowed roles": accDefaultRoles |- accAllowedRoles
+VIOLATION (TXT "{EX} DelPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I)
+
+--[Integration between SIAMv4 Roles and the new Prototype Framework PF_Roles]
+-- `Role`s can be renamed into `Role`s again once ticket #xxx has been resolved
+CLASSIFY Role IS Role -- Necessary for integration with System Context (new Prototype Framework)
+-- Temporary measure to accommodate for bug in new prototype framework
+POPULATION label[Role*PF_Label] CONTAINS [ ("Anonymous", "Anonymous") ] 
+-- Temporary? rules to ensure labels are in place
+label :: Role * PF_Label [UNI] REPRESENT PF_Label TYPE ALPHANUMERIC
+ROLE ExecEngine MAINTAINS "Auto create default labels for PF_Roles"
+RULE "Auto create default labels for PF_Roles": I[Role] |- label;label~
+VIOLATION (TXT "{EX} InsPair;label;Role;", SRC I, TXT ";PF_Label;", TGT I)
+
+--[Session Roles]--
+-- Session Roles are different from Account Roles, because they need to be tweaked in the (new) Prototype Framework
+
+PURPOSE RELATION sessionAllowedRoles
+{+the set of active roles in a session (i.e. the roles that determine what can(not) be done in a session) is limited to the set of roles that may be activated: for user sessions, these are the roles that are specified in the user's account.+}
+sessionAllowedRoles :: SESSION * Role
+MEANING "Within a SESSION, a Role may be activated"
+ROLE ExecEngine MAINTAINS "Set allowed session roles in User sessions"
+RULE "Set allowed session roles in User sessions": 
+   sessionAccount;accAllowedRoles |- sessionAllowedRoles
+VIOLATION (TXT "{EX} InsPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;", TGT I[Role])
+ROLE ExecEngine MAINTAINS "Clear allowed session roles in User sessions"
+RULE "Clear allowed session roles in User sessions": 
+   sessionIsUser;sessionAllowedRoles |- sessionAccount;accAllowedRoles
+VIOLATION (TXT "{EX} DelPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;", TGT I[Role])
+
+PURPOSE RELATION sessionActiveRoles
+{+the set of active roles in a session determine what the user can and cannot do. 
+The account of the user specifies the default of roles that should be activated at the moment the user succesfully logs in.
+A role can only be activated in a session if the session-account specifies it as an allowed role.+}
+sessionActiveRoles :: SESSION * Role
+MEANING "A SESSION has activated a Role"
+
+ROLE ExecEngine MAINTAINS "Deactivate session roles that are not allowed session roles"
+RULE "Deactivate session roles that are not allowed session roles": sessionActiveRoles |- sessionAllowedRoles
+VIOLATION (TXT "{EX} DelPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;", TGT I[Role])
+
+ROLE ExecEngine MAINTAINS "Activate default roles in a User session that has no active roles other than 'User'"
+RULE "Activate default roles in a User session that has no active roles other than 'User'": 
+   (I-(sessionActiveRoles;(I-"User");sessionActiveRoles~));sessionAccount;accDefaultRoles |- sessionActiveRoles
+VIOLATION (TXT "{EX} InsPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;", TGT I[Role])
+
+ROLE ExecEngine MAINTAINS "Deactivate roles in a User session that are revoked from the User's Account"
+RULE "Deactivate roles in a User session that are revoked from the User's Account":
+   sessionIsUser;sessionAllowedRoles |- sessionAccount;accAllowedRoles;(I \/ "User")
+VIOLATION (TXT "{EX} DelPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;", TGT I[Role])
+
+--[The User Role is available for all Accounts]--
+
+POPULATION Role CONTAINS [ "User" ] -- Every account shall have the role 'User' (both as an Allowed and Default Role)
+
+ROLE ExecEngine MAINTAINS "All User Accounts must have the role User"
+RULE "All User Accounts must have the role User" : I[Account] |- accAllowedRoles;"User";accDefaultRoles~
+VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;User"
+          ,TXT "{EX}InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;User"
+          )
+
+--[System Roles]--
+PURPOSE RELATION systemRole
+{+Some roles exist for purposes that are internal to the system. It should not be possible for such roles to be assigned to Accounts, or activated in sessions. We have called such roles 'system roles' to contrast them with the roles that are available in so-called 'god accounts'.+}
+systemRole :: Role * Role [PROP] -- Roles that are not allowed for any Account (including 'god-accounts).
+
+ROLE ExecEngine MAINTAINS "Accounts cannot have any of the system roles"
+RULE "Accounts cannot have any of the system roles": accAllowedRoles |- accAllowedRoles;(I[Role]-systemRole)
+VIOLATION (TXT "{EX} DelPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I)
+
+POPULATION systemRole CONTAINS [ ("SYSTEM","SYSTEM") ]         -- Role is used in INTERFACEs that no body should access
+POPULATION systemRole CONTAINS [ ("Anonymous","Anonymous") ]   -- Role is used in INTERFACEs for anonymous users
+POPULATION systemRole CONTAINS [ ("ExecEngine","ExecEngine") ] -- Default role for ExecEngine
+
+--[Anonymous sessions]--
+
+ROLE ExecEngine MAINTAINS "Activate role 'Anonymous' in a session that has no authenticated user"
+RULE "Activate role 'Anonymous' in a session that has no authenticated user": 
+   sessionIsAnon |- sessionAllowedRoles;"Anonymous";sessionActiveRoles~
+VIOLATION (TXT "{EX} InsPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;Anonymous"
+          ,TXT "{EX} InsPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;Anonymous"
+          )
+
+ROLE ExecEngine MAINTAINS "De-activate role 'Anonymous' in a session with an authenticated user"
+RULE "De-activate role 'Anonymous' in a session with an authenticated user": 
+   sessionAllowedRoles;"Anonymous" |- sessionIsAnon;V[SESSION*Role]
+VIOLATION (TXT "{EX} DelPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;Anonymous") -- Other rules ensure that `sessionActiveRoles` is depopulated
+
+ROLE ExecEngine MAINTAINS "Anonymous Session Roles"
+RULE "Anonymous Session Roles": sessionIsAnon;sessionAllowedRoles |- V;"Anonymous"
+VIOLATION (TXT "{EX} DelPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;", TGT I)
+
+--[Navigation after succesful login/logout]
+
+CONCEPT NavToIfc "Alphanumeric text that represents an INTERFACE" REPRESENT NavToIfc TYPE ALPHANUMERIC
+
+sessionIfcsSet :: SESSION * SESSION [PROP] -- The default interfaces for anonymous- and user-sessions have been set.
+sessionAnonIfc :: SESSION * NavToIfc [UNI] -- Name of default interface for anonymous sessions
+sessionUserIfc :: SESSION * NavToIfc [UNI] -- Name of default interface for user sessions
+
+ROLE ExecEngine MAINTAINS "InsPair `sessionIfcsSet`"
+RULE "InsPair `sessionIfcsSet`": I /\ sessionAnonIfc;sessionAnonIfc~ /\ sessionUserIfc;sessionUserIfc~ |- sessionIfcsSet
+VIOLATION (TXT "{EX} InsPair;sessionIfcsSet;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+ROLE ExecEngine MAINTAINS "DelPair `sessionIfcsSet`"
+RULE "DelPair `sessionIfcsSet`": sessionIfcsSet |- I /\ sessionAnonIfc;sessionAnonIfc~ /\ sessionUserIfc;sessionUserIfc~
+VIOLATION (TXT "{EX} DelPair;sessionIfcsSet;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+--[Logout]--
+sessionLogoutReq :: SESSION * SESSION [PROP]
+ROLE ExecEngine MAINTAINS "Logout"
+RULE "Logout": "_SESSION";sessionLogoutReq |- -V 
+MEANING "A request to logout in a session must be processed in that session."
+VIOLATION (TXT "{EX} SetNavToOnCommit;", SRC sessionAnonIfc -- Setup for default anonymous interface
+          ,TXT "{EX} DelAtom;SESSION;", SRC I
+          )
+
+--[Assisted Login request]--
+sessionLoginAssist :: SESSION * SESSION [PROP] -- This flag is used by the 'LoginWithAssistance' interfaces. It has been put here to accommodate developers that want to create their own versions of such interfaces).
+ROLE ExecEngine MAINTAINS "Reset login help"
+RULE "Reset login help": sessionLoginAssist |- sessionIsAnon
+VIOLATION (TXT "{EX} DelPair;sessionLoginAssist;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+--[Session Properties]
+sessionIsAnon  :: SESSION * SESSION [PROP] -- The session has the property of not having a session account (i.e.: an anonymous user)
+sessionIsUser  :: SESSION * SESSION [PROP] -- The session has the property of having a session (user) account (and by implication: a session user)
+sessionIsAgent :: SESSION * SESSION [PROP] -- see file "SIAM_AgentAccountsForAPIs.adl" for details.
+
+ROLE ExecEngine MAINTAINS "Set property 'sessionIsAnon'"
+RULE "Set property 'sessionIsAnon'": I - (sessionAccount;sessionAccount~ \/ sessionAgentAccount;sessionAgentAccount~) |- sessionIsAnon
+VIOLATION (TXT "{EX} InsPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear property 'sessionIsAnon'"
+RULE "Clear property 'sessionIsAnon'": sessionIsAnon |- I - (sessionAccount;sessionAccount~ \/ sessionAgentAccount;sessionAgentAccount~)
+VIOLATION (TXT "{EX} DelPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Set property 'sessionIsUser'"
+RULE "Set property 'sessionIsUser'": I /\ sessionAccount;sessionAccount~ |- sessionIsUser
+VIOLATION (TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear property 'sessionIsUser'"
+RULE "Clear property 'sessionIsUser'": sessionIsUser |- I /\ sessionAccount;sessionAccount~
+VIOLATION (TXT "{EX} DelPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+sessionAgentAccount :: SESSION * AgentAccount [UNI] -- see file "SIAM_AgentAccountsForAPIs.adl" 
+ROLE ExecEngine MAINTAINS "Set property 'sessionIsAgent'"
+RULE "Set property 'sessionIsAgent'": I /\ sessionAgentAccount;sessionAgentAccount~ |- sessionIsAgent
+VIOLATION (TXT "{EX} InsPair;sessionIsAgent;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+ROLE ExecEngine MAINTAINS "Clear property 'sessionIsAgent'"
+RULE "Clear property 'sessionIsAgent'": sessionIsAgent |- I /\ sessionAgentAccount;sessionAgentAccount~
+VIOLATION (TXT "{EX} DelPair;sessionIsAgent;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+--[Glossary]--
+
+PURPOSE CONCEPT Account
+{+Als iemand inlogt in het systeem moet diens 'context' worden geactiveerd, d.w.z. de gegevens over de persoon die het systeem nodig heeft om te kunnen berekenen wat hij/zij wel en niet mag doen, en welke gegevens van het systeem daarbij mogen worden gebruikt. Om zulke computations te kunnen maken wordt een aantal zaken geregistreerd en aan één persoon gekoppeld.+}
+CONCEPT Account "een verzameling gegevens die (een deel van) de gebruikerscontext van één gebruiker binnen het systeem beschrijft"
+
+PURPOSE CONCEPT Userid
+{+Het Userid (gebruikersnaam) van een account identificeert dat account en impliciet daarmee ook diens eigenaar (d.w.z. de persoon die als enige geacht wordt met dit account in te loggen. Een goed gebruik is om hiervoor een e-mailadres te gebruiken waarop de user van het account bereikbaar is.+}
+CONCEPT Userid "een rij karakters (bijvoorbeeld het e-mailadres van de user), die een account identificeert binnen het systeem"
+REPRESENT Userid TYPE ALPHANUMERIC
+
+PURPOSE CONCEPT Password
+{+Om het moeilijk te maken dat het Account van een zeker persoon door een ander wordt gebruikt, registreert het systeem wachtwoorden.
+Door een wachtwoord geheim te houden ontstaat enige mate van zekerheid dat het systeem gebruikt word door (dan wel met medeweten van) de persoon op wiens naam het wachtwoord is geregistreerd.+}
+CONCEPT Password "een rij karakters, die geheim gehouden kan worden door een persoon, en door die persoon gebruikt moet worden om toegang te krijgen tot het systeem"
+REPRESENT Password TYPE PASSWORD
+
+PURPOSE CONCEPT UID
+{+Eenvoudige user-identifiers bestaan uit een rij van bits (characters), die binnen de scope van de partij die ze uitgeeft een dergelijke gebruiker identificeren. Om user-identifiers van arbitraire uitgevers te kunnen gebruiken, zoals het geval is wanneer derde partijen gebruikt worden om een gebruiker te identificeren en authenticeren, dan moet ook worden aangegeven binnen welke scope de tekenrij een gebruiker identificeert. Het concept UID introduceren we om een dergelijke tekenrij en de bijbehorende scope (die we 'IdP' noemen) samen te kunnen registreren. +}
+CONCEPT UID "a pair (`IdP`,`Userid`) that may identify a user (account)"
+
+PURPOSE CONCEPT IdP
+{+Eenvoudige user-identifiers bestaan uit een rij van bits (characters), die binnen de scope van de partij die ze uitgeeft een dergelijke gebruiker identificeren. We gebruiken de term 'IdP' om een partij mee aan te duiden die dergelijke user-identifiers uitgeeft.+}
+CONCEPT IdP "a character string that represents an authentication service provider"
+REPRESENT IdP TYPE ALPHANUMERIC
+
+PURPOSE CONCEPT Role
+{+Niet iedereen mag alle gegevens uit een systeem inzien en/of wijzigen. Om de beheerslast te beperken die ontstaat als dit soort rechten per persoon wordt uitgegeven, gebruiken we het concept 'Role'. Een Role wordt enerzijds toegekend aan Accounts (en daarmee aan Personen) en anderzijds wordt hij gebruikt om gegevens in te zien en/of te wijzigen. Als een user inlogt worden de Rollen die aan hem zijn toegekend in de session geactiveerd (sessionrollen). Interfaces gebruiken deze sessionrollen om al dan niet gegevens te tonen en/of te editen.+}
+CONCEPT Role "de naam voor het mogen inzien en/of wijzigen van zekere gegevens, die kan worden toegekend aan accounts en in sessions kan worden geactiveerd" 
+
+PURPOSE CONCEPT SESSION
+{+Een persoon gebruikt een gegevensruimte (en heet dan 'user') door met een browser (bijv. Chrome of Firefox) het systeem te benaderen dat de gegegensruimte beheert. Als meerdere personen een gegevensruimte delen, moet het systeem de context van elk van hen kunnen onderscheiden, bijvoorbeeld om:
+\begin{itemize}
+\item de interactie 'klein' te houden, d.w.z. alleen gegevens te laten zien die voor hem/haar relevant zijn;
+\item ervoor te zorgen dat een user niet ziet wat hij niet mag zien;
+\item te kunnen bijhouden welke persoon, of welk(e) organisatie(onderdeel) verantwoordelijk is voor een zekere transactie;
+\item automatisch gegevens betreffende de user of zijn context aan transacties toe te kunnen voegen
+\end{itemize}
+We gebruiken de term 'SESSION' of 'session' om de verzameling van gegevens betreffende één (actieve) user mee aan te geven. Deze term correspondeert met de gelijknamige term browsers gebruiken, nl. 'een verbinding (door de browser) met een webservice (die een URL heeft)'. Het systeem houdt één session bij voor elke actieve user, d.w.z. voor elke browser die het systeem benadert. Merk op dat dit in het bijzonder geldt als de user in verschillende tabbladen van dezelfde browser het systeem benadert - er is dan toch maar één session (en één user).
++}
+CONCEPT SESSION "een verzameling van gegevens die de context beschrijven waarin één persoon het systeem gebruikt"
+
+-----------------------------------------------------------
+ENDCONTEXT

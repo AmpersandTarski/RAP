@@ -1,0 +1,69 @@
+CONTEXT "Persona" IN ENGLISH
+PURPOSE CONTEXT "Persona" 
+{+ There is a subtle difference between Actors (that perform actions) and
+Parties that are responsible for such actions (or better: accountable). 
+We introduce the concept 'Persona', instances of which combine the two.
++}
+
+--[Persona (minimalistic)]--
+IDENT Persona: Persona(pActor,pParty,pRelation)
+pActor :: Persona * Actor [UNI,TOT] MEANING "A Persona is associated with a single Actor that can act (do stuff)"
+pParty :: Persona * Party [UNI,TOT] MEANING "A Persona is associated with the single Party that is responsible for the Actors actions, i.e. on whose behalf its Actor acts"
+pRelation :: Persona * Relationship [UNI] MEANING "A Persona is associated with a particular relationship (e.g. that of 'employee') that its Actor and Party have with one another."
+
+actorPartyRelationship :: Actor * Party
+MEANING "For (at least) one purpose, an Actor may act for a Party"
+ROLE ExecEngine MAINTAINS "Actor-Party relationship integrity (1)"
+RULE "Actor-Party relationship integrity (1)": pActor~;pParty |- actorPartyRelationship
+VIOLATION (TXT "{EX} InsPair;actorPartyRelationship;Actor;", SRC I, TXT ";Party;", TGT I)
+ROLE ExecEngine MAINTAINS "Actor-Party relationship integrity (2)"
+RULE "Actor-Party relationship integrity (2)": actorPartyRelationship |- pActor~;pParty
+VIOLATION (TXT "{EX} DelPair;actorPartyRelationship;Actor;", SRC I, TXT ";Party;", TGT I)
+
+--[Accounts and Sessions]-- 
+accPersona :: Account * Persona  [UNI]
+MEANING "An Account may contain (web)service-specific attributes regarding a Persona"
+
+RULE "Integrity of Persons, Partys and Persona related to an Account":
+   accPersona;accPersona~ /\ accOrg;accOrg~ /\ accPerson;accPerson~ 
+|- accPersona;(pParty;accOrg~ /\ pActor;accPerson~)
+
+ROLE ExecEngine MAINTAINS "Populate `pActor` from `accPerson`"
+RULE "Populate `pActor` from `accPerson`": (I[Persona]-(pActor;pActor~));accPersona~;accPerson |- pActor
+VIOLATION (TXT "{EX} InsPair;pActor;Persona;", SRC I, TXT ";Actor;", TGT I[Person])
+
+ROLE ExecEngine MAINTAINS "Populate `pParty` from `accOrg`"
+RULE "Populate `pParty` from `accOrg`": (I[Persona]-(pParty;pParty~));accPersona~;accOrg |- pParty
+VIOLATION (TXT "{EX} InsPair;pParty;Persona;", SRC I, TXT ";Party;", TGT I[Party])
+
+ROLE ExecEngine MAINTAINS "Populate `accPerson` from `pActor`"
+RULE "Populate `accPerson` from `pActor`": (I[Persona]-(accPerson;accPerson~));accPersona;pActor;I[Person] |- accPerson
+VIOLATION (TXT "{EX} InsPair;accPerson;Account;", SRC I, TXT ";Person;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Populate `accOrg` from `pParty`"
+RULE "Populate `accOrg` from `pParty`": (I[Persona]-(accOrg;accOrg~));accPersona;pParty;I[Party] |- accOrg
+VIOLATION (TXT "{EX} InsPair;accOrg;Account;", SRC I, TXT ";Party;", TGT I)
+
+ROLE ExecEngine MAINTAINS "Assign Persona to Account"
+RULE "Assign Persona to Account": (I[Account]-(accPersona;accPersona~));(accPerson;pActor~ /\ accOrg;pParty~) |- accPersona
+VIOLATION (TXT "{EX} InsPair;accPersona;Account;", SRC I, TXT ";Persona;", TGT I)
+
+sessionPersona :: SESSION * Persona [UNI]
+MEANING "In a SESSION, the user (i.e. the Persona that acts 'at the other side') may be known."
+ROLE ExecEngine MAINTAINS "Determine the acting persona in a session"
+RULE "Determine the acting persona in a session": sessionAccount;accPersona |- sessionPersona
+VIOLATION (TXT "{EX} InsPair;sessionPersona;SESSION;", SRC I, TXT ";Persona;", TGT I)
+ROLE ExecEngine MAINTAINS "Undetermine the acting persona in a session"
+RULE "Undetermine the acting persona in a session": sessionPersona |- sessionAccount;accPersona
+VIOLATION (TXT "{EX} DelPair;sessionPersona;SESSION;", SRC I, TXT ";Persona;", TGT I)
+
+--[Glossary]--
+CONCEPT Persona "the combination of an Actor (that performs actions) and a Party (that is accountable for such acctions), within the context of their mutual relationship"
+CONCEPT Actor "an entity that is capable of acting, such as a person, or a web-service (an agent)"
+CONCEPT Party "an entity that has knowledge about the world, a means to reason with that knowledge, and the ability to decide what (new or modified) kinds of reasoning are valid within its knowledge"
+CONCEPT Relationship "a text that refers to a (set of) purpose(s) that an Actor works to achieve on behalf of a Party"
+
+REPRESENT Relationship TYPE ALPHANUMERIC
+
+-----------------------------------------------------------
+ENDCONTEXT

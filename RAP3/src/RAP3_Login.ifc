@@ -1,8 +1,17 @@
 CONTEXT "Login" IN ENGLISH
 -----------------------------------------------------------
 
-INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
-   [ "Login met een bestaand account" : I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
+ROLE ExecEngine MAINTAINS "Add role Anonymous to sessions"
+RULE "Add role Anonymous to sessions": I[SESSION]-(sessionAccount;sessionAccount~) |- sessionAllowedRoles;"Anonymous";sessionAllowedRoles~
+VIOLATION (TXT "{EX}InsPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;Anonymous")
+-- When a user logs in, this role is removed by rule 'Clear allowed session roles'
+
+ROLE ExecEngine MAINTAINS "Activate Anonymous by default"
+RULE "Activate Anonymous by default": sessionAllowedRoles;"Anonymous" |- sessionActiveRoles;"Anonymous"
+VIOLATION (TXT "{EX}InsPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;Anonymous")
+
+INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <FORM hideOnNoRecords>
+   [ "Login met een bestaand account" : I-sessionAccount;sessionAccount~ cRud BOX <TABLE hideOnNoRecords>
       [ "Studentnummer": loginUserid cRUd
       , "Password": loginPassword crUd -- crUd is needed for Passwords
       , "Login" : I BOX <PROPBUTTON>
@@ -10,7 +19,7 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
                           , property : loginButton cRUd
                           ]
       ]
-   , "Registreer een nieuw account": I-sessionAccount;sessionAccount~ cRud BOX <HCOLS>
+   , "Registreer een nieuw account": I-sessionAccount;sessionAccount~ cRud BOX <TABLE hideOnNoRecords>
       [ "Studentnummer" : regUserID cRUd
       , "Email" :      regEmail cRUd
       , "Naam" :       regPerson cRud
@@ -21,13 +30,13 @@ INTERFACE "Login": "_SESSION"[SESSION] cRud BOX <HROWS>
                           , property : registerButton cRUd
                           ]
       ]
-   , "Logout": I /\ sessionAccount;sessionAccount~ cRud BOX <ROWSNL>
-      [ "Logout": I cRud BOX <HCOLS>
+   , "Logout": I /\ sessionAccount;sessionAccount~ cRud BOX <FORM hideLabels>
+      [ "Logout": I cRud BOX <TABLE hideOnNoRecords>
          [ "Logout?": I BOX <PROPBUTTON>
                                [ disabled : I-I
                                , property : logoutRequest cRUd
                                ]
-         , "UserID": sessionUserid cRud
+         , "Userid": sessionUserid cRud
 --       , "Organization": accOrg cRud
 --       , "Person": accPerson CRUD
          , "Email": sessionAccount;accEmail cRud

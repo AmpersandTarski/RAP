@@ -1,0 +1,43 @@
+﻿CONTEXT SeqTextPhrasesInterface IN ENGLISH 
+
+INTERFACE "TextConstructs": V[SESSION*TextConstruct] cRud BOX <TABLE>
+   [ "TextConstruct" : I cRud
+   , "tcPrefix" : tcPrefix cRUd
+   , "tcLabel" : tcLabel cRUd
+   , "tcResult" : tcResult cRUd
+   ]
+
+INTERFACE "SeqTextPhrases": "_SESSION" cRud BOX
+    [ "New Sequence" : sessionNewSeq cRUd
+    , "Sequences" : V[SESSION*Sequence] cRud BOX <TABLE>
+       [ "Sequence name"  : seqName cRud
+       , "New item"  : seqNewLastItem cRUd
+       , "1st item index" : seqSinFirstValue cRUd
+       ]
+    , "Items" : V[SESSION*Sequence] cRud BOX
+       [ "Sequence" : I cRud BOX <TABLE>
+          [ "Name" : I cRud
+          , "First item" : seqFirstItem cRud
+          , "Last item" : seqLastItem cRud
+          , "BigText" : seqLastItem;itemBigText cRud
+          ]
+       , "Items" : itemInSeq~ cRud BOX <TABLE sortable hideOnNoRecords>
+          [ "Item"     : I  cRud
+          , "Rmv?"     : itemRmvReq cRUd
+          , "Del?"     : itemDelReq cRUd
+          , "Index"    : itemSinValue cRud
+          , "itemPhrase" : itemPhrase
+          , "itemBigText" : itemBigText
+          ]
+       ]
+    , "Orphaned Items" : V[SESSION*Item];(I-itemInSeq;itemInSeq~) cRud BOX <TABLE sortable hideOnNoRecords>
+       [ "Item"     : I  cRud
+       , "Rmv?"     : itemRmvReq cRUd
+       , "Del?"     : itemDelReq cRUd
+       , "Index"    : itemSinValue cRud
+       , "itemPhrase" : itemPhrase
+       , "itemBigText" : itemBigText
+       ]
+    ]
+
+ENDCONTEXT

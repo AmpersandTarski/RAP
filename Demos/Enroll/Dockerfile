@@ -1,15 +1,22 @@
-FROM ampersandtarski/ampersand-prototype:latest
+FROM ampersandtarski/prototype-framework:v1.7.0
 
-ARG ADL_FILE
-ENV ADL_FILE=${ADL_FILE:-Script.adl}
-
-ENV AMPERSAND_DB_HOST=db
-
-RUN mkdir /src
-
-ADD . /src
+COPY . /usr/local/project/
 
 # Generate prototype application from folder
-RUN ampersand --proto=/var/www/html /src/Enrollment.adl --verbose --sqlHost=db --sqlLogin=ampersand --sqlPwd=ampersand \
- && mkdir -p /var/www/html/log \
- && chown -R www-data:www-data /var/www/html
+RUN ampersand proto /usr/local/project/Enrollment.adl \
+  --proto-dir /var/www \
+  --verbose
+
+RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
+  && cd /var/www \
+  # && composer install --prefer-dist --no-dev --profile \
+  # && npm install \
+  # && gulp build-ampersand \
+  # && gulp build-project
+
+# SJ:
+# When the container starts, I want to inform the Apache server
+# what the fully qualified domain name is.
+# For example by:
+#  echo $SERVER_HOST_NAME  >> /etc/apache2/apache2.conf
+# However, I cannot get it done... :-(

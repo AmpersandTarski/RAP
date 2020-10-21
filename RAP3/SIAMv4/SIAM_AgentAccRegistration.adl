@@ -1,0 +1,125 @@
+CONTEXT "AgentAccount Registration" IN ENGLISH
+PURPOSE CONTEXT "AgentAccount Registration"
+{+ This file specifies a basic AgentAccount Registration Form (AARForm), as well as
+- the means to use it in various INTERFACEs, and
+- a means for processing such forms, i.e. create AgentAccounts when appropriate,
+  using the data specified in the form to populate the AgentAccount.
+  
+The setup is such that an AARForm can be expanded (as can AgentAccounts)
++}
+
+INCLUDE "./SIAM_LoginWithUPW.adl"
+
+--[AARForms - General]
+RELATION aarformAPIKey[AARForm*APIKey]       [UNI] -- Requested APIKey
+RELATION aarformPassword[AARForm*Password]   [UNI] -- Requested Password
+
+RELATION aarformIsClean[AARForm*AARForm] [PROP] -- AARForm has property that a valid AgentAccount can be created
+ROLE ExecEngine MAINTAINS "InsPair aarformIsClean"
+RULE "InsPair aarformIsClean": I /\ aarformAPIKey;aarformAPIKey~ /\ aarformPassword;aarformPassword~ |- aarformIsClean
+VIOLATION (TXT "{EX} InsPair;aarformIsClean;AARForm;", SRC I, TXT ";AARForm;", TGT I)
+ROLE ExecEngine MAINTAINS "DelPair aarformIsClean"
+RULE "DelPair aarformIsClean": aarformIsClean |- I /\ aarformAPIKey;aarformAPIKey~ /\ aarformPassword;aarformPassword~
+VIOLATION (TXT "{EX} DelPair;aarformIsClean;AARForm;", SRC I, TXT ";AARForm;", TGT I)
+
+RELATION aarformCancelReq[AARForm*AARForm] [PROP]
+ROLE ExecEngine MAINTAINS "Delete canceled AARForms"
+RULE "Delete canceled AARForms": aarformCancelReq |- -V
+VIOLATION (TXT "{EX} DelAtom;AARForm;", SRC I)
+
+ROLE ExecEngine MAINTAINS "Delete orphaned AARForms"
+RULE "Delete orphaned AARForms": I |- sessionAARForm~;sessionAARForm \/ agaccAARForm~;agaccAARForm
+VIOLATION (TXT "{EX} DelAtom;AARForm;", SRC I)
+
+--[[AgentAccount creation]]--
+RELATION agaccAARForm[AgentAccount*AARForm] [INJ,UNI] -- An AgentAccount may (still) know about the AARForm it was created form
+RELATION aarformCreateAgentAccountReq[AARForm*AARForm] [PROP] -- Request the creation of a new AgentAccount
+RULE "An AgentAccount may only be created if it has not been previously registered": 
+   aarformCreateAgentAccountReq;aarformAPIKey;agaccAPIKey~ |- agaccAARForm~
+
+ROLE ExecEngine MAINTAINS "Service AgentAccount create request"
+RULE "Service AgentAccount create request": aarformCreateAgentAccountReq /\ aarformIsClean |- agaccAARForm~;agaccAARForm
+VIOLATION (TXT "{EX} InsAtom;AgentAccount" 
+          ,TXT "{EX} InsPair;agaccAARForm;AgentAccount;_NEW;AARForm;", SRC I
+          )
+ROLE ExecEngine MAINTAINS "Reset aarformCreateAARFReq"
+RULE "Reset aarformCreateAARFReq": I /\ agaccAARForm~;agaccAARForm |- -aarformCreateAgentAccountReq
+VIOLATION (TXT "{EX} DelPair;aarformCreateAgentAccountReq;AARForm;", SRC I, TXT ";AARForm;", TGT I)
+
+--[Copy required fields to AgentAccount]
+--$APIKey (required)
+ROLE ExecEngine MAINTAINS "Carbon copy agaccAPIKey from its AARForm"
+RULE "Carbon copy agaccAPIKey from its AARForm": agaccAARForm;aarformAPIKey |- agaccAPIKey
+VIOLATION (TXT "{EX} InsPair;agaccAPIKey;AgentAccount;", SRC I, TXT ";APIKey;", TGT I)
+--Note: you can change a userid, but you cannot discard it.
+
+--$Password (required)
+ROLE ExecEngine MAINTAINS "Carbon copy agaccPassword from its AARForm"
+RULE "Carbon copy agaccPassword from its AARForm": agaccAARForm;aarformPassword |- agaccPassword
+VIOLATION (TXT "{EX} InsPair;agaccPassword;AgentAccount;", SRC I, TXT ";Password;", TGT I)
+--Note: you can change a Password, but you cannot discard it.
+
+--[Copy optional fields to AgentAccount]
+-- The constructs as they are specified here can be used as a template for adding fields to AARForms
+--$AgentRef (optional) -- other stuff can be populated into AgentAccounts in a similar fashion
+RELATION aarformAgentRef[AARForm*AgentRef] [UNI] -- Name of the Agent associated with requested AgentAccount
+ROLE ExecEngine MAINTAINS "Copy existing aarformAgentRef to associated agaccAgentRef"
+RULE "Copy existing aarformAgentRef to associated agaccAgentRef": agaccAARForm;aarformAgentRef |- agaccAgentRef
+VIOLATION (TXT "{EX} InsPair;agaccAgentRef;AgentAccount;", SRC I, TXT ";AgentRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Delete agaccAgentRef when aarformAgentRef does not exist"
+RULE "Delete agaccAgentRef when aarformAgentRef does not exist": agaccAARForm;(I-aarformAgentRef;aarformAgentRef~) |- -(agaccAgentRef;V)
+VIOLATION (TXT "{EX} DelPair;agaccAgentRef;AgentAccount;", SRC I, TXT ";AgentRef;", SRC agaccAgentRef)
+
+--$PersonRef (optional) -- other stuff can be populated into AgentAccounts in a similar fashion
+RELATION aarformPersonRef[AARForm*PersonRef] [UNI] -- Name of the Person associated with requested AgentAccount
+ROLE ExecEngine MAINTAINS "Copy existing aarformPersonRef to associated agaccPersonRef"
+RULE "Copy existing aarformPersonRef to associated agaccPersonRef": agaccAARForm;aarformPersonRef |- agaccPersonRef
+VIOLATION (TXT "{EX} InsPair;agaccPersonRef;AgentAccount;", SRC I, TXT ";PersonRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Delete agaccPersonRef when aarformPersonRef does not exist"
+RULE "Delete agaccPersonRef when aarformPersonRef does not exist": agaccAARForm;(I-aarformPersonRef;aarformPersonRef~) |- -(agaccPersonRef;V)
+VIOLATION (TXT "{EX} DelPair;agaccPersonRef;AgentAccount;", SRC I, TXT ";PersonRef;", SRC agaccPersonRef)
+
+--$OrgRef (optional) -- other stuff can be populated into AgentAccounts in a similar fashion
+RELATION aarformOrgRef[AARForm*OrgRef] [UNI] -- Name of the Organization associated with requested AgentAccount
+ROLE ExecEngine MAINTAINS "Copy existing aarformOrgRef to associated agaccOrgRef"
+RULE "Copy existing aarformOrgRef to associated agaccOrgRef": agaccAARForm;aarformOrgRef |- agaccOrgRef
+VIOLATION (TXT "{EX} InsPair;agaccOrgRef;AgentAccount;", SRC I, TXT ";OrgRef;", TGT I)
+ROLE ExecEngine MAINTAINS "Delete agaccOrgRef when aarformOrgRef does not exist"
+RULE "Delete agaccOrgRef when aarformOrgRef does not exist": agaccAARForm;(I-aarformOrgRef;aarformOrgRef~) |- -(agaccOrgRef;V)
+VIOLATION (TXT "{EX} DelPair;agaccOrgRef;AgentAccount;", SRC I, TXT ";OrgRef;", SRC agaccOrgRef)
+
+--[[AARForms and SESSIONS]]--
+RELATION sessionCreateAARFReq[SESSION*SESSION] [PROP] -- This allows a button in an interface to create an AARF
+RELATION sessionAARForm[SESSION*AARForm] [INJ,UNI] -- An AARForm may be filled in from some session.
+
+ROLE ExecEngine MAINTAINS "Service AARForm create request"
+RULE "Service AARForm create request": sessionCreateAARFReq |- sessionAARForm;sessionAARForm~
+VIOLATION (TXT "{EX} InsAtom;AARForm"
+          ,TXT "{EX} InsPair;sessionAARForm;SESSION;", SRC I, TXT ";AARForm;_NEW"
+          )
+ROLE ExecEngine MAINTAINS "Reset sessionCreateAARFReq"
+RULE "Reset sessionCreateAARFReq": I /\ sessionAARForm;sessionAARForm~ |- -sessionCreateAARFReq
+VIOLATION (TXT "{EX} DelPair;sessionCreateAARFReq;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+
+--[Example interfaces]
+
+{- -- AgentAccount creation in an admin session
+INTERFACE "Create AgentAccount" FOR AgentAccountManager: I[AARForm] cRud BOX <RAW>
+   [ "Form to fill in": I cRud BOX
+      [ "APIKey" : aarformAPIKey cRUd
+      , "Password" : aarformPassword 
+      , "Agent Name" : aarformAgentRef
+      , "Represents Person"  : aarformPersonRef
+      , "Represents Organization": aarformOrgRef
+      ]
+   , "Buttons": I cRud BOX <RAW>
+      [ "Create": I cRud BOX <PROPBUTTON>
+         [ "property": aarformCreateAgentAccountReq cRUd
+         , "disabled": I-aarformIsClean cRud
+--       , "hide": <expression> cRud
+--       , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
+         ]
+      ]
+   ]
+-}
+ENDCONTEXT
