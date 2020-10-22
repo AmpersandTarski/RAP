@@ -9,9 +9,9 @@ CONTEXT RAP4 IN ENGLISH
 
    INCLUDE "Analyse.ifc"
 
-   INCLUDE "RAP4_AccountMgt.ifc"            -- RAP Account management interface
+   INCLUDE "RAP4_AccountMgt.ifc"            -- RAP4 Account management interface
    INCLUDE "RAP4.xlsx"                      -- Initial, minimal set of people and accounts 
--- INCLUDE "RAP4_Login.ifc"                 -- RAP Login/Logout interface
+-- INCLUDE "RAP4_Login.ifc"                 -- RAP4 Login/Logout interface
 
 REPRESENT Language TYPE ALPHANUMERIC
 REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC
@@ -73,7 +73,7 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SR
 --[Loading of the script]--
 RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP4
 RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script,.
-RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP when it is loaded into the meta tables
+RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP4 when it is loaded into the meta tables
 
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
 --RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
@@ -95,7 +95,7 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SR
           )
 
 --[Deletion of Context (Fully cascading!)]--
-RELATION requestDestroy[Context*Context] [PROP] -- a request to destroy this context. Beware: Experimental. You might burn all. The idea is that ALL atoms in the context of RAP that are linked with this context atom (transitive closure) will be deleted. ALL relations are taken into account, except for a set, specified in cli.php. Currently, the only relation in that set is context[ScriptVersion*Context]. This is to avoid that atoms are destroyed in the specific RAP part. 
+RELATION requestDestroy[Context*Context] [PROP] -- a request to destroy this context. Beware: Experimental. You might burn all. The idea is that ALL atoms in the context of RAP4 that are linked with this context atom (transitive closure) will be deleted. ALL relations are taken into account, except for a set, specified in cli.php. Currently, the only relation in that set is context[ScriptVersion*Context]. This is to avoid that atoms are destroyed in the specific RAP4 part. 
 ROLE ExecEngine MAINTAINS "Destroy Context"  -- ExecEngine is een echte pyrotechnicus.... 
 RULE "Destroy Context" : requestDestroy |- -V
 VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
@@ -165,7 +165,7 @@ RELATION urlEncodedName[Pattern*EncodedName][UNI]
 RELATION conceptualDiagram[Context*FileObject][UNI]
 REPRESENT EncodedName TYPE ALPHANUMERIC
 
-RELATION basePath[ScriptVersion*FilePath][UNI,TOT] -- The path on the filesystem relative from RAP to the context stuff of this scriptversion ( i.e.:  scripts\123456\generated\Script_1475844318716509\Version2016-10-07T144605\)
+RELATION basePath[ScriptVersion*FilePath][UNI,TOT] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\generated\Script_1475844318716509\Version2016-10-07T144605\)
 
 ROLE ExecEngine MAINTAINS "link cd of context"
 RULE "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]

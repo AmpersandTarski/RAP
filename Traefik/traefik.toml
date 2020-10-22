@@ -129,7 +129,7 @@
 
 # Enable Docker configuration backend
 # See also: https://community.traefik.io/t/unstable-behaviour-in-context-of-docker-compose/8254
-# RAP has multiple networks in use: db and proxy.
+# RAP4 has multiple networks in use: db and proxy.
 # The docker provider will discover the addresses of the container,
 # as the container has more than one network traefik will pick one of them.
 # If traefik is only on one of those networks the other address will not be reachable.
