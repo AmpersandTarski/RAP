@@ -45,8 +45,8 @@ services:
       - dummy-student-prototype
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
-      - AMPERSAND_DEBUG_MODE=true
-      - AMPERSAND_PRODUCTION_MODE=false # false => e.g. enables database reset (in production mode not possible)
+      - AMPERSAND_DEBUG_MODE=false
+      - AMPERSAND_PRODUCTION_MODE=true # false => e.g. enables database reset (in production mode not possible)
       - AMPERSAND_DBHOST=db # refers to database service below
       - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
       - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
@@ -70,39 +70,7 @@ services:
         max-size: "200k"
         max-file: "100"
 
-  # demo application Klantkaarten
-  klantkaart:
-    image: ampersandtarski/klantkaart:latest
-    container_name: klantkaart
-    build:
-      context: Demos/Klantkaart
-    restart: unless-stopped
-    depends_on:
-      - db
-      - traefik
-    networks:
-      - proxy
-      - db
-    environment:
-      - AMPERSAND_LOG_CONFIG=logging.yaml
-      - AMPERSAND_DEBUG_MODE=true
-      - AMPERSAND_PRODUCTION_MODE=false # false => e.g. enables database reset (in production mode not possible)
-      - AMPERSAND_DBHOST=db # refers to database service below
-      - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
-      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
-      - AMPERSAND_DBNAME=klantkaart
-      - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.klantkaart-insecure.rule: Host(`klantkaart.${SERVER_HOST_NAME}`)
-      # more labels added for production, see ./docker-compose.prod.yml file
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "100"
- 
-  # demo application Enrollment
+# demo application Enrollment
   enroll:
     image: ampersandtarski/enroll:latest
     container_name: enroll
@@ -154,15 +122,19 @@ services:
         max-size: "200k"
         max-file: "100"
 
-  phptools:
-    image: phpmyadmin/phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
     environment:
       PMA_HOST: db # refers to database service above
-    ports:
-      - "8080:80"
-    container_name: phptools
+    container_name: phpmyadmin
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.phpmyadmin-insecure.rule: Host(`phpmyadmin.${SERVER_HOST_NAME}`)
     depends_on:
       - db
+      - traefik
     networks:
+      - proxy
       - db
+
