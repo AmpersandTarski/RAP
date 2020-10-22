@@ -132,7 +132,7 @@ VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Pa
           )
 
 PURPOSE RULE "Logout without request"
-{+When a session ceases to exist, RAP will break the link between session and account.
+{+When a session ceases to exist, RAP4 will break the link between session and account.
 As a consequence, I /\ sessionAccount;sessionAccount~ = "_SESSION" as long as a user is logged in.
 +}
 ROLE ExecEngine MAINTAINS "Logout without request"
