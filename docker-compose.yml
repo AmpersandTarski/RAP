@@ -155,14 +155,17 @@ services:
         max-file: "100"
 
   phptools:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
     environment:
       PMA_HOST: db # refers to database service above
-    ports:
-      - "8080:80"
     container_name: phptools
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.phpmyadmin-insecure.rule: Host(`phpmyadmin.${SERVER_HOST_NAME}`)
     depends_on:
       - db
+      - traefik
     networks:
+      - proxy
       - db
