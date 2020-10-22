@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^RAP3/(.*)$ /index.php [L]
