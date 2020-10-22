@@ -1,5 +1,5 @@
 # This script is meant to build from the root directory of your RAP-repo.
-# Ampersand compiler is also needed for RAP3 to compile student scripts
+# Ampersand compiler is also needed for RAP4 to compile student scripts
 
 FROM ampersandtarski/prototype-framework:v1.7.0
 
@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y graphviz \
 COPY . /usr/local/project/
 
 # Generate prototype application from folder
-RUN ampersand proto /usr/local/project/RAP3.adl \
+RUN ampersand proto /usr/local/project/RAP4.adl \
   --proto-dir /var/www \
   --build-recipe RAP \
   --verbose

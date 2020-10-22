@@ -4,7 +4,7 @@ version: '3.7'
 # run it literally (change NOTHING!) and expect the result in documentation/docker-compose.png
 
 volumes:
-  rap3-data: 
+  rap4-data: 
   db-data:
   letsencrypt:
 
@@ -31,13 +31,13 @@ services:
       - proxy
   
   dummy-student-prototype:
-    image: ampersandtarski/rap3-student-prototype:v1.0.0
+    image: ampersandtarski/rap4-student-prototype:v1.0.0
   
-  rap3:
+  rap4:
     image: ampersandtarski/ampersand-rap:2020
-    container_name: rap3
+    container_name: rap4
     build:
-      context: RAP3
+      context: RAP4
     restart: unless-stopped
     depends_on:
       - db
@@ -50,19 +50,19 @@ services:
       - AMPERSAND_DBHOST=db # refers to database service below
       - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
       - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
-      - AMPERSAND_DBNAME=rap3
+      - AMPERSAND_DBNAME=rap4
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
-      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap3-student-prototype:v1.0.0
+      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.0.0
     volumes:
-      - rap3-data:/var/www/data
+      - rap4-data:/var/www/data
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - proxy
       - db
     labels:
       traefik.enable: "true"
-      traefik.http.routers.rap3-insecure.rule: Host(`${SERVER_HOST_NAME}`)
+      traefik.http.routers.rap4-insecure.rule: Host(`${SERVER_HOST_NAME}`)
       # more labels added for production, see ./docker-compose.prod.yml file
     logging:
       driver: "json-file"
@@ -135,7 +135,7 @@ services:
         max-file: "100"
  
   db:
-    container_name: rap3-db
+    container_name: rap4-db
     image: mariadb:10.4
     restart: unless-stopped
     command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]

@@ -1,4 +1,4 @@
-CONTEXT RAP3 IN ENGLISH
+CONTEXT RAP4 IN ENGLISH
 
 VIEW "ParseAsHtml" : CompileResponse HTML TEMPLATE "View-ParseAsHtml.html" ENDVIEW
 
@@ -46,7 +46,7 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
 -- Atlas kan erg lang duren. Wellicht in combinatie met het niet goed werken van multiuser functionaliteit? Uitzoeken! HJO, 20170423
          , "Atlas" :      I BOX <PROPBUTTON>
                            [ property : loadRequest cRUd
-                           , disabled : I /\ loadedInRAP3Ok  cRud
+                           , disabled : I /\ loadedInRAP4Ok  cRud
 --                         , "hide": <expression> cRud
 --                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]

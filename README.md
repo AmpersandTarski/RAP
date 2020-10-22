@@ -1,13 +1,13 @@
 # RAP
-RAP is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](http://portal.ou.nl/web/ontwerpen-met-bedrijfsregels). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](http://ampersand.tarski.nl/RAP3/) to try it out...
+RAP is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](http://portal.ou.nl/web/ontwerpen-met-bedrijfsregels). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](http://ampersand.tarski.nl/RAP4/) to try it out...
 
 If you want to deploy it, use
 ```
    .../git/RAP> docker-compose up -d
 ```
-This deploys the RAP3 service on your docker-platform using the file ``docker-compose.yml``. Docker will pull the most recent RAP-image from Docker Hub and spin up the application. When this is done, browse (preferrably in Chrome or Firefox) to http://localhost/RAP3 to see it work.
+This deploys the RAP4 service on your docker-platform using the file ``docker-compose.yml``. Docker will pull the most recent RAP-image from Docker Hub and spin up the application. When this is done, browse (preferrably in Chrome or Firefox) to http://localhost/RAP4 to see it work.
 
-To build a docker-image of RAP3 yourself, open a command line interface, clone the RAP repository (if you haven't already), go to the root directory of RAP and give the following command:
+To build a docker-image of RAP4 yourself, open a command line interface, clone the RAP repository (if you haven't already), go to the root directory of RAP and give the following command:
 ```
    .../git/RAP> docker build --tag ampersandtarski/ampersand-rap:latest .
 ```
@@ -23,8 +23,8 @@ To build a docker-image of RAP3 yourself, open a command line interface, clone t
     cd RAP
     ~~~
 
- 3) Unfortunatly, you need an account at github to create a token, which is necessary for your server to access the package. If you do not have one, you can register [here](https://github.com/). It's free, and zillions of other people have done so before.
- 4) You have to create a token to allow access to the package. To do so, follow the following steps:
+ 3) If cloning RAP (the previous step) fails, you may need an account at github to create a token, which is necessary for your server to access the package. If you do not have one, you can register [here](https://github.com/). It's free, and zillions of other people have done so before.
+ To create a token to allow access to the package, follow these steps:
     1) Head over to the [settings of your github account](https://github.com/settings/tokens).
     2) Press the button to generate a new token.
     3) Fill in a name for your token, and make sure to check the checkbox `read:packages`.

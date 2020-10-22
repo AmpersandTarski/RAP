@@ -67,6 +67,6 @@ config:
     # - config/some-other-file.yaml
 
 extensions:
-    RAP3:
-        bootstrap: extensions/RAP3/src/Command.php
+    RAP4:
+        bootstrap: extensions/RAP4/src/Command.php
         # config: config/extension.yaml

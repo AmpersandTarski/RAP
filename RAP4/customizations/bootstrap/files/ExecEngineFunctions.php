@@ -1,6 +1,6 @@
 <?php
 
-namespace RAP3;
+namespace RAP4;
 
 use Ampersand\AmpersandApp;
 use Exception;
@@ -8,7 +8,7 @@ use Ampersand\Core\Atom;
 use Ampersand\Core\Concept;
 use Ampersand\Rule\ExecEngine;
 use Ampersand\Core\Link;
-use Ampersand\Extension\RAP3\Command;
+use Ampersand\Extension\RAP4\Command;
 
 /* Ampersand commands must not be changed in this file, but in a configuration yaml file.
  *
@@ -40,7 +40,7 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $userId
             throw new Exception("Error while compiling new script version", 500);
         }
         
-        ExecEngine::getFunction('CompileWithAmpersand')->call($this, 'loadPopInRAP3', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
+        ExecEngine::getFunction('CompileWithAmpersand')->call($this, 'loadPopInRAP4', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
         
         $this->debug("Compiling {$i}/{$total}: end");
     }
@@ -131,8 +131,8 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
         case 'diagnosis':
             ExecEngine::getFunction('Diagnosis')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
-        case 'loadPopInRAP3':
-            ExecEngine::getFunction('loadPopInRAP3')->call($this, $srcRelPath, $scriptVersionAtom);
+        case 'loadPopInRAP4':
+            ExecEngine::getFunction('loadPopInRAP4')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'fspec':
             ExecEngine::getFunction('FuncSpec')->call($this, $srcRelPath, $scriptVersionAtom);
@@ -277,7 +277,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scriptVersionAtom) {
+ExecEngine::registerFunction('loadPopInRAP4', function (string $path, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
     $model = $ee->getApp()->getModel();
@@ -285,7 +285,7 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
     $basename  = pathinfo($path, PATHINFO_BASENAME);
     $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . pathinfo($path, PATHINFO_DIRNAME);
 
-    // Create RAP3 population
+    // Create RAP4 population
     $command = new Command(
         'ampersand population',
         [ $basename
@@ -337,8 +337,8 @@ ExecEngine::registerFunction('loadPopInRAP3', function (string $path, Atom $scri
         }
     }
 
-    // Populate 'loadedInRAP3Ok' to signal success to the ExecEngine
-    setProp('loadedInRAP3Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+    // Populate 'loadedInRAP4Ok' to signal success to the ExecEngine
+    setProp('loadedInRAP4Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
     $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
 

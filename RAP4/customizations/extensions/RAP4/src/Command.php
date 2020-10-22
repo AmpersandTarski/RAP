@@ -1,6 +1,6 @@
 <?php
 
-namespace Ampersand\Extension\RAP3;
+namespace Ampersand\Extension\RAP4;
 
 use Psr\Log\LoggerInterface;
 
