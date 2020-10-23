@@ -38,7 +38,7 @@ services:
     container_name: rap4
     build:
       context: RAP4
-    restart: unless-stopped
+    restart: always
     depends_on:
       - db
       - traefik
@@ -54,6 +54,7 @@ services:
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
       - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.0.0
+      - APACHE_RUN_DIR=/var/www
     volumes:
       - rap4-data:/var/www/data
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -76,7 +77,7 @@ services:
     container_name: enroll
     build:
       context: Demos/Enroll
-    restart: unless-stopped
+    restart: always
     depends_on:
       - db
       - traefik
@@ -85,8 +86,8 @@ services:
       - db
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
-      - AMPERSAND_DEBUG_MODE=false
-      - AMPERSAND_PRODUCTION_MODE=true # false => e.g. enables database reset (in production mode not possible)
+      - AMPERSAND_DEBUG_MODE=true
+      - AMPERSAND_PRODUCTION_MODE=false # false => e.g. enables database reset (in production mode not possible)
       - AMPERSAND_DBHOST=db # refers to database service below
       - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
       - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file

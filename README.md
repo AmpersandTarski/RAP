@@ -74,7 +74,7 @@ Now you should be fine to deploy RAP4:
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
     ```
 
-### After deployment
+`AMPERSAND_PRODUCTION_MODE`
  1) In MariaDB, the user `ampersand` must be given the proper credentials. You can do this either in phpmyadmin (accessible through your browser with URL phpmyadmin.$HOSTNAME). You must give the user full rights to create and use databases, but not to administrative tasks.
  
     If, for some reason, you cannot do this with phpmyadmin, you must do it by hand. Arrange this by going into the rap4 container first:
@@ -97,9 +97,10 @@ Now you should be fine to deploy RAP4:
     ```
 
  2) When making a new database (or refreshing the existing one)
- The very first time you install RAP4, RAP4 needs to create a database. It does that when you press the red "(re-)install your prototype" button. To enable this, the environment variable `AMPERSAND_PRODUCTION_MODE` must be set to `false` or else RAP4 cannot create a new database. Remember to reset it to `true` once the database is present. See issue AmpersandTarski/Ampersand#1119 for the complete story.
+ The very first time you install RAP4, RAP4 needs to create a database. It does that when you press the red "(re-)install the database" button. To enable this, the environment variable `AMPERSAND_PRODUCTION_MODE` must be set to `false` or else RAP4 cannot create a new database. Remember to reset it to `true` once the database is present. See issue AmpersandTarski/Ampersand#1119 for the complete story.
  If, for some reason you have to replace the RAP4-database you also need to set `AMPERSAND_PRODUCTION_MODE` to `false` temporarily.
  When you make a fresh database, please tell the database to give the user `ampersand` the privilege to create and use databases.
+ Please do this for the application "enroll" too. When it doesn't come up after installation, check the `AMPERSAND_PRODUCTION_MODE` variable in `docker-compose.yml`. Set it to `false` so you can reinstall the application (which, among other things, creates a database for enroll). Then set `AMPERSAND_PRODUCTION_MODE` back to `true` to prevent accidents in the future.
 
  3) Test RAP4 by logging in (you may have to register first), create a script (try copying Enrollment.adl from the tutorial) and compile it. Watch the compiler message: as long as there are errors you cannot do anything. If there are no errors, try to generate a functional specification, try out the Atlas, and try to generate a prototype and try to run that prototype. All of that should work now.
  
@@ -107,3 +108,10 @@ Now you should be fine to deploy RAP4:
  ```
   docker stop phpmyadmin
  ```
+
+### Maintenance
+For inspecting the database, log in to the server and bring up phpmyadmin:
+```
+ docker-compose up -d phpmyadmin
+```
+Then in your browser you can access the database with URL `phpmyadmin.rap.cs.ou.nl`. Of course you will need the database password for this.
