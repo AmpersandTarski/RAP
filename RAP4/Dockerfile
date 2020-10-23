@@ -19,8 +19,7 @@ RUN apt-get update \
 
 # We use graphviz to create drawings in diagnosis and functional specifications.
 # and we need epstopdf to create pdf files for images
-RUN apt-get update && apt-get install -y graphviz \
-        texlive-font-utils
+RUN apt-get update && apt-get install -y graphviz
 
 COPY . /usr/local/project/
 
