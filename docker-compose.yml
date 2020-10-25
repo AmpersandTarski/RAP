@@ -107,7 +107,7 @@ services:
   db:
     container_name: rap4-db
     image: mariadb:10.4
-    restart: unless-stopped
+    restart: always
     command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
