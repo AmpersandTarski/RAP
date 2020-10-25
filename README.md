@@ -1,11 +1,62 @@
 # RAP4
 RAP4 is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](http://portal.ou.nl/web/ontwerpen-met-bedrijfsregels). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](http://ampersand.tarski.nl/RAP4/) to try it out...
 
+## Getting Started
+
+### Prerequisites
+
+ * Make sure you have [docker](https://docs.docker.com/get-docker/) installed. You could watch [this instructional video](https://youtu.be/lvt6TC_IZRI?t=99) on how to do that.
+ * Make sure you have [git](https://git-scm.com/downloads) installed.
+ 
+### Installation
+
+Follow these steps to get up and running:
+
+#### Step 1.
+On a command line, paste the following commands:
+
+~~~.bash
+git clone https://github.com/AmpersandTarski/RAP.git
+cd RAP/RAP4
+~~~
+
+This will clone the software and make it available on your machine.
+
+#### Step 2.
+Copy the file `.example.env` to `.env` . It contains environment variables that are required by RAP. You might want to edit the values to your liking, but you could leave them as is too.  
+
+#### Step 3.
+
+~~~.bash
+docker-compose up -d
+~~~
+This will build the services and run the containers. The first time you launch this command it might take a while, depending on your internet connection and hardware. Relax and enjoy the show.
+
+
+### Test your installation
+
+When this is done, browse (preferrably in Chrome or Firefox) to http://localhost/RAP4 to see it work.
+
+## A first example
+
+## Further reading
+
+## Troubleshooting
+
+
+
+
+
+
+
+# TODO: Either get rid of everything below or put it in an appropriate place in the new structure.
+
+
 If you want to deploy it, use
 ```
    .../git/RAP4> docker-compose up -d
 ```
-This deploys the RAP4 service on your docker-platform using the file ``docker-compose.yml``. Docker will pull the most recent RAP4-image from Docker Hub and spin up the application. When this is done, browse (preferrably in Chrome or Firefox) to http://localhost/RAP4 to see it work.
+This deploys the RAP4 service on your docker-platform using the file ``docker-compose.yml``. Docker will pull the most recent RAP4-image from Docker Hub and spin up the application. 
 
 To build a docker-image of RAP4 yourself, open a command line interface, clone the RAP4 repository (if you haven't already), go to the root directory of RAP4 and give the following command:
 ```
@@ -16,7 +67,6 @@ To build a docker-image of RAP4 yourself, open a command line interface, clone t
 
 ### Prerequisites
 
- 1) Make sure you have docker installed: [Instructions on how to install and get started](https://youtu.be/lvt6TC_IZRI?t=99).
 
  2) Clone the RAP-repository from GitHub:
     ~~~
