@@ -20,22 +20,29 @@ git clone https://github.com/AmpersandTarski/RAP.git
 cd RAP/RAP4
 ~~~
 
-This will clone the software and make it available on your machine.
+This will clone the software and make it available on your machine. 
 
 #### Step 2.
-Copy the file `.example.env` to `.env` . It contains environment variables that are required by RAP. You might want to edit the values to your liking, but you could leave them as is too.  
+
+
+Copy the file `../.example.env` to `.env` . It contains environment variables that are required by RAP. You might want to edit the values to your liking, but you could leave them as is too.  
+
+~~~.bash
+cp ../.example.env .env
+~~~
+
 
 #### Step 3.
 
 ~~~.bash
 docker-compose up -d
 ~~~
-This will build the services and run the containers. The first time you launch this command it might take a while, depending on your internet connection and hardware. Relax and enjoy the show.
+This deploys the RAP4 service on your docker-platform. Docker will pull the most recent RAP4-image from Docker Hub and spin up the application. The first time you launch this command it might take a while, depending on your internet connection and hardware. Relax and enjoy the show.
 
 
 ### Test your installation
 
-When this is done, browse (preferrably in Chrome or Firefox) to http://localhost/RAP4 to see it work.
+When this is done, browse (preferrably in Chrome or Firefox) to http://enroll.localhost/#/ to see it work.
 
 ## A first example
 
@@ -43,36 +50,8 @@ When this is done, browse (preferrably in Chrome or Firefox) to http://localhost
 
 ## Troubleshooting
 
+### Cloning fails from Github
 
-
-
-
-
-
-# TODO: Either get rid of everything below or put it in an appropriate place in the new structure.
-
-
-If you want to deploy it, use
-```
-   .../git/RAP4> docker-compose up -d
-```
-This deploys the RAP4 service on your docker-platform using the file ``docker-compose.yml``. Docker will pull the most recent RAP4-image from Docker Hub and spin up the application. 
-
-To build a docker-image of RAP4 yourself, open a command line interface, clone the RAP4 repository (if you haven't already), go to the root directory of RAP4 and give the following command:
-```
-   .../git/RAP4> docker build --tag ampersandtarski/ampersand-rap:latest .
-```
-
-## Usage
-
-### Prerequisites
-
-
- 2) Clone the RAP-repository from GitHub:
-    ~~~
-    git clone https://github.com/AmpersandTarski/RAP4.git
-    cd RAP4
-    ~~~
       If cloning RAP4 (the previous step) fails, you may need an account at github to create a token, which is necessary for your server to access the package. If you do not have one, you can register [here](https://github.com/). It's free, and zillions of other people have done so before.
       To create a token to allow access to the package, follow these steps:
       1) Head over to the [settings of your github account](https://github.com/settings/tokens).
@@ -86,7 +65,24 @@ To build a docker-image of RAP4 yourself, open a command line interface, clone t
           ```
          Your username will be asked, and you have to supply the generated token as a password. 
 
- 3) The docker-socket must be accessible for RAP4. Find out where the socket is and give it read and write access with:
+ 
+
+
+
+
+
+
+
+# FIXME: Either get rid of everything below or put it in an appropriate place in the new structure.
+
+## FIXME: A lot of the stuff that is below here, probably should go to somewhere in the-tools-we-use, but not on *this* README file. Here we only need stuff that is relevant for a new end user.
+
+To build a docker-image of RAP4 yourself, open a command line interface, clone the RAP4 repository (if you haven't already), go to the root directory of RAP4 and give the following command:
+```
+   .../git/RAP4> docker build --tag ampersandtarski/ampersand-rap:latest .
+```
+
+3) The docker-socket must be accessible for RAP4. Find out where the socket is and give it read and write access with:
  ```
  sudo chmod 666 /var/run/docker.sock
  ```
