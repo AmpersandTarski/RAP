@@ -16,25 +16,25 @@ Follow these steps to get up and running:
 On a command line, paste the following commands:
 
 ~~~.bash
-git clone https://github.com/AmpersandTarski/RAP.git
-cd RAP/RAP4
+git clone https://github.com/AmpersandTarski/RAP.git RAP
+cd RAP
 ~~~
 
 This will clone the software and make it available on your machine. 
 
 #### Step 2.
 
-
-Copy the file `../.example.env` to `.env` . It contains environment variables that are required by RAP. You might want to edit the values to your liking, but you could leave them as is too.  
+Copy the file `.example.env` to `.env` . It contains environment variables that are required by RAP. You might want to edit the values to your liking, but you could leave them as is too.  
 
 ~~~.bash
-cp ../.example.env .env
+cp .example.env .env
 ~~~
 
 
 #### Step 3.
 
 ~~~.bash
+docker network create proxy
 docker-compose up -d
 ~~~
 This deploys the RAP4 service on your docker-platform. Docker will pull the most recent RAP4-image from Docker Hub and spin up the application. The first time you launch this command it might take a while, depending on your internet connection and hardware. Relax and enjoy the show.
