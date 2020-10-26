@@ -54,6 +54,7 @@ services:
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
       - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.0.0
+      - RAP_STUDENT_PROTO_LOG_CONFIG=logging.yaml
       - APACHE_RUN_DIR=/var/www
     volumes:
       - rap4-data:/var/www/data

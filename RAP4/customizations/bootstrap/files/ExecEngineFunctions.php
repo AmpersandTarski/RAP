@@ -225,6 +225,10 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $serverName = getenv('RAP_HOST_NAME');
     $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
+    $studentProtoLogConfig = getenv('RAP_STUDENT_PROTO_LOG_CONFIG');
+    if ($studentProtoLogConfig === false) {
+        $studentProtoLogConfig = 'logging.yaml';
+    }
 
     if (count($scriptContentPairs) != 1) {
         throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
@@ -254,8 +258,14 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
           "--label traefik.enable=true", // label for Traefik to route trafic
           "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
           "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
-          "-e AMPERSAND_DBHOST=db",
-          "-e AMPERSAND_DBNAME=\"{$userName}\"",
+          "-e AMPERSAND_DBHOST=" . getenv('AMPERSAND_DBHOST'), // use same database host as the RAP4 application itself
+          "-e AMPERSAND_DBNAME=\"student_{$userName}\"",
+          "-e AMPERSAND_DBUSER=" . getenv('AMPERSAND_DBUSER'), // TODO change db user to a student prototype specific user with less privileges and limited to databases with prefix 'student_'
+          "-e AMPERSAND_DBPASS=" . getenv('AMPERSAND_DBPASS'),
+          "-e AMPERSAND_PRODUCTION_MODE=\"false\"", // student must be able to reset his/her application
+          "-e AMPERSAND_DEBUG_MODE=\"true\"", // show student detailed log information, is needed otherwise user is e.g. not redirected to reinstall page
+          "-e AMPERSAND_SERVER_URL=\"https://{$userName}.{$serverName}\"",
+          "-e AMPERSAND_LOG_CONFIG={$studentProtoLogConfig}", // use high level logging
           $studentProtoImage // image name to run
         ],
         $ee->getLogger()
