@@ -14,19 +14,17 @@ You can deploy RAP4 yourself by following these instructions:
 
 Follow these steps to get up and running:
 
-1.
-   On a command line, paste the following commands:
+1. On a command line, paste the following commands:
 
    ~~~.bash
    git clone https://github.com/AmpersandTarski/RAP.git RAP
    cd RAP
+   git checkout development
    ~~~
 
    This will clone the software and make it available on your machine. 
 
-2.
-
-   Copy the file `.example.env` to `.env` . It contains environment variables that are required by RAP. :
+2. Copy the file `.example.env` to `.env` . It contains environment variables that are required by RAP. :
 
    ~~~.bash
    cp .example.env .env
@@ -34,36 +32,32 @@ Follow these steps to get up and running:
    
    You might want to edit the values to your liking, but you could leave them as is too. 
 
-2. Build an image
-   ```
-       docker-compose build
+3. Build an image and create a proxy network
+   
+   ```.bash
+   docker-compose build
+   docker network create proxy
    ```
    
-3. Create the proxy network for docker
-   ```
-       docker network create proxy
+4. Spin up RAP4. 
+
+   If on your laptop, do it locally:
+   ```.bash
+   docker-compose up -d
    ```
    
-4. set environment variables.
-   Copy the file `.example.env` to `.env` and edit the passwords in `.env`.
-   Set `SERVER_HOST_NAME` to the hostname, e.g. `localhost` or `rap.cs.ou.nl`.
-   Remember this hostname for step 6.
-   If you need to create a fresh RAP4-database, enable the database installation by setting  `DISABLE_DB_INSTALL` to `false`. If you already have a database from a previous install and wish to keep it, set `DISABLE_DB_INSTALL` to `true`.
-   
-5. Spin up RAP4. If on your laptop, do it locally:
-   ```
-       docker-compose up -d
-   ```
    Or, if you are working from a server other than localhost:
    ```
-       docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
    
-6. install the RAP4 database
-   In your browser, navigate to your hostname, e.g. `localhost`.
+5. install the RAP4 database
+   In your browser, navigate to your hostname, e.g. http://localhost .
    Now you will see the RAP-application. If there is no database, install it.
    
-7. enable prototypes
+@Stefjoosten: Waaraan kan de student dat zien, en wat moet-ie dan doen? Hoe dan??
+
+6. enable prototypes
    ```
     sudo chmod 666 /var/run/docker.sock
    ```
