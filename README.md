@@ -30,7 +30,13 @@ Follow these steps to get up and running:
    cp .example.env .env
    ~~~ 
    
-   You might want to edit the values to your liking, but you could leave them as is too. 
+   Edit the values in the .env file as follows (or leave them if you're in a rush)
+   ```
+    * MYSQL_ROOT_PASSWORD=<invent a secure password for the DB root>
+    * MYSQL_AMPERSAND_PASSWORD=<invent a secure password for the user 'ampersand'>
+    * SERVER_HOST_NAME=<the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'> 
+    * DISABLE_DB_INSTALL=<false if you need to install the RAP4 database.
+   ```
 
 3. Build an image and create a proxy network
    
@@ -84,7 +90,7 @@ Follow these steps to get up and running:
  - Verify that your prototype works.
  - Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
 
-# Redeploying RAP4
+# Maintaining and redeploying RAP4
 When changes have been made to the master branch of the RAP-repository, you may want to redeploy the new version. Go into your server with a CLI and rebuild the application:
    ```
        cd RAP
@@ -107,7 +113,7 @@ In the unlikely and undesirable event that you want to reinstall the RAP4 databa
 # Troubleshooting
 Here are a few things that could go wrong when you install RAP4. The numbers correspond to the installation steps above.
 
-1. If cloning RAP4 (the previous step) fails, you may need an account at github to create a token, which is necessary for your server to access the package. If you do not have one, you can register [here](https://github.com/). It's free.
+1. If cloning RAP4 fails, you may need an account at github to create a token, which is necessary for your server to access the package. If you do not have one, you can register [here](https://github.com/). It's free.
       To create a token to allow access to the package, follow these steps:
       1) Head over to the [settings of your github account](https://github.com/settings/tokens).
       2) Press the button to generate a new token.
@@ -125,16 +131,16 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
 
 2. When building an image, you might discover that Docker is not installed. So follow these [Instructions](https://youtu.be/lvt6TC_IZRI?t=99) to install Docker. Building RAP4 may take a while, but the build-log should be scrolling over your screen. If building fails, raise an issue on [GitHub](https://github.com/AmpersandTarski/RAP) or send me an e-mail on stef.joosten@ou.nl. Please include the build log.
 
-3. This should work without problems. If this fails, something is wrong with Docker or with your installation of Docker. The network `proxy` is necessary for Traefik to connect to the internet. Traefik is an edge router, aka proxy, that takes care of HTTPS security.
+3. Step 3 should work without problems. If this fails, something is wrong with Docker or with your installation of Docker. The network `proxy` is necessary for Traefik to connect to the internet. Traefik is an edge router, aka proxy, that takes care of HTTPS security.
    
-4. This should work without problems. For setting the environment variables, use any text editor (VS-code, vim, or whatever). For security reasons, use strong passwords and keep your .env file secret. If you set the variable `DISABLE_DB_INSTALL` to `true`, you won't be able to generate a new RAP4 database. During production, you want to disable that. (NOTE: currently, there exists a workaround which allows anyone to reset the database. This is a known bug.)
+2. Step 4 should work without problems. For setting the environment variables, use any text editor (VS-code, vim, or whatever). For security reasons, use strong passwords and keep your .env file secret. If you set the variable `DISABLE_DB_INSTALL` to `true`, you won't be able to generate a new RAP4 database. During production, you want to disable that. (NOTE: currently, there exists a workaround which allows anyone to reset the database. This is a known bug.)
 
- You need to specify passwords for the root account and for the ampersand account to allow access to the database for yourself, or the rap4 service, for the demo application (enroll) and for the prototypes a user runs. These credentials are not stored in the RAP4 GitHub-repo (for obvious security concerns), so you must invent them.
+You need to specify passwords for the root account and for the ampersand account to allow access to the database for yourself, or the rap4 service, for the demo application (enroll) and for the prototypes a user runs. These credentials are not stored in the RAP4 GitHub-repo (for obvious security concerns), so you must invent them.
 
-    NOTE: There is still a security risk for passwords, but a smaller one. Anyone with access to the build-machine can access .env and see the passwords. In the Open University (OUNL), this machine is accessible only through a VPN-link and the machine is protected with a username/password. This is enough security for the OUNL.
+    NOTE: The security risk for passwords, which was a known issue, has become smaller but it has not vanished. Anyone with access to the build-machine can access .env and see the passwords. From the outside, the Open University (OUNL) server is accessible only through a VPN-link and the machine itself is protected with a username/password. This is enough security for now. However, when an outsider gains access, bot passwords are readable in the .env file.
     TODO: implement secrets to improve security.
    
-5. This should work without problems. There are two alternatives to spin up RAP4. On localhost, you might not be able (and not need) to use HTTP, so just do `docker-compose up -d`, If you need https, use the longer version.
+5. Step 5 should work without problems. There are two alternatives to spin up RAP4. On localhost, you might not be able (and not need) to use HTTP, so just do `docker-compose up -d`, If you need https, use the longer version.
    
 6. Check that RAP4 is running. Use `docker ps` to verify. You should see something like
    ```
@@ -147,10 +153,10 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
    ```
    If your browser fails to produce a working application:
     * check the database credentials. RAP4 has not always reported a failure to connect to the database.
-    * verify that you can access the database by running phpmyadmin (URL: phpmyadmin.<hostname>, e.g. phpmyadmin.rap.cs.ou.nl)
+    * verify that you can access the database by running phpmyadmin (URL: `phpmyadmin.<hostname>`, e.g. phpmyadmin.rap.cs.ou.nl)
     * check that you can access the database as root (using the root password you provided in step 4)
     * check that user 'ampersand'@'' has all rights except administrative rights.
-    * verify that the database 'rap4' exists. if it doesn't, navigate to <hostname>/admin/installer and press the red button to install the database.
+    * verify that the database 'rap4' exists. if it doesn't, navigate to `<hostname>/admin/installer` and press the red button to install the database.
     * if installation doesn't work, verify that the environment variable `AMPERSAND_PRODUCTION_MODE` in the RAP4-container is set to `false`. If it is not, step 4 has not been carried out properly. While you are in the rap4-container, you can set `AMPERSAND_PRODUCTION_MODE` to `false` by hand and reinstall the database. Don't forget to set it back to `true` once the database is up and running.
    the RAP4 database
    In your browser, navigate to your hostname, e.g. `localhost`.
@@ -171,6 +177,10 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
    ```
    To change the protection is not an elegant way and may be a security risk. Normally this file should have code 660, which means that only the owner and members of the group docker have read and write access. TODO: find out a better way to grant RAP4 access to the docker-socket.
 
-8. This should work without problems. When you set `DISABLE_DB_INSTALL` to `true` in your .env file, you have to make this known to the containers in RAP4. That is why you must repeat step 5.
+8. Step 8 should work without problems.
+   When you set `DISABLE_DB_INSTALL` to `true` in your .env file, you have to make this known to the containers in RAP4.
+   That is why you must repeat step 5.
    
-9. This should work without problems. Since phpmyadmin is a stateless service, stopping or killing the phpmyadmin-service has the same effect.
+9. Step 9 should work without problems.
+   Since phpmyadmin is a stateless service,
+   stopping or killing the phpmyadmin-service has the same effect.

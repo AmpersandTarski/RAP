@@ -49,7 +49,7 @@ services:
       - AMPERSAND_PRODUCTION_MODE=${DISABLE_DB_INSTALL} # to disable a database reset in production mode.
       - AMPERSAND_DBHOST=db # refers to database service below
       - AMPERSAND_DBUSER=ampersand
-      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
+      - AMPERSAND_DBPASS=${MYSQL_AMPERSAND_PASSWORD} # from .env file
       - AMPERSAND_DBNAME=rap4
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
@@ -91,7 +91,7 @@ services:
       - AMPERSAND_PRODUCTION_MODE=${DISABLE_DB_INSTALL} # to disable a database reset in production mode.
       - AMPERSAND_DBHOST=db # refers to database service below
       - AMPERSAND_DBUSER=ampersand
-      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
+      - AMPERSAND_DBPASS=${MYSQL_AMPERSAND_PASSWORD} # from .env file
       - AMPERSAND_DBNAME=enroll
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
     labels:
@@ -106,13 +106,15 @@ services:
  
   db:
     container_name: rap4-db
-    image: mariadb:10.4
+    image: ampersandtarski/rap4-db
+    build:
+      context: RAP4DB
     restart: always
     command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
       - MYSQL_USER=ampersand
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD} # from .env file
+      - MYSQL_PASSWORD=${MYSQL_AMPERSAND_PASSWORD} # from .env file
     # nu nog de autorisaties voor user ampersand instellen....
     volumes:
       - db-data:/var/lib/mysql

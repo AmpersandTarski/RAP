@@ -8,7 +8,7 @@ RUN ampersand proto /usr/local/project/Enrollment.adl \
   --verbose
 
 RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
-  && cd /var/www 
+  && cd /var/www
   # && composer install --prefer-dist --no-dev --profile \
   # && npm install \
   # && gulp build-ampersand \

@@ -1,3 +1,4 @@
 CONTEXT RAP4 IN ENGLISH
+-- The indirection to "src/RAP4.adl" is needed so that `docker build` can find the other directories too: templates, Sequences, etc.
     INCLUDE "src/RAP4.adl"
 ENDCONTEXT
