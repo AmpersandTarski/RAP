@@ -1,5 +1,5 @@
 # RAP4
-RAP4 is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](http://portal.ou.nl/web/ontwerpen-met-bedrijfsregels). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](rap.cs.ou.nl) to try it out...
+RAP4 is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](https://www.ou.nl/-/IM0403_Rule-Based-Design). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](https://rap.cs.ou.nl) to try it out...
 
 # Deploy RAP4
 You can deploy RAP4 on a machine with Docker installed. Here is how:
@@ -60,25 +60,30 @@ You can deploy RAP4 on a machine with Docker installed. Here is how:
  - Try to generate a functional specification. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
  - Try the Atlas. Browse through the elements of your script.
  - Generate a Prototype. Upon success you will see a link "Open Prototype".
- - Open the prototype. The URL <yourname>.hostname (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser.
+ - Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser.
  - Install the database by pushing the red button.
  - Verify that your prototype works.
  - Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
 
 # Redeploying RAP4
-When changes have been made to the master branch of the RAP-repository, go into your server with a CLI and rebuild the application:
+When changes have been made to the master branch of the RAP-repository, you may want to redeploy the new version. Go into your server with a CLI and rebuild the application:
    ```
        cd RAP
        git pull
        docker-compose build
        docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
-(or, if you work from localhost, just `docker-compose up -d` on the last line)
+(or, if you work from localhost, simplify the last line to `docker-compose up -d`)
+
 For inspecting the database, bring up phpmyadmin:
 ```
  docker-compose up -d phpmyadmin
 ```
-Don't forget to shut it down afterwards.
+Then in your browser you can access the database with URL `phpmyadmin.<hostname>` (e.g. phpmyadmin.rap.cs.ou.nl). Of course you will need the database password for `root` or for `ampersand` that you invented in step 4 of the installation.
+
+Don't forget to shut phpmyadmin down afterwards.
+
+In the unlikely and undesirable event that you want to reinstall the RAP4 database, don't forget to set the environment variable that disables the reset to `false`. Switch it back after you're done.
 
 # Troubleshooting
 Here are a few things that could go wrong when you install RAP4. The numbers correspond to the installation steps above.
@@ -99,7 +104,7 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
 
    After you have cloned RAP4, stay in you working directory.
 
-2. When building an image, you might discover that Docker is not installed. So follow these [Instructions](https://youtu.be/lvt6TC_IZRI?t=99) to install Docker. Building may take a while, but the build-log should be scrolling over your screen. If building fails, raise an issue on [GitHub](https://github.com/AmpersandTarski/RAP) or send me an e-mail on stef.joosten@ou.nl. Please include the build log.
+2. When building an image, you might discover that Docker is not installed. So follow these [Instructions](https://youtu.be/lvt6TC_IZRI?t=99) to install Docker. Building RAP4 may take a while, but the build-log should be scrolling over your screen. If building fails, raise an issue on [GitHub](https://github.com/AmpersandTarski/RAP) or send me an e-mail on stef.joosten@ou.nl. Please include the build log.
 
 3. This should work without problems. If this fails, something is wrong with Docker or with your installation of Docker. The network `proxy` is necessary for Traefik to connect to the internet. Traefik is an edge router, aka proxy, that takes care of HTTPS security.
    
@@ -108,21 +113,21 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
  You need to specify passwords for the root account and for the ampersand account to allow access to the database for yourself, or the rap4 service, for the demo application (enroll) and for the prototypes a user runs. These credentials are not stored in the RAP4 GitHub-repo (for obvious security concerns), so you must invent them.
 
     NOTE: There is still a security risk for passwords, but a smaller one. Anyone with access to the build-machine can access .env and see the passwords. In the Open University (OUNL), this machine is accessible only through a VPN-link and the machine is protected with a username/password. This is enough security for the OUNL.
-    TODO: implement secrets to get even more security.
+    TODO: implement secrets to improve security.
    
 5. This should work without problems. There are two alternatives to spin up RAP4. On localhost, you might not be able (and not need) to use HTTP, so just do `docker-compose up -d`, If you need https, use the longer version.
    
-6. Check that RAP4 is running by `docker ps`. You should see something like
+6. Check that RAP4 is running. Use `docker ps` to verify. You should see something like
    ```
-   CONTAINER ID        IMAGE                                COMMAND                  CREATED             STATUS              PORTS                                      NAMES
-   91f3cf3faf72        phpmyadmin/phpmyadmin:latest         "/docker-entrypoint.…"   10 seconds ago      Up 8 seconds        80/tcp                                     phpmyadmin
+   CONTAINER ID     IMAGE                                COMMAND                  CREATED             STATUS              PORTS                                      NAMES
+   91f3cf3faf72     phpmyadmin/phpmyadmin:latest         "/docker-entrypoint.…"   10 seconds ago      Up 8 seconds        80/tcp                                     phpmyadmin
    37b03f15d        ampersandtarski/ampersand-rap:2020   "docker-php-entrypoi…"   10 seconds ago      Up 8 seconds        80/tcp                                     rap4
    3397b6461        ampersandtarski/enroll:latest        "docker-php-entrypoi…"   10 seconds ago      Up 8 seconds        80/tcp                                     enroll
    a7fce423e        mariadb:10.4                         "docker-entrypoint.s…"   14 seconds ago      Up 13 seconds       3306/tcp                                   rap4-db
-   1b3d6ad2d26b        traefik:v2.2                         "/entrypoint.sh trae…"   17 seconds ago      Up 16 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   traefik
+   1b3d6ad2d26b     traefik:v2.2                         "/entrypoint.sh trae…"   17 seconds ago      Up 16 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   traefik
    ```
    If your browser fails to produce a working application:
-    * check the database credentials. RAP4 does not always report a failure to connect to the database.
+    * check the database credentials. RAP4 has not always reported a failure to connect to the database.
     * verify that you can access the database by running phpmyadmin (URL: phpmyadmin.<hostname>, e.g. phpmyadmin.rap.cs.ou.nl)
     * check that you can access the database as root (using the root password you provided in step 4)
     * check that user 'ampersand'@'' has all rights except administrative rights.
@@ -147,16 +152,13 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
    ```
    To change the protection is not an elegant way and may be a security risk. Normally this file should have code 660, which means that only the owner and members of the group docker have read and write access. TODO: find out a better way to grant RAP4 access to the docker-socket.
 
-8. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your .env file and repeat step 5 to effectuate this change.
+8. This should work without problems. When you set `DISABLE_DB_INSTALL` to `true` in your .env file, you have to make this known to the containers in RAP4. That is why you must repeat step 5.
    
-9. For security reasons, stop the database client:
-   ```
-     docker stop phpmyadmin
-   ```
+9. This should work without problems. Since phpmyadmin is a stateless service, stopping or killing the phpmyadmin-service has the same effect.
 
 # Troubleshooting other things:
 1. 
-If you have to set the credentials for the ampersand account on the database by hand, you can go into the rap4 service, install a MariaDB client and hand out the credentials by hand. Here is the recipe:
+If you have to set the credentials for the ampersand account on the database by hand, you can go into the rap4 service, install a MariaDB client and provide credentials by hand. (This has happened once upon a time, when phpmyadmin failed and we had to do it by hand.) Here is the recipe:
  
     If, for some reason, you cannot do this with phpmyadmin, you must do it by hand. Arrange this by going into the rap4 container first:
     ```
@@ -176,11 +178,3 @@ If you have to set the credentials for the ampersand account on the database by 
      REVOKE ALL PRIVILEGES ON *.* FROM 'ampersand'@'%';
      GRANT ALL PRIVILEGES ON *.* TO 'ampersand'@'%' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
     ```
-
-
-### Maintenance
-For inspecting the database, log in to the server and bring up phpmyadmin:
-```
- docker-compose up -d phpmyadmin
-```
-Then in your browser you can access the database with URL `phpmyadmin.rap.cs.ou.nl`. Of course you will need the database password for this.
