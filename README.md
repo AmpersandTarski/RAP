@@ -1,19 +1,39 @@
 # RAP4
 RAP4 is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](https://www.ou.nl/-/IM0403_Rule-Based-Design). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](https://rap.cs.ou.nl) to try it out...
 
-# Deploy RAP4
-You can deploy RAP4 on a machine with Docker installed. If you run in trouble, consult the section  Here is how:
-1. Make your working directory:
-   ```
-       mkdir RAP
-       cd RAP
-   ```
+## Deploy RAP4 on your own machine
+
+You can deploy RAP4 yourself by following these instructions: 
+
+### Prerequisites
+
+ * Make sure you have [docker](https://docs.docker.com/get-docker/) installed. You could watch [this instructional video](https://youtu.be/lvt6TC_IZRI?t=99) on how to do that.
+ * Make sure you have [git](https://git-scm.com/downloads) installed.
+ 
+### Installation
+
+Follow these steps to get up and running:
+
+1.
+   On a command line, paste the following commands:
+
+   ~~~.bash
+   git clone https://github.com/AmpersandTarski/RAP.git RAP
+   cd RAP
+   ~~~
+
+   This will clone the software and make it available on your machine. 
+
+2.
+
+   Copy the file `.example.env` to `.env` . It contains environment variables that are required by RAP. :
+
+   ~~~.bash
+   cp .example.env .env
+   ~~~ 
    
-1. Get the sources from github:
-   ```
-       git clone https://github.com/AmpersandTarski/RAP4.git .
-   ```
-   
+   You might want to edit the values to your liking, but you could leave them as is too. 
+
 2. Build an image
    ```
        docker-compose build
