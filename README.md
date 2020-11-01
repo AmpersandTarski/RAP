@@ -155,26 +155,3 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
 8. This should work without problems. When you set `DISABLE_DB_INSTALL` to `true` in your .env file, you have to make this known to the containers in RAP4. That is why you must repeat step 5.
    
 9. This should work without problems. Since phpmyadmin is a stateless service, stopping or killing the phpmyadmin-service has the same effect.
-
-# Troubleshooting other things:
-1. 
-If you have to set the credentials for the ampersand account on the database by hand, you can go into the rap4 service, install a MariaDB client and provide credentials by hand. (This has happened once upon a time, when phpmyadmin failed and we had to do it by hand.) Here is the recipe:
- 
-    If, for some reason, you cannot do this with phpmyadmin, you must do it by hand. Arrange this by going into the rap4 container first:
-    ```
-     docker exec -it rap4 bash
-    ```
-    Now you are in the rap4-container. First install the CLI of MariaDB and log in into the database, using the root password you invented before:
-    ```
-     apt install mariadb-client
-     mariadb --host=db --user=root --password=<root password>
-    ```
-    Now you are in the MariaDB-CLI, you can verify that the users `root` and `ampersand` exist by giving the SQL command:
-    ```
-     select * from mysql.user;
-    ```
-    Now give user `ampersand` the right privileges:
-    ```
-     REVOKE ALL PRIVILEGES ON *.* FROM 'ampersand'@'%';
-     GRANT ALL PRIVILEGES ON *.* TO 'ampersand'@'%' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
-    ```
