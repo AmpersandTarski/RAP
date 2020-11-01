@@ -2,10 +2,15 @@
 RAP4 is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](https://www.ou.nl/-/IM0403_Rule-Based-Design). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](https://rap.cs.ou.nl) to try it out...
 
 # Deploy RAP4
-You can deploy RAP4 on a machine with Docker installed. Here is how:
+You can deploy RAP4 on a machine with Docker installed. If you run in trouble, consult the section  Here is how:
+1. Make your working directory:
+   ```
+       mkdir RAP
+       cd RAP
+   ```
+   
 1. Get the sources from github:
    ```
-       cd RAP
        git clone https://github.com/AmpersandTarski/RAP4.git .
    ```
    
@@ -22,7 +27,7 @@ You can deploy RAP4 on a machine with Docker installed. Here is how:
 4. set environment variables.
    Copy the file `.example.env` to `.env` and edit the passwords in `.env`.
    Set `SERVER_HOST_NAME` to the hostname, e.g. `localhost` or `rap.cs.ou.nl`.
-   Remember this name for step 6.
+   Remember this hostname for step 6.
    If you need to create a fresh RAP4-database, enable the database installation by setting  `DISABLE_DB_INSTALL` to `false`. If you already have a database from a previous install and wish to keep it, set `DISABLE_DB_INSTALL` to `true`.
    
 5. Spin up RAP4. If on your laptop, do it locally:
