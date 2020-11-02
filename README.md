@@ -7,7 +7,7 @@ You can deploy RAP4 yourself by following these instructions:
 
 ### Prerequisites
 
- * Make sure you have [docker](https://docs.docker.com/get-docker/) installed. You could watch [this instructional video](https://youtu.be/lvt6TC_IZRI?t=99) on how to do that.
+ * Make sure you have [docker](https://docs.docker.com/get-docker/) installed.
  * Make sure you have [git](https://git-scm.com/downloads) installed.
  
 ### Installation
@@ -35,7 +35,7 @@ Follow these steps to get up and running:
     * MYSQL_ROOT_PASSWORD=<invent a secure password for the DB root>
     * MYSQL_AMPERSAND_PASSWORD=<invent a secure password for the user 'ampersand'>
     * SERVER_HOST_NAME=<the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'> 
-    * DISABLE_DB_INSTALL=<false if you need to install the RAP4 database.
+    * DISABLE_DB_INSTALL=<false if you need to install the RAP4 database. Set to true in production>
    ```
 
 3. Build an image and create a proxy network
@@ -57,11 +57,10 @@ Follow these steps to get up and running:
    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
    
-5. install the RAP4 database
-   In your browser, navigate to your hostname, e.g. http://localhost .
-   Now you will see the RAP-application. If there is no database, install it.
-   
-@Stefjoosten: Waaraan kan de student dat zien, en wat moet-ie dan doen? Hoe dan??
+5. In your browser, navigate to your hostname, e.g. http://localhost .
+   Now you will see the RAP-application
+   ![landing page](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20landing%20page%202020-11-02.png)
+   If there is no database, install it.
 
 6. enable prototypes
    ```
