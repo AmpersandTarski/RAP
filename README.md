@@ -20,6 +20,7 @@ Follow these steps to get up and running:
    git clone https://github.com/AmpersandTarski/RAP.git RAP
    cd RAP
    git checkout development
+
    ~~~
 
    This will clone the software and make it available on your machine. 
@@ -28,6 +29,7 @@ Follow these steps to get up and running:
 
    ~~~.bash
    cp .example.env .env
+
    ~~~ 
    
    Edit the values in the .env file as follows (or leave them if you're in a rush)
@@ -43,6 +45,7 @@ Follow these steps to get up and running:
    ```.bash
    docker-compose build
    docker network create proxy
+
    ```
    
 4. Spin up RAP4. 
@@ -50,11 +53,13 @@ Follow these steps to get up and running:
    If on your laptop, do it locally:
    ```.bash
    docker-compose up -d
+
    ```
    
    Or, if you are working from a server other than localhost:
    ```
    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
    ```
    
 5. In your browser, navigate to your hostname, e.g. http://localhost .
@@ -72,14 +77,16 @@ Follow these steps to get up and running:
 
 8. enable prototypes
    ```
-    sudo chmod 666 /var/run/docker.sock
+   sudo chmod 666 /var/run/docker.sock
+
    ```
    
 9. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your .env-file and repeat step 5 to effectuate this change.
    
 10. For security reasons, stop the database client:
    ```
-     docker stop phpmyadmin
+   docker stop phpmyadmin
+
    ```
 
 # Testing
