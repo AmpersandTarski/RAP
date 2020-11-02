@@ -58,18 +58,26 @@ Follow these steps to get up and running:
    ```
    
 5. In your browser, navigate to your hostname, e.g. http://localhost .
+   Now you will see an error message, caused by a nonexisting RAP database.
+   ![nonexistent database](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20nonexisting%20database%202020-11-02.png?raw=true)
+
+
+6. In your browser, add "admin/installer" to the URL:
+   ![install the database](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20reinstall%20application%202020-11-02.png?raw=true)
+   Now click the red "Reinstall application" button
+
+7. In your browser, navigate to your hostname, e.g. http://localhost .
    Now you will see the RAP-application
    ![landing page](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20landing%20page%202020-11-02.png)
-   If there is no database, install it.
 
-6. enable prototypes
+8. enable prototypes
    ```
     sudo chmod 666 /var/run/docker.sock
    ```
    
-8. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your .env-file and repeat step 5 to effectuate this change.
+9. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your .env-file and repeat step 5 to effectuate this change.
    
-9. For security reasons, stop the database client:
+10. For security reasons, stop the database client:
    ```
      docker stop phpmyadmin
    ```
