@@ -45,7 +45,7 @@ services:
       - dummy-student-prototype
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
-      - AMPERSAND_DEBUG_MODE=false
+      - AMPERSAND_DEBUG_MODE=true
       - AMPERSAND_PRODUCTION_MODE=${DISABLE_DB_INSTALL} # to disable a database reset in production mode.
       - AMPERSAND_DBHOST=db # refers to database service below
       - AMPERSAND_DBUSER=ampersand
