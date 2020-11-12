@@ -62,16 +62,12 @@ Follow these steps to get up and running:
 
    ```
    
-5. In your browser, navigate to your hostname, e.g. http://localhost .
-   Now you will see an error message, caused by a nonexisting RAP database.
-   ![nonexistent database](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20nonexisting%20database%202020-11-02.png?raw=true)
-
-
-6. In your browser, add "admin/installer" to the URL:
+5. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
    ![install the database](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20reinstall%20application%202020-11-02.png?raw=true)
-   Now click the red "Reinstall application" button
 
-7. In your browser, navigate to your hostname, e.g. http://localhost .
+6. Now click the red "Reinstall application" button. This creates a fresh RAP4 database, so it may take a while.
+
+7. In your browser, navigate to your hostname, e.g. http://localhost, or click on Home.
    Now you will see the RAP-application
    ![landing page](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20landing%20page%202020-11-02.png)
 
@@ -81,7 +77,7 @@ Follow these steps to get up and running:
 
    ```
    
-9. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your .env-file and repeat step 5 to effectuate this change.
+9. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your `.env` file and repeat step 4 to effectuate this change.
    
 10. For security reasons, stop the database client:
    ```
@@ -165,16 +161,20 @@ You need to specify passwords for the root account and for the ampersand account
    a7fce423e        mariadb:10.4                         "docker-entrypoint.s…"   14 seconds ago      Up 13 seconds       3306/tcp                                   rap4-db
    1b3d6ad2d26b     traefik:v2.2                         "/entrypoint.sh trae…"   17 seconds ago      Up 16 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   traefik
    ```
+   If you see this error message, the cause is a missing RAP database.
+   ![nonexistent database](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20nonexisting%20database%202020-11-02.png?raw=true)
+   You should have obtained the "Installer" screen with the red button "Reinstall application".
+   Things to try:
+    * If the URL in your browser ends with "/#/", add "admin/installer" to it. That should bring you to the "Installer" screen.
+    * If the Installer screen does not install a database, inspect the environment variable `AMPERSAND_DEBUG_MODE` in the file `docker-compose.yml`. It should be `true` to install the database.
+
    If your browser fails to produce a working application:
-    * check the database credentials. RAP4 has not always reported a failure to connect to the database.
+    * check the database credentials. RAP4 does not report a failure to connect to the database if the environment variable `AMPERSAND_DEBUG_MODE` is `false`.
     * verify that you can access the database by running phpmyadmin (URL: `phpmyadmin.<hostname>`, e.g. phpmyadmin.rap.cs.ou.nl)
     * check that you can access the database as root (using the root password you provided in step 4)
-    * check that user 'ampersand'@'' has all rights except administrative rights.
+    * check that user 'ampersand'@'%' has all rights except administrative rights.
     * verify that the database 'rap4' exists. if it doesn't, navigate to `<hostname>/admin/installer` and press the red button to install the database.
     * if installation doesn't work, verify that the environment variable `AMPERSAND_PRODUCTION_MODE` in the RAP4-container is set to `false`. If it is not, step 4 has not been carried out properly. While you are in the rap4-container, you can set `AMPERSAND_PRODUCTION_MODE` to `false` by hand and reinstall the database. Don't forget to set it back to `true` once the database is up and running.
-   the RAP4 database
-   In your browser, navigate to your hostname, e.g. `localhost`.
-   Now you will see the RAP-application. If there is no database, install it.
    
 7. The prototypes of a RAP4 user will run in a dedicated container for that user only.
    For this purpose, RAP4 needs access to the docker repository on its host. However, sometimes this access is protected. In that case you must allow the rap4 service to read and write in the docker repository. You can verify this by going into the rap4 service and checking whether it has access:
