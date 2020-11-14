@@ -70,15 +70,15 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SR
           , TXT "{EX}DelPair;diagRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
---[Loading of the script]--
+--[Generate an Atlas]--
 RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP4
 RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script,.
 RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP4 when it is loaded into the meta tables
 
-ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
---RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Load population into meta tables" : (loadRequest-loadedInRAP4Ok);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;loadPopInRAP4;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
+ROLE ExecEngine MAINTAINS "Generate an Atlas" -- reset loadRequest after an attempt to create it has been performed.
+--RULE "Generate an Atlas" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Generate an Atlas" : (loadRequest-loadedInRAP4Ok);source;filePath |- -V
+VIOLATION ( TXT "{EX}CompileWithAmpersand;makeAtlas;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 
