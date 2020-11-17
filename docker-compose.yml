@@ -45,11 +45,11 @@ services:
       - dummy-student-prototype
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
-      - AMPERSAND_DEBUG_MODE=false
-      - AMPERSAND_PRODUCTION_MODE=true # false => e.g. enables database reset (in production mode not possible)
+      - AMPERSAND_DEBUG_MODE=true
+      - AMPERSAND_PRODUCTION_MODE=${DISABLE_DB_INSTALL} # to disable a database reset in production mode.
       - AMPERSAND_DBHOST=db # refers to database service below
-      - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
-      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
+      - AMPERSAND_DBUSER=ampersand
+      - AMPERSAND_DBPASS=${MYSQL_AMPERSAND_PASSWORD} # from .env file
       - AMPERSAND_DBNAME=rap4
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
@@ -88,10 +88,10 @@ services:
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
       - AMPERSAND_DEBUG_MODE=true
-      - AMPERSAND_PRODUCTION_MODE=false # false => e.g. enables database reset (in production mode not possible)
+      - AMPERSAND_PRODUCTION_MODE=${DISABLE_DB_INSTALL} # to disable a database reset in production mode.
       - AMPERSAND_DBHOST=db # refers to database service below
-      - AMPERSAND_DBUSER=${MYSQL_USER} # from .env file, which must be in the build environment
-      - AMPERSAND_DBPASS=${MYSQL_PASSWORD} # from .env file
+      - AMPERSAND_DBUSER=ampersand
+      - AMPERSAND_DBPASS=${MYSQL_AMPERSAND_PASSWORD} # from .env file
       - AMPERSAND_DBNAME=enroll
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
     labels:
@@ -107,15 +107,15 @@ services:
   db:
     container_name: rap4-db
     image: mariadb:10.4
-    restart: unless-stopped
+    restart: always
     command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
-      - MYSQL_USER=${MYSQL_USER} # from .env file
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD} # from .env file
-    # nu nog de autorisaties voor user ${MYSQL_USER} instellen....
+      - MYSQL_USER=ampersand  # the database user is fixed. No need to make this variable. 
+      - MYSQL_PASSWORD=${MYSQL_AMPERSAND_PASSWORD} # from .env file
     volumes:
       - db-data:/var/lib/mysql
+      - ./db-init-scripts:/docker-entrypoint-initdb.d # script to setup db authorization for user ampersand. 
     networks:
       - db
     logging:

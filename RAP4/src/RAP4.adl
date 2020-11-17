@@ -78,7 +78,7 @@ RELATION context[ScriptVersion*Context][UNI] -- The context that is created in R
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
 --RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Load population into meta tables" : (loadRequest-loadedInRAP4Ok);source;filePath |- -V
-VIOLATION ( TXT "{EX}CompileWithAmpersand;loadPopInRAP4;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
+VIOLATION ( TXT "{EX}CompileWithAmpersand;makeAtlas;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
           )
 

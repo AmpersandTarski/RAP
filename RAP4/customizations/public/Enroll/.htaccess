@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^(.*)$ http://${SERVER_HOST_NAME}.enroll [QSA,R=301,L]
