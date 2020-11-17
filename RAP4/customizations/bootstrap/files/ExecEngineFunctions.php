@@ -40,7 +40,7 @@ ExecEngine::registerFunction('PerformanceTest', function ($scriptAtomId, $userId
             throw new Exception("Error while compiling new script version", 500);
         }
         
-        ExecEngine::getFunction('CompileWithAmpersand')->call($this, 'loadPopInRAP4', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
+        ExecEngine::getFunction('CompileWithAmpersand')->call($this, 'makeAtlas', $scriptVersionInfo['id'], $scriptVersionInfo['relpath']);
         
         $this->debug("Compiling {$i}/{$total}: end");
     }
@@ -131,8 +131,8 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
         case 'diagnosis':
             ExecEngine::getFunction('Diagnosis')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
-        case 'loadPopInRAP4':
-            ExecEngine::getFunction('loadPopInRAP4')->call($this, $srcRelPath, $scriptVersionAtom);
+        case 'makeAtlas':
+            ExecEngine::getFunction('makeAtlas')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'fspec':
             ExecEngine::getFunction('FuncSpec')->call($this, $srcRelPath, $scriptVersionAtom);
@@ -168,7 +168,8 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
 
     // Populate 'funcSpecOk' upon success
     setProp('funcSpecOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
-    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
+    // Do not display the compiler response when generating the text file. Instead, send it to the log.E
+    // $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
 
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject(
@@ -287,7 +288,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('loadPopInRAP4', function (string $path, Atom $scriptVersionAtom) {
+ExecEngine::registerFunction('makeAtlas', function (string $path, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
     $model = $ee->getApp()->getModel();
