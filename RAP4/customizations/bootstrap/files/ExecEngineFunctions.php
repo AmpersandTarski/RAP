@@ -278,6 +278,8 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
     $command2->execute();
 
+    sleep(5); //  helps to reduce "bad gateway" and "404 page not found" errors.
+
     // Populate 'protoOk' upon success
     setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
 
