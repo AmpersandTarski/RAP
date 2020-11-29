@@ -257,6 +257,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
           "-a stdin",  // stdin ensures that the content of the script is available in the container.
           "--network proxy", // the reverse proxy Traefik is in the proxy network
           "--label traefik.enable=true", // label for Traefik to route trafic
+          "--label traefik.docker.network=proxy",  // solving RAP issue #92
           "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
           "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
           "-e AMPERSAND_DBHOST=" . getenv('AMPERSAND_DBHOST'), // use same database host as the RAP4 application itself
