@@ -42,8 +42,8 @@ ROLE ExecEngine MAINTAINS "Check script"
 -}
 --RULE "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Check script" : compileRequest;submittor;accUserid |- -V[Script*Userid]
-VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT";", TGT I
-          , TXT "{EX}DelPair;compileRequest;Script;", SRC I, TXT";Script;", SRC I
+VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT ";", TGT I
+          , TXT "{EX}DelPair;compileRequest;Script;", SRC I, TXT ";Script;", SRC I
           )
 
 --[Functional specifiations]--
@@ -55,7 +55,7 @@ ROLE ExecEngine MAINTAINS "Create fspec" -- reset funcSpecRequest after an attem
 --RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V[ScriptVersion*FilePath]
 VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I, TXT ";", SRC version~;submittor;accUserid
-          , TXT "{EX}DelPair;funcSpecRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          , TXT "{EX}DelPair;funcSpecRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
 
 --[Diagnosis]--
@@ -67,7 +67,7 @@ ROLE ExecEngine MAINTAINS "Create diagnosis" -- reset diagRequest after an attem
 --RULE "Create diagnosis" : diagRequest-diag;diag~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create diagnosis" : (diagRequest-diag;diag~);source;filePath |- -V
 VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
-          , TXT "{EX}DelPair;diagRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          , TXT "{EX}DelPair;diagRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
 
 --[Loading of the script]--
@@ -79,7 +79,7 @@ ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadReques
 --RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Load population into meta tables" : (loadRequest-loadedInRAP4Ok);source;filePath |- -V
 VIOLATION ( TXT "{EX}CompileWithAmpersand;makeAtlas;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
-          , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
 
 --[Prototypes]--
@@ -91,7 +91,7 @@ ROLE ExecEngine MAINTAINS "Create prototype" -- reset protoRequest after an atte
 --RULE "Create prototype" : protoRequest-proto;proto~ |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Create prototype" : (protoRequest-protoOk;protoOk~);source;filePath |- -V
 VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
-          , TXT "{EX}DelPair;protoRequest;ScriptVersion;", SRC I, TXT";ScriptVersion;", SRC I
+          , TXT "{EX}DelPair;protoRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
 
 --[Deletion of Context (Fully cascading!)]--
