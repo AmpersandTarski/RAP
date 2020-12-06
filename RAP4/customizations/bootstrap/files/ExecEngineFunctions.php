@@ -82,7 +82,9 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
     // Compile the file, only to check for errors.
     $command = new Command(
         'ampersand check',
-        [basename($srcAbsPath)],
+        [ "--build-recipe Prototype", // check with build-recipe for Prototype, because otherwise the script migth be ok, but not for a prototype
+          basename($srcAbsPath)
+        ],
         $ee->getLogger()
     );
     $command->execute(dirname($srcAbsPath));
