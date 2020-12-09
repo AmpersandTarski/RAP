@@ -212,9 +212,10 @@ sessionUserIfc :: SESSION * NavToIfc [UNI] -- Name of default interface for user
 ROLE ExecEngine MAINTAINS "InsPair `sessionIfcsSet`"
 RULE "InsPair `sessionIfcsSet`": I /\ sessionAnonIfc;sessionAnonIfc~ /\ sessionUserIfc;sessionUserIfc~ |- sessionIfcsSet
 VIOLATION (TXT "{EX} InsPair;sessionIfcsSet;SESSION;", SRC I, TXT ";SESSION;", TGT I)
-ROLE ExecEngine MAINTAINS "DelPair `sessionIfcsSet`"
-RULE "DelPair `sessionIfcsSet`": sessionIfcsSet |- I /\ sessionAnonIfc;sessionAnonIfc~ /\ sessionUserIfc;sessionUserIfc~
-VIOLATION (TXT "{EX} DelPair;sessionIfcsSet;SESSION;", SRC I, TXT ";SESSION;", TGT I)
+-- The reverse of InsPair `sessionIfcsSet` would be:
+-- ROLE ExecEngine MAINTAINS "DelPair `sessionIfcsSet`"
+-- RULE "DelPair `sessionIfcsSet`": sessionIfcsSet |- I /\ sessionAnonIfc;sessionAnonIfc~ /\ sessionUserIfc;sessionUserIfc~
+-- VIOLATION (TXT "{EX} DelPair;sessionIfcsSet;SESSION;", SRC I, TXT ";SESSION;", TGT I)
 
 --[Logout]--
 sessionLogoutReq :: SESSION * SESSION [PROP]
