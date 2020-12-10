@@ -65,6 +65,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.rap4-insecure.rule: Host(`${SERVER_HOST_NAME}`)
+      traefik.docker.network: proxy
       # more labels added for production, see ./docker-compose.prod.yml file
     logging:
       driver: "json-file"
@@ -97,6 +98,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.enroll-insecure.rule: Host(`enroll.${SERVER_HOST_NAME}`)
+      traefik.docker.network: proxy
       # more labels added for production, see ./docker-compose.prod.yml file
     logging:
       driver: "json-file"
@@ -133,10 +135,10 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.phpmyadmin-insecure.rule: Host(`phpmyadmin.${SERVER_HOST_NAME}`)
+      traefik.docker.network: proxy
     depends_on:
       - db
       - traefik
     networks:
       - proxy
       - db
-
