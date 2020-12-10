@@ -2,6 +2,8 @@ FROM ampersandtarski/prototype-framework:v1.7.0
 
 COPY run-student-proto.sh /
 
+COPY templates /templates
+
 RUN chmod +x /run-student-proto.sh
 
 # RUN chown -R www-data:www-data /var/www/log /var/www/data /var/www/generics \

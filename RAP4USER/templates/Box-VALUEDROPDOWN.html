@@ -1,0 +1,44 @@
+$if(verbose)$
+<!-- Box-DROPDOWN.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$ ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$) -->$endif$
+$if(crudR)$
+<style>
+  select option {
+     color: black;
+  }
+  
+  select:invalid,
+  select option[value=""] {
+      color: #c0c0c0;
+  }
+  
+  /*Added for browser compatibility*/
+  [hidden] {
+    display: none;
+  }
+</style>
+
+<div ng-controller="AtomicController">
+  <div ng-repeat="resource in requireArray(resource['$name$'])" ng-switch="resource.hasOwnProperty('selectflag')">
+    <select ng-switch-when="true"
+      ng-show="requireArray(resource['selectfrom']).length > 0"
+      ng-options="value for value in requireArray(resource['selectfrom'])"
+      ng-model="resource['setrelation']"
+      ng-change="resource.selectflag = !resource.selectflag; saveItem(resource, 'selectflag', patchResource); saveItem(resource, 'setrelation', patchResource)"
+      ng-disabled="resource.disabled"
+	  class="form-control input-sm"
+      required>
+      <option value="">{{resource['instruction']}}</option> <!-- add 'disabled' to prevent selecting this option, add 'hidden' to hide this option -->
+    </select>
+    <select ng-switch-default
+      ng-show="requireArray(resource['selectfrom']).length > 0"
+      ng-options="value for value in requireArray(resource['selectfrom'])"
+      ng-model="resource['setrelation']" ng-change="saveItem(resource, 'setrelation', patchResource)"
+      ng-disabled="resource.disabled"
+	  class="form-control input-sm"
+      required>
+      <option value="">{{resource['instruction']}}</option> <!-- add 'disabled' to prevent selecting this option, add 'hidden' to hide this option -->
+    </select>
+  </div>
+</div>$else$<span>
+  <i>N/A</i>
+</span>$endif$
