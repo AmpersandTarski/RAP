@@ -31,7 +31,7 @@ services:
       - proxy
   
   dummy-student-prototype:
-    image: ampersandtarski/rap4-student-prototype:v1.0.0
+    image: ampersandtarski/rap4-student-prototype:v1.1.0
   
   rap4:
     image: ampersandtarski/ampersand-rap:2020
@@ -53,7 +53,7 @@ services:
       - AMPERSAND_DBNAME=rap4
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
-      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.0.0
+      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.1.0
       - RAP_STUDENT_PROTO_LOG_CONFIG=logging.yaml
       - APACHE_RUN_DIR=/var/www
     volumes:
@@ -134,11 +134,12 @@ services:
     restart: unless-stopped
     labels:
       traefik.enable: "true"
+      traefik.domain: ${SERVER_HOST_NAME}
       traefik.http.routers.phpmyadmin-insecure.rule: Host(`phpmyadmin.${SERVER_HOST_NAME}`)
       traefik.docker.network: proxy
     depends_on:
       - db
       - traefik
     networks:
-      - proxy
       - db
+      - proxy

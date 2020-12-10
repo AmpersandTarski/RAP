@@ -1,0 +1,35 @@
+$if(verbose)$<!-- Box-PROPBUTTON.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$ ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$) -->$endif$
+$if(crudR)$<div ng-controller="AtomicController">
+    <div ng-repeat="resource in $if(exprIsUni)$(resource['$name$'] === null ? [] : [resource['$name$']])$else$resource['$name$']$endif$">
+        <div ng-if="resource.hasOwnProperty('disabledpopovertext') && resource.disabled">
+            <button class="btn btn-sm"
+                ng-class="resource.hasOwnProperty('disabledcolor') && resource.disabled ? 'btn-{{resource.disabledcolor}}' : (resource.hasOwnProperty('color') ? 'btn-{{resource.color}}' : 'btn-primary')" 
+                ng-style="resource.hasOwnProperty('disabledcolor') && resource.disabled && '{{resource.disabledcolor}}' === 'link' ? {'padding': '0px', 'line-height': '1', 'margin-bottom': '8px'} : (resource.hasOwnProperty('color') && '{{resource.color}}' === 'link' && {'padding': '0px', 'line-height': '1', 'margin-bottom': '2px'})"
+                ng-click="resource.property = !resource.property; saveItem(resource, 'property', patchResource);"
+                uib-tooltip="{{resource.disabledpopovertext}}" tooltip-trigger="mouseenter" tooltip-placement="top"
+                ng-disabled="resource.disabled" ng-hide="resource.hide"
+                ng-switch="!resource.hasOwnProperty('label') ? '0' : !resource.hasOwnProperty('label1') ? '1' : !resource.hasOwnProperty('label2') ? '2' : !resource.hasOwnProperty('label3') ? '3' : '4'">
+                <div ng-switch-when='4'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}{{requireArray(resource['label1'])[0].hasOwnProperty('_label_') ? requireArray(resource['label1'])[0]._label_ : requireArray(resource['label1'])[0]}}{{requireArray(resource['label2'])[0].hasOwnProperty('_label_') ? requireArray(resource['label2'])[0]._label_ : requireArray(resource['label2'])[0]}}{{requireArray(resource['label3'])[0].hasOwnProperty('_label_') ? requireArray(resource['label3'])[0]._label_ : requireArray(resource['label3'])[0]}}</div><!-- When label expression is not explicitely UNI, resource['label'] contains an array rather than a value -->
+                <div ng-switch-when='3'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}{{requireArray(resource['label1'])[0].hasOwnProperty('_label_') ? requireArray(resource['label1'])[0]._label_ : requireArray(resource['label1'])[0]}}{{requireArray(resource['label2'])[0].hasOwnProperty('_label_') ? requireArray(resource['label2'])[0]._label_ : requireArray(resource['label2'])[0]}}</div>
+                <div ng-switch-when='2'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}{{requireArray(resource['label1'])[0].hasOwnProperty('_label_') ? requireArray(resource['label1'])[0]._label_ : requireArray(resource['label1'])[0]}}</div>
+                <div ng-switch-when='1'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}</div>
+                <div ng-switch-when='0'>$label$</div>
+            </button>
+        </div>
+        <div ng-if="!(resource.hasOwnProperty('disabledpopovertext') && resource.disabled)">
+            <button class="btn btn-sm"
+                ng-class="resource.hasOwnProperty('disabledcolor') && resource.disabled ? 'btn-{{resource.disabledcolor}}' : (resource.hasOwnProperty('color') ? 'btn-{{resource.color}}' : 'btn-primary')" 
+                ng-style="resource.hasOwnProperty('disabledcolor') && resource.disabled && '{{resource.disabledcolor}}' === 'link' ? {'padding': '0px', 'line-height': '1', 'margin-bottom': '8px'} : (resource.hasOwnProperty('color') && '{{resource.color}}' === 'link' && {'padding': '0px', 'line-height': '1', 'margin-bottom': '2px'})"
+                ng-click="resource.property = !resource.property; saveItem(resource, 'property', patchResource);"
+                uib-tooltip="{{resource.popovertext}}" tooltip-trigger="mouseenter" tooltip-placement="top"
+                ng-disabled="resource.disabled" ng-hide="resource.hide"
+                ng-switch="!resource.hasOwnProperty('label') ? '0' : !resource.hasOwnProperty('label1') ? '1' : !resource.hasOwnProperty('label2') ? '2' : !resource.hasOwnProperty('label3') ? '3' : '4'">
+                <div ng-switch-when='4'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}{{requireArray(resource['label1'])[0].hasOwnProperty('_label_') ? requireArray(resource['label1'])[0]._label_ : requireArray(resource['label1'])[0]}}{{requireArray(resource['label2'])[0].hasOwnProperty('_label_') ? requireArray(resource['label2'])[0]._label_ : requireArray(resource['label2'])[0]}}{{requireArray(resource['label3'])[0].hasOwnProperty('_label_') ? requireArray(resource['label3'])[0]._label_ : requireArray(resource['label3'])[0]}}</div><!-- When label expression is not explicitely UNI, resource['label'] contains an array rather than a value -->
+                <div ng-switch-when='3'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}{{requireArray(resource['label1'])[0].hasOwnProperty('_label_') ? requireArray(resource['label1'])[0]._label_ : requireArray(resource['label1'])[0]}}{{requireArray(resource['label2'])[0].hasOwnProperty('_label_') ? requireArray(resource['label2'])[0]._label_ : requireArray(resource['label2'])[0]}}</div>
+                <div ng-switch-when='2'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}{{requireArray(resource['label1'])[0].hasOwnProperty('_label_') ? requireArray(resource['label1'])[0]._label_ : requireArray(resource['label1'])[0]}}</div>
+                <div ng-switch-when='1'>{{requireArray(resource['label'])[0].hasOwnProperty('_label_') ? requireArray(resource['label'])[0]._label_ : requireArray(resource['label'])[0]}}</div>
+                <div ng-switch-when='0'>$label$</div>
+            </button>
+        </div>
+    </div>
+</div>$else$<span><i>N/A</i></span>$endif$
