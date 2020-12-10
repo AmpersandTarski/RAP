@@ -19,4 +19,4 @@ services:
       traefik.http.routers.phpmyadmin.tls.certresolver: letsencrypt
       traefik.http.routers.phpmyadmin.tls.options: safeTLSOptions@file
       traefik.http.routers.phpmyadmin.middlewares: securityHeaders@file
-      traefik.http.routers.phpmyadmin.enroll.rule: Host(`phpmyadmin.rap.cs.ou.nl`)
+      traefik.http.routers.phpmyadmin.rule: Host(`phpmyadmin.rap.cs.ou.nl`)
