@@ -52,16 +52,14 @@ INTERFACE "Relation" FOR User, Tutor : I[Relation] cRud BOX
 INTERFACE "Rules" FOR User, Tutor : I[Rule] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
   , "Formele expressie:" : formalExpression cRud
-  , "Meaning:" : meaning[Rule*Meaning] cRud 
-  , "Purpose:" : purpose[Rule*Purpose];markup;asMarkdown cRud 
   ]
 
 INTERFACE "Rule" FOR User, Tutor : I[Rule] cRud BOX
   [ "Regel:" : I[Rule] cRud
+  , "origin" : origin cRud  
   , "Formele expressie:" : formalExpression cRud
-  , "Meaning:" : meaning[Rule*Meaning] cRud 
-  , "Purpose:" : purpose[Rule*Purpose];markup;asMarkdown cRud 
---  , "origin" : origin cRud  
+  , "MEANING:" : meaning[Rule*Meaning];markup;asMarkdown cRud 
+  , "PURPOSE:" : purpose[Rule*Purpose];markup;asMarkdown cRud 
   , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
   ]
 
