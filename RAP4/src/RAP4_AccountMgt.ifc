@@ -131,7 +131,7 @@ VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Pa
           ,TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
           )
 
-PURPOSE RULE "Logout without request"
+PURPOSE RULE "Logout without request" MARKDOWN
 {+When a session ceases to exist, RAP4 will break the link between session and account.
 As a consequence, I /\ sessionAccount;sessionAccount~ = "_SESSION" as long as a user is logged in.
 +}
