@@ -4,11 +4,16 @@ RELATION asMarkdown[Markup*Text][UNI,TOT]
 
 -- VIEW Context : Context(TXT "Context")
 
+VIEW Contextname: Context(name)
+VIEW Script: Script(TXT "Terug naar script")
+VIEW MeaningContent: Meaning(markup;asMarkdown)
+VIEW PurposeContent: Purpose(markup;asMarkdown)
+
 INTERFACE "Context" FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
       [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
       , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
       , ""     : I[Context] TABS
-         [ "Concepten" : (context[Pattern*Context]~;concepts[Pattern*Concept]) \/ context[Concept*Context]~ INTERFACE "Concepts"
+         [ "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE "Concepts"
          , "Relaties"  : declaredIn[Relation*Context]~  INTERFACE "Relations"
          , "Regels"    : I
             TABS [ "gewone regels"          : allRules[Context*Rule] ;(I[Rule]-I[PropertyRule]) INTERFACE "Rules"
@@ -21,23 +26,23 @@ INTERFACE "Context" FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
 
 INTERFACE "Concepts" FOR User, Tutor : I[Concept] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Concepts:" : I cRud LINKTO INTERFACE "Concept"
-  , "Purpose:" : purpose[Concept*Purpose];markup;asMarkdown cRud 
+  , "Purpose:" : purpose[Concept*Purpose] cRud 
   ]
 
 INTERFACE "Concept" FOR User, Tutor : I[Concept] cRud BOX
   [ "Concept:" : I cRud
-  , "Purpose:" : purpose[Concept*Purpose];markup;asMarkdown cRud 
+  , "Purpose:" : purpose[Concept*Purpose] cRud 
   , "used in (relations):" : source~ \/ target~ cRud LINKTO INTERFACE "Relation"
   , "More generic concepts:" : genspc[Isa*Concept]~;gengen[Isa*Concept] \/ genspc[IsE*Concept]~;gengen[IsE*Concept] cRud LINKTO INTERFACE "Concept"
   , "More specific concepts:" :gengen[Isa*Concept]~;genspc[Isa*Concept] \/ gengen[IsE*Concept]~;genspc[IsE*Concept] cRud LINKTO INTERFACE "Concept"
   , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
+  , "Context" : context cRud
   ]
 
 INTERFACE "Relations" FOR User, Tutor : I[Relation] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Relation:" : I cRud -- name[Relation*RelationName] cRud en daar moet dan nog een view bij.
-  , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
-  , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
-  , "Meaning:" : decMean[Relation*Meaning] cRud 
+  , "MEANING:" : decMean[Relation*Meaning] cRud 
+  , "PURPOSE:" : purpose[Relation*Purpose] cRud 
   ]
 INTERFACE "Relation" FOR User, Tutor : I[Relation] cRud BOX
   [ "Relation:" : I cRud
@@ -45,8 +50,9 @@ INTERFACE "Relation" FOR User, Tutor : I[Relation] cRud BOX
   , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
   , "Eigenschappen:" : propertyRule;declaredthrough cRud
   , "Properties:" : prop [Relation * Property] cRud
-  , "Purpose:" : purpose[Relation*Purpose];markup;asMarkdown cRud 
-  , "Meaning:" : decMean[Relation*Meaning] cRud 
+  , "MEANING:" : decMean[Relation*Meaning] cRud 
+  , "PURPOSE:" : purpose[Relation*Purpose] cRud 
+  , "Context" : context cRud
   ]
 
 INTERFACE "Rules" FOR User, Tutor : I[Rule] cRud BOX <TABLE sortable hideOnNoRecords>
@@ -58,21 +64,23 @@ INTERFACE "Rule" FOR User, Tutor : I[Rule] cRud BOX
   [ "Regel:" : I[Rule] cRud
   , "origin" : origin cRud  
   , "Formele expressie:" : formalExpression cRud
-  , "MEANING:" : meaning[Rule*Meaning];markup;asMarkdown cRud 
-  , "PURPOSE:" : purpose[Rule*Purpose];markup;asMarkdown cRud 
+  , "MEANING:" : meaning[Rule*Meaning] cRud 
+  , "PURPOSE:" : purpose[Rule*Purpose] cRud 
   , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
+  , "Context" : allRules[Context*Rule]~ cRud
   ]
 
 CLASSIFY PropertyRule ISA Rule
 
 INTERFACE "Patterns" FOR User, Tutor : I[Pattern] cRud BOX <TABLE sortable hideOnNoRecords>
   [ "Thema's:" : I cRud
-  , "Purpose:" : purpose[Pattern*Purpose];markup;asMarkdown cRud 
+  , "Purpose:" : purpose[Pattern*Purpose] cRud 
   ]
 
 INTERFACE "Pattern" FOR User, Tutor : I[Pattern] cRud BOX
   [ "Themes:" : I cRud
   , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
+  , "Context" : context  cRud
   ]
 
 VIEW ShowConceptualDiagram: FileObject { imgfile : filePath }
@@ -86,10 +94,11 @@ It must correspond with chapter 2, the business language chapter, from the funct
 +}
 INTERFACE "Language" FOR User,  Tutor : I[Pattern] cRud BOX
   [ "Theme:" : I cRud
-  , "Purpose:" : purpose[Pattern*Purpose];markup;asMarkdown cRud
+  , "Context" : context cRud
+  , "Purpose:" : purpose[Pattern*Purpose] cRud
   , "Definitions:" : concepts[Pattern*Concept] cRud BOX
          [ "Concept" : name[Concept*ConceptName]
-         , "Purpose" : purpose[Concept*Purpose];markup;asMarkdown cRud
+         , "Purpose" : purpose[Concept*Purpose] cRud
          ]
   ]
 
