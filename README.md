@@ -5,6 +5,11 @@ RAP4 is a tool that is being used by the Open University of the Netherlands in t
 
 You can deploy RAP4 yourself by following these instructions: 
 
+### Assumptions
+
+* RAP4 runs on linux. If you are on Windows, you need to install WSL2 in order to take full advantage of the functionality of RAP4. Here are the [installation instructions for WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10). There is also a [nice youtube item on how to configure WSL2 and a quick overview of it](https://www.youtube.com/watch?v=j0PPcUUtHlw).
+* For the rest of this Readme, we assume you have linux running.
+
 ### Prerequisites
 
  * Make sure you have [docker](https://docs.docker.com/get-docker/) installed.
