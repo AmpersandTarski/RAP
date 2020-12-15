@@ -76,11 +76,12 @@ Follow these steps to get up and running:
    Now you will see the RAP-application
    ![landing page](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20landing%20page%202020-11-02.png)
 
-8. You'r not done yet! Now enable RAP to generate prototypes for your users
+8. You're not done yet! Now enable RAP to generate prototypes for your users
    ```
    sudo chmod 666 /var/run/docker.sock
 
    ```
+   This step may not be possible on Windows. If that's the case then skip it.
    
 9. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your `.env` file and repeat step 4 to effectuate this change.
    
