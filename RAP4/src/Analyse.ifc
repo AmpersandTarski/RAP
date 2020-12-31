@@ -12,11 +12,13 @@ VIEW PurposeContent: Purpose(markup;asMarkdown)
 INTERFACE "Context" FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
       [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
       , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
-      , ""     : I[Context] TABS
+      , ""     : I[Context]
+      BOX <TABS>
          [ "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE "Concepts"
          , "Relaties"  : declaredIn[Relation*Context]~  INTERFACE "Relations"
          , "Regels"    : I
-            TABS [ "gewone regels"          : allRules[Context*Rule] ;(I[Rule]-I[PropertyRule]) INTERFACE "Rules"
+            BOX <TABS>
+                 [ "gewone regels"          : allRules[Context*Rule] ;(I[Rule]-I[PropertyRule]) INTERFACE "Rules"
                  , "multipliciteits regels" : allRules[Context*Rule] ;         I[PropertyRule];I[Rule] INTERFACE "Rules"
                  ]
          , "Patterns"   : context [Pattern * Context]~ INTERFACE "Patterns"
