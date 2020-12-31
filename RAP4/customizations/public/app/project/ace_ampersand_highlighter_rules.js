@@ -30,10 +30,7 @@ var AmpersandHighlightRules = function () {
             regex: "\[(\s*+(INJ|SUR|UNI|TOT|SYM|ASY|RFX|IRF|TRN|PROP)(\s*+(,\s*+(INJ|SUR|UNI|TOT|SYM|ASY|RFX|IRF|TRN|PROP))*+)?+)?+\s*+\]"
         }, {
             token: "keyword", // Frontend keywords
-            regex: "\b(INTERFACE|FOR|[Cc][Rr][Uu][Dd]|BOX|ROWS|TABS|COLS|LINKTO)\b"
-        }, {
-            token: "keyword", // Frontend templates
-            regex: "\b<(TABS|ROWS|COLS|SCOLS|HCOLS|HROWS|SHCOLS|SPCOLS|SPHCOLS|ROWSNL|COLSNL)>\b"
+            regex: "\b(INTERFACE|FOR|[Cc][Rr][Uu][Dd]|BOX|TABS|TABLE|FORM|LINKTO)\b"
         }, {
             token: "keyword", // Specials
             regex: "(\bExecEngine\b|\b{EX}\b|\b(InsPair|DelPair|NewStruct|DelAtom)\b|'ONE'|\"_SESSION\")\[SESSION\]|\"_SESSION\"|\bSESSION\b|\b_NEW\b)"
