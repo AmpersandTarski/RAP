@@ -1,4 +1,4 @@
-FROM ampersandtarski/prototype-framework:v1.8.3
+FROM ampersandtarski/prototype-framework:v1.8.4
 
 COPY run-student-proto.sh /
 
