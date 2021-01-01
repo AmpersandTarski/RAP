@@ -97,9 +97,9 @@ being the account that corresponds to the `loginUserid` and `loginPassword` fiel
 +}
 ROLE ExecEngine MAINTAINS "Login upon request"
 RULE "Login upon request": 
-   ("_SESSION" - sessionAccount;sessionAccount~)
-   /\ loginUserid;accUserid~;accPassword;loginPassword~
-   /\ loginButton
+   ("_SESSION" - sessionAccount;sessionAccount~)          -- the current session is not logged in,
+   /\ loginUserid;accUserid~;accPassword;loginPassword~   -- the password and userid match to the account, and
+   /\ loginButton                                         -- the login button is pressed
 |-     sessionAccount;sessionAccount~
 VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC loginUserid;accUserid~ 
           ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
@@ -130,15 +130,6 @@ VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Pa
           ,TXT "{EX} DelPair;regPassword1;SESSION;", SRC I, TXT ";Password;", TGT regPassword1
           ,TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
           )
-
-PURPOSE RULE "Logout without request" MARKDOWN
-{+When a session ceases to exist, RAP4 will break the link between session and account.
-As a consequence, I /\ sessionAccount;sessionAccount~ = "_SESSION" as long as a user is logged in.
-+}
-ROLE ExecEngine MAINTAINS "Logout without request"
-RULE "Logout without request":
-   I /\ sessionAccount;sessionAccount~ |- "_SESSION"
-VIOLATION (TXT "{EX} DelPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC sessionAccount)
 
 RULE CopyEmail : sessionAccount~;registerButton;regEmail |- accEmail
 VIOLATION ( TXT "{EX} InsPair;accEmail;Account;",  SRC I, TXT ";Emailaddress;", TGT I )
