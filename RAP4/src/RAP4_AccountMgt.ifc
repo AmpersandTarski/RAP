@@ -82,6 +82,15 @@ INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <FORM hideLabels>
    ]
 POPULATION LoginMessage CONTAINS [ "Editing your account requires that you are logged in" ]
 
+PURPOSE RULE "Remove expired sessions" MARKDOWN
+{+When a browser-session ceases to exist, RAP4 still has a link between session and account.
+The next time a session is linked to this account, the previous sessions should be removed.
++}
+ROLE ExecEngine MAINTAINS "Remove expired sessions"
+RULE "Remove expired sessions":
+   "_SESSION";sessionAccount;sessionAccount~ |- "_SESSION"
+VIOLATION (TXT "{EX} DelAtom;SESSION;", TGT I)
+
 --[Studenten mogen een eigen account aanmaken door dat aan te vinken bij de login]--
 RELATION regUserID      [SESSION * Userid]       [UNI] -- Studentnummer waarmee de student zich wil registreren
 RELATION regPassword1   [SESSION * Password]     [UNI]
