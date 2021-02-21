@@ -1,6 +1,10 @@
 CONTEXT RAP IN DUTCH
 RELATION markup[Purpose*Markup][UNI,TOT]
+RELATION markup[Meaning*Markup][UNI,TOT]
+RELATION name[Context*ContextName] [UNI] --Removed TOT, for it gives a nasty violation
 RELATION asMarkdown[Markup*Text][UNI,TOT]
+RELATION origin[Rule*Origin]
+RELATION context[Relation*Context]
 
 -- VIEW Context : Context(TXT "Context")
 

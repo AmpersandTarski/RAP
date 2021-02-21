@@ -47,7 +47,7 @@ INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX 
            
 INTERFACE "Account" FOR AccountManager: I[Account] cRud BOX
    [ "Userid": accUserid cRUd
-   , "(Re)set password": accNewPassword crUd -- crUd is needed for Passwords
+   , "(Re)set password": accNewPassword cRUd -- crUd is needed for Passwords
 -- , "Organization": accOrg cRUd
    , "Person": accPerson cRUd
    , "Allowed Roles": accAllowedRoles cRUd
@@ -71,8 +71,8 @@ INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <FORM hideLabels>
    , "session account": sessionAccount cRUd BOX
       [ "Userid": accUserid cRud
       , "Nieuw wachtwoord": sessionAccount~ cRud BOX <TABLE> -- crUd is required for Passwords
-         [ "Nieuw": regPassword1 crUd -- crUd is required for Passwords
-         , "(herhaal)": regPassword2 crUd -- crUd is required for Passwords
+         [ "Nieuw": regPassword1 cRUd -- crUd is required for Passwords
+         , "(herhaal)": regPassword2 cRUd -- crUd is required for Passwords
          ]
       , "Persoon": accPerson CRUD
       , "Toegestane rollen": accAllowedRoles cRud
