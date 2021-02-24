@@ -32,7 +32,9 @@ services:
   
   dummy-student-prototype:
     image: ampersandtarski/rap4-student-prototype:v1.1.1
-  
+    build:
+      context: RAP4USER
+
   rap4:
     image: ampersandtarski/ampersand-rap:2020
     container_name: rap4
