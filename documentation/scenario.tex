@@ -1,0 +1,122 @@
+\documentclass{standalone}
+% run pdflatex --shell-escape scenario.tex
+\RequirePackage{shellesc}
+\usepackage{dot2texi}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\begin{document}
+\hyphenation{mee-kij-ken ver-nie-tigd ver-nie-tigt door-stu-ren blijft be-die-nen ver-wij-de-ren media-viewer inci-dent be-kijkt cen-tra-list}
+\begin{dot2tex}[dot]
+digraph G {                                             
+d2toptions ="--autosize"
+rankdir=TB
+node    [shape="box" lblstyle="text width=7cm,align=left"]
+
+"1" [texlbl="1. A developer changes the Ampersand compiler on his laptop in a local feature branch of the repo Ampersandtarski/Ampersand. By using a feature branch he postpones the moment of merging while sharing progress with peers."]
+"2" [texlbl="2. A developer copies the file .example.env on his laptop to .env to secure safe internal passwords"]
+"3" [texlbl="3. A developer edits the file .env on his laptop  to secure safe internal passwords"]
+"4" [texlbl="4. The developer builds an image ampersandtarski/ampersand:local on his laptop  for local testing only. Danger: do not push this image to docker hub!"]
+"5" [texlbl="5. The developer pushes a change to Github from his local feature branch to the remote feature branch for sharing."]
+"6" [texlbl="6. The developer does a pull request  on Github in the repo Ampersandtarski/Ampersand, stating that the change is ready for peer testing."]
+"7" [texlbl="7. Github merges the change on Github into the development branch. "]
+"8" [texlbl="8. Github generates the image ampersandtarski/ampersand:development onto Docker hub  to share the image with the rest of the world."]
+"9" [texlbl="9. A developer changes the Prototype framework on his laptop in a local feature branch of the repo Ampersandtarski/Prototype. "]
+"10" [texlbl="10. The developer pushes a change to Github from his local feature branch to the remote feature branch for sharing."]
+"11" [texlbl="11. The developer does a pull request  on Github in the repo Ampersandtarski/Prototype, stating that the change is ready for peer testing."]
+"12" [texlbl="12. Github merges the change on Github into the development branch. "]
+"13" [texlbl="13. Github builds the image ampersandtarski/prototype-framework onto Docker hub  to share the image with the rest of the world."]
+
+
+"14" [texlbl="14. A developer changes  RAP on his laptop in a local feature branch of the repo Ampersandtarski/RAP. "]
+"15" [texlbl="15. The developer pushes a change to Github from his local feature branch to the remote feature branch for sharing."]
+"16" [texlbl="16. The developer does a pull request  on Github in the repo Ampersandtarski/RAP, stating that the change is ready for peer testing."]
+
+"17" [texlbl="17. Github merges the change on Github into the master branch. "]
+"18" [texlbl="18. The developer builds the image ampersandtarski/ampersand-rap:2020 on his laptop  for deploying locally without TLS (http only)."]
+
+
+
+
+
+"19" [texlbl="19. The developer connects  to a server  for deploying remotely under TLS (https)."]
+"20" [texlbl="20. The developer builds the image ampersandtarski/ampersand-rap:2020 on the server.  "]
+
+
+
+
+
+"21" [texlbl="21. The developer deploys RAP on the server.  "]
+"22" [texlbl="22. The developer deploys RAP on his laptop.  "]
+"23" [texlbl="23. A developer changes  Enroll on his laptop in a local feature branch of the repo Ampersandtarski/RAP/Demos/Enroll. "]
+"24" [texlbl="24. The developer pushes a change to Github from his local feature branch to the remote feature branch for sharing."]
+
+"25" [texlbl="25. The developer builds Enroll on his laptop  "]
+"26" [texlbl="26. The developer pushes the image ampersandtarski/enroll to Docker hub in ampersandtarski to allow remote deployment of RAP."]
+"27" [texlbl="27. A developer copies the file .example.env on the server to .env to secure safe internal passwords"]
+"28" [texlbl="28. A developer edits the file .env on the server  to secure safe internal passwords"]
+"29" [texlbl="29. A developer changes the student prototype configuration on his laptop in a local feature branch of the repo Ampersandtarski/RAP/RAP4USER. "]
+"30" [texlbl="30. The developer builds the image ampersandtarski/rap4-student-prototype on his laptop  to allow remote deployment of RAP."]
+"31" [texlbl="31. The developer pushes the image ampersandtarski/rap4-student-prototype to Docker hub in ampersandtarski to allow remote deployment of RAP."]
+"32" [texlbl="32. The developer pushes the changed version number of the Ampersand compiler to Github in the development branch of the repo Ampersandtarski/Prototype, to inform the Prototype repo of a compiler upgrade."]
+"33" [texlbl="33. The developer tests the prototype framework on his laptop in the development branch of the repo Ampersandtarski/Prototype to ensure that old bugs do not reappear."]
+"34" [texlbl="34. The developer merges the prototype framework on Github into the master branch to publish the upgrade with a new version number."]
+"35" [texlbl="35. The developer records the changed version number of the Prototype framework to Github in the development branch of the repo Ampersandtarski/RAP, to inform the RAP repo of a compiler upgrade."]
+"36" [texlbl="36. The developer tests RAP on his laptop in the development branch of the repo Ampersandtarski/RAP, to ensure that old bugs do not reappear."]
+"37" [texlbl="37. Github merges the change on Github into the development branch of Ampersandtarski/RAP. "]
+"38" [texlbl="38. The developer ensures that Rap/RAP4/Dockerfile contains `COPY --from ampersandtarski/ampersand:local ...`  on his laptop  to try it locally."]
+
+{rank=same; 1; 9; 14; 23}
+
+"2" -> "3"
+"1" -> "4"
+"1" -> "5"
+"5" -> "6"
+"6" -> "7"
+"7" -> "8"
+
+"9" -> "10"
+"10" -> "11"
+"11" -> "12"
+"8" -> "13"
+"34" -> "13"
+
+"14" -> "15"
+"15" -> "16"
+"24" -> "16"
+"36" -> "17"
+"17" -> "18"
+"3" -> "18"
+"38" -> "18"
+"8" -> "18"
+"13" -> "18"
+"31" -> "18"
+"17" -> "19"
+"19" -> "20"
+"13" -> "20"
+"26" -> "20"
+"28" -> "20"
+"31" -> "20"
+"20" -> "21"
+"18" -> "22"
+
+"23" -> "24"
+"29" -> "24"
+"23" -> "25"
+"25" -> "26"
+
+"27" -> "28"
+
+"29" -> "30"
+"30" -> "31"
+"7" -> "32"
+"32" -> "33"
+"12" -> "33"
+"33" -> "34"
+"13" -> "35"
+"35" -> "36"
+"37" -> "36"
+"16" -> "37"
+"4" -> "38"
+}
+\end{dot2tex}                                               
+\end{document}
