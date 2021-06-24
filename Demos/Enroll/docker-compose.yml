@@ -1,0 +1,108 @@
+version: '3.7'
+# This file is meant to deploy Enroll as a stand-alone application under docker.
+# Note that Enroll is also being deployed in conjunction with RAP as a demo application, which is arranged in ../../docker-compose.yml.
+# to build:
+#    >  cd <...>RAP/Demos/Enroll
+#    >  docker compose build
+# to deploy on an empty docker platform:
+#    >  docker compose up -d
+# To visualize this docker-compose.yml file, if you are on linux, run:
+#      docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -f -m image docker-compose.yml -o documentation/docker-compose.png
+# run it literally (change NOTHING!) and expect the result in documentation/docker-compose.png
+
+volumes:
+  db-data:
+  letsencrypt:
+
+networks:
+  proxy:
+    external: true
+  db:
+
+services:
+  # reverse proxy
+  traefik:
+    image: "traefik:v2.2"
+    container_name: "traefik"
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./Traefik/traefik.toml:/etc/traefik/traefik.toml"
+      - "./Traefik/conf.d:/etc/traefik/conf.d"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - proxy
+
+# demo application Enrollment
+  enroll:
+    image: ampersandtarski/enroll:latest
+    container_name: enroll
+    build:
+      context: .
+    restart: always
+    depends_on:
+      - db
+      - traefik
+    networks:
+      - proxy
+      - db
+    environment:
+      - AMPERSAND_LOG_CONFIG=logging.yaml
+      - AMPERSAND_DEBUG_MODE=true
+      - AMPERSAND_PRODUCTION_MODE=${DISABLE_DB_INSTALL} # to disable a database reset in production mode.
+      - AMPERSAND_DBHOST=db # refers to database service below
+      - AMPERSAND_DBUSER=ampersand
+      - AMPERSAND_DBPASS=${MYSQL_AMPERSAND_PASSWORD} # from .env file
+      - AMPERSAND_DBNAME=enroll
+      - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.enroll-insecure.rule: Host(`enroll.${SERVER_HOST_NAME}`)
+      traefik.docker.network: proxy
+      # more labels added for production, see ./docker-compose.prod.yml file
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+ 
+  db:
+    container_name: rap4-db
+    image: mariadb:10.4
+    restart: always
+    command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
+      - MYSQL_USER=ampersand  # the database user is fixed. No need to make this variable. 
+      - MYSQL_PASSWORD=${MYSQL_AMPERSAND_PASSWORD} # from .env file
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db-init-scripts:/docker-entrypoint-initdb.d # script to setup db authorization for user ampersand. 
+    networks:
+      - db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: db # refers to database service above
+    container_name: phpmyadmin
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.domain: ${SERVER_HOST_NAME}
+      traefik.http.routers.phpmyadmin-insecure.rule: Host(`phpmyadmin.${SERVER_HOST_NAME}`)
+      traefik.docker.network: proxy
+    depends_on:
+      - db
+      - traefik
+    networks:
+      - db
+      - proxy
