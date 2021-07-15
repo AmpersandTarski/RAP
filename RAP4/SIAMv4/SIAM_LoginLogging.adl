@@ -12,7 +12,7 @@ ROLE ExecEngine MAINTAINS "Login Timestamping"
 RULE "Login Timestamping": sessionAccount |- sessionLoginTimestamp;V
 VIOLATION (TXT "{EX} InsPair;sessionLoginTimestamp;SESSION;", SRC I, TXT ";DateTime;{php}date(DATE_ISO8601)")
 
--- The below rule is switched back on again after resolving issue #285 (https://github.com/AmpersandTarski/ampersand/issues/285)
+-- The below rule has been switched back on again after resolving issue #285 (https://github.com/AmpersandTarski/ampersand/issues/285)
 ROLE ExecEngine MAINTAINS "Login Logging"
 RULE "Login Logging": sessionAccount~;sessionLoginTimestamp |- accMostRecentLogin
 VIOLATION (TXT "{EX} InsPair;accMostRecentLogin;Account;", SRC I, TXT ";DateTime;", TGT I
