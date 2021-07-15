@@ -59,7 +59,7 @@ ROLE ExecEngine MAINTAINS "InsPair `isInvisible`"
 RULE "InsPair `isInvisible`": I-isInvisible |- isVisible
 VIOLATION (TXT "{EX} InsPair;isVisible;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenuItem;", TGT I)
 
-RELATION label[PF_NavMenuItem*PF_Label] [UNI,TOT]    REPRESENT PF_Label TYPE ALPHANUMERIC
+RELATION label[PF_NavMenuItem*PF_Label] [UNI]    REPRESENT PF_Label TYPE ALPHANUMERIC
 RELATION isPartOf[PF_NavMenuItem*PF_NavMenu] [UNI,TOT]
 -- POPULATION isInvisible CONTAINS [ ("NavMenuItemsTrashBin", "NavMenuItemsTrashBin") ]
 -- INTERFACE NavMenuItemsTrashBin: I[SESSION] cRud BOX [ "Something to please the compiler": I ]

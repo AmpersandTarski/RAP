@@ -1,7 +1,7 @@
 CONTEXT RAP4 IN ENGLISH
 
 PURPOSE PATTERN "Registration of Ampersand source files"
-{+As a student, I need to submit files for Ampersand to compile, so that I can get functional specifications and all other goodies that Ampersand has in store for me.
+{+As a student, I need to submit files for Ampersand to compile, so that I can get a conceptual analysis and all other goodies that Ampersand has in store for me.
 In order to submit an Ampersand script in RAP4, the user uploads text in the web-application.
 This pattern defines what administration RAP4 will do in order before compiling the script/
 +}

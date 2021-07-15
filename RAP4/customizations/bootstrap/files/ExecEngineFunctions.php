@@ -137,7 +137,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
             ExecEngine::getFunction('makeAtlas')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'fspec':
-            ExecEngine::getFunction('FuncSpec')->call($this, $srcRelPath, $scriptVersionAtom);
+            ExecEngine::getFunction('CAnalysis')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'prototype':
             ExecEngine::getFunction('Prototype')->call($this, $srcRelPath, $scriptAtom, $scriptVersionAtom, $userName);
@@ -152,7 +152,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom) {
+ExecEngine::registerFunction('CAnalysis', function (string $path, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
@@ -163,7 +163,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Compile the file, only to check for errors.
     $command = new Command(
         'ampersand documentation',
-        ['script.adl', '--format docx', '--language=NL', '--output-dir="."', "--verbosity debug" ],
+        ['script.adl', '--format docx', '--language=NL', '--ConceptualAnalysis', '--output-dir="./conceptualanalysis"', "--verbosity debug" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -176,8 +176,8 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$relDir}/{$filename}.docx",
-        "Functional specification"
+        "{$relDir}/conceptualanalysis/{$filename}.docx",
+        "Conceptual Analysis"
     );
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
 });
@@ -306,7 +306,7 @@ ExecEngine::registerFunction('makeAtlas', function (string $path, Atom $scriptVe
         'ampersand population',
         [ $basename
         , '--output-dir="./"'
-        , "--build-recipe AtlasPopulation"
+        , "--build-recipe Grind"
         , "--output-format json"
         , "--verbosity warn"
         ],

@@ -5,6 +5,7 @@ COPY . /usr/local/project/
 # Generate prototype application from folder
 RUN ampersand proto /usr/local/project/Klantkaart.adl \
   --proto-dir /var/www \
+  --build-recipe Prototype \
   --verbose
 
 RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \

@@ -9,12 +9,15 @@ CONTEXT RAP4 IN ENGLISH
 
    INCLUDE "Analyse.ifc"
 
+   INCLUDE "Contexts.ifc"
+   INCLUDE "RAP4.ifc"
+
    INCLUDE "RAP4_AccountMgt.ifc"            -- RAP4 Account management interface
    INCLUDE "RAP4.xlsx"                      -- Initial, minimal set of people and accounts 
 -- INCLUDE "RAP4_Login.ifc"                 -- RAP4 Login/Logout interface
 
 REPRESENT Language TYPE ALPHANUMERIC
-REPRESENT AmpersandVersion,TType,Origin,AtomValue TYPE ALPHANUMERIC
+REPRESENT AmpersandVersion,TType TYPE ALPHANUMERIC
 REPRESENT Message TYPE BIGALPHANUMERIC
 REPRESENT Population TYPE BIGALPHANUMERIC
 REPRESENT ShowADL TYPE BIGALPHANUMERIC
@@ -25,6 +28,9 @@ REPRESENT CompileResponse TYPE BIGALPHANUMERIC
 
 CLASSIFY Script ISA Sequence
 CLASSIFY ScriptVersion ISA Item
+CLASSIFY Interface ISA ObjectDef
+CONCEPT ObjectDef "An ObjectDef is the (recursive) structure that corresponds with a BOX in an Ampersand script." 
+CLASSIFY ObjectDef ISA Term
 
 --[[Manipulating Scripts with Ampersand]]--
 PATTERN Compilation
@@ -110,70 +116,169 @@ VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
           )
 ENDPATTERN
 
-PATTERN "Relations from FormalAmpersand"
+PATTERN "Runtime"
+    RELATION atom[InsAtom*Atom] -- 
+    RELATION content[Div*Atom] -- 
+    RELATION div[InsAtom * Div]
+    RELATION field[Div * Field]
+    RELATION def[Field * FieldDef]
+    RELATION def[Object * ObjectDef]
+    RELATION fieldIn[Field * Object]
+    RELATION eval[Term * Pair]
+    RELATION in[Pair*Relation]
+ENDPATTERN
+
+PATTERN "Pair views"
+    RELATION expSQL[PairViewSegment * MySQLQuery] [UNI]
+    RELATION expTgt[PairViewSegment * Concept]
+    RELATION segment[PairView * PairViewSegment] [INJ]
+    RELATION segmentType[PairViewSegment * PairViewSegmentType] [UNI]
+    RELATION sequenceNr[PairViewSegment * Int] [UNI]
+    RELATION srcOrTgt[PairViewSegment * SourceOrTarget] [UNI]
+    RELATION text[PairViewSegment * String] [UNI]
+ENDPATTERN
+
+PATTERN "Static relations from FormalAmpersand"
     REPRESENT ConceptDefinition TYPE BIGALPHANUMERIC
 
-    RELATION meaning[Rule*Meaning] -- e.g. 'bfOUprop[BusinessFunction] is antisymmetric'
-    MEANING "The meanings of a relation."
+    RELATION allConjuncts[Context*Conjunct] -- The conjuncts contained by a context
+    RELATION allRoles[Context*Role] -- The roles contained by a context
+    RELATION allRules[Context*Rule] -- The rules contained by a context
+    RELATION allRules[Pattern*Rule] -- The rules contained by a pattern
+    RELATION arg[UnaryTerm*Term] [UNI] -- 
+    RELATION asMarkdown[Markup*Text] [UNI] -- 
+    RELATION bind[BindedRelation*Relation] [UNI] -- 
+    RELATION concepts[Pattern*Concept] -- 
+    RELATION conjunct[Conjunct*Term] -- 
+    RELATION context[Concept*Context] [UNI] -- The context that contains the definition of a concept
+    RELATION context[Interface*Context] [UNI] -- The context that contains an Interface
+    RELATION context[Isa*Context] [UNI]
+    RELATION context[IsE*Context] [UNI]
+    RELATION context[Pattern*Context] [UNI] -- The context that contains a Pattern
+    RELATION context[Population*Context] [UNI] -- The context that contains a Population
+    RELATION context[Pattern*Context] [UNI] -- The context that contains a pattern
+    RELATION context[Population*Context] [UNI] -- The context that contains a Population
+    RELATION context[Rule*Context] [UNI] -- The context that contains a Rule
+    RELATION declaredIn[Relation*Pattern] -- The Pattern in which a relation is declared
+    RELATION declaredthrough[PropertyRule*Property] [TOT]
+    MEANING "A property is defined as part of the declaration of relation."
     RELATION decMean[Relation * Meaning]
     MEANING "The meanings of a relation."
+    RELATION decprL[Relation * String] [UNI]
+    MEANING "The left part of a PRAGMA of a relation."
+    RELATION decprM[Relation * String] [UNI]
+    MEANING "The middle part of a PRAGMA of a relation."
+    RELATION decprR[Relation * String] [UNI]
+    MEANING "The right part of a PRAGMA of a relation."
+    RELATION edit[FieldDef * Relation] -- to be filled automatically
+    RELATION editFlp[FieldDef * Relation] -- to be filled automatically
+    RELATION fieldIn[FieldDef * ObjectDef]
+    RELATION first[BinaryTerm * Term] [UNI]
+    RELATION formalTerm[Rule * Term] [UNI]
+    MEANING "The term whose complement defines the violations of a rule."
+    RELATION gengen[Isa*Concept] [UNI]
+    MEANING "A generalization rule refers to one or more generic concepts."
+    RELATION gengen[IsE * Concept] [TOT]
+    RELATION genspc[Isa*Concept] [UNI]
+    MEANING "A generalization rule refers to one or more specific concepts."
+    RELATION genspc[IsE*Concept] [UNI]
+    MEANING "A generalization rule refers to one or more specific concepts."
+    RELATION identityRules[Rule*Context]
+    RELATION identityRules[Rule*Pattern]
+    RELATION ifcConjuncts[Interface*Conjunct]
+    RELATION ifcObj[Interface*ObjectDef] [UNI]
+    RELATION ifcPos[Interface*Origin] [UNI]
+    RELATION ifcPurpose[Interface*Purpose]
+    RELATION ifcQuads[Interface*Quad]
+    RELATION ifcRoles[Interface*Role]
+    RELATION pf_ifcRoles[PF_Interface*Role]
+    RELATION isa[Concept*Concept]
+    RELATION isAPI[PF_Interface*PF_Interface]
+    RELATION isPublic[Interface*Interface]
+    RELATION label[FieldDef*FieldName] [UNI]
+    RELATION label[PF_Interface*PF_Label] [UNI]
+    RELATION language[Context*Language] [UNI]
+    RELATION language[Markup*Language] [UNI]
+    RELATION maintains[Role*Rule]
+    RELATION markup[Meaning*Markup] [UNI]
+    RELATION markup[Purpose*Markup] [UNI]
+    RELATION meaning[Rule*Meaning]
+    MEANING "The meanings of a relation."
+    RELATION message[Rule*Message] [INJ]
+    RELATION multrules[Rule*Context]
+    RELATION multrules[Rule*Pattern]
+    RELATION name[Concept*ConceptName] [UNI]
+    RELATION name[Context*ContextName] [UNI]
+    RELATION name[Interface*InterfaceName] [UNI]
+    RELATION name[ObjectDef*ObjectName] [UNI]
+    RELATION name[Pattern*PatternName] [UNI]
+    RELATION name[Relation*RelationName] [UNI]
+    MEANING "Every relation has a name by which it can be referenced within its Context(s)."
+    RELATION name[Role*RoleName] [UNI]
+    RELATION name[Rule*RuleName] [UNI]
+    RELATION objView[ObjectDef*View] [UNI]
+    RELATION objpos[ObjectDef*Origin] [UNI]
+    RELATION operator[BinaryTerm*Operator] [UNI]
+    RELATION operator[UnaryTerm*Operator] [UNI]
+    RELATION origin[Rule*Origin] [UNI]
+    RELATION rc_orgRules[Conjunct*Rule]
+    RELATION pairView[Rule*PairView]
+    RELATION prop[Relation*Property]
+    RELATION propertyRule[Relation*PropertyRule] [SUR]
+    MEANING "The properties of a relation."
+    RELATION purpose[Concept * Purpose]
+    MEANING "The purposes of a concept."
+    RELATION purpose[Context * Purpose] [{-This is currently *NOT* INJ, see issue https://github.com/AmpersandTarski/Ampersand/issues/46 -}]
+    MEANING "The purposes of a context."
+    RELATION purpose[Interface * Purpose]
+    MEANING "The purposes of an interface."
     RELATION purpose[Pattern*Purpose]
     MEANING "The purposes of a pattern."
     RELATION purpose[Relation * Purpose]
     MEANING "The purposes of a relation."
-    RELATION meaning[Rule * Meaning]
-    MEANING "The meanings of a rule."
     RELATION purpose[Rule * Purpose]
     MEANING "The purposes of a rule."
-    RELATION purpose[Identity * Purpose]
-    MEANING "The purposes of an identity."
     RELATION purpose[View * Purpose]
     MEANING "The purposes of a view."
-    RELATION purpose[Concept * Purpose]
-    MEANING "The purposes of a concept."
-    RELATION purpose[Interface * Purpose]
-    MEANING "The purposes of an interface."
-    RELATION purpose[Context * Purpose] [{-This is currently *NOT* INJ, see issue https://github.com/AmpersandTarski/Ampersand/issues/46 -}]
-    MEANING "The purposes of a context."
-    RELATION declaredthrough[PropertyRule*Property] [TOT]
-    MEANING "A property is defined as part of the declaration of relation."
-    RELATION propertyRule[Relation*PropertyRule] [SUR]
-    MEANING "The properties of a relation."
-    RELATION gengen[Isa*Concept] [UNI,TOT]
-    MEANING "A generalization rule refers to one or more generic concepts."
-    RELATION genspc[Isa*Concept] [UNI,TOT]
-    MEANING "A generalization rule refers to one or more specific concepts."
-    RELATION gengen[IsE*Concept] [TOT]
-    MEANING "A generalization rule refers to one or more generic concepts."
-    RELATION genspc[IsE*Concept] [UNI,TOT]
-    MEANING "A generalization rule refers to one or more specific concepts."
-RELATION name[Concept*ConceptName] [UNI]
-RELATION name[Relation*RelationName] [UNI,TOT]
-MEANING "Every relation has a name by which it can be referenced within its Context(s)."
-RELATION source[Relation*Concept] [UNI,TOT]
-RELATION target[Relation*Concept] [UNI,TOT]
-RELATION declaredIn[Relation*Context] -- The context in which a relation is declared
-RELATION prop[Relation*Property]
-RELATION formalExpression[Rule*Expression] [UNI,TOT]
-MEANING "The rule expressed in relation algebra."
-RELATION context[Concept*Context] -- The context that contains the definition of a concept
-RELATION context[Pattern*Context][UNI] -- The context that contains a pattern
-RELATION concepts[Pattern*Concept] -- The concepts that are defined in a pattern
-RELATION allRules[Context*Rule] -- The rules contained by a context
+    RELATION qConjunct[Quad*Conjunct] [UNI]
+    RELATION qDcl[Quad*Relation] [UNI]
+    RELATION qRule[Quad*Rule] [UNI]
+    RELATION relsDefdIn[Pattern*Relation]
+    RELATION relsDefdIn[Relation*Context]
+    RELATION second[BinaryTerm * Term] [UNI]
+    RELATION showADL[Term * ShowADL] [UNI]
+    RELATION sign[Term * Signature] [UNI]
+    RELATION sign[Relation * Signature] [UNI]
+    RELATION singleton[Singleton * Signature] [UNI]
+    RELATION source[Relation*Concept] [UNI]
+    RELATION src[Signature*Concept] [UNI]
+    RELATION source[Relation*Concept] [UNI]
+    RELATION target[Relation*Concept] [UNI]
+    RELATION tgt[Signature*Concept] [UNI]
+    RELATION ttype[Concept*TType] [UNI]
+    RELATION udefrules[Rule*Context] [UNI]
+    RELATION udefrules[Rule*Pattern] [UNI]
+    REPRESENT EncodedName TYPE ALPHANUMERIC
+    RELATION urlEncodedName[Concept*EncodedName] [UNI]
+    RELATION urlEncodedName[Pattern*EncodedName] [UNI]
+    RELATION urlEncodedName[Rule*EncodedName] [UNI]
+    RELATION usedIn[Relation*Term]
+    RELATION userSrc[Term*Concept] [UNI]
+    RELATION userTgt[Term*Concept] [UNI]
+    RELATION uses[Context*Pattern]
+    RELATION versionInfo[Context*AmpersandVersion] [UNI]
+    RELATION viewBy[Concept*Concept]
+    RELATION violatable[Interface*Rule]
 ENDPATTERN
 
 PATTERN "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)
 
 RELATION conceptualDiagram[Concept*FileObject][UNI]
-RELATION urlEncodedName[Concept*EncodedName][UNI]
 RELATION conceptualDiagram[Rule*FileObject][UNI]
-RELATION urlEncodedName[Rule*EncodedName][UNI]
 RELATION conceptualDiagram[Pattern*FileObject][UNI]
-RELATION urlEncodedName[Pattern*EncodedName][UNI]
 RELATION conceptualDiagram[Context*FileObject][UNI]
-REPRESENT EncodedName TYPE ALPHANUMERIC
 
-RELATION basePath[ScriptVersion*FilePath][UNI,TOT] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\generated\Script_1475844318716509\Version2016-10-07T144605\)
+RELATION basePath[ScriptVersion*FilePath][UNI] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\generated\Script_1475844318716509\Version2016-10-07T144605\)
 
 ROLE ExecEngine MAINTAINS "link cd of context"
 RULE "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]

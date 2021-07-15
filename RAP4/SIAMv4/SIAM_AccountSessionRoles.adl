@@ -113,14 +113,14 @@ RULE "Default roles must be allowed roles": accDefaultRoles |- accAllowedRoles
 VIOLATION (TXT "{EX} DelPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I)
 
 --[Integration between SIAMv4 Roles and the new Prototype Framework PF_Roles]
--- `Role`s can be renamed into `Role`s again once ticket #xxx has been resolved
+-- `PF_Role`s can be renamed into `Role`s again once ticket #xxx has been resolved
 CLASSIFY Role IS Role -- Necessary for integration with System Context (new Prototype Framework)
 -- Temporary measure to accommodate for bug in new prototype framework
 POPULATION label[Role*PF_Label] CONTAINS [ ("Anonymous", "Anonymous") ] 
 -- Temporary? rules to ensure labels are in place
 label :: Role * PF_Label [UNI] REPRESENT PF_Label TYPE ALPHANUMERIC
-ROLE ExecEngine MAINTAINS "Auto create default labels for PF_Roles"
-RULE "Auto create default labels for PF_Roles": I[Role] |- label;label~
+ROLE ExecEngine MAINTAINS "Auto create default labels for Roles"
+RULE "Auto create default labels for Roles": I[Role] |- label;label~
 VIOLATION (TXT "{EX} InsPair;label;Role;", SRC I, TXT ";PF_Label;", TGT I)
 
 --[Session Roles]--

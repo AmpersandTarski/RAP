@@ -1,0 +1,67 @@
+CONTEXT RAP IN ENGLISH
+
+VIEW Context : Context(name)
+VIEW Concept : Concept(name)
+
+INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
+      [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
+      , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
+      , ""     : I[Context] cRud
+      BOX <TABS>
+         [ "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE "Concepts"
+         , "Relaties"  : relsDefdIn[Relation*Context]~ INTERFACE "Relations"
+         , "Regels"    : I
+            BOX <TABS>
+                 [ "gewone regels"          : allRules[Context*Rule] ;(I[Rule]-I[PropertyRule]) INTERFACE "Rules"
+                 , "multipliciteits regels" : allRules[Context*Rule] ;         I[PropertyRule];I[Rule] INTERFACE "Rules"
+                 ]
+         , "Patterns"   : context [Pattern * Context]~ INTERFACE "Patterns"
+         ]
+  ]
+
+INTERFACE Contexts (valid,relations) : "_SESSION"[SESSION];sessionAccount;submittor~;version;context cRud
+      BOX<TABLE sortable>
+           [ context   : I                           cRud
+           , patterns  : context[Pattern*Context]~   cRud
+           , concepts  : context[Concept*Context]~   cRud
+           , rules     : context[Rule*Context]~      cRud
+           , relations : relsDefdIn[Relation*Context]~  cRud
+           ]
+
+
+INTERFACE "ContextDetailed" FOR User  : I[Context] cRud
+BOX <TABS>
+  [ "About" : I BOX
+    [ "name"  : name[Context*ContextName]
+    , "versionInfo" : versionInfo
+    , "owner" : context~;version~;submittor;accPerson
+    , "rules" : context[Rule*Context]~
+    , "relations" : relsDefdIn[Relation*Context]~
+    , "concepts" : context[Concept*Context]~
+    ]
+  , "Patterns defined" : context[Pattern*Context]~ BOX 
+    [ "Pattern" : I CRuD -- INTERFACE Pattern
+    ]
+  , "Patterns used" : uses[Context*Pattern] BOX 
+    [ "Pattern" : I CRuD -- INTERFACE Pattern
+    ]
+  , "Isas" : context[Concept*Context]~ ; (I[Concept] 
+          /\
+                (gengen[Isa*Concept]~;gengen[Isa*Concept]) /\
+                ( -(genspc[Isa*Concept]~;genspc[Isa*Concept]))) 
+         -- INTERFACE IsaTree 
+  , "Concepts" : context[Concept*Context]~
+  , "Relations" : relsDefdIn[Relation*Context]~  -- LINKTO INTERFACE "Relation"
+       BOX<TABLE sortable>
+           [ relation   : I
+           , "declared in pattern" : declaredIn[Relation*Pattern]
+           , "declared in context" : relsDefdIn[Relation*Context]
+           ]
+  , "Roles" : allRoles[Context*Role]
+--  , "allConjuncts" : allConjuncts[Context*Conjunct]
+--  , "Rules" : allRules[Context*Rule] INTERFACE "Rule"
+  ]
+
+ENDCONTEXT
+
+

@@ -94,7 +94,7 @@ Follow these steps to get up and running:
  - Verify that the compiler works by compiling an example script.
  - Verify that the compiler generates error message when you make a deliberate mistake in your example script.
  - Check that once the script is correct, the buttons Func Spec, Atlas, and Prototype are active.
- - Try to generate a functional specification. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
+ - Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
  - Try the Atlas. Browse through the elements of your script.
  - Generate a Prototype. Upon success you will see a link "Open Prototype".
    If you get a permission error for `/var/run/docker.sock` something went wrong with step 8. Turn to "troubleshooting" for possible solutions.
