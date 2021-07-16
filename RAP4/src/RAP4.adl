@@ -240,7 +240,7 @@ PATTERN "Static relations from FormalAmpersand"
     MEANING "The purposes of a rule."
     RELATION purpose[View * Purpose]
     MEANING "The purposes of a view."
-    RELATION qConjunct[Quad*Conjunct] [UNI]
+    RELATION qConjuncts[Quad*Conjunct]
     RELATION qDcl[Quad*Relation] [UNI]
     RELATION qRule[Quad*Rule] [UNI]
     RELATION relsDefdIn[Pattern*Relation]
