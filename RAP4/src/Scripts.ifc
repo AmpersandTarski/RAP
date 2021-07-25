@@ -43,7 +43,6 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
 --                         , "hide": <expression> cRud
 --                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]
--- Atlas kan erg lang duren. Wellicht in combinatie met het niet goed werken van multiuser functionaliteit? Uitzoeken! HJO, 20170423
          , "Atlas" :      I BOX <PROPBUTTON>
                            [ property : loadRequest cRUd
                            , disabled : I /\ loadedInRAP4Ok  cRud

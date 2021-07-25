@@ -103,7 +103,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed by the atlas for its graphics)
-        $version->link($basePath . '/fspec/images', 'basePath[ScriptVersion*FilePath]')->add();
+        $version->link($basePath . '/conceptualanalysis/images/', 'basePath[ScriptVersion*FilePath]')->add();
         
         return ['id' => $version->getId(), 'relpath' => $srcRelPath];
     // Script not ok (exitcode != 0)
@@ -316,6 +316,7 @@ ExecEngine::registerFunction('makeAtlas', function (string $path, Atom $scriptVe
     // upon success, the generated file is: ./atlas/<scriptname without extension>_generated_pop.json
 
     $scriptNameWithoutExt = pathinfo($path, PATHINFO_FILENAME);
+    // In RAP,  $scriptNameWithoutExt = "script"
     
     if ($command->getExitcode() == 0) {
         // Open and decode generated metaPopulation.json file

@@ -27,7 +27,6 @@ CONCEPT FileObject ""
   RELATION originalFileName[FileObject*FileName] [UNI] --,TOT]
     REPRESENT FileName TYPE ALPHANUMERIC
 
-
 CONCEPT ScriptContent ""
 REPRESENT ScriptContent TYPE BIGALPHANUMERIC
 VIEW ScriptContent : ScriptContent DEFAULT HTML TEMPLATE "View-ACE.html" ENDVIEW
