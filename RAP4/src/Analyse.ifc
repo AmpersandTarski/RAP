@@ -23,9 +23,9 @@ INTERFACE Concepts FOR User, Tutor : I[Concept] cRud BOX <TABLE sortable hideOnN
 INTERFACE Concept FOR User, Tutor : I[Concept] cRud BOX
   [ "Concept:" : I cRud
   , "Purpose:" : purpose[Concept*Purpose] cRud 
-  , "used in (relations):" : source~ \/ target~ cRud LINKTO INTERFACE "Relation"
-  , "More generic concepts:" : genspc[Isa*Concept]~;gengen[Isa*Concept] \/ genspc[IsE*Concept]~;gengen[IsE*Concept] cRud LINKTO INTERFACE "Concept"
-  , "More specific concepts:" :gengen[Isa*Concept]~;genspc[Isa*Concept] \/ gengen[IsE*Concept]~;genspc[IsE*Concept] cRud LINKTO INTERFACE "Concept"
+  , "File Object for CD" : conceptualDiagram cRud
+  , "File path for CD" : conceptualDiagram;filePath cRud
+  , "Original file name for CD" : conceptualDiagram;originalFileName cRud
   , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
   , "Context" : context cRud
   ]

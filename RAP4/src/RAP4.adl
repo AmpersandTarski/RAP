@@ -78,7 +78,7 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SR
 
 --[Loading of the script]--
 RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP4
-RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script,.
+RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
 RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP4 when it is loaded into the meta tables
 
 
@@ -273,10 +273,10 @@ ENDPATTERN
 
 PATTERN "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)
 
-RELATION conceptualDiagram[Concept*FileObject][UNI]
-RELATION conceptualDiagram[Rule*FileObject][UNI]
-RELATION conceptualDiagram[Pattern*FileObject][UNI]
-RELATION conceptualDiagram[Context*FileObject][UNI]
+RELATION conceptualDiagram[Concept*FileObject] [UNI]
+RELATION conceptualDiagram[Rule*FileObject] [UNI]
+RELATION conceptualDiagram[Pattern*FileObject] [UNI]
+RELATION conceptualDiagram[Context*FileObject] [UNI]
 
 RELATION basePath[ScriptVersion*FilePath][UNI] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\generated\Script_1475844318716509\Version2016-10-07T144605\)
 
@@ -290,7 +290,7 @@ VIOLATION ( TXT "{EX} NewStruct;FileObject"
                 ,TXT ";filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
-                                 , TXT "LogicalDataModel.svg"
+                                 , TXT "LogicalDataModel.png"
           )
 
 ROLE ExecEngine MAINTAINS "link cd of pattern"
@@ -305,8 +305,8 @@ VIOLATION ( TXT "{EX} NewStruct;FileObject"
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
                                  , TXT "CDPattern"
-                                 , SRC urlEncodedName[Pattern*EncodedName]
-                                 , TXT ".svg"
+                                 , SRC name -- SJ should this be urlEncodedName[Pattern*EncodedName]? Why?
+                                 , TXT ".png"
           )
 
 ROLE ExecEngine MAINTAINS "link cd of rule"
@@ -321,8 +321,8 @@ VIOLATION ( TXT "{EX} NewStruct;FileObject"
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
                                  , TXT "CDRule"
-                                 , SRC urlEncodedName[Rule*EncodedName]
-                                 , TXT ".svg"
+                                 , SRC name -- SJ should this be urlEncodedName[Rule*EncodedName]? Why?
+                                 , TXT ".png"
           )
 
 ROLE ExecEngine MAINTAINS "link cd of concept"
@@ -337,8 +337,8 @@ VIOLATION ( TXT "{EX} NewStruct;FileObject"
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
                                  , TXT "CDConcept"
-                                 , SRC urlEncodedName[Concept*EncodedName]
-                                 , TXT ".svg"
+                                 , SRC name -- SJ should this be urlEncodedName[Concept*EncodedName]? Why?
+                                 , TXT ".png"
           )
 
 
