@@ -22,7 +22,7 @@ RUN apt-get update \
 RUN apt-get update && apt-get install -y graphviz
 
 # Copy Ampersand compiler
-COPY --from=ampersandtarski/ampersand:local /bin/ampersand /usr/local/bin
+COPY --from=ampersandtarski/ampersand:development /bin/ampersand /usr/local/bin
 RUN chmod +x /usr/local/bin/ampersand
 
 COPY . /usr/local/project/
