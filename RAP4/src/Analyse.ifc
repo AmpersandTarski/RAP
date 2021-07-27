@@ -64,12 +64,12 @@ INTERFACE Rule FOR User, Tutor : I[Rule] cRud BOX
 CLASSIFY PropertyRule, IdentityRule ISA Rule
 
 INTERFACE Patterns FOR User, Tutor : I[Pattern] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Thema's:" : I cRud
+  [ "Thema:" : I cRud
   , "Purpose:" : purpose[Pattern*Purpose] cRud 
   ]
 
 INTERFACE Pattern FOR User, Tutor : I[Pattern] cRud BOX
-  [ "Themes:" : I                           cRud
+  [ "Thema:" : I                            cRud
   , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
   , "Context" : context                     cRud
   ]

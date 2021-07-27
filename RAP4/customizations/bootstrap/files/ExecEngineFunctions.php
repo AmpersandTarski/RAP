@@ -88,7 +88,7 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
         $ee->getLogger()
     );
     $command->execute(dirname($srcAbsPath));
-    
+
     // Save compile output
     $scriptAtom->link($command->getResponse(), 'compileresponse[Script*CompileResponse]')->add();
     
@@ -103,8 +103,19 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed by the atlas for its graphics)
-        $version->link($basePath . '/conceptualanalysis/images/', 'basePath[ScriptVersion*FilePath]')->add();
+        $version->link($basePath . '/images/', 'basePath[ScriptVersion*FilePath]')->add();
         
+        // Generate graphics for both the documentation and the atlas.
+        $command = new Command(
+            'ampersand documentation',
+            [ "--no-text",     // omit the document, so generate graphics only.
+              "--format docx", // needed, or else Ampersand will not run.
+              basename($srcAbsPath)
+            ],
+            $ee->getLogger()
+        );
+        $command->execute(dirname($srcAbsPath));
+
         return ['id' => $version->getId(), 'relpath' => $srcRelPath];
     // Script not ok (exitcode != 0)
     } else {
@@ -163,7 +174,7 @@ ExecEngine::registerFunction('CAnalysis', function (string $path, Atom $scriptVe
     // Compile the file, only to check for errors.
     $command = new Command(
         'ampersand documentation',
-        ['script.adl', '--format docx', '--language=NL', '--ConceptualAnalysis', '--output-dir="./conceptualanalysis"', "--verbosity debug" ],
+        ['script.adl', '--format docx', '--no-graphics', '--language=NL', '--ConceptualAnalysis', "--verbosity debug" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -176,7 +187,7 @@ ExecEngine::registerFunction('CAnalysis', function (string $path, Atom $scriptVe
     // Create fSpec and link to scriptVersionAtom
     $foObject = createFileObject(
         $ee->getApp(),
-        "{$relDir}/conceptualanalysis/{$filename}.docx",
+        "{$relDir}/{$filename}.docx",
         "Conceptual Analysis"
     );
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
@@ -197,7 +208,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     // Create fspec with diagnosis chapter
     $command = new Command(
         'ampersand documentation',
-        ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--output-dir ./diagnosis', "--verbosity warn" ],
+        ['script.adl', '--format docx', '--no-graphics', '--language NL', '--Diagnosis', '--output-dir ./diagnosis', "--verbosity warn" ],
         $ee->getLogger()
     );
     mkdir("diagnosis", 0755, true);
