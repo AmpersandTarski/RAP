@@ -6,9 +6,9 @@ VIEW Accounts: Account DEFAULT { "uid": accUserid } ENDVIEW
 --[Account extensions]--
 
 --CLASSIFY Studentnummer ISA Userid   -- NOTE: Userid is of TYPE ALPHANUMERIC, which Studentnummer inherits
-accUserid :: Account * Userid [INJ,UNI] -- At most one account for every Studentnummer and vice versa
-accPerson :: Account * Person [UNI] -- At most one name for every Studentnummer and vice versa
-accEmail :: Account * Emailaddress [UNI] REPRESENT Emailaddress TYPE ALPHANUMERIC -- dit kan later een CEP-adres worden
+RELATION accUserid[Account * Userid] [INJ,UNI] -- At most one account for every Studentnummer and vice versa
+RELATION accPerson[Account * Person] [UNI] -- At most one name for every Studentnummer and vice versa
+RELATION accEmail[Account * Emailaddress] [UNI] REPRESENT Emailaddress TYPE ALPHANUMERIC -- dit kan later een CEP-adres worden
 
 --[Password (re)setting]--
 
@@ -66,18 +66,19 @@ INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <TABLE
 
 --[User account management]--
 
+PURPOSE INTERFACE "MyAccount"
+{+This interface provides basic account information and allows a user to change his or her password.
++}
 INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <FORM hideLabels>
    [ "no session account": (I-sessionAccount;sessionAccount~);V;"Editing your account requires that you are logged in"[LoginMessage] cRud
-   , "session account": sessionAccount cRUd BOX
+   , "session account": sessionAccount cRud BOX
       [ "Userid": accUserid cRud
       , "Nieuw wachtwoord": sessionAccount~ cRud BOX <TABLE> -- crUd is required for Passwords
          [ "Nieuw": regPassword1 cRUd -- crUd is required for Passwords
          , "(herhaal)": regPassword2 cRUd -- crUd is required for Passwords
          ]
-      , "Persoon": accPerson CRUD
+      , "Persoon": accPersonRef cRud
       , "Toegestane rollen": accAllowedRoles cRud
-      , "Default rollen": accDefaultRoles cRUd
-      , "Persoonlijk ID": accUserid cRUd  -- This field is needed to allow a student to provide his or her own student number.
       ]
    ]
 POPULATION LoginMessage CONTAINS [ "Editing your account requires that you are logged in" ]
