@@ -8,7 +8,7 @@ waarin ik scripts kan maken, verwijderen en naar het script kan navigeren om eri
 om zodoende volwaardig beheer over mijn eigen scripts te kunnen doen.
 +}
 INTERFACE MyScripts FOR User: "_SESSION";sessionAccount cRud BOX <TABLE hideOnNoRecords>
-   [ "" : submittor~ cRuD BOX <TABLE sortable hideOnNoRecords>
+   [ "" : submittor~ CRuD BOX <TABLE sortable hideOnNoRecords>
       [ content  : I[Script]  cRud
       , opdracht : assignment CRUd
       , tijdstip : submitted  cRud
@@ -45,12 +45,12 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
 --                         , "hide": <expression> cRud
 --                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
                            ]
-         , "Atlas" :      I BOX <PROPBUTTON>
-                           [ property : loadRequest cRUd
-                           , disabled : I /\ loadedInRAP4Ok  cRud
+--       , "Atlas" :      I BOX <PROPBUTTON>
+--                         [ property : loadRequest cRUd
+--                         , disabled : loadedInRAP4Ok  cRud
 --                         , "hide": <expression> cRud
 --                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
-                           ]
+--                         ]
          , "Prototype" :  I BOX <PROPBUTTON>
                            [ property : protoRequest cRUd
                            , disabled : I /\ protoOk  cRud
@@ -61,7 +61,7 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
          ]
       , "links to your results": seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
          [ "Download document" : funcSpec cRud
-         , "Atlas" :      context cRud LINKTO INTERFACE "Context"
+--       , "Atlas" :      context cRud LINKTO INTERFACE "Context"
          , "Prototype" :  protoOk;version~;proto cRud
          ]
       ]

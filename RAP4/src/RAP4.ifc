@@ -15,7 +15,7 @@ VIEW "Field": Field DEFAULT
    }
 ENDVIEW
 
-INTERFACE "Overview" : I[SESSION] ; "_SESSION" cRud BOX<TABS>
+INTERFACE "Overview" FOR Advanced : I[SESSION] ; "_SESSION" cRud BOX<TABS>
    [ interfaces : V[SESSION*Interface]
      BOX <TABLE>
        [ "Interface" : I

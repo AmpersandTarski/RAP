@@ -10,31 +10,18 @@ RELATION asMarkdown[Markup*Text][UNI,TOT]
 RELATION origin[Rule*Origin]
 RELATION relsDefdIn[Relation*Context]
 
-VIEW Script: Script(TXT "Terug naar script")
 VIEW MeaningContent: Meaning(markup;asMarkdown)
 VIEW PurposeContent: Purpose(markup;asMarkdown)
 
 
-INTERFACE Concepts FOR User, Tutor : I[Concept] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Concepts:" : I cRud LINKTO INTERFACE "Concept"
-  , "Purpose:" : purpose[Concept*Purpose] cRud 
-  ]
-
 INTERFACE Concept FOR User, Tutor : I[Concept] cRud BOX
   [ "Concept:" : I cRud
-  , "Purpose:" : purpose[Concept*Purpose] cRud 
-  , "File Object for CD" : conceptualDiagram cRud
-  , "File path for CD" : conceptualDiagram;filePath cRud
-  , "Original file name for CD" : conceptualDiagram;originalFileName cRud
-  , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
-  , "Context" : context cRud
+  , "Definition" : name;acdcpt~;(acddef2\/acdmean) cRud -- acddef2 is old syntax, acdmean is new syntax.
+  , "Purpose:" : purpose[Concept*Purpose]          cRud 
+  , "Used in rules": conceptualDiagram             cRud <ShowConceptualDiagram>
+  , "Context" : context                            cRud
   ]
 
-INTERFACE Relations FOR User, Tutor : I[Relation] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Relation:" : I cRud -- name[Relation*RelationName] cRud en daar moet dan nog een view bij.
-  , "MEANING:" : decMean[Relation*Meaning] cRud 
-  , "PURPOSE:" : purpose[Relation*Purpose] cRud 
-  ]
 INTERFACE Relation FOR User, Tutor : I[Relation] cRud BOX
   [ "Relation:" : I cRud
   , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
@@ -46,10 +33,7 @@ INTERFACE Relation FOR User, Tutor : I[Relation] cRud BOX
   , "Context" : relsDefdIn cRud
   ]
 
-INTERFACE Rules FOR User, Tutor : I[Rule] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
-  , "Formele expressie:" : formalTerm cRud
-  ]
+VIEW Rule : Rule(name)
 
 INTERFACE Rule FOR User, Tutor : I[Rule] cRud BOX
   [ "Regel:" : I[Rule] cRud
@@ -57,8 +41,8 @@ INTERFACE Rule FOR User, Tutor : I[Rule] cRud BOX
   , "Formele expressie:" : formalTerm cRud
   , "MEANING:" : meaning[Rule*Meaning] cRud 
   , "PURPOSE:" : purpose[Rule*Purpose] cRud 
-  , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
-  , "Context" : allRules[Context*Rule]~ cRud
+  , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
+  , "Context" : allRules[Rule*Context] cRud
   ]
 
 CLASSIFY PropertyRule, IdentityRule ISA Rule

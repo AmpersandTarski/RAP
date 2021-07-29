@@ -140,14 +140,19 @@ ENDPATTERN
 PATTERN "Static relations from FormalAmpersand"
     REPRESENT ConceptDefinition TYPE BIGALPHANUMERIC
 
+    RELATION acdcpt[ConceptDef*ConceptName] [UNI] -- ^ The name of the concept for which this is the definition. If there is no such concept, the conceptdefinition is ignored.
+    RELATION acddef2[ConceptDef*Meaning] [UNI]    -- ^ The textual definition of this concept in the old syntax (e.g. CONCEPT foo "This is the definition").
+    RELATION acdmean[ConceptDef*Meaning]          -- ^ User-specified meanings, possibly more than one, for multiple languages in the new syntax (e.g. CONCEPT foo MEANING {+This is the definition+}
+    RELATION acdfrom[ConceptDef*Pattern] [UNI]    -- ^ The name of the pattern or context in which this concept definition was made
     RELATION allConjuncts[Context*Conjunct] -- The conjuncts contained by a context
     RELATION allRoles[Context*Role] -- The roles contained by a context
-    RELATION allRules[Context*Rule] -- The rules contained by a context
+    RELATION allRules[Rule*Context] -- The rules contained by a context
     RELATION allRules[Pattern*Rule] -- The rules contained by a pattern
     RELATION arg[UnaryTerm*Term] [UNI] -- 
     RELATION asMarkdown[Markup*Text] [UNI] -- 
     RELATION bind[BindedRelation*Relation] [UNI] -- 
     RELATION concepts[Pattern*Concept] -- 
+    RELATION ctxcds[ConceptDef*Context] -- 
     RELATION conjunct[Conjunct*Term] -- 
     RELATION context[Concept*Context] [UNI] -- The context that contains the definition of a concept
     RELATION context[Interface*Context] [UNI] -- The context that contains an Interface
@@ -222,6 +227,7 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION origin[Rule*Origin] [UNI]
     RELATION rc_orgRules[Conjunct*Rule]
     RELATION pairView[Rule*PairView]
+    RELATION acdpos[ConceptDef*Origin] [UNI]      -- ^ The position of this definition in the text of the Ampersand source (filename, line number and column number).
     RELATION prop[Relation*Property]
     RELATION propertyRule[Relation*PropertyRule] [SUR]
     MEANING "The properties of a relation."
@@ -277,7 +283,7 @@ RELATION conceptualDiagram[Rule*FileObject] [UNI]
 RELATION conceptualDiagram[Pattern*FileObject] [UNI]
 RELATION conceptualDiagram[Context*FileObject] [UNI]
 
-RELATION basePath[ScriptVersion*FilePath][UNI] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\generated\Script_1475844318716509\Version2016-10-07T144605\)
+RELATION basePath[ScriptVersion*FilePath] [UNI] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\Script_1475844318716509\Version2016-10-07T144605\)
 
 ROLE ExecEngine MAINTAINS "link cd of context"
 RULE "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]
@@ -289,7 +295,7 @@ VIOLATION ( TXT "{EX} NewStruct;FileObject"
                 ,TXT ";filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
-                                 , TXT "LogicalDataModel.png"
+                                 , TXT "/images/LogicalDataModel.png"
           )
 
 ROLE ExecEngine MAINTAINS "link cd of pattern"
@@ -303,24 +309,24 @@ VIOLATION ( TXT "{EX} NewStruct;FileObject"
                                  , SRC context[Pattern*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
-                                 , TXT "CDPattern"
-                                 , SRC name -- SJ should this be urlEncodedName[Pattern*EncodedName]? Why?
+                                 , TXT "/images/CDPattern"
+                                 , SRC urlEncodedName
                                  , TXT ".png"
           )
 
 ROLE ExecEngine MAINTAINS "link cd of rule"
-RULE "link cd of rule" : I[Rule] /\ allRules[Context*Rule]~;context[ScriptVersion*Context]~;context[ScriptVersion*Context];allRules[Context*Rule]
+RULE "link cd of rule" : I[Rule] /\ allRules[Rule*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];allRules[Rule*Context]~
                                |- conceptualDiagram[Rule*FileObject];conceptualDiagram[Rule*FileObject]~
 MEANING "Elke regel in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
 VIOLATION ( TXT "{EX} NewStruct;FileObject"
                 ,TXT ";conceptualDiagram;Rule;",SRC I[Rule],TXT ";FileObject;_NEW"
                 ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
                 ,TXT ";filePath;FileObject;_NEW;FilePath;"
-                                 , SRC allRules[Context*Rule]~;
+                                 , SRC allRules[Rule*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
-                                 , TXT "CDRule"
-                                 , SRC name -- SJ should this be urlEncodedName[Rule*EncodedName]? Why?
+                                 , TXT "/images/CDRule"
+                                 , SRC urlEncodedName
                                  , TXT ".png"
           )
 
@@ -335,13 +341,11 @@ VIOLATION ( TXT "{EX} NewStruct;FileObject"
                                  , SRC context[Concept*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
-                                 , TXT "CDConcept"
-                                 , SRC name -- SJ should this be urlEncodedName[Concept*EncodedName]? Why?
+                                 , TXT "/images/CDConcept"
+                                 , SRC urlEncodedName
                                  , TXT ".png"
           )
 
-
 ENDPATTERN
-
 
 ENDCONTEXT
