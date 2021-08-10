@@ -12,7 +12,6 @@ cat /script.adl
 # First generate Ampersand proto from student script
 ampersand proto /script.adl \
     --proto-dir=/var/www \
-    --build-recipe Prototype \
     --verbose
 
 chown -R www-data:www-data /var/www/log /var/www/data /var/www/generics
