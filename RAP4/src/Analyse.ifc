@@ -1,7 +1,7 @@
 CONTEXT RAP IN DUTCH
 RELATION markup[Purpose*Markup][UNI]
 RELATION markup[Meaning*Markup][UNI]
-REPRESENT Text TYPE ALPHANUMERIC
+REPRESENT Text TYPE BIGALPHANUMERIC   -- Fix for AmpersandTarski/Ampersand issue #1199
 
 RULE defaultMarkupPurpose : I[Purpose] |- markup;V
 
