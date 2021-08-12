@@ -15,7 +15,8 @@ INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;s
            [ context       : I                              cRud
            , patterns      : context[Pattern*Context]~      cRud
            , concepts      : context[Concept*Context]~      cRud
-           , rules         : context[Rule*Context]~         cRud
+           , rules         : allRules~ - proprules~         cRud
+           , properties    : proprules[PropertyRule*Context]~ cRud
            , relations     : relsDefdIn[Relation*Context]~  cRud
            , "versionInfo" : versionInfo                    cRud
            ]
@@ -44,8 +45,8 @@ INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
                       [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
                       , "Formele expressie:" : formalTerm     cRud
                       ]
-                 , "multipliciteits regels"  : multrules~     cRud BOX <TABLE sortable hideOnNoRecords>
-                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
+                 , "multipliciteits regels"  : proprules[PropertyRule*Context]~     cRud BOX <TABLE sortable hideOnNoRecords>
+                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "PropRule"
                       , "Formele expressie:" : formalTerm     cRud
                       ]
                  , "identiteitsregels"       : identityRules~ cRud BOX <TABLE sortable hideOnNoRecords>

@@ -45,6 +45,14 @@ INTERFACE Rule FOR User, Tutor : I[Rule] cRud BOX
   , "Context" : allRules[Rule*Context] cRud
   ]
 
+INTERFACE PropRule FOR User, Tutor : I[PropertyRule] cRud BOX
+  [ "Regel:" : I[Rule] cRud
+  , "origin" : origin cRud  
+  , "Formele expressie:" : formalTerm cRud
+  , "MEANING:" : meaning[Rule*Meaning] cRud 
+  , "Context" : allRules[Rule*Context] cRud
+  ]
+
 CLASSIFY PropertyRule, IdentityRule ISA Rule
 
 INTERFACE Patterns FOR User, Tutor : I[Pattern] cRud BOX <TABLE sortable hideOnNoRecords>

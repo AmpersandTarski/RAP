@@ -209,8 +209,8 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION meaning[Rule*Meaning]
     MEANING "The meanings of a relation."
     RELATION message[Rule*Message] [INJ]
-    RELATION multrules[Rule*Context]
-    RELATION multrules[Rule*Pattern]
+    RELATION proprules[PropertyRule*Context]
+    RELATION proprules[PropertyRule*Pattern]
     RELATION name[Concept*ConceptName] [UNI]
     RELATION name[Context*ContextName] [UNI]
     RELATION name[Interface*InterfaceName] [UNI]
