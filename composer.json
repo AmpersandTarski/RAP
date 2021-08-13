@@ -2,7 +2,7 @@
     "name": "ampersandtarski/rap",
     "type": "project",
     "require-dev": {
-        "ampersandtarski/prototype": "^1.7"
+        "ampersandtarski/prototype": "^1.8.5"
     },
     "license": "MIT",
     "require": {}

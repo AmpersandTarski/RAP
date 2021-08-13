@@ -79,16 +79,16 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
     file_put_contents($srcAbsPath, $scriptContent = current($links)->tgt()->getId());
     $version->link($scriptContent, 'content[ScriptVersion*ScriptContent]')->add();
 
-    // Compile the file, only to check for errors.
+    // Compile the file. Only to check for errors.
     $command = new Command(
         'ampersand check',
-        [ "--build-recipe Prototype", // check with build-recipe for Prototype, because otherwise the script migth be ok, but not for a prototype
-          basename($srcAbsPath)
+        [ "--build-recipe Prototype"  // check with build-recipe for Prototype, because otherwise the script migth be ok, but not for a prototype
+        , basename($srcAbsPath)       // this is 'script.adl'
         ],
         $ee->getLogger()
     );
     $command->execute(dirname($srcAbsPath));
-    
+
     // Save compile output
     $scriptAtom->link($command->getResponse(), 'compileresponse[Script*CompileResponse]')->add();
     
@@ -103,8 +103,77 @@ ExecEngine::registerFunction('CompileToNewVersion', function ($scriptAtomId, $us
         $version->link($sourceFO, 'source[ScriptVersion*FileObject]')->add();
         
         // create basePath, indicating the relative path to the context stuff of this scriptversion. (Needed by the atlas for its graphics)
-        $version->link($basePath . '/fspec/images', 'basePath[ScriptVersion*FilePath]')->add();
+        $version->link($basePath, 'basePath[ScriptVersion*FilePath]')->add();
+
+        // Generate graphics for both the documentation and the atlas.
+        $command = new Command(
+            'ampersand documentation',
+            [ "--no-text"             // omit the document, so generate graphics only.
+            , "--format docx"         // needed, or else Ampersand will not run.
+            , basename($srcAbsPath)   // this is 'script.adl'
+            ],
+            $ee->getLogger()
+        );
+        $command->execute(dirname($srcAbsPath));
+
+        // Create RAP4 population for the Atlas
+        $workDir   = dirname($srcAbsPath);
+        // e.g.   $workDir   = /var/www/data/scripts/stefj/Script_6fe4c067-3bae-4a0f-b085-f4af71cade27/ScriptVersion_819b8420-8a50-4a49-a78d-65518059ebc4
+    
+        // Create RAP4 population
+        $command = new Command(
+            'ampersand population',
+            [ '--output-dir="./"'
+            , "--build-recipe Grind"
+            , "--output-format json"
+            , "--verbosity warn"
+            , basename($srcAbsPath)   // this is 'script.adl'
+            ],
+            $ee->getLogger()
+        );
+        $command->execute(dirname($srcAbsPath));
+        // upon success, the generated file is: ./atlas/<scriptname without extension>_generated_pop.json
+    
+        if ($command->getExitcode() == 0) {
+            // Open and decode generated metaPopulation.json file
+            $pop = file_get_contents("{$workDir}/script_generated_pop.json"); // will be script_generated_pop.json
+            if ($pop === false) {
+                throw new Exception("Generated Atlas population file not found for script'");
+            }
+            $pop = json_decode($pop, true);
         
+            // Add atoms to database
+            foreach ($pop['atoms'] as $atomPop) {
+                $concept = $model->getConcept($atomPop['concept']);
+                foreach ($atomPop['atoms'] as $atomId) {
+                    $atom = getRAPAtom($atomId, $concept);
+                    $atom->add(); // Add to database
+    
+                    // Link Context atom to the ScriptVersion
+                    if ($concept->getId() == 'Context') {
+                        $version->link($atom, 'context[ScriptVersion*Context]')->add();
+                    }
+                }
+            }
+        
+            // Add links to database
+            foreach ($pop['links'] as $linkPop) {
+                $relation = $model->getRelation($linkPop['relation']);
+                foreach ($linkPop['links'] as $pair) {
+                    $pair = new Link(
+                        $relation,
+                        getRAPAtom($pair['src'], $relation->srcConcept),
+                        getRAPAtom($pair['tgt'], $relation->tgtConcept)
+                    );
+                    $pair->add();
+                }
+            }
+        }
+    
+        // Populate 'loadedInRAP4Ok' to signal success to the ExecEngine
+        setProp('loadedInRAP4Ok[ScriptVersion*ScriptVersion]', $version, $command->getExitcode() == 0);
+        $version->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
+
         return ['id' => $version->getId(), 'relpath' => $srcRelPath];
     // Script not ok (exitcode != 0)
     } else {
@@ -137,7 +206,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
             ExecEngine::getFunction('makeAtlas')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'fspec':
-            ExecEngine::getFunction('FuncSpec')->call($this, $srcRelPath, $scriptVersionAtom);
+            ExecEngine::getFunction('CAnalysis')->call($this, $srcRelPath, $scriptVersionAtom);
             break;
         case 'prototype':
             ExecEngine::getFunction('Prototype')->call($this, $srcRelPath, $scriptAtom, $scriptVersionAtom, $userName);
@@ -152,7 +221,7 @@ ExecEngine::registerFunction('CompileWithAmpersand', function ($action, $scriptI
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
-ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVersionAtom) {
+ExecEngine::registerFunction('CAnalysis', function (string $path, Atom $scriptVersionAtom) {
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
@@ -163,7 +232,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     // Compile the file, only to check for errors.
     $command = new Command(
         'ampersand documentation',
-        ['script.adl', '--format docx', '--language=NL', '--output-dir="."', "--verbosity debug" ],
+        ['script.adl', '--format docx', '--no-graphics', '--language=NL', '--ConceptualAnalysis', "--verbosity debug" ],
         $ee->getLogger()
     );
     $command->execute($workDir);
@@ -177,7 +246,7 @@ ExecEngine::registerFunction('FuncSpec', function (string $path, Atom $scriptVer
     $foObject = createFileObject(
         $ee->getApp(),
         "{$relDir}/{$filename}.docx",
-        "Functional specification"
+        "Conceptual Analysis"
     );
     $scriptVersionAtom->link($foObject, 'funcSpec[ScriptVersion*FileObject]')->add();
 });
@@ -197,7 +266,7 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
     // Create fspec with diagnosis chapter
     $command = new Command(
         'ampersand documentation',
-        ['script.adl', '--format docx', '--language NL', '--Diagnosis', '--output-dir ./diagnosis', "--verbosity warn" ],
+        ['script.adl', '--format docx', '--no-graphics', '--language NL', '--Diagnosis', '--output-dir ./diagnosis', "--verbosity warn" ],
         $ee->getLogger()
     );
     mkdir("diagnosis", 0755, true);
@@ -287,75 +356,6 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
     $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
-});
-
-/**
- * @phan-closure-scope \Ampersand\Rule\ExecEngine
- * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
- */
-ExecEngine::registerFunction('makeAtlas', function (string $path, Atom $scriptVersionAtom) {
-    /** @var \Ampersand\Rule\ExecEngine $ee */
-    $ee = $this; // because autocomplete does not work on $this
-    $model = $ee->getApp()->getModel();
-
-    $basename  = pathinfo($path, PATHINFO_BASENAME);
-    $workDir   = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . pathinfo($path, PATHINFO_DIRNAME);
-
-    // Create RAP4 population
-    $command = new Command(
-        'ampersand population',
-        [ $basename
-        , '--output-dir="./"'
-        , "--build-recipe AtlasPopulation"
-        , "--output-format json"
-        , "--verbosity warn"
-        ],
-        $ee->getLogger()
-    );
-    $command->execute($workDir);
-    // upon success, the generated file is: ./atlas/<scriptname without extension>_generated_pop.json
-
-    $scriptNameWithoutExt = pathinfo($path, PATHINFO_FILENAME);
-    
-    if ($command->getExitcode() == 0) {
-        // Open and decode generated metaPopulation.json file
-        $pop = file_get_contents("{$workDir}/{$scriptNameWithoutExt}_generated_pop.json");
-        if ($pop === false) {
-            throw new Exception("Generated Atlas population file not found for script: '{$path}'");
-        }
-        $pop = json_decode($pop, true);
-    
-        // Add atoms to database
-        foreach ($pop['atoms'] as $atomPop) {
-            $concept = $model->getConcept($atomPop['concept']);
-            foreach ($atomPop['atoms'] as $atomId) {
-                $atom = getRAPAtom($atomId, $concept);
-                $atom->add(); // Add to database
-
-                // Link Context atom to the ScriptVersion
-                if ($concept->getId() == 'Context') {
-                    $scriptVersionAtom->link($atom, 'context[ScriptVersion*Context]')->add();
-                }
-            }
-        }
-    
-        // Add links to database
-        foreach ($pop['links'] as $linkPop) {
-            $relation = $model->getRelation($linkPop['relation']);
-            foreach ($linkPop['links'] as $pair) {
-                $pair = new Link(
-                    $relation,
-                    getRAPAtom($pair['src'], $relation->srcConcept),
-                    getRAPAtom($pair['tgt'], $relation->tgtConcept)
-                );
-                $pair->add();
-            }
-        }
-    }
-
-    // Populate 'loadedInRAP4Ok' to signal success to the ExecEngine
-    setProp('loadedInRAP4Ok[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
-    $scriptVersionAtom->link($command->getResponse(), 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
 
 /**

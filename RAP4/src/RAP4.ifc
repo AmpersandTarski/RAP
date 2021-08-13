@@ -1,0 +1,70 @@
+CONTEXT RAP
+
+VIEW "Interface": Interface DEFAULT
+   { name : name[Interface*InterfaceName]
+   }
+ENDVIEW
+
+VIEW "FieldDef": FieldDef DEFAULT
+   { name : label[FieldDef*FieldName]
+   }
+ENDVIEW
+
+VIEW "Field": Field DEFAULT
+   { name : def;label[FieldDef*FieldName]
+   }
+ENDVIEW
+
+INTERFACE "Overview" FOR Advanced : I[SESSION] ; "_SESSION" cRud BOX<TABS>
+   [ interfaces : V[SESSION*Interface]
+     BOX <TABLE>
+       [ "Interface" : I
+       , name : name
+       , context : context
+       , pos : ifcPos cRud
+       , fieldDefs : I[Interface]; fieldIn[FieldDef*ObjectDef]~ BOX <TABLE>
+           [ FieldDef : I[FieldDef]
+           , label : label
+           , edit : edit
+           , editFlp : editFlp
+           ]
+       ]
+   , DIVs : V[SESSION*Div]
+     BOX <TABLE>
+       [ Div : I 
+       , field : field
+       , content : content
+       ]
+   , Fields : I[SESSION] BOX<TABLE>
+       [ Fields : V[SESSION*Field]
+           BOX <TABLE>
+             [ Field : I
+             , fieldIn : fieldIn
+             , divs : field~
+             , def : def
+             ] 
+       , FieldDefs : V[SESSION*FieldDef]
+           BOX <TABLE>
+             [ FieldDef : I 
+             , label : label
+             , fieldIn : fieldIn
+             , edit : edit
+             , editFlp : editFlp
+             ]
+       ]
+   , Objects : I[SESSION] BOX<TABLE>
+       [ Objects : V[SESSION*Object]
+           BOX <TABLE>
+             [ Object : I 
+             , def : def
+             ] 
+       ]
+   , Relations : V[SESSION*Relation] cRud
+     BOX <TABLE>
+       [ Relation : I
+       , "field for edit" : edit~
+       , "field for editFpl" : editFlp~
+       ]
+   ]
+
+ENDCONTEXT

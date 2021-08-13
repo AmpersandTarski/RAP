@@ -1,8 +1,4 @@
 <!-- ShowConceptualDiagram.html -->
-<div ng-repeat=$if(exprIsUni)$ "resource in (resource['$name$'] === null ? [] : [resource['$name$']])"$else$ "resource in resource['$name$']"$endif$>
-    <a ng-href="{{resource._view_.'imgfile'}}" target="_blank">
-        <img class="img center-block" style="max-width : 500px;" ng-src="{{resource._view_.'imgfile'}}" alt="Conceptual diagram" />
-    </a>
-    <br/>
-    <span>klik op het plaatje om te vergroten</span>
+<div ng-repeat="obj in requireArray(resource['$name$'])">
+    <img style="max-width : 500px;" ng-src="api/v1/file/{{obj._view_.imgfile}}" alt="Conceptual diagram" />
 </div>

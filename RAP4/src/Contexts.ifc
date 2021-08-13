@@ -1,0 +1,101 @@
+CONTEXT RAP IN ENGLISH
+
+VIEW Context : Context(name)
+VIEW Concept : Concept(name)
+VIEW Script: Script(TXT "Terug naar script")
+
+PURPOSE INTERFACE Atlas
+{+ The atlas helps the user to investigate his or her script.
+She can browse around in it. The Atlas displays only the contexts that are loaded in RAP4.
++}
+INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<FORM hideLabels>
+   [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud   -- This works because VIEW Script: Script(TXT "Terug naar script")
+   , "" : I
+      BOX<TABLE sortable>
+           [ context       : I                              cRud
+           , patterns      : context[Pattern*Context]~      cRud
+           , concepts      : context[Concept*Context]~      cRud
+           , rules         : allRules~ - proprules~         cRud
+           , properties    : proprules[PropertyRule*Context]~ cRud
+           , relations     : relsDefdIn[Relation*Context]~  cRud
+           , "versionInfo" : versionInfo                    cRud
+           ]
+   ]
+
+INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
+      [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
+      , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
+      , ""     : I[Context] cRud
+      BOX <TABS>
+         [ "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ cRud
+            BOX <TABLE sortable hideOnNoRecords>
+                 [ "Concepts:"   : I cRud LINKTO INTERFACE "Concept"
+                 , "Definition:" : name;acdcpt~;(acddef2\/acdmean) cRud -- acddef2 is old syntax, acdmean is new syntax.
+                 , "Waartoe?"    : purpose[Concept*Purpose]        cRud 
+                 ]
+         , "Relaties"  : relsDefdIn[Relation*Context]~ cRud
+            BOX <TABLE sortable hideOnNoRecords>
+                 [ "RELATION" : I cRud -- name[Relation*RelationName] cRud en daar moet dan nog een view bij.
+                 , "MEANING"  : decMean[Relation*Meaning] cRud 
+                 , "PURPOSE"  : purpose[Relation*Purpose] cRud 
+                 ]
+         , "Regels"    : I
+            BOX <TABS>
+                 [ "regels met RULE"         : udefrules~     cRud BOX <TABLE sortable hideOnNoRecords>
+                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
+                      , "Formele expressie:" : formalTerm     cRud
+                      ]
+                 , "multipliciteits regels"  : proprules[PropertyRule*Context]~     cRud BOX <TABLE sortable hideOnNoRecords>
+                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "PropRule"
+                      , "Formele expressie:" : formalTerm     cRud
+                      ]
+                 , "identiteitsregels"       : identityRules~ cRud BOX <TABLE sortable hideOnNoRecords>
+                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
+                      , "Formele expressie:" : formalTerm     cRud
+                      ]
+                 ]
+         , "Patterns"   : context [Pattern * Context]~ INTERFACE "Patterns"
+         ]
+  ]
+
+
+INTERFACE "ContextDetailed" FOR Advanced : I[Context] cRud BOX<FORM hideLabels>
+  [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
+  , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
+  , ""     : I[Context] cRud
+    BOX <TABS>
+      [ "About" : I BOX
+        [ "name"  : name[Context*ContextName]
+        , "versionInfo" : versionInfo                      cRud
+        , "owner" : context~;version~;submittor;accPerson  cRud
+        , "rules" : context[Rule*Context]~                 cRud
+        , "relations" : relsDefdIn[Relation*Context]~
+        , "concepts" : context[Concept*Context]~
+        ]
+      , "Patterns defined" : context[Pattern*Context]~ BOX 
+        [ "Pattern" : I CRuD -- INTERFACE Pattern
+        ]
+      , "Patterns used" : uses[Context*Pattern] BOX 
+        [ "Pattern" : I CRuD -- INTERFACE Pattern
+        ]
+      , "Isas" : context[Concept*Context]~ ; (I[Concept] 
+              /\
+                    (gengen[Isa*Concept]~;gengen[Isa*Concept]) /\
+                    ( -(genspc[Isa*Concept]~;genspc[Isa*Concept]))) 
+             -- INTERFACE IsaTree 
+      , "Concepts" : context[Concept*Context]~
+      , "Relations" : relsDefdIn[Relation*Context]~  -- LINKTO INTERFACE "Relation"
+           BOX<TABLE sortable>
+               [ relation   : I
+               , "declared in pattern" : declaredIn[Relation*Pattern]
+               , "declared in context" : relsDefdIn[Relation*Context]
+               ]
+      , "Roles" : allRoles[Context*Role]
+    --  , "allConjuncts" : allConjuncts[Context*Conjunct]
+    --  , "Rules" : allRules[Rule*Context] INTERFACE "Rule"
+      ]
+  ]
+
+ENDCONTEXT
+
+

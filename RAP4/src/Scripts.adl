@@ -27,9 +27,8 @@ CONCEPT FileObject ""
   RELATION originalFileName[FileObject*FileName] [UNI] --,TOT]
     REPRESENT FileName TYPE ALPHANUMERIC
 
-
 CONCEPT ScriptContent ""
-REPRESENT ScriptContent TYPE BIGALPHANUMERIC
+REPRESENT ScriptContent TYPE HUGEALPHANUMERIC
 VIEW ScriptContent : ScriptContent DEFAULT HTML TEMPLATE "View-ACE.html" ENDVIEW
 
 CONCEPT ScriptVersion ""
@@ -74,10 +73,10 @@ VIOLATION (TXT "{EX} InsPair;itemInSeq;Item;", TGT I[ScriptVersion], TXT ";Seque
           ,TXT "{EX} InsPair;nextItem;Item;",TGT I[ScriptVersion], TXT ";Item;", SRC seqFirstItem
           )
 
-ROLE Janitor MAINTAINS "Destroy context of non-latest scriptversion"
+ROLE ExecEngine MAINTAINS "Destroy context of non-latest scriptversion"
 RULE "Destroy context of non-latest scriptversion" :
-   context[ScriptVersion*Context]~ |- -(context[ScriptVersion*Context]~;nextItem~;nextItem)
-VIOLATION (TXT "{EX} InsPair;requestDestroy;Context;",SRC I[Context],TXT ";Context;",SRC I[Context])
+   context[ScriptVersion*Context] |- -(nextItem;V)
+VIOLATION (TXT "{EX}Cleanup;", SRC nextItem;context[ScriptVersion*Context], TXT ";Context")
 
 ENDPATTERN
 

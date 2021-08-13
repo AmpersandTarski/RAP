@@ -1,52 +1,28 @@
 CONTEXT RAP IN DUTCH
-RELATION markup[Purpose*Markup][UNI,TOT]
+RELATION markup[Purpose*Markup][UNI]
+RELATION markup[Meaning*Markup][UNI]
+REPRESENT Text TYPE BIGALPHANUMERIC   -- Fix for AmpersandTarski/Ampersand issue #1199
+
+RULE defaultMarkupPurpose : I[Purpose] |- markup;V
+
+RELATION name[Context*ContextName] [UNI]
 RELATION asMarkdown[Markup*Text][UNI,TOT]
+RELATION origin[Rule*Origin]
+RELATION relsDefdIn[Relation*Context]
 
--- VIEW Context : Context(TXT "Context")
-
-VIEW Contextname: Context(name)
-VIEW Script: Script(TXT "Terug naar script")
 VIEW MeaningContent: Meaning(markup;asMarkdown)
 VIEW PurposeContent: Purpose(markup;asMarkdown)
 
-INTERFACE "Context" FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
-      [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
-      , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
-      , ""     : I[Context]
-      BOX <TABS>
-         [ "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE "Concepts"
-         , "Relaties"  : declaredIn[Relation*Context]~  INTERFACE "Relations"
-         , "Regels"    : I
-            BOX <TABS>
-                 [ "gewone regels"          : allRules[Context*Rule] ;(I[Rule]-I[PropertyRule]) INTERFACE "Rules"
-                 , "multipliciteits regels" : allRules[Context*Rule] ;         I[PropertyRule];I[Rule] INTERFACE "Rules"
-                 ]
-         , "Patterns"   : context [Pattern * Context]~ INTERFACE "Patterns"
-         ]
-  ]
 
-
-INTERFACE "Concepts" FOR User, Tutor : I[Concept] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Concepts:" : I cRud LINKTO INTERFACE "Concept"
-  , "Purpose:" : purpose[Concept*Purpose] cRud 
-  ]
-
-INTERFACE "Concept" FOR User, Tutor : I[Concept] cRud BOX
+INTERFACE Concept FOR User, Tutor : I[Concept] cRud BOX
   [ "Concept:" : I cRud
-  , "Purpose:" : purpose[Concept*Purpose] cRud 
-  , "used in (relations):" : source~ \/ target~ cRud LINKTO INTERFACE "Relation"
-  , "More generic concepts:" : genspc[Isa*Concept]~;gengen[Isa*Concept] \/ genspc[IsE*Concept]~;gengen[IsE*Concept] cRud LINKTO INTERFACE "Concept"
-  , "More specific concepts:" :gengen[Isa*Concept]~;genspc[Isa*Concept] \/ gengen[IsE*Concept]~;genspc[IsE*Concept] cRud LINKTO INTERFACE "Concept"
-  , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
-  , "Context" : context cRud
+  , "Definition" : name;acdcpt~;(acddef2\/acdmean) cRud -- acddef2 is old syntax, acdmean is new syntax.
+  , "Purpose:" : purpose[Concept*Purpose]          cRud 
+  , "Used in rules": conceptualDiagram             cRud <ShowConceptualDiagram>
+  , "Context" : context                            cRud
   ]
 
-INTERFACE "Relations" FOR User, Tutor : I[Relation] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Relation:" : I cRud -- name[Relation*RelationName] cRud en daar moet dan nog een view bij.
-  , "MEANING:" : decMean[Relation*Meaning] cRud 
-  , "PURPOSE:" : purpose[Relation*Purpose] cRud 
-  ]
-INTERFACE "Relation" FOR User, Tutor : I[Relation] cRud BOX
+INTERFACE Relation FOR User, Tutor : I[Relation] cRud BOX
   [ "Relation:" : I cRud
   , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
   , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
@@ -54,35 +30,40 @@ INTERFACE "Relation" FOR User, Tutor : I[Relation] cRud BOX
   , "Properties:" : prop [Relation * Property] cRud
   , "MEANING:" : decMean[Relation*Meaning] cRud 
   , "PURPOSE:" : purpose[Relation*Purpose] cRud 
-  , "Context" : context cRud
+  , "Context" : relsDefdIn cRud
   ]
 
-INTERFACE "Rules" FOR User, Tutor : I[Rule] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
-  , "Formele expressie:" : formalExpression cRud
-  ]
+VIEW Rule : Rule(name)
 
-INTERFACE "Rule" FOR User, Tutor : I[Rule] cRud BOX
+INTERFACE Rule FOR User, Tutor : I[Rule] cRud BOX
   [ "Regel:" : I[Rule] cRud
   , "origin" : origin cRud  
-  , "Formele expressie:" : formalExpression cRud
+  , "Formele expressie:" : formalTerm cRud
   , "MEANING:" : meaning[Rule*Meaning] cRud 
   , "PURPOSE:" : purpose[Rule*Purpose] cRud 
-  , "Conceptual diagram": (I[Rule]-I[PropertyRule]);conceptualDiagram cRud <ShowConceptualDiagram>
-  , "Context" : allRules[Context*Rule]~ cRud
+  , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
+  , "Context" : allRules[Rule*Context] cRud
   ]
 
-CLASSIFY PropertyRule ISA Rule
+INTERFACE PropRule FOR User, Tutor : I[PropertyRule] cRud BOX
+  [ "Regel:" : I[Rule] cRud
+  , "origin" : origin cRud  
+  , "Formele expressie:" : formalTerm cRud
+  , "MEANING:" : meaning[Rule*Meaning] cRud 
+  , "Context" : allRules[Rule*Context] cRud
+  ]
 
-INTERFACE "Patterns" FOR User, Tutor : I[Pattern] cRud BOX <TABLE sortable hideOnNoRecords>
-  [ "Thema's:" : I cRud
+CLASSIFY PropertyRule, IdentityRule ISA Rule
+
+INTERFACE Patterns FOR User, Tutor : I[Pattern] cRud BOX <TABLE sortable hideOnNoRecords>
+  [ "Thema:" : I cRud
   , "Purpose:" : purpose[Pattern*Purpose] cRud 
   ]
 
-INTERFACE "Pattern" FOR User, Tutor : I[Pattern] cRud BOX
-  [ "Themes:" : I cRud
+INTERFACE Pattern FOR User, Tutor : I[Pattern] cRud BOX
+  [ "Thema:" : I                            cRud
   , "Conceptual diagram": conceptualDiagram cRud <ShowConceptualDiagram>
-  , "Context" : context  cRud
+  , "Context" : context                     cRud
   ]
 
 VIEW ShowConceptualDiagram: FileObject { imgfile : filePath }

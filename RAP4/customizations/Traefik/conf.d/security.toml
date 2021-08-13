@@ -1,0 +1,34 @@
+################################################################
+# Header configuration
+################################################################
+
+[http.middlewares]
+  [http.middlewares.redirectToHttps.redirectScheme]
+    scheme = "https"
+  [http.middlewares.securityHeaders.headers]
+    frameDeny = true
+    browserXssFilter = true
+    contentTypeNosniff = true
+    referrerPolicy = "strict-origin-when-cross-origin"
+    [http.middlewares.securityHeaders.headers.customResponseHeaders]
+      Strict-Transport-Security = "max-age=63072000"
+
+################################################################
+# TLS configuration
+################################################################
+
+[tls.options]
+  [tls.options.default]
+    sniStrict = true
+
+  [tls.options.safeTLSOptions]
+    minVersion = "VersionTLS12"
+    sniStrict = true
+    cipherSuites = [
+      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+      "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+    ]

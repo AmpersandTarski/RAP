@@ -1,10 +1,16 @@
 version: '3.7'
-# to visualize this docker-compose.yml file, if you are on linux, run:
+# This file is meant to deploy Enroll as a stand-alone application under docker.
+# Note that Enroll is also being deployed in conjunction with RAP as a demo application, which is arranged in ../../docker-compose.yml.
+# to build:
+#    >  cd <...>RAP/Demos/Enroll
+#    >  docker compose build
+# to deploy on an empty docker platform:
+#    >  docker compose up -d
+# To visualize this docker-compose.yml file, if you are on linux, run:
 #      docker run --rm -it --name dcv -v $(pwd):/input pmsipilot/docker-compose-viz render -f -m image docker-compose.yml -o documentation/docker-compose.png
 # run it literally (change NOTHING!) and expect the result in documentation/docker-compose.png
 
 volumes:
-  rap4-data: 
   db-data:
   letsencrypt:
 
@@ -29,58 +35,13 @@ services:
       - "letsencrypt:/letsencrypt"
     networks:
       - proxy
-  
-  dummy-student-prototype:
-    image: ampersandtarski/rap4-student-prototype:v1.1.1
-    build:
-      context: RAP4USER
-
-  rap4:
-    image: ampersandtarski/ampersand-rap:2021-08-10
-    container_name: rap4
-    build:
-      context: RAP4
-    restart: always
-    depends_on:
-      - db
-      - traefik
-      - dummy-student-prototype
-    environment:
-      - AMPERSAND_LOG_CONFIG=logging.yaml
-      - AMPERSAND_DEBUG_MODE=true
-      - AMPERSAND_PRODUCTION_MODE=${DISABLE_DB_INSTALL} # to disable a database reset in production mode.
-      - AMPERSAND_DBHOST=db # refers to database service below
-      - AMPERSAND_DBUSER=ampersand
-      - AMPERSAND_DBPASS=${MYSQL_AMPERSAND_PASSWORD} # from .env file
-      - AMPERSAND_DBNAME=rap4
-      - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
-      - RAP_HOST_NAME=${SERVER_HOST_NAME}
-      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.1.1
-      - RAP_STUDENT_PROTO_LOG_CONFIG=logging.yaml
-      - APACHE_RUN_DIR=/var/www
-    volumes:
-      - rap4-data:/var/www/data
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    networks:
-      - proxy
-      - db
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.rap4-insecure.rule: Host(`${SERVER_HOST_NAME}`)
-      traefik.docker.network: proxy
-      # more labels added for production, see ./docker-compose.prod.yml file
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "100"
 
 # demo application Enrollment
   enroll:
     image: ampersandtarski/enroll:latest
     container_name: enroll
     build:
-      context: Demos/Enroll
+      context: .
     restart: always
     depends_on:
       - db

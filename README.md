@@ -25,7 +25,6 @@ Follow these steps to get up and running:
    git clone https://github.com/AmpersandTarski/RAP.git RAP
    cd RAP
    git checkout development
-
    ~~~
 
    This will clone the software and make it available on your machine. 
@@ -34,7 +33,6 @@ Follow these steps to get up and running:
 
    ~~~.bash
    cp .example.env .env
-
    ~~~ 
    
    Edit the values in the .env file as follows (or leave them if you're in a rush)
@@ -50,7 +48,6 @@ Follow these steps to get up and running:
    ```.bash
    docker-compose build
    docker network create proxy
-
    ```
    
 4. Spin up RAP4. 
@@ -58,13 +55,11 @@ Follow these steps to get up and running:
    If on your laptop, do it locally:
    ```.bash
    docker-compose up -d
-
    ```
    
    Or, if you are working from a server other than localhost:
    ```
    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
    ```
    
 5. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
@@ -78,8 +73,9 @@ Follow these steps to get up and running:
 
 8. You're not done yet! Now enable RAP to generate prototypes for your users
    ```
+   docker exec -it rap4 bash
    sudo chmod 666 /var/run/docker.sock
-
+   exit
    ```
    This step may not be possible on Windows. If that's the case then skip it.
    
@@ -98,7 +94,7 @@ Follow these steps to get up and running:
  - Verify that the compiler works by compiling an example script.
  - Verify that the compiler generates error message when you make a deliberate mistake in your example script.
  - Check that once the script is correct, the buttons Func Spec, Atlas, and Prototype are active.
- - Try to generate a functional specification. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
+ - Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
  - Try the Atlas. Browse through the elements of your script.
  - Generate a Prototype. Upon success you will see a link "Open Prototype".
    If you get a permission error for `/var/run/docker.sock` something went wrong with step 8. Turn to "troubleshooting" for possible solutions.
