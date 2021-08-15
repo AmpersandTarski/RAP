@@ -73,10 +73,10 @@ VIOLATION (TXT "{EX} InsPair;itemInSeq;Item;", TGT I[ScriptVersion], TXT ";Seque
           ,TXT "{EX} InsPair;nextItem;Item;",TGT I[ScriptVersion], TXT ";Item;", SRC seqFirstItem
           )
 
-ROLE ExecEngine MAINTAINS "Destroy context of non-latest scriptversion"
-RULE "Destroy context of non-latest scriptversion" :
-   context[ScriptVersion*Context] |- -(nextItem;V)
-VIOLATION (TXT "{EX}Cleanup;", SRC nextItem;context[ScriptVersion*Context], TXT ";Context")
+-- ROLE ExecEngine MAINTAINS "Destroy context of non-latest scriptversion"
+-- RULE "Destroy context of non-latest scriptversion" :
+--    context[ScriptVersion*Context] |- -(nextItem;V)
+-- VIOLATION (TXT "{EX}Cleanup;", SRC nextItem;context[ScriptVersion*Context], TXT ";Context")
 
 ENDPATTERN
 
