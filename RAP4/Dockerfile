@@ -1,7 +1,7 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Ampersand compiler is also needed for RAP4 to compile student scripts
 
-FROM ampersandtarski/prototype-framework:v1.8.5
+FROM ampersandtarski/prototype-framework:v1.10.3
 
 # Install docker, so students can run their prototypes
 RUN apt-get update \

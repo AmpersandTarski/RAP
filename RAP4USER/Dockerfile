@@ -1,4 +1,4 @@
-FROM ampersandtarski/prototype-framework:v1.8.5
+FROM ampersandtarski/prototype-framework:v1.10.3
 
 COPY --from=ampersandtarski/ampersand:development /bin/ampersand /usr/local/bin
 RUN chmod +x /usr/local/bin/ampersand
