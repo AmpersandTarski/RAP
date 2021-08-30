@@ -9,9 +9,10 @@ volumes:
   letsencrypt:
 
 networks:
-  proxy:
-    external: true
-  db:
+  proxy: # network name is used by RAP4 script to make student prototype container accessible via traefik ingress
+    external: true # must be external to prevent prefix with folder name
+  rap_db: # network name is used by RAP4 script to let student prototype container connect to database
+    external: true # must be external to prevent prefix with folder name
 
 services:
   # reverse proxy
@@ -63,7 +64,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - proxy
-      - db
+      - rap_db
     labels:
       traefik.enable: "true"
       traefik.http.routers.rap4-insecure.rule: Host(`${SERVER_HOST_NAME}`)
@@ -87,7 +88,7 @@ services:
       - traefik
     networks:
       - proxy
-      - db
+      - rap_db
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
       - AMPERSAND_DEBUG_MODE=true
@@ -121,7 +122,7 @@ services:
       - db-data:/var/lib/mysql
       - ./db-init-scripts:/docker-entrypoint-initdb.d # script to setup db authorization for user ampersand. 
     networks:
-      - db
+      - rap_db
     logging:
       driver: "json-file"
       options:
@@ -143,5 +144,5 @@ services:
       - db
       - traefik
     networks:
-      - db
+      - rap_db
       - proxy
