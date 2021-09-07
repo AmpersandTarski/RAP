@@ -38,13 +38,7 @@ RELATION scriptOk[ScriptVersion*ScriptVersion] [PROP] -- A ScriptVersion may hav
 
 RELATION compileRequest[Script*Script][PROP]
 ROLE ExecEngine MAINTAINS "Check script"
-{- 20161111/RJ: het is een goed gebruik om de regel zodanig op te stellen 
-   dat je zeker weet dat elke relatie/expressie die in het VIOLATION statement voorkomt, 
-   ook echt bestaat. Ik heb het nut van dit goede gebruik al enkele keren ervaren.
-   Dit leidt er ook vaak toe dat een InsPair (DelPair, ...) het 'genormaliseerde' formaat heeft:
-     VIOLATION ( TXT "{EX} InsPair;relation;SrcConcept;", SRC I, TXT ";TgtConcept;", TGT I)
-   en dat is wel zo netjes.
--}
+
 --RULE "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Check script" : compileRequest;submittor;accUserid |- -V[Script*Userid]
 VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT ";", TGT I

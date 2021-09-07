@@ -29,12 +29,7 @@ MEANING "An Account may contain (web)service-specific attributes regarding a spe
 
 sessionPerson :: SESSION * Person [UNI]
 MEANING "In a SESSION, the user (i.e. the Person that acts 'at the other side') may be known."
-ROLE ExecEngine MAINTAINS "Determine the acting person in a session"
-RULE "Determine the acting person in a session": sessionAccount;accPerson |- sessionPerson
-VIOLATION (TXT "{EX} InsPair;sessionPerson;SESSION;", SRC I, TXT ";Person;", TGT I)
-ROLE ExecEngine MAINTAINS "Clear the acting person in a session"
-RULE "Clear the acting person in a session": sessionPerson |- sessionAccount;accPerson
-VIOLATION (TXT "{EX} DelPair;sessionPerson;SESSION;", SRC I, TXT ";Person;", TGT I)
+ENFORCE sessionPerson := sessionAccount;accPerson
 
 --[Integration with SIAM_PersonRef]--
 --#IFNOT ManualPersonRef
@@ -57,13 +52,8 @@ RULE "Auto maintain 'personRef' relation":
 VIOLATION (TXT "{EX} InsPair;personRef;Person;", SRC I, TXT ";PersonRef;", TGT I)
 --#ENDIF
 
-ROLE ExecEngine MAINTAINS "Auto maintain 'accPerson' relation"
-RULE "Auto maintain 'accPerson' relation": accPersonRef;(personRef~ - personRef~;-I) |- accPerson
-VIOLATION (TXT "{EX} InsPair;accPerson;Account;", SRC I, TXT ";Person;", TGT I)
-
-ROLE ExecEngine MAINTAINS "Auto maintain 'accPersonRef' relation"
-RULE "Auto maintain 'accPersonRef' relation": accPerson;personRef |- accPersonRef
-VIOLATION (TXT "{EX} InsPair;accPersonRef;Account;", SRC I, TXT ";PersonRef;", TGT I)
+ENFORCE accPerson >: accPersonRef;(personRef~ - personRef~;-I)
+ENFORCE accPersonRef >: accPerson;personRef
 
 --[Glossary]--
 CONCEPT Person "A human being regarded as an individual" "Oxford English Dictionary"
