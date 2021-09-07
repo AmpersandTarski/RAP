@@ -96,7 +96,6 @@ VIOLATION (TXT "{EX} DelAtom;SESSION;", TGT I)
 RELATION regUserID      [SESSION * Userid]       [UNI] -- Studentnummer waarmee de student zich wil registreren
 RELATION regPassword1   [SESSION * Password]     [UNI]
 RELATION regPassword2   [SESSION * Password]     [UNI]
-RELATION regPerson      [SESSION * Person]       [UNI]
 RELATION registerButton [SESSION * SESSION]      [PROP] -- knopje om expliciet te zeggen dat met deze gegevens geregistreerd moet gaan worden.
 RELATION loginButton    [SESSION * SESSION]      [PROP]      -- knopje om expliciet te zeggen dat de gebruiker wil inloggen.
 
@@ -140,13 +139,6 @@ VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Pa
           ,TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
           )
 
-RULE CopyPerson : sessionAccount~;registerButton;regPerson |- accPerson
-VIOLATION ( TXT "{EX} InsPair;accPerson;Account;",  SRC I, TXT ";Person;", TGT I )
-RULE EmptyRegPerson : sessionAccount;accPerson |- -regPerson
-VIOLATION ( TXT "{EX} DelPair;regPerson;SESSION;",  SRC I, TXT ";Person;", TGT I )
-RULE ResetCreateAccount : (registerButton /\ sessionAccount;sessionAccount~) - regPerson;regPerson~ |- -registerButton
-VIOLATION ( TXT "{EX} DelPair;registerButton;SESSION;", SRC I, TXT ";SESSION;", TGT I )
-
 PURPOSE RULE RefuseExistingStudentnumber
 {+Registering a student number that is already known yields an error message,
 asking to register with a student number that is not yet registered as a user.
@@ -155,8 +147,6 @@ RULE RefuseExistingStudentnumber : ("_SESSION"-sessionAccount;sessionAccount~);r
 VIOLATION (TXT "You cannot register student number ", SRC regUserID, TXT ", because it is registered already.")
 RULE EqualPasswords : regPassword1~;regPassword2 |- I
 MESSAGE "Please type equal passwords (case sensitive)"
-ROLE ExecEngine MAINTAINS CopyPerson, EmptyRegPerson, ResetCreateAccount
-
 
 {- Toestanden
 1	"_SESSION";regUserID;-accUserid~;V	A new userid has been entered in this session's register menu. So, someone wants to register a new account.
@@ -170,7 +160,7 @@ ROLE ExecEngine MAINTAINS CopyPerson, EmptyRegPerson, ResetCreateAccount
 
 State transitions
 Login	7, 8 --> 6
-Register	1, 3, 4, 5 --> 6
+Register	1, 3, 5 --> 6
 -}
 
 ENDCONTEXT
