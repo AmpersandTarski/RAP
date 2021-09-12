@@ -156,6 +156,8 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION conjunct[Conjunct*Term] -- 
     RELATION context[Concept*Context] [UNI] -- The context that contains the definition of a concept
     RELATION context[Interface*Context] [UNI] -- The context that contains an Interface
+    RULE "IDENT Interface" : name;name~ /\ context[Interface*Context];context~ |- I
+    VIOLATION (TXT "Interface ", SRC name, TXT " in context ", SRC context;name, TXT " is not unique.")
     RELATION context[Isa*Context] [UNI]
     RELATION context[IsE*Context] [UNI]
     RELATION context[Pattern*Context] [UNI] -- The context that contains a Pattern
@@ -217,6 +219,7 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION name[ObjectDef*ObjectName] [UNI]
     RELATION name[Pattern*PatternName] [UNI]
     RELATION name[Relation*RelationName] [UNI]
+    RELATION name[View*ViewDefName] [UNI,TOT]
     MEANING "Every relation has a name by which it can be referenced within its Context(s)."
     RELATION name[Role*RoleName] [UNI]
     RELATION name[Rule*RuleName] [UNI]
@@ -273,6 +276,11 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION uses[Context*Pattern]
     RELATION versionInfo[Context*AmpersandVersion] [UNI]
     RELATION viewBy[Concept*Concept]
+    RELATION vdats[View*ViewSegment]
+    RELATION vdcpt[View*Concept]
+    RELATION vdhtml[View*Concept]
+    RELATION vdIsDefault[View*Concept]
+    RELATION vdpos[View*Origin]
     RELATION violatable[Interface*Rule]
 ENDPATTERN
 
