@@ -65,8 +65,8 @@ RELATION isPartOf[PF_NavMenuItem*PF_NavMenu] [UNI,TOT]
 -- INTERFACE NavMenuItemsTrashBin: I[SESSION] cRud BOX [ "Something to please the compiler": I ]
 ROLE ExecEngine MAINTAINS "Fix bugs in PF_NavMenu Stuff"
 RULE "Fix bugs in PF_NavMenu Stuff": I[PF_NavMenuItem] |- isPartOf;isPartOf~ /\ label;label~
-VIOLATION (TXT "{EX} InsPair;isPartOf;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenu;", TGT I
-          ,TXT "{EX} InsPair;label;PF_NavMenuItem;", SRC I, TXT ";PF_Label;", TGT I
+VIOLATION ( TXT "{EX} InsPair;isPartOf;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenu;", TGT I
+          , TXT "{EX} InsPair;label;PF_NavMenuItem;", SRC I, TXT ";PF_Label;", TGT I
           )
 
 --[[Examples of possibly useful RULEs]]--
@@ -78,7 +78,7 @@ Note: setting the property `accIsActive` will automatically also set `accIsIniti
 
    ROLE ExecEngine MAINTAINS "Account activation/initialization"
    RULE "Account activation/initialization": I[Account] |- accIsInitialized
-   VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
+   VIOLATION ( TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
              -- `accIsInitialized` will now automatically be set by RULE `Active accounts are initialized`
              )
 
@@ -86,8 +86,8 @@ Note: setting the property `accIsActive` will automatically also set `accIsIniti
 --[Set default interfaces for anonymous sessions and user sessions]
    ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
    RULE "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
-   VIOLATION (TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/MyScripts" -- <-- Deze interface verschijnt als je net bent ingelogd
-             ,TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- Hier kun je inloggen.
+   VIOLATION ( TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/MyScripts" -- <-- Deze interface verschijnt als je net bent ingelogd
+             , TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- Hier kun je inloggen.
              ) --}
 
 --[Auto activate auto-login accounts]

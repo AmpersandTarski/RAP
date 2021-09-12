@@ -54,14 +54,13 @@ VIOLATION (TXT "{EX} InsPair;seqLastItem;Sequence;", TGT I, TXT ";Item;", SRC I)
 
 ROLE ExecEngine MAINTAINS "Automatically detect emptiness of a Sequence"
 RULE "Automatically detect emptiness of a Sequence": seqFirstItem \/ seqLastItem |- itemInSeq~;V
-VIOLATION (TXT "{EX} DelPair;seqFirstItem;Sequence;", SRC I, TXT ";Item;", SRC seqFirstItem
-          ,TXT "{EX} DelPair;seqLastItem;Sequence;", SRC I, TXT ";Item;", SRC seqLastItem
+VIOLATION ( TXT "{EX} DelPair;seqFirstItem;Sequence;", SRC I, TXT ";Item;", SRC seqFirstItem
+          , TXT "{EX} DelPair;seqLastItem;Sequence;", SRC I, TXT ";Item;", SRC seqLastItem
           )
 
 ROLE ExecEngine MAINTAINS "Automatically remove next-item-link from orphaned items"
 RULE "Automatically remove next-item-link from orphaned items": I[Item]-(itemInSeq;itemInSeq~) |- (V[Item]-nextItem);V
-VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem
-          )
+VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem)
 -- While the following line should not fire, it may so happen that people use this Ontology and make their own SeqInterfacing service that does not take care of this condition.
 ROLE ExecEngine MAINTAINS "Automatically remove next-item-link that points outside sequence"
 RULE "Automatically remove next-item-link that points outside sequence": nextItem |- itemInSeq;itemInSeq~

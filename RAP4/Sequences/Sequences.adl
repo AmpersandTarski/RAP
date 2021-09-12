@@ -16,7 +16,7 @@
 sessionNewSeq :: SESSION * SeqName
 ROLE ExecEngine MAINTAINS "Create new Sequence"
 RULE "Create new Sequence": sessionNewSeq |- -V
-   VIOLATION ( TXT "{EX} NewStruct;Sequence;seqName;Sequence;_NEW;SeqName;", TGT I
+   VIOLATION ( TXT "{EX} InsAtom;Sequence;seqName;Sequence;_NEW;SeqName;", TGT I
              , TXT "{EX} DelPair;sessionNewSeq;SESSION;", SRC I, TXT ";SeqName;", TGT I
              )
 

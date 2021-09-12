@@ -49,34 +49,34 @@ MEANING "An Item must have a record of (the true value of) the SinValue of its p
 ROLE ExecEngine MAINTAINS "Auto delete SinValue of non-first items in a sequence"
 RULE "Auto delete SinValue of non-first items in a sequence": 
   (nextItem~ /\ itemInSeq;itemInSeq~);-itemSinValue  |- -itemSinPredValue
-VIOLATION (TXT "{EX} DelPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", SRC itemSinPredValue
-          ,TXT "{EX} DelPair;itemSinValue;Item;",SRC I, TXT ";SinValue;", SRC itemSinValue
+VIOLATION ( TXT "{EX} DelPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", SRC itemSinPredValue
+          , TXT "{EX} DelPair;itemSinValue;Item;",SRC I, TXT ";SinValue;", SRC itemSinValue
           )
 
 ROLE ExecEngine MAINTAINS "Auto delete SinValues"
 RULE "Auto delete SinValues" : 
   I-(itemInSeq;itemInSeq~) \/ (I /\ itemInSeq;(I-seqSinProp);itemInSeq~) 
 |- -(itemSinValue;itemSinValue~) /\ -(itemSinPredValue;itemSinPredValue~)
-VIOLATION (TXT "{EX} DelPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", SRC itemSinPredValue
-          ,TXT "{EX} DelPair;itemSinValue;Item;",SRC I, TXT ";SinValue;", SRC itemSinValue
+VIOLATION ( TXT "{EX} DelPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", SRC itemSinPredValue
+          , TXT "{EX} DelPair;itemSinValue;Item;",SRC I, TXT ";SinValue;", SRC itemSinValue
           )
 
 ROLE ExecEngine MAINTAINS "Auto compute SinValue of first item in a sequence"
 RULE "Auto compute SinValue of first item in a sequence": 
   seqFirstItem~;seqSinProp;seqSinFirstValue |- itemSinValue
 MEANING "The `itemSinValue` of the first Item of a sequence must be equal to `seqSinFirstValue`."
-VIOLATION (TXT "{EX} InsPair;itemSinValue;Item;", SRC I, TXT ";SinValue;", TGT I
-          ,TXT "{EX} DelPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", SRC itemSinPredValue
+VIOLATION ( TXT "{EX} InsPair;itemSinValue;Item;", SRC I, TXT ";SinValue;", TGT I
+          , TXT "{EX} DelPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", SRC itemSinPredValue
           )
 
 ROLE ExecEngine MAINTAINS "Auto compute SinValue of non-first items in a sequence"
 RULE "Auto compute SinValue of non-first items in a sequence": 
   (nextItem~ /\ itemInSeq;seqSinProp;itemInSeq~);itemSinValue  |- itemSinPredValue
 MEANING "An Item must have a record of (the true value of) the SinValue of its predecessor so that it knows its own value."
-VIOLATION (TXT "{EX} InsPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", TGT I
-          ,TXT "{EX} sinComputeItemValue" -- sinComputeItemValue($relation,$srcConcept,$srcAtom,$tgtConcept,$predSinValue)
-                   ,TXT ";itemSinValue;Item;",SRC I   -- $relation, $srcConcept, $srcAtom
-                   ,TXT ";SinValue;", TGT I  -- $tgtConcept;$previous
+VIOLATION ( TXT "{EX} InsPair;itemSinPredValue;Item;", SRC I, TXT ";SinValue;", TGT I
+          , TXT "{EX} sinComputeItemValue" -- sinComputeItemValue($relation,$srcConcept,$srcAtom,$tgtConcept,$predSinValue)
+                   , TXT ";itemSinValue;Item;",SRC I   -- $relation, $srcConcept, $srcAtom
+                   , TXT ";SinValue;", TGT I  -- $tgtConcept;$previous
           )
 
 ENDCONTEXT

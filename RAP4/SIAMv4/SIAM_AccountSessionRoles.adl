@@ -97,8 +97,8 @@ VIOLATION (TXT "{EX} InsPair;sessionLogoutReq;SESSION;", SRC I, TXT ";SESSION;",
 
 ROLE ExecEngine MAINTAINS "Request to deactivate sessionAccount"
 RULE "Request to deactivate sessionAccount": accDeactivateReq |- sessionAccount~;sessionAccount
-VIOLATION (TXT "{EX} DelPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
-          ,TXT "{EX} DelPair;accDeactivateReq;Account;", SRC I, TXT ";Account;", TGT I
+VIOLATION ( TXT "{EX} DelPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
+          , TXT "{EX} DelPair;accDeactivateReq;Account;", SRC I, TXT ";Account;", TGT I
           )
 
 --[Account Roles]--
@@ -166,8 +166,8 @@ POPULATION Role CONTAINS [ "User" ] -- Every account shall have the role 'User' 
 
 ROLE ExecEngine MAINTAINS "All User Accounts must have the role User"
 RULE "All User Accounts must have the role User" : I[Account] |- accAllowedRoles;"User";accDefaultRoles~
-VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;User"
-          ,TXT "{EX}InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;User"
+VIOLATION ( TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;User"
+          , TXT "{EX}InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;User"
           )
 
 --[System Roles]--
@@ -188,8 +188,8 @@ POPULATION systemRole CONTAINS [ ("ExecEngine","ExecEngine") ] -- Default role f
 ROLE ExecEngine MAINTAINS "Activate role 'Anonymous' in a session that has no authenticated user"
 RULE "Activate role 'Anonymous' in a session that has no authenticated user": 
    sessionIsAnon |- sessionAllowedRoles;"Anonymous";sessionActiveRoles~
-VIOLATION (TXT "{EX} InsPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;Anonymous"
-          ,TXT "{EX} InsPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;Anonymous"
+VIOLATION ( TXT "{EX} InsPair;sessionAllowedRoles;SESSION;", SRC I, TXT ";Role;Anonymous"
+          , TXT "{EX} InsPair;sessionActiveRoles;SESSION;", SRC I, TXT ";Role;Anonymous"
           )
 
 ROLE ExecEngine MAINTAINS "De-activate role 'Anonymous' in a session with an authenticated user"
@@ -222,8 +222,8 @@ sessionLogoutReq :: SESSION * SESSION [PROP]
 ROLE ExecEngine MAINTAINS "Logout"
 RULE "Logout": "_SESSION";sessionLogoutReq |- -V 
 MEANING "A request to logout in a session must be processed in that session."
-VIOLATION (TXT "{EX} SetNavToOnCommit;", SRC sessionAnonIfc -- Setup for default anonymous interface
-          ,TXT "{EX} DelAtom;SESSION;", SRC I
+VIOLATION ( TXT "{EX} SetNavToOnCommit;", SRC sessionAnonIfc -- Setup for default anonymous interface
+          , TXT "{EX} DelAtom;SESSION;", SRC I
           )
 
 --[Assisted Login request]--

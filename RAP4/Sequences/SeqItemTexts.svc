@@ -35,10 +35,10 @@ RULE "Auto-delete itemSinTexts (Prefixes)":
    (itemUsedPrefix;V  /\ itemInSeq;(I - seqSinPrefix;seqSinPrefix~)) -- yes[2] for 'Prefix'
    \/ (itemInSeq /\  itemUsedPrefix;-I;seqSinPrefix~)                -- yes[1] for 'Prefix'
    |- -V
-VIOLATION (TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC itemSinText
-          ,TXT "{EX} DelPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemUsedPrefix
-          ,TXT "{EX} DelPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemUsedValue
-          ,TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
+VIOLATION ( TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC itemSinText
+          , TXT "{EX} DelPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemUsedPrefix
+          , TXT "{EX} DelPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemUsedValue
+          , TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
           )
 
 ROLE ExecEngine MAINTAINS "Auto-delete itemSinTexts (Postfixes)" --
@@ -46,10 +46,10 @@ RULE "Auto-delete itemSinTexts (Postfixes)":
    (itemUsedPostfix;V /\ itemInSeq;(I-seqSinPostfix;seqSinPostfix~)) -- yes[2] for 'Postfix'
    \/ (itemInSeq /\ itemUsedPostfix;-I;seqSinPostfix~)               -- yes[1] for 'Postfix'
    |- -V
-VIOLATION (TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC itemSinText
-          ,TXT "{EX} DelPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemUsedPrefix
-          ,TXT "{EX} DelPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemUsedValue
-          ,TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
+VIOLATION ( TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC itemSinText
+          , TXT "{EX} DelPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemUsedPrefix
+          , TXT "{EX} DelPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemUsedValue
+          , TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
           )
 
 ROLE ExecEngine MAINTAINS "Auto-delete itemSinTexts (SinValues)"
@@ -57,10 +57,10 @@ RULE "Auto-delete itemSinTexts (SinValues)":
    (itemUsedValue;V /\ (I - itemSinValue;itemSinValue~)) -- yes[2] for 'SinValue'
    \/ (I /\ itemSinValue;-I;itemUsedValue~)              -- yes[1] for 'SinValue'
    |- -V
-VIOLATION (TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC itemSinText
-          ,TXT "{EX} DelPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemUsedPrefix
-          ,TXT "{EX} DelPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemUsedValue
-          ,TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
+VIOLATION ( TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC itemSinText
+          , TXT "{EX} DelPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemUsedPrefix
+          , TXT "{EX} DelPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemUsedValue
+          , TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
           )
 
 {- Decision table for inserting or modifying ItemTexts:
@@ -76,37 +76,37 @@ VIOLATION (TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC 
 ROLE ExecEngine MAINTAINS "Auto-create itemSinTexts upon SinValue changes"
 RULE "Auto-create itemSinTexts upon SinValue changes":
    itemSinValue |- itemUsedValue
-VIOLATION (TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
-                ,TXT ";SinText;", SRC itemInSeq;seqSinPrefix
-                ,TXT         ";", SRC itemSinValue 
-                ,TXT         ";", SRC itemInSeq;seqSinPostfix
-          ,TXT "{EX} InsPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPrefix
-          ,TXT "{EX} InsPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemSinValue
-          ,TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
+VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
+                 , TXT ";SinText;", SRC itemInSeq;seqSinPrefix
+                 , TXT         ";", SRC itemSinValue 
+                 , TXT         ";", SRC itemInSeq;seqSinPostfix
+          , TXT "{EX} InsPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPrefix
+          , TXT "{EX} InsPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemSinValue
+          , TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
           )
 
 ROLE ExecEngine MAINTAINS "Auto-create itemSinTexts upon seqSinPrefix changes"
 RULE "Auto-create itemSinTexts upon seqSinPrefix changes":
    (I /\ itemSinValue;itemSinValue~);itemInSeq;seqSinPrefix |- itemUsedPrefix
-VIOLATION (TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
-                ,TXT ";SinText;", SRC itemInSeq;seqSinPrefix
-                ,TXT         ";", SRC itemSinValue 
-                ,TXT         ";", SRC itemInSeq;seqSinPostfix
-          ,TXT "{EX} InsPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPrefix
-          ,TXT "{EX} InsPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemSinValue
-          ,TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
+VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
+                 , TXT ";SinText;", SRC itemInSeq;seqSinPrefix
+                 , TXT         ";", SRC itemSinValue 
+                 , TXT         ";", SRC itemInSeq;seqSinPostfix
+          , TXT "{EX} InsPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPrefix
+          , TXT "{EX} InsPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemSinValue
+          , TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
           )
 
 ROLE ExecEngine MAINTAINS "Auto-create itemSinTexts upon seqSinPostfix changes"
 RULE "Auto-create itemSinTexts upon seqSinPostfix changes":
    (I /\ itemSinValue;itemSinValue~);itemInSeq;seqSinPostfix |- itemUsedPostfix
-VIOLATION (TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
-                ,TXT ";SinText;", SRC itemInSeq;seqSinPrefix
-                ,TXT         ";", SRC itemSinValue 
-                ,TXT         ";", SRC itemInSeq;seqSinPostfix
-          ,TXT "{EX} InsPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPrefix
-          ,TXT "{EX} InsPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemSinValue
-          ,TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
+VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
+                 , TXT ";SinText;", SRC itemInSeq;seqSinPrefix
+                 , TXT         ";", SRC itemSinValue 
+                 , TXT         ";", SRC itemInSeq;seqSinPostfix
+          , TXT "{EX} InsPair;itemUsedPrefix;Item;", SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPrefix
+          , TXT "{EX} InsPair;itemUsedValue;Item;",  SRC I, TXT ";SinValue;", SRC itemSinValue
+          , TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
           )
 
 ENDCONTEXT

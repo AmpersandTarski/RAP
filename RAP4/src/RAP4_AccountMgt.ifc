@@ -27,8 +27,8 @@ ROLE ExecEngine MAINTAINS "(Re)set the password of an account"
 RULE "(Re)set the password of an account": 
    accNewPassword /\ (sessionAccount \/ sessionActiveRoles;"AccountManager";V)~;"_SESSION";V |- -V
 MEANING "(Re)setting the password for an account can only be done by an AccountManager or the account user."
-VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC I, TXT ";Password;", TGT I
-          ,TXT "{EX} DelPair;accNewPassword;Account;", SRC I, TXT ";Password;", TGT I
+VIOLATION ( TXT "{EX} InsPair;accPassword;Account;", SRC I, TXT ";Password;", TGT I
+          , TXT "{EX} DelPair;accNewPassword;Account;", SRC I, TXT ";Password;", TGT I
           )
 RULE "(Re)setting the password for an account can only be done by an AccountManager or the account user":
    accNewPassword |- (sessionAccount \/ sessionActiveRoles;"AccountManager";V)~;"_SESSION";V
@@ -111,9 +111,9 @@ RULE "Login upon request":
    /\ loginUserid;accUserid~;accPassword;loginPassword~   -- the password and userid match to the account, and
    /\ loginButton                                         -- the login button is pressed
 |-     sessionAccount;sessionAccount~
-VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC loginUserid;accUserid~ 
-          ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
-          ,TXT "{EX} DelPair;loginPassword;SESSION;", SRC I, TXT ";Password;", SRC loginPassword
+VIOLATION ( TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", SRC loginUserid;accUserid~ 
+          , TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
+          , TXT "{EX} DelPair;loginPassword;SESSION;", SRC I, TXT ";Password;", SRC loginPassword
           )
 
 --[Studenten mogen een eigen account aanmaken middels een specifieke interface]--
@@ -123,9 +123,9 @@ RULE "Login on a new account when registering":
    /\ regUserID;-accUserid~;V[Account*SESSION]        -- the new userID does not exist
    /\ regPassword1;regPassword2~                      -- both passwords are equal
 |-    sessionAccount;sessionAccount~
-VIOLATION (TXT "{EX} NewStruct;Account"
-               , TXT ";accUserid;Account;_NEW;Userid;", TGT regUserID
-               , TXT ";sessionAccount;SESSION;", SRC I, TXT ";Account;_NEW"
+VIOLATION ( TXT "{EX} InsAtom;Account"
+          , TXT "{EX} InsPair;accUserid;Account;_NEW;Userid;", TGT regUserID
+          , TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;_NEW"
           , TXT "{EX} DelPair;regUserID;SESSION;", SRC I, TXT ";Userid;", TGT regUserID
           , TXT "{EX} DelPair;registerButton;SESSION;", SRC I, TXT ";SESSION;", TGT I
           )
@@ -136,9 +136,9 @@ RULE "Change password":
    ("_SESSION" /\ sessionAccount;sessionAccount~)
    /\ regPassword1;regPassword2~
 |-    sessionAccount;accPassword;regPassword2~
-VIOLATION (TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Password;", TGT regPassword2
-          ,TXT "{EX} DelPair;regPassword1;SESSION;", SRC I, TXT ";Password;", TGT regPassword1
-          ,TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
+VIOLATION ( TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";Password;", TGT regPassword2
+          , TXT "{EX} DelPair;regPassword1;SESSION;", SRC I, TXT ";Password;", TGT regPassword1
+          , TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
           )
 
 RULE CopyEmail : sessionAccount~;registerButton;regEmail |- accEmail

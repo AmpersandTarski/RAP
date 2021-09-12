@@ -45,10 +45,10 @@ siamcompPersonRef  :: SIAMPersonRefComputation * PersonRef  [UNI]
 
 ROLE ExecEngine MAINTAINS "Auto create SIAMPersonRefComputation"
 RULE "Auto create SIAMPersonRefComputation": personFirstName~;personLastName |- siamcompFirstName~;siamcompLastName
-VIOLATION (TXT "{EX} InsAtom;SIAMPersonRefComputation"
-              ,TXT "{EX} InsPair;siamcompFirstName;SIAMPersonRefComputation;_NEW;FirstName;", SRC I
-              ,TXT "{EX} InsPair;siamcompLastName;SIAMPersonRefComputation;_NEW;LastName;", TGT I
-              ,TXT "{EX} InsPair;siamcompPersonRef;SIAMPersonRefComputation;_NEW;PersonRef;{php}'", SRC I, TXT "'.' '.'", TGT I, TXT "'"
+VIOLATION ( TXT "{EX} InsAtom;SIAMPersonRefComputation"
+          , TXT "{EX} InsPair;siamcompFirstName;SIAMPersonRefComputation;_NEW;FirstName;", SRC I
+          , TXT "{EX} InsPair;siamcompLastName;SIAMPersonRefComputation;_NEW;LastName;", TGT I
+          , TXT "{EX} InsPair;siamcompPersonRef;SIAMPersonRefComputation;_NEW;PersonRef;{php}'", SRC I, TXT "'.' '.'", TGT I, TXT "'"
           )
 
 ROLE ExecEngine MAINTAINS "Auto maintain 'personRef' relation"

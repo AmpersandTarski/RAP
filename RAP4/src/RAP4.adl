@@ -297,10 +297,10 @@ ROLE ExecEngine MAINTAINS "link cd of context"
 RULE "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]
                                |- conceptualDiagram[Context*FileObject];conceptualDiagram[Context*FileObject]~
 MEANING "Elke context in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Context;",SRC I[Context],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;LogicalDataModel"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Context;",SRC I[Context],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;LogicalDataModel"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
                                  , TXT "/images/LogicalDataModel.png"
@@ -310,10 +310,10 @@ ROLE ExecEngine MAINTAINS "link cd of pattern"
 RULE "link cd of pattern" : I[Pattern] /\ context[Pattern*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Pattern*Context]~
                                |- conceptualDiagram[Pattern*FileObject];conceptualDiagram[Pattern*FileObject]~
 MEANING "Elk pattern in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Pattern;",SRC I[Pattern],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Pattern;",SRC I[Pattern],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[Pattern*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
@@ -326,10 +326,10 @@ ROLE ExecEngine MAINTAINS "link cd of rule"
 RULE "link cd of rule" : I[Rule] /\ allRules[Rule*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];allRules[Rule*Context]~
                                |- conceptualDiagram[Rule*FileObject];conceptualDiagram[Rule*FileObject]~
 MEANING "Elke regel in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Rule;",SRC I[Rule],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Rule;",SRC I[Rule],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC allRules[Rule*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
@@ -342,10 +342,10 @@ ROLE ExecEngine MAINTAINS "link cd of concept"
 RULE "link cd of concept" : I[Concept] /\(context[Concept*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Concept*Context]~)
                                |- conceptualDiagram[Concept*FileObject];conceptualDiagram[Concept*FileObject]~
 MEANING "Elk concept in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Concept;",SRC I[Concept],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Concept;",SRC I[Concept],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[Concept*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]

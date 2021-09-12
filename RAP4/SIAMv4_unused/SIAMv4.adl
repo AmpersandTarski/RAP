@@ -55,15 +55,15 @@ Note: setting the property `accIsActive` will automatically also set `accIsIniti
 
    ROLE ExecEngine MAINTAINS "Account activation/initialization"
    RULE "Account activation/initialization": I[Account] |- accIsInitialized
-   VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
+   VIOLATION ( TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
              -- `accIsInitialized` will now automatically be set by RULE `Active accounts are initialized`
              )
 
 --[Set default interfaces for anonymous sessions and user sessions]
    ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
    RULE "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
-   VIOLATION (TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/AnonHome"
-             ,TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/UserHome"
+   VIOLATION ( TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/AnonHome"
+             , TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/UserHome"
              ) --}
 
 -- The following RULEs are listed here so that developers may (cherry)pick them as necessary:

@@ -13,12 +13,12 @@ VIOLATION (TXT "{EX} DelPair;accAutoLoginReq;Account;", SRC I, TXT ";Account;", 
 
 ROLE ExecEngine MAINTAINS "Auto login" -- When multiple accounts have this property, only one will be selected.
 RULE "Auto login": sessionIsAnon;V;(accAutoLoginReq /\ accIsActive) |- sessionIsUser;sessionAccount
-VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", TGT I
-          ,TXT "{EX} DelPair;accAutoLoginReq;Account;", TGT I, TXT ";Account;", TGT I
-          ,TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", SRC I
-          ,TXT "{EX} DelPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", SRC I
-          ,TXT "{EX} SetNavToOnCommit;", SRC sessionUserIfc -- Setup for default user interface
-          ,TXT "{EX} SetNavToOnCommit;", TGT accUserIfc -- Override if Account has a specific setting
+VIOLATION ( TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", TGT I
+          , TXT "{EX} DelPair;accAutoLoginReq;Account;", TGT I, TXT ";Account;", TGT I
+          , TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          , TXT "{EX} DelPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          , TXT "{EX} SetNavToOnCommit;", SRC sessionUserIfc -- Setup for default user interface
+          , TXT "{EX} SetNavToOnCommit;", TGT accUserIfc -- Override if Account has a specific setting
           )
 
 ENDCONTEXT

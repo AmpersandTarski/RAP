@@ -33,11 +33,11 @@ tcResult :: TextConstruct * BigText [UNI]
 
 ROLE ExecEngine MAINTAINS "Create TextConstructs"
 RULE "Create TextConstructs": itemBigText~;nextItem;itemPhrase |- tcPrefix~;tcLabel
-VIOLATION (TXT "{EX} NewStruct;TextConstruct"
-               ,TXT ";tcPrefix;TextConstruct;_NEW;BigText;", SRC I
-               ,TXT ";tcLabel;TextConstruct;_NEW;BigText;", TGT I
+VIOLATION ( TXT "{EX} InsAtom;TextConstruct"
+          , TXT "{EX} InsPair;tcPrefix;TextConstruct;_NEW;BigText;", SRC I
+          , TXT "{EX} InsPair;tcLabel;TextConstruct;_NEW;BigText;", TGT I
 -- The line below may make the rule 'Compute TextConstructs' obsolete.
---             ,TXT ";tcResult;TextConstruct;_NEW;BigText;{php}implode('',array(", SRC I, TXT ",", TGT I, TXT "))"
+--        , TXT "{EX} InsPair;tcResult;TextConstruct;_NEW;BigText;{php}implode('',array(", SRC I, TXT ",", TGT I, TXT "))"
           )
 
 ROLE ExecEngine MAINTAINS "Compute TextConstructs"
