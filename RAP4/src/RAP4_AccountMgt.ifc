@@ -96,8 +96,6 @@ VIOLATION (TXT "{EX} DelAtom;SESSION;", TGT I)
 RELATION regUserID      [SESSION * Userid]       [UNI] -- Studentnummer waarmee de student zich wil registreren
 RELATION regPassword1   [SESSION * Password]     [UNI]
 RELATION regPassword2   [SESSION * Password]     [UNI]
-RELATION regEmail       [SESSION * Emailaddress] [UNI] -- OU Emailaccount (kunnen we later met Messaging gebruiken)
-RELATION regPerson      [SESSION * Person]       [UNI]
 RELATION registerButton [SESSION * SESSION]      [PROP] -- knopje om expliciet te zeggen dat met deze gegevens geregistreerd moet gaan worden.
 RELATION loginButton    [SESSION * SESSION]      [PROP]      -- knopje om expliciet te zeggen dat de gebruiker wil inloggen.
 
@@ -141,17 +139,6 @@ VIOLATION ( TXT "{EX} InsPair;accPassword;Account;", SRC sessionAccount, TXT ";P
           , TXT "{EX} DelPair;regPassword2;SESSION;", SRC I, TXT ";Password;", TGT regPassword2
           )
 
-RULE CopyEmail : sessionAccount~;registerButton;regEmail |- accEmail
-VIOLATION ( TXT "{EX} InsPair;accEmail;Account;",  SRC I, TXT ";Emailaddress;", TGT I )
-RULE EmptyRegEmail : sessionAccount;accEmail |- -regEmail
-VIOLATION ( TXT "{EX} DelPair;regEmail;SESSION;",  SRC I, TXT ";Emailaddress;", TGT I )
-RULE CopyPerson : sessionAccount~;registerButton;regPerson |- accPerson
-VIOLATION ( TXT "{EX} InsPair;accPerson;Account;",  SRC I, TXT ";Person;", TGT I )
-RULE EmptyRegPerson : sessionAccount;accPerson |- -regPerson
-VIOLATION ( TXT "{EX} DelPair;regPerson;SESSION;",  SRC I, TXT ";Person;", TGT I )
-RULE ResetCreateAccount : (registerButton /\ sessionAccount;sessionAccount~)-(regEmail;regEmail~\/regPerson;regPerson~) |- -registerButton
-VIOLATION ( TXT "{EX} DelPair;registerButton;SESSION;", SRC I, TXT ";SESSION;", TGT I )
-
 PURPOSE RULE RefuseExistingStudentnumber
 {+Registering a student number that is already known yields an error message,
 asking to register with a student number that is not yet registered as a user.
@@ -160,15 +147,12 @@ RULE RefuseExistingStudentnumber : ("_SESSION"-sessionAccount;sessionAccount~);r
 VIOLATION (TXT "You cannot register student number ", SRC regUserID, TXT ", because it is registered already.")
 RULE EqualPasswords : regPassword1~;regPassword2 |- I
 MESSAGE "Please type equal passwords (case sensitive)"
-ROLE ExecEngine MAINTAINS CopyEmail, EmptyRegEmail, CopyPerson, EmptyRegPerson, ResetCreateAccount
-
 
 {- Toestanden
 1	"_SESSION";regUserID;-accUserid~;V	A new userid has been entered in this session's register menu. So, someone wants to register a new account.
 2	"_SESSION";regUserID;accUserid~;V	An existing userid has been entered in this session's register menu. Apparently, someone wants to register a new account, but it exists already.
 3	"_SESSION";(I/\regPassword1;regPassword2~);V	Two equal passwords have been entered in this session's register menu. So, this is the password for the new account
 3	"_SESSION";(I/\regPassword1;-I;regPassword2~);V	Two unequal passwords have been entered in this session's register menu. Apparently, the user has mis-typed the password.
-4	"_SESSION";regEmail;V	An e-mail address has been entered in this session's register menu. This email address will be used for the new account
 5	"_SESSION";registerButton;V	The "Registreer"-button has been clicked on in this session's register menu. So, the user is done and wishes to make the new account
 6	"_SESSION";(I/\sessionAccount;sessionAccount~);V	This session is logged in.
 7	"_SESSION";(I-sessionAccount;sessionAccount~);V	This session is not logged in.
@@ -176,7 +160,7 @@ ROLE ExecEngine MAINTAINS CopyEmail, EmptyRegEmail, CopyPerson, EmptyRegPerson, 
 
 State transitions
 Login	7, 8 --> 6
-Register	1, 3, 4, 5 --> 6
+Register	1, 3, 5 --> 6
 -}
 
 ENDCONTEXT

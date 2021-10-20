@@ -48,9 +48,8 @@ ROLE ExecEngine MAINTAINS "Automatically set first Item of Sequence"
 RULE "Automatically set first Item of Sequence": itemInSeq-(nextItem~;itemInSeq) |- seqFirstItem~
 VIOLATION (TXT "{EX} InsPair;seqFirstItem;Sequence;", TGT I, TXT ";Item;", SRC I)
 
-ROLE ExecEngine MAINTAINS "Automatically set last Item of Sequence"
-RULE "Automatically set last Item of Sequence": itemInSeq-(nextItem;itemInSeq) |- seqLastItem~
-VIOLATION (TXT "{EX} InsPair;seqLastItem;Sequence;", TGT I, TXT ";Item;", SRC I)
+-- Automatically set the last Item of a Sequence"
+ENFORCE seqLastItem >: itemInSeq~ - (nextItem;itemInSeq)~
 
 ROLE ExecEngine MAINTAINS "Automatically detect emptiness of a Sequence"
 RULE "Automatically detect emptiness of a Sequence": seqFirstItem \/ seqLastItem |- itemInSeq~;V
@@ -62,10 +61,8 @@ ROLE ExecEngine MAINTAINS "Automatically remove next-item-link from orphaned ite
 RULE "Automatically remove next-item-link from orphaned items": I[Item]-(itemInSeq;itemInSeq~) |- (V[Item]-nextItem);V
 VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem)
 -- While the following line should not fire, it may so happen that people use this Ontology and make their own SeqInterfacing service that does not take care of this condition.
-ROLE ExecEngine MAINTAINS "Automatically remove next-item-link that points outside sequence"
-RULE "Automatically remove next-item-link that points outside sequence": nextItem |- itemInSeq;itemInSeq~
-VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem
-          )
+-- This rule automatically removes the next-item-link if it points outside the sequence
+ENFORCE nextItem :< itemInSeq;itemInSeq~
 
 --[Option: Transitive Closures for `nextItem`]--
 {- 
@@ -79,11 +76,7 @@ VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem
     RULE "Compute transitive closure of nextItem" : nextItem = succCopy
     VIOLATION (TXT "{EX} TransitiveClosure;nextItem;Item;succCopy;succPlus")
 
-    ROLE ExecEngine MAINTAINS "Compute transitive closure of nextItem by Ins", "Compute transitive closure of nextItem by Del"
-    RULE "Compute transitive closure of nextItem by Ins" : succPlus\/I |- succStar
-    VIOLATION (TXT "{EX} InsPair;succStar;Item;", SRC I, TXT ";Item;", TGT I)
-    RULE "Compute transitive closure of nextItem by Del" : succStar |- succPlus\/I
-    VIOLATION (TXT "{EX} DelPair;succStar;Item;", SRC I, TXT ";Item;", TGT I)
+    ENFORCE succStar := succPlus\/I
 -}
 
 ENDCONTEXT

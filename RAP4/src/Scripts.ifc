@@ -39,7 +39,7 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
                   ]
       , "Compiler message"  : compileresponse cRud
       , controls: seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
-         [ "Func. spec + pictures" : I BOX <PROPBUTTON>
+         [ "Functional spec. document" : I BOX <PROPBUTTON>
                            [ property : funcSpecRequest cRUd
                            , disabled : I /\ funcSpec;funcSpec~  cRud
 --                         , "hide": <expression> cRud

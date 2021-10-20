@@ -15,12 +15,7 @@ RELATION arfUserid[AccRegForm*Userid]       [UNI] -- Requested Userid
 RELATION arfPassword[AccRegForm*Password]   [UNI] -- Requested Password
 
 RELATION arfIsClean[AccRegForm*AccRegForm] [PROP] -- AccRegForm has property that a valid account can be created
-ROLE ExecEngine MAINTAINS "InsPair arfIsClean"
-RULE "InsPair arfIsClean": I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~ |- arfIsClean
-VIOLATION (TXT "{EX} InsPair;arfIsClean;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
-ROLE ExecEngine MAINTAINS "DelPair arfIsClean"
-RULE "DelPair arfIsClean": arfIsClean |- I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~
-VIOLATION (TXT "{EX} DelPair;arfIsClean;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
+ENFORCE arfIsClean := I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~
 
 RELATION arfCancelReq[AccRegForm*AccRegForm] [PROP]
 ROLE ExecEngine MAINTAINS "Delete canceled AccRegForms"

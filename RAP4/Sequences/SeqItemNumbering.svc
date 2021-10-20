@@ -33,12 +33,7 @@ seqSinFirstValue :: Sequence * SinValue [UNI]
 MEANING "A sequence may specify the SinValue of its first item"
 
 seqSinProp :: Sequence * Sequence [PROP] -- The Sequence Item Numbering Service applies to this sequence
-ROLE ExecEngine MAINTAINS "Auto-set seqSin property"
-RULE "Auto-set seqSin property": I /\ seqSinFirstValue;V |- seqSinProp
-VIOLATION (TXT "{EX} InsPair;seqSinProp;Sequence;", SRC I, TXT ";Sequence;", TGT I)
-ROLE ExecEngine MAINTAINS "Auto-clear seqSin property"
-RULE "Auto-clear seqSin property": seqSinProp |- seqSinFirstValue;V
-VIOLATION (TXT "{EX} DelPair;seqSinProp;Sequence;", SRC I, TXT ";Sequence;", TGT I)
+ENFORCE seqSinProp := I /\ seqSinFirstValue;V
 
 ROLE ExecEngine MAINTAINS "Auto delete SinValue of first item in a sequence"
 RULE "Auto delete SinValue of first item in a sequence": seqFirstItem~;-seqSinFirstValue |- -itemSinValue
