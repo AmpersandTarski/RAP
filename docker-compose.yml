@@ -37,7 +37,7 @@ services:
       context: RAP4USER
 
   rap4:
-    image: ampersandtarski/ampersand-rap:2021-08-10
+    image: ampersandtarski/ampersand-rap:2021-10-22
     container_name: rap4
     build:
       context: RAP4

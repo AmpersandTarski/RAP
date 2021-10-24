@@ -74,9 +74,6 @@ RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested 
 RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
 RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP4 when it is loaded into the meta tables
 
-
-RELATION name[Role*RoleName] [TOT,UNI]
-
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
 --RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
 -- Also make sure only to populate a new atlas, if it will be the only atlas population for that user. (that will be taken care of by the rule named "Trash all previous atlases of this account".)
