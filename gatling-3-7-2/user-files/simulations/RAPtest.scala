@@ -51,15 +51,15 @@ class RAPtest extends Simulation {
       http("Fill Userid/Password")
         .patch("/api/v1/resource/SESSION/1")
         .body(StringBody(""" [{ "op":"replace",
-                                "path":"/Login/${sessId}/Login/${sessId}/Userid",
+                                "path":"/Login/#{sessId}/Login/#{sessId}/Userid",
                                 "value":"stefj"
                               },
                               { "op":"replace",
-                                "path":"/Login/${sessId}/Login/${sessId}/Password",
+                                "path":"/Login/#{sessId}/Login/#{sessId}/Password",
                                 "value":"welkom"
                               },
                               { "op":"replace",
-                                "path":"/Login/${sessId}/Login/${sessId}/Login/property",
+                                "path":"/Login/#{sessId}/Login/#{sessId}/Login/property",
                                 "value":true
                               }] """)).asJson
     )
