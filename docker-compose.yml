@@ -153,7 +153,8 @@ services:
     container_name: gatling
     build:
       context: gatling-3-7-2
-    restart: unless-stopped
+    # restart: unless-stopped     # run only once, so never restart
+    command: "-s RAPtest"
     volumes:
       - ./gatling-3-7-2/conf:/opt/gatling/conf
       - ./gatling-3-7-2/results:/opt/gatling/results

@@ -19,7 +19,7 @@ import io.gatling.http.cookie._
 class RAPtest extends Simulation {
 
   private val httpProtocol = http
-    .baseUrl("http://localhost")
+    .baseUrl("https://rap.cs.ou.nl")
     .inferHtmlResources(AllowList(), DenyList())
     .acceptHeader("*/*")
     .acceptEncodingHeader("gzip, deflate")
@@ -52,11 +52,11 @@ class RAPtest extends Simulation {
         .patch("/api/v1/resource/SESSION/1")
         .body(StringBody(""" [{ "op":"replace",
                                 "path":"/Login/#{sessId}/Login/#{sessId}/Userid",
-                                "value":"stefj"
+                                "value":"pietertje"
                               },
                               { "op":"replace",
                                 "path":"/Login/#{sessId}/Login/#{sessId}/Password",
-                                "value":"welkom"
+                                "value":"slechtpaswoord"
                               },
                               { "op":"replace",
                                 "path":"/Login/#{sessId}/Login/#{sessId}/Login/property",

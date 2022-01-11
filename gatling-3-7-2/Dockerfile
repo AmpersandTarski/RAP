@@ -31,6 +31,8 @@ RUN mkdir -p /tmp/archive && cd /tmp/archive && \
 # change context to gatling directory
 WORKDIR  /opt/gatling
 
+ADD ./user-files/simulations/*.scala /opt/gatling/user-files/simulations
+
 # set directories below to be mountable from host
 VOLUME ["/opt/gatling/conf", "/opt/gatling/results", "/opt/gatling/user-files"]
 
