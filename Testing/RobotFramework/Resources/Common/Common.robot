@@ -12,4 +12,3 @@ Begin web test
 
 End web test
     Close All Browsers
-    
