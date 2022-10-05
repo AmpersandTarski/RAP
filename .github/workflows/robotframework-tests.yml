@@ -1,0 +1,49 @@
+name: 🤖 Robot Framework Tests
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - master
+      - development
+  pull_request:
+    branches: 
+      - master
+      - development
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '* */2 * * *'
+  workflow_dispatch:
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+        - name: Execute tests
+          uses: joonvena/robotframework-docker-action@v1.0
+          with:
+            robot_tests_dir: 'Testing/RobotFramework'
+            robot_reports_dir: 'Testing/RobotFramework/Results'
+        - name: Upload test results
+          uses: actions/upload-artifact@v1
+          if: always()
+          with:
+            name: results
+            path: Testing/RobotFramework/Results
+    
+    generate_report:
+        if: always()
+        needs: [test] 
+        runs-on: ubuntu-latest
+        steps:
+        - name: Download reports
+          uses: actions/download-artifact@v1
+          with:
+            name: results
+            path: Testing/RobotFramework/Results
+        - name: Send report to commit
+          uses: joonvena/robotframework-reporter-action@v2.1
+          with:
+            gh_access_token: ${{ secrets.GITHUB_TOKEN }}
+            report_path: Testing/RobotFramework/Results
