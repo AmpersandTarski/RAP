@@ -10,5 +10,5 @@ GoToLandingPage
     Go To            ${HOME_URL}
 
 VerifyLandingPageLoaded
-    Wait Until Page Contains Element     xpath=//a[contains(text(),'See Ampersand documentation »')]
+    Wait Until Page Contains Element     xpath=//a[contains(text(),'See Ampersand documentation »')]    15
     Log    Trying to show homepage, page must contain button "See Ampersand Documentation"
