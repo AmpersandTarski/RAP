@@ -5,10 +5,10 @@ Library    SeleniumLibrary
 
 
 *** Keywords ***
-GoToLandingPage
+Go to the Home page
     [Arguments]      ${HOME_URL}
     Go To            ${HOME_URL}
 
-VerifyLandingPageLoaded
+Verify that the Home page is loaded
     Wait Until Page Contains Element     xpath=//a[contains(text(),'See Ampersand documentation »')]    15
     Log    Trying to show homepage, page must contain button "See Ampersand Documentation"

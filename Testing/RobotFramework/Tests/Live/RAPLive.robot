@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation       Testing Rap tutorial
+Documentation       Testing RAP
 
 Resource            ../../Resources/Common/Common.robot
 Resource            ../../Resources/RAP/RAPApp.robot
@@ -14,6 +14,6 @@ ${HOME_URL}     https://rap.cs.ou.nl/#/page/home
 
 *** Test Cases ***
 Should be able to access the Home page
-    [Documentation]    verify Home page can load
+    [Documentation]    Verifies if the Home page can be loaded.
     [Tags]  Smoke
     Should be able to access the Home page    ${HOME_URL}
