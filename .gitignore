@@ -12,3 +12,5 @@ prototype-src/
 .cache
 
 /vendor/
+
+Testing/RobotFramework/Results
