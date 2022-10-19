@@ -1,0 +1,25 @@
+name: ︻╦̵̵͇̿̿̿̿╤── Gatling Tests
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - master
+      - development
+  pull_request:
+    branches: 
+      - master
+      - development
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '* */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: liatrio/run-gatling@v1.2.0
+        with:
+          pomPath: Testing/Gatling/pom.xml
