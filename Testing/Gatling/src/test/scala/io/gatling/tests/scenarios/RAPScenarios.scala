@@ -14,7 +14,7 @@ object RAPScenarios {
                        .check(status.is(200)))
 
   val runUnsuccessfulLogin =
-    scenario("Unsuccessful Login")
+    scenario("Unsuccessful Login Scenario")
       .exec(RAPRequests.getLogin)
       .exec(RAPRequests.patchIncorrectLogin)
       .exec(RAPRequests.getMyScript
