@@ -1,7 +1,5 @@
 package io.gatling.tests.classes
 
-import scala.concurrent.duration._
-
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
@@ -18,7 +16,7 @@ object Login {
         )
       .exec(
         http("Enter correct credentials (username and password)")
-          .patch(s"/api/v1/resource/SESSION/1/")
+          .put(s"/api/v1/resource/SESSION/1/")
           .body(
             StringBody(
               """
