@@ -6,7 +6,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 
-import io.gatling.tests.classes._
+import io.gatling.tests.classes.Login
 
 class Main extends Simulation {
 
