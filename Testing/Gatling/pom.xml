@@ -41,7 +41,6 @@
         <artifactId>gatling-maven-plugin</artifactId>
         <version>${gatling-maven-plugin.version}</version>
         <configuration>
-          <simulationsFolder>src/test/scala</simulationsFolder>
           <runMultipleSimulations>true</runMultipleSimulations>
         </configuration>
       </plugin>
