@@ -20,12 +20,10 @@ class Main extends Simulation {
     .acceptLanguageHeader("en-GB,en;q=0.9,en-US;q=0.8,nl;q=0.7")
     .userAgentHeader("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.47")
 
-  val login: Login = Login()
-
   // Runs in parallel
   setUp(
-    login.RunSuccessfulLogin()
+    Login.RunSuccessfulLogin()
          .inject(atOnceUsers(1)).protocols(httpProtocol),
-    login.RunUnsuccessfulLogin()
+    Login.RunUnsuccessfulLogin()
          .inject(atOnceUsers(1)).protocols(httpProtocol))
 }
