@@ -8,7 +8,7 @@ import io.gatling.jdbc.Predef._
 
 import io.gatling.tests.classes.Login
 
-class Main extends Simulation {
+class Main2 extends Simulation {
 
   val BASE_URL: String = "https://rap.cs.ou.nl"
 
