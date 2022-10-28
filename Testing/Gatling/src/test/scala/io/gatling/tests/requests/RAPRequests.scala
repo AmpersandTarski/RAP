@@ -25,4 +25,17 @@ object RAPRequests {
 
   val getMyScript = http("Access MyScripts page")
     .get("/api/v1/resource/SESSION/1/MyScripts")
+
+  val postNewScript = http("Post NewScript")
+    .post("/api/v1/resource/Script")
+    .check(jsonPath("$._id_").saveAs("scriptId"))
+    .check(status.is(200))
+
+  val patchNewScript = http("Changing NewScript Values")
+    .patch("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
+    .body(RawFileBody("io/gatling/tests/requests/new_script.json")).asJson
+
+  val getMyScriptsScriptId = http("Access Created NewScript from MyScripts")
+    .get("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
+    .check(status.is(200))
 }

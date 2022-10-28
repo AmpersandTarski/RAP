@@ -21,4 +21,14 @@ object RAPScenarios {
       .exec(RAPRequests.patchIncorrectLogin)
       .exec(RAPRequests.getMyScript
                        .check(status.is(401)))
+
+  val runCreateNewScript = scenario("RecordedSimulation")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScript
+                     .check(status.is(200)))
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchNewScript)
+    .exec(RAPRequests.getMyScriptsScriptId)
 }
