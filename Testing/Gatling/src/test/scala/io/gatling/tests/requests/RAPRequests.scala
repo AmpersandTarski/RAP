@@ -1,8 +1,8 @@
 package io.gatling.tests.requests
 
-import io.gatling.core.Predef.*
-import io.gatling.http.Predef.*
-import io.gatling.jdbc.Predef.*
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import io.gatling.jdbc.Predef._
 
 object RAPRequests {
   val getHome = http("Access Home page")

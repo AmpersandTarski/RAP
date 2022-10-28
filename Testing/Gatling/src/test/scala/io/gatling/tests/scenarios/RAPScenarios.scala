@@ -1,9 +1,9 @@
 package io.gatling.tests.scenarios
 
 import io.gatling.tests.requests.RAPRequests
-import io.gatling.core.Predef.*
-import io.gatling.http.Predef.*
-import io.gatling.jdbc.Predef.*
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import io.gatling.jdbc.Predef._
 
 object RAPScenarios {
   val runSuccessfulLogin =
