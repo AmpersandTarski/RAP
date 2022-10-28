@@ -8,6 +8,7 @@ import io.gatling.jdbc.Predef.*
 object RAPScenarios {
   val runSuccessfulLogin =
     scenario("Successful Login Scenario")
+      .exec(RAPRequests.getHome)
       .exec(RAPRequests.getLogin)
       .exec(RAPRequests.patchCorrectLogin)
       .exec(RAPRequests.getMyScript
@@ -15,6 +16,7 @@ object RAPScenarios {
 
   val runUnsuccessfulLogin =
     scenario("Unsuccessful Login Scenario")
+      .exec(RAPRequests.getHome)
       .exec(RAPRequests.getLogin)
       .exec(RAPRequests.patchIncorrectLogin)
       .exec(RAPRequests.getMyScript
