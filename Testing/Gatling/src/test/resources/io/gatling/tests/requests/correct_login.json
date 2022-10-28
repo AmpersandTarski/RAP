@@ -1,0 +1,17 @@
+[
+  {
+    "op": "replace",
+    "path": "/Login/${sessId}/Login/${sessId}/Userid",
+    "value": "pinda"
+  },
+  {
+    "op": "replace",
+    "path": "/Login/${sessId}/Login/${sessId}/Password",
+    "value": "kaas"
+  },
+  {
+    "op": "replace",
+    "path": "/Login/${sessId}/Login/${sessId}/Login/property",
+    "value": true
+  }
+]
