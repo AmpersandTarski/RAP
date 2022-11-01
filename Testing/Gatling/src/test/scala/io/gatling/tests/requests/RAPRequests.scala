@@ -37,7 +37,7 @@ object RAPRequests {
     .check(jsonPath("$._id_").saveAs("scriptId"))
     .check(status.is(200))
 
-  val patchNewScript = http("Changing NewScript calues and compile")
+  val patchNewScript = http("Changing NewScript values and compile")
     .patch("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
     .body(RawFileBody("io/gatling/tests/requests/new_script.json")).asJson
 
