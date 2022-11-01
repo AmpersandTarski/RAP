@@ -11,23 +11,20 @@ object RAPScenarios {
       .exec(RAPRequests.getHome)
       .exec(RAPRequests.getLogin)
       .exec(RAPRequests.patchCorrectLogin)
-      .exec(RAPRequests.getMyScript
-                       .check(status.is(200)))
+      .exec(RAPRequests.getMyScriptReturns200)
 
   val runUnsuccessfulLogin =
     scenario("Unsuccessful Login Scenario")
       .exec(RAPRequests.getHome)
       .exec(RAPRequests.getLogin)
       .exec(RAPRequests.patchIncorrectLogin)
-      .exec(RAPRequests.getMyScript
-                       .check(status.is(401)))
+      .exec(RAPRequests.getMyScriptReturns401)
 
   val runCreateNewScript = scenario("RecordedSimulation")
     .exec(RAPRequests.getHome)
     .exec(RAPRequests.getLogin)
     .exec(RAPRequests.patchCorrectLogin)
-    .exec(RAPRequests.getMyScript
-                     .check(status.is(200)))
+    .exec(RAPRequests.getMyScriptReturns200)
     .exec(RAPRequests.postNewScript)
     .exec(RAPRequests.patchNewScript)
     .exec(RAPRequests.getMyScriptsScriptId)
