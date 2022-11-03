@@ -37,9 +37,17 @@ object RAPRequests {
     .check(jsonPath("$._id_").saveAs("scriptId"))
     .check(status.is(200))
 
-  val patchNewScript = http("User changes NewScript values and compiles the script")
+  val patchNewScriptName = http("User changes NewScript assignment name")
     .patch("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
-    .body(RawFileBody("io/gatling/tests/requests/new_script.json")).asJson
+    .body(RawFileBody("io/gatling/tests/requests/new_script_name.json")).asJson
+
+  val patchNewScriptContent = http("User changes NewScript script content")
+    .patch("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
+    .body(RawFileBody("io/gatling/tests/requests/new_script_content.json")).asJson
+
+  val patchNewScriptCompile = http("User compiles the NewScript")
+    .patch("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
+    .body(RawFileBody("io/gatling/tests/requests/new_script_compile.json")).asJson
 
   val getMyScriptsScriptId = http("User gets the newly created NewScript from MyScripts page")
     .get("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
