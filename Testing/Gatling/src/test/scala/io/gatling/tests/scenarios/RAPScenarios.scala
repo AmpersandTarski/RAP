@@ -40,4 +40,10 @@ object RAPScenarios {
     .exec(RAPRequests.patchNewScriptContent)
     .exec(RAPRequests.patchNewScriptCompile)
     .exec(RAPRequests.getMyScriptsScriptId)
+
+  val runSuccessfulRegister = scenario("Successful Register scenario")
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.getRegister)
+    .exec(RAPRequests.patchCorrectRegister)
+    .exec(RAPRequests.getMyAccount)
 }

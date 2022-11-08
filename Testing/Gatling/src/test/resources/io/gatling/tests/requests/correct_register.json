@@ -1,0 +1,22 @@
+[
+  {
+    "op": "replace",
+    "path": "/Login/${sessId}/Register/${regId}/Form_32_to_32_fill_32_in/Userid_32__40__42__41_",
+    "value": "${sessId}"
+  },
+  {
+    "op": "replace",
+    "path": "/Login/${sessId}/Register/${regId}/Form_32_to_32_fill_32_in/Password_32__40__42__41_",
+    "value": "somePasswords"
+  },
+  {
+    "op": "replace",
+    "path": "/Login/${sessId}/Register/${regId}/Form_32_to_32_fill_32_in/Your_32_name",
+    "value": "${sessId}"
+  },
+  {
+    "op": "replace",
+    "path": "/Login/${sessId}/Register/${regId}/Buttons/Create_32_account/property",
+    "value": true
+  }
+]
