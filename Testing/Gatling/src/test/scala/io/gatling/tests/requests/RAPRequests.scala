@@ -38,7 +38,7 @@ object RAPRequests {
     .body(ElFileBody("io/gatling/tests/requests/correct_register.json")).asJson
     .check(status.is(200))
 
-  val getMyAccount = http("User gets MyAccount")
+  val getMyAccountReturns200 = http("User gets MyAccount")
     .get("/api/v1/resource/SESSION/1/MyAccount")
     .check(status.is(200))
 
@@ -76,10 +76,10 @@ object RAPRequests {
 
   val patchIncorrectRegister = http("User enter register credentials (userId does not exist yet)")
     .patch("/api/v1/resource/SESSION/1")
-    .body(ElFileBody("io/gatling/tests/requests/Incorrect_register.json")).asJson
+    .body(ElFileBody("io/gatling/tests/requests/incorrect_register.json")).asJson
     .check(status.is(200))
 
-  val dontGetMyAccount = http("User gets MyAccount")
+  val getMyAccountReturns401 = http("User cannot get into My Account page")
     .get("/api/v1/resource/SESSION/1/MyAccount")
     .check(status.is(401))
 }

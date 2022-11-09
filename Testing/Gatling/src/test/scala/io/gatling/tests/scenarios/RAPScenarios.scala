@@ -45,11 +45,11 @@ object RAPScenarios {
     .exec(RAPRequests.getLogin)
     .exec(RAPRequests.getRegister)
     .exec(RAPRequests.patchCorrectRegister)
-    .exec(RAPRequests.getMyAccount)
+    .exec(RAPRequests.getMyAccountReturns200)
 
   val runUnsuccessfulRegister = scenario("Unsuccesful Register scenario")
     .exec(RAPRequests.getLogin)
     .exec(RAPRequests.getRegister)
     .exec(RAPRequests.patchIncorrectRegister)
-    .exec(RAPRequests.dontGetMyAccount)
+    .exec(RAPRequests.getMyAccountReturns401)
 }
