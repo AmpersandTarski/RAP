@@ -46,4 +46,10 @@ object RAPScenarios {
     .exec(RAPRequests.getRegister)
     .exec(RAPRequests.patchCorrectRegister)
     .exec(RAPRequests.getMyAccount)
+
+  val runUnsuccessfulRegister = scenario("Unsuccesful Register scenario")
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.getRegister)
+    .exec(RAPRequests.patchIncorrectRegister)
+    .exec(RAPRequests.dontGetMyAccount)
 }

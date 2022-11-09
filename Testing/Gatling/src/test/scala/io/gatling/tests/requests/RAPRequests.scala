@@ -19,9 +19,9 @@ object RAPRequests {
     .patch("/api/v1/resource/SESSION/1")
     .body(ElFileBody("io/gatling/tests/requests/get_register.json")).asJson
     .resources(http("request_13")
-                 .get("/api/v1/resource/SESSION/1/Login")
-                 .check(jsonPath("$.Register._id_").saveAs("regId"))
-                 .check(status.is(200)))
+      .get("/api/v1/resource/SESSION/1/Login")
+      .check(jsonPath("$.Register._id_").saveAs("regId"))
+      .check(status.is(200)))
 
   val patchCorrectLogin = http("User enters correct credentials (username and password)")
     .patch(s"/api/v1/resource/SESSION/1/")
@@ -73,4 +73,13 @@ object RAPRequests {
   val getMyScriptsScriptId = http("User gets the newly created NewScript from MyScripts page")
     .get("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
     .check(status.is(200))
+
+  val patchIncorrectRegister = http("User enter register credentials (userId does not exist yet)")
+    .patch("/api/v1/resource/SESSION/1")
+    .body(ElFileBody("io/gatling/tests/requests/Incorrect_register.json")).asJson
+    .check(status.is(200))
+
+  val dontGetMyAccount = http("User gets MyAccount")
+    .get("/api/v1/resource/SESSION/1/MyAccount")
+    .check(status.is(401))
 }

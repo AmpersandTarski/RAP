@@ -6,9 +6,9 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 
-class UnsuccessfulLogin extends Simulation {
+class UnsuccessfulRegister extends Simulation {
   setUp(
-    RAPScenarios.runUnsuccessfulLogin
+    RAPScenarios.runUnsuccessfulRegister
       .inject(atOnceUsers(1))
       .protocols(RAPDefaults.httpProtocol)
   )
