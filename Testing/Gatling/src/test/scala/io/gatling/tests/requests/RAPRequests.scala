@@ -18,10 +18,11 @@ object RAPRequests {
   val getRegister = http("User gets register page (by sessId)")
     .patch("/api/v1/resource/SESSION/1")
     .body(ElFileBody("io/gatling/tests/requests/get_register.json")).asJson
-    .resources(http("request_13")
-      .get("/api/v1/resource/SESSION/1/Login")
-      .check(jsonPath("$.Register._id_").saveAs("regId"))
-      .check(status.is(200)))
+    .resources(
+      http("Save register ID as regId")
+        .get("/api/v1/resource/SESSION/1/Login")
+        .check(jsonPath("$.Register._id_").saveAs("regId"))
+        .check(status.is(200)))
 
   val patchCorrectLogin = http("User enters correct credentials (username and password)")
     .patch(s"/api/v1/resource/SESSION/1/")
@@ -33,7 +34,7 @@ object RAPRequests {
     .body(ElFileBody("io/gatling/tests/requests/incorrect_login.json")).asJson
     .check(status.is(200))
 
-  val patchCorrectRegister = http("User enter register credentials (userId does not exist yet)")
+  val patchCorrectRegister = http("User enters register credentials (userId does not exist yet)")
     .patch("/api/v1/resource/SESSION/1")
     .body(ElFileBody("io/gatling/tests/requests/correct_register.json")).asJson
     .check(status.is(200))
@@ -74,7 +75,7 @@ object RAPRequests {
     .get("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
     .check(status.is(200))
 
-  val patchIncorrectRegister = http("User enter register credentials (userId does not exist yet)")
+  val patchIncorrectRegister = http("User enters register credentials (userId does already exist)")
     .patch("/api/v1/resource/SESSION/1")
     .body(ElFileBody("io/gatling/tests/requests/incorrect_register.json")).asJson
     .check(status.is(200))
