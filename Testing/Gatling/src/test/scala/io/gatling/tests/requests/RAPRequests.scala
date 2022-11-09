@@ -68,6 +68,7 @@ object RAPRequests {
   val patchNewScriptCompile = http("User compiles the NewScript")
     .patch("/api/v1/resource/Script/Script_${scriptId}/Nieuw_32_script")
     .body(RawFileBody("io/gatling/tests/requests/new_script_compile.json")).asJson
+    .check(jsonPath("$.content.Actual_32_info.Compiler_32_message").is("This script of Enrollment contains no type errors."))
     .check(status.is(200))
 
   val getMyScriptsScriptId = http("User gets the newly created NewScript from MyScripts page")
