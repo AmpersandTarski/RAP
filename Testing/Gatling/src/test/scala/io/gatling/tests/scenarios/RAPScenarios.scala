@@ -47,9 +47,21 @@ object RAPScenarios {
     .exec(RAPRequests.patchCorrectRegister)
     .exec(RAPRequests.getMyAccountReturns200)
 
-  val runUnsuccessfulRegister = scenario("Unsuccesful Register scenario")
+  val runUnsuccessfulRegister = scenario("Unsuccessful Register scenario")
     .exec(RAPRequests.getLogin)
     .exec(RAPRequests.getRegister)
     .exec(RAPRequests.patchIncorrectRegister)
     .exec(RAPRequests.getMyAccountReturns401)
+
+  val runUnsuccessfulCompile = scenario("Unsuccessful compile scenario")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.getMyAccountReturns200)
+    .exec(RAPRequests.postScript)
+    .exec(RAPRequests.patchIncorrectCompileScriptContent)
+    .exec(RAPRequests.patchIncorrectCompileScript)
+
+
 }
