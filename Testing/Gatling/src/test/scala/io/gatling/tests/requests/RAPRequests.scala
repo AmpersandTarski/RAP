@@ -84,4 +84,21 @@ object RAPRequests {
   val getMyAccountReturns401 = http("User cannot get into My Account page")
     .get("/api/v1/resource/SESSION/1/MyAccount")
     .check(status.is(401))
+
+  val postScript = http("Save the script ID as scrID")
+    .post("/api/v1/resource/Script")
+    .check(jsonPath("$._id_").saveAs("scrId"))
+    .check(status.is(200))
+
+  val patchIncorrectCompileScriptContent = http("User enters incorrect script content")
+    .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .body(RawFileBody("io/gatling/tests/requests/incorrect_compile.json")).asJson
+    .check(status.is(200))
+
+  val getCheckErrorMessage = http("Check error message (Error because it didn't start with 'CONTENT')")
+    .get("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .check(jsonPath("$.Actual_32_info.Compiler_32_message").saveAs("errMsg"))
+    .check(substring("${errMsg}").exists)
+    .check(status.is(200))
+
 }

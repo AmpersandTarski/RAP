@@ -1,0 +1,22 @@
+[
+  {
+    "op": "replace",
+    "path": "/Meta_45_info/opdracht",
+    "value": null
+  },
+  {
+    "op": "replace",
+    "path": "/Content",
+    "value": "asdhkjasd"
+  },
+  {
+    "op": "replace",
+    "path": "/Meta_45_info/opdracht",
+    "value": "Test"
+  },
+  {
+    "op": "replace",
+    "path": "/Actual_32_info/compile/property",
+    "value": true
+  }
+]
