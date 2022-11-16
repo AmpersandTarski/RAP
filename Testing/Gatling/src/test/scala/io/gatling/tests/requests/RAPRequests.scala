@@ -85,7 +85,7 @@ object RAPRequests {
     .get("/api/v1/resource/SESSION/1/MyAccount")
     .check(status.is(401))
 
-  val postScript = http("save the script ID as scrID")
+  val postScript = http("Save the script ID as scrID")
     .post("/api/v1/resource/Script")
     .check(jsonPath("$._id_").saveAs("scrId"))
     .check(status.is(200))
@@ -95,7 +95,7 @@ object RAPRequests {
     .body(RawFileBody("io/gatling/tests/requests/incorrect_compile.json")).asJson
     .check(status.is(200))
 
-  val patchIncorrectCompileScript = http("check error code")
+  val getCheckErrorMessage = http("Check error message (Error because it didn't start with 'CONTENT')")
     .get("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
     .check(jsonPath("$.Actual_32_info.Compiler_32_message").saveAs("errMsg"))
     .check(substring("${errMsg}").exists)

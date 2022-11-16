@@ -60,7 +60,7 @@ object RAPScenarios {
     .exec(RAPRequests.getMyScriptReturns200)
     .exec(RAPRequests.postScript)
     .exec(RAPRequests.patchIncorrectCompileScriptContent)
-    .exec(RAPRequests.patchIncorrectCompileScript)
+    .exec(RAPRequests.getCheckErrorMessage)
 
 
 }
