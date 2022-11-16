@@ -57,7 +57,6 @@ object RAPScenarios {
     .exec(RAPRequests.getHome)
     .exec(RAPRequests.getLogin)
     .exec(RAPRequests.patchCorrectLogin)
-    .exec(RAPRequests.getMyAccountReturns200)
     .exec(RAPRequests.getMyScriptReturns200)
     .exec(RAPRequests.postScript)
     .exec(RAPRequests.patchIncorrectCompileScriptContent)
