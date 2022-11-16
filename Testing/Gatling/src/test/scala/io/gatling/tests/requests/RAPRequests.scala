@@ -97,7 +97,8 @@ object RAPRequests {
 
   val patchIncorrectCompileScript = http("check error code")
     .get("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
-    .check(substring("error").exists) //Klopt dit?
+    .check(jsonPath("$.Actual_32_info.Compiler_32_message").saveAs("errMsg"))
+    .check(substring("${errMsg}").exists)
     .check(status.is(200))
 
 }
