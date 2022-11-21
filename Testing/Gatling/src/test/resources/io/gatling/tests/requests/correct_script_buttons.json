@@ -1,0 +1,12 @@
+[
+  {
+    "op": "replace",
+    "path": "/Actual_32_info/controls/${scrId}/Func_46__32_spec_32__43__32_pictures/property",
+    "value": true
+  },
+  {
+    "op": "replace",
+    "path": "/Actual_32_info/controls/${scrId}/Prototype/property",
+    "value": true
+  }
+]

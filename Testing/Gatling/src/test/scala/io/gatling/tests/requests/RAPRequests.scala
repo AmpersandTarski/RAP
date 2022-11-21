@@ -3,6 +3,7 @@ package io.gatling.tests.requests
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
+import io.gatling.jsonpath.JsonPath
 import io.gatling.tests.common
 
 object RAPRequests {
@@ -101,4 +102,14 @@ object RAPRequests {
     .check(substring("${errMsg}").exists)
     .check(status.is(200))
 
+  val patchCorrectCompileScriptContentAndName = http("Enter script name and correct script content")
+    .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .body(RawFileBody("io/gatling/tests/requests/correct_script_content.json")).asJson
+    .check(jsonPath("$.content.Actual_32_info.Compiler_32_message").is("This script of Enrollment contains no type errors."))
+    .check(status.is(200))
+
+  val patchCorrectButtons = http("Press function and property button")
+    .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .body(RawFileBody("io/gatling/tests/requests/correct_script_buttons.json")).asJson
+    .check(status.is(200))
 }
