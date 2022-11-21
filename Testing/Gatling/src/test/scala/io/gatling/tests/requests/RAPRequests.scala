@@ -106,10 +106,11 @@ object RAPRequests {
     .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
     .body(RawFileBody("io/gatling/tests/requests/correct_script_content.json")).asJson
     .check(jsonPath("$.content.Actual_32_info.Compiler_32_message").is("This script of Enrollment contains no type errors."))
+    .check(jsonPath("$.content.Actual_32_info.controls._id_").saveAs("ScrVersionId"))
     .check(status.is(200))
 
   val patchCorrectButtons = http("Press function and property button")
     .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
-    .body(RawFileBody("io/gatling/tests/requests/correct_script_buttons.json")).asJson
+    .body(ElFileBody("io/gatling/tests/requests/correct_script_buttons.json")).asJson
     .check(status.is(200))
 }

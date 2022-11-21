@@ -69,6 +69,5 @@ object RAPScenarios {
     .exec(RAPRequests.getMyScriptReturns200)
     .exec(RAPRequests.postScript)
     .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
-
-  //.exec(RAPRequests.patchCorrectButtons)
+    .exec(RAPRequests.patchCorrectButtons)
 }
