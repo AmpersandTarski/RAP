@@ -62,5 +62,12 @@ object RAPScenarios {
     .exec(RAPRequests.patchIncorrectCompileScriptContent)
     .exec(RAPRequests.getCheckErrorMessage)
 
-
+  val runSuccessfulCompileButtons = scenario("Run successful script and press the script buttons")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.patchCorrectButtons)
 }
