@@ -46,6 +46,7 @@ object RAPRequests {
 
   val getMyScriptReturns200 = http("User can get MyScripts page")
     .get("/api/v1/resource/SESSION/1/MyScripts")
+    .check(jsonPath("$._id_").saveAs("accountId"))
     .check(status.is(200))
 
   val getMyScriptReturns401 = http("User cannot get MyScripts page")
@@ -86,31 +87,31 @@ object RAPRequests {
     .get("/api/v1/resource/SESSION/1/MyAccount")
     .check(status.is(401))
 
-  val postScript = http("Save the script ID as scrID")
-    .post("/api/v1/resource/Script")
-    .check(jsonPath("$._id_").saveAs("scrId"))
-    .check(status.is(200))
-
   val patchIncorrectCompileScriptContent = http("User enters incorrect script content")
-    .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .patch("/api/v1/resource/Script/${scriptId}/Nieuw_32_script")
     .body(RawFileBody("io/gatling/tests/requests/incorrect_compile.json")).asJson
     .check(status.is(200))
 
   val getCheckErrorMessage = http("Check error message (Error because it didn't start with 'CONTENT')")
-    .get("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .get("/api/v1/resource/Script/${scriptId}/Nieuw_32_script")
     .check(jsonPath("$.Actual_32_info.Compiler_32_message").saveAs("errMsg"))
     .check(substring("${errMsg}").exists)
     .check(status.is(200))
 
   val patchCorrectCompileScriptContentAndName = http("Enter script name and correct script content")
-    .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .patch("/api/v1/resource/Script/${scriptId}/Nieuw_32_script")
     .body(RawFileBody("io/gatling/tests/requests/correct_script_content.json")).asJson
     .check(jsonPath("$.content.Actual_32_info.Compiler_32_message").is("This script of Enrollment contains no type errors."))
     .check(jsonPath("$.content.Actual_32_info.controls._id_").saveAs("ScrVersionId"))
     .check(status.is(200))
 
   val patchCorrectButtons = http("Press function and property button")
-    .patch("/api/v1/resource/Script/${scrId}/Nieuw_32_script")
+    .patch("/api/v1/resource/Script/${scriptId}/Nieuw_32_script")
     .body(ElFileBody("io/gatling/tests/requests/correct_script_buttons.json")).asJson
     .check(status.is(200))
+
+  val deleteScripts = http("Delete a script")
+    .delete("/api/v1/resource/SESSION/1/MyScripts/${accountId}/_EMPTY_/${scriptId}")
+    .check(status.is(200))
+
 }
