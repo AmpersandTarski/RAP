@@ -9,7 +9,7 @@ import io.gatling.jdbc.Predef._
 class SuccessfulRegister extends Simulation {
   setUp(
     RAPScenarios.runSuccessfulRegister
-                .inject(atOnceUsers(1))
-                .protocols(RAPDefaults.httpProtocol)
-    )
+      .inject(atOnceUsers(1))
+      .protocols(RAPDefaults.httpProtocol)
+  )
 }
