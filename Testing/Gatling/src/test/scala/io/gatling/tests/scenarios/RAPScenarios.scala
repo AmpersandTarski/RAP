@@ -58,7 +58,7 @@ object RAPScenarios {
     .exec(RAPRequests.getLogin)
     .exec(RAPRequests.patchCorrectLogin)
     .exec(RAPRequests.getMyScriptReturns200)
-    .exec(RAPRequests.postScript)
+    .exec(RAPRequests.postNewScript)
     .exec(RAPRequests.patchIncorrectCompileScriptContent)
     .exec(RAPRequests.getCheckErrorMessage)
 
@@ -67,7 +67,33 @@ object RAPScenarios {
     .exec(RAPRequests.getLogin)
     .exec(RAPRequests.patchCorrectLogin)
     .exec(RAPRequests.getMyScriptReturns200)
-    .exec(RAPRequests.postScript)
+    .exec(RAPRequests.postNewScript)
     .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
     .exec(RAPRequests.patchCorrectButtons)
+
+  val runDeleteAllScripts = scenario("Compile three scripts and delete those scripts")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.deleteScript)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.deleteScript)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.deleteScript)
+
+  /* val runGenerateConceptualAnalysis = scenario("Go to Atlas, check if concepts are created and check when enrollment script, you see the 'concepts'")
+     .exec(RAPRequests.getHome)
+     .exec(RAPRequests.getLogin)
+     .exec(RAPRequests.patchCorrectLogin)
+     .exec(RAPRequests.getMyScriptReturns200)
+     /*.exec(RAPRequests.postNewScript)
+     .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+     .exec(RAPRequests.patchCorrectButtons)*/
+     .exec(RAPRequests.getAtlas)
+     .exec(RAPRequests.getContext)*/
 }

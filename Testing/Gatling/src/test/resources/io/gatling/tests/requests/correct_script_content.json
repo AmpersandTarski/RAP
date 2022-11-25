@@ -2,7 +2,7 @@
   {
     "op": "replace",
     "path": "/Meta_45_info/opdracht",
-    "value": "TestScript"
+    "value": "${scrId}"
   },
   {
     "op": "replace",
