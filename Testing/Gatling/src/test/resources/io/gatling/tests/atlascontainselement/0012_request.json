@@ -1,7 +1,0 @@
-[
-  {
-    "op": "replace",
-    "path": "/Login/${sessId}/Login/${sessId}/Userid",
-    "value": "Key"
-  }
-]
