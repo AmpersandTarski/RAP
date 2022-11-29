@@ -10,12 +10,11 @@ volumes
 prototype-src/
 .env
 .cache
-
+.idea/
 /vendor/
 
 Testing/RobotFramework/Results
-Testing/Gatling/.idea/shelf/
-Testing/Gatling/.idea/workspace.xml
+Testing/Gatling/.idea
 Testing/Gatling/target
 Testing/Gatling/results
 Testing/Gatling/src/test/results
