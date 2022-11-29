@@ -114,15 +114,19 @@ object RAPRequests {
     .delete("/api/v1/resource/SESSION/1/MyScripts/${accountId}/_EMPTY_/${scriptId}")
     .check(status.is(200))
 
-  /*  val getAtlas = http("Go to the atlas page")
+  val getAtlas = http("Go to the atlas page")
       .get("/api/v1/resource/SESSION/1/Atlas")
-      .check(jsonPath("$._id_").saveAs("contextId"))
-      .check(jsonPath("$.Terug_32_naar_32_script._id_").is("scriptId"))
+      //.check(jsonPath("$[0]._id_").saveAs("contextId"))
+      .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
       .check(status.is(200))
 
-    val getContext = http("Go to the context page")
+  val checkAtlas = http("Validate Atlas section")
+    .get("/api/v1/resource/SESSION/1/Atlas")
+    .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").exists)
+
+  /*val getContext = http("Go to the context page")
       .get("/api/v1/resource/Context/${contextId}/Context")
-      .check(jsonPath("$._id_").is("contextId"))
-      .check(jsonPath("$.Terug_32_naar_32_script._id_").is("scriptId"))
+      .check(jsonPath("$._id_").is("${contextId}"))
+      .check(jsonPath("$.Terug_32_naar_32_script[0]._id_").is("scriptId"))
       .check(status.is(200))*/
 }

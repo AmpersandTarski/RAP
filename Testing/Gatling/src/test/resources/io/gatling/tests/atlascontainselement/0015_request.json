@@ -1,13 +1,8 @@
 [
   {
     "op": "replace",
-    "path": "/Login/${sessId}/Login/${sessId}/Userid",
-    "value": "rood"
-  },
-  {
-    "op": "replace",
     "path": "/Login/${sessId}/Login/${sessId}/Password",
-    "value": "kapje"
+    "value": "Board"
   },
   {
     "op": "replace",

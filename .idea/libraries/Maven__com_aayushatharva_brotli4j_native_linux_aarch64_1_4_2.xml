@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.aayushatharva.brotli4j:native-linux-aarch64:1.4.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/aayushatharva/brotli4j/native-linux-aarch64/1.4.2/native-linux-aarch64-1.4.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/aayushatharva/brotli4j/native-linux-aarch64/1.4.2/native-linux-aarch64-1.4.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/aayushatharva/brotli4j/native-linux-aarch64/1.4.2/native-linux-aarch64-1.4.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
