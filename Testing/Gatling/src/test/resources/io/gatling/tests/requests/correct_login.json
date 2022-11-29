@@ -2,12 +2,12 @@
   {
     "op": "replace",
     "path": "/Login/${sessId}/Login/${sessId}/Userid",
-    "value": "pinda"
+    "value": "rood"
   },
   {
     "op": "replace",
     "path": "/Login/${sessId}/Login/${sessId}/Password",
-    "value": "kaas"
+    "value": "kapje"
   },
   {
     "op": "replace",
