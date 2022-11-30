@@ -134,10 +134,9 @@ object RAPRequests {
 
   val getPrototype = http("Change base url and install the database")
     .get("http://rood.rap.cs.ou.nl/api/v1/admin/installer?defaultPop=true")
+    .check(jsonPath("$.successes[0].message").is("Application successfully reinstalled"))
     .check(status.is(200))
 
-  val getOverviewHTML = http("Get the html")
-    .get("http://rood.rap.cs.ou.nl/app/project/ifcOverview.view.html")
 
   val getDatabase = http("Go to the database")
     .get("http://rood.rap.cs.ou.nl/api/v1/resource/SESSION/1/Overview")
