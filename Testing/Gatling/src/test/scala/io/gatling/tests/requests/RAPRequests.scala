@@ -2,6 +2,7 @@ package io.gatling.tests.requests
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
+import io.gatling.tests.common.RAPDefaults
 import io.gatling.jdbc.Predef._
 import io.gatling.jsonpath.JsonPath
 import io.gatling.tests.common
@@ -17,6 +18,7 @@ object RAPRequests {
     .check(jsonPath("$._id_").saveAs("sessId"))
     .check(status.is(200))
 
+
   val getRegister = http("User gets register page (by sessId)")
     .patch("/api/v1/resource/SESSION/1")
     .body(ElFileBody("io/gatling/tests/requests/get_register.json")).asJson
@@ -29,6 +31,7 @@ object RAPRequests {
   val patchCorrectLogin = http("User enters correct credentials (username and password)")
     .patch("/api/v1/resource/SESSION/1/")
     .body(ElFileBody("io/gatling/tests/requests/correct_login.json")).asJson
+    .check(jsonPath("$.patches[0].value").saveAs("loginName"))
     .check(status.is(200))
 
   val patchIncorrectLogin = http("User enters incorrect credentials")
@@ -133,12 +136,14 @@ object RAPRequests {
     .check(status.is(200))
 
   val getPrototype = http("Change base url and install the database")
-    .get("http://rood.rap.cs.ou.nl/api/v1/admin/installer?defaultPop=true")
+    .get(s"${RAPDefaults.PROTOTYPE_URL}/api/v1/admin/installer?defaultPop=true")
     .check(jsonPath("$.successes[0].message").is("Application successfully reinstalled"))
     .check(status.is(200))
 
+  val getOverviewHTML = http("Get the html")
+    .get(s"${RAPDefaults.PROTOTYPE_URL}/app/project/ifcOverview.view.html")
 
   val getDatabase = http("Go to the database")
-    .get("http://rood.rap.cs.ou.nl/api/v1/resource/SESSION/1/Overview")
+    .get(s"${RAPDefaults.PROTOTYPE_URL}/api/v1/resource/SESSION/1/Overview")
     .check(status.not(404))
 }

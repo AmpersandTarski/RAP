@@ -107,6 +107,7 @@ object RAPScenarios {
     .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
     .exec(RAPRequests.patchCorrectButtons)
     .exec(RAPRequests.getPrototype)
+    .exec(RAPRequests.getOverviewHTML)
     .exec(RAPRequests.getDatabase)
     .exec(RAPRequests.deleteScript)
 }
