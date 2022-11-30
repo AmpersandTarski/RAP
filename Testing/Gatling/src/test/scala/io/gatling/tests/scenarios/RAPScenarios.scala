@@ -29,6 +29,7 @@ object RAPScenarios {
     .exec(RAPRequests.patchNewScriptName)
     .exec(RAPRequests.patchNewScriptContent)
     .exec(RAPRequests.getMyScriptsScriptId)
+    .exec(RAPRequests.deleteScript)
 
   val runCompileNewScript = scenario("Compiling a new script Scenario")
     .exec(RAPRequests.getHome)
@@ -40,6 +41,8 @@ object RAPScenarios {
     .exec(RAPRequests.patchNewScriptContent)
     .exec(RAPRequests.patchNewScriptCompile)
     .exec(RAPRequests.getMyScriptsScriptId)
+    .exec(RAPRequests.deleteScript)
+
 
   val runSuccessfulRegister = scenario("Successful Register scenario")
     .exec(RAPRequests.getLogin)
@@ -61,6 +64,7 @@ object RAPScenarios {
     .exec(RAPRequests.postNewScript)
     .exec(RAPRequests.patchIncorrectCompileScriptContent)
     .exec(RAPRequests.getCheckErrorMessage)
+    .exec(RAPRequests.deleteScript)
 
   val runSuccessfulCompileButtons = scenario("Run successful script and press the script buttons")
     .exec(RAPRequests.getHome)
@@ -70,6 +74,7 @@ object RAPScenarios {
     .exec(RAPRequests.postNewScript)
     .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
     .exec(RAPRequests.patchCorrectButtons)
+    .exec(RAPRequests.deleteScript)
 
   val runDeleteAllScripts = scenario("Compile three scripts and delete those scripts")
     .exec(RAPRequests.getHome)

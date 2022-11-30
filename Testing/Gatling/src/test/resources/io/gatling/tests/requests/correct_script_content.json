@@ -2,7 +2,7 @@
   {
     "op": "replace",
     "path": "/Meta_45_info/opdracht",
-    "value": "${scrId}"
+    "value": "${scriptId}"
   },
   {
     "op": "replace",
