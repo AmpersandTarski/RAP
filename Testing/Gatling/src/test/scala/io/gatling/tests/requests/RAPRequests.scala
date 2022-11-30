@@ -131,4 +131,15 @@ object RAPRequests {
     .check(substring("Module").exists)
     .check(substring("SESSION").exists)
     .check(status.is(200))
+
+  val getPrototype = http("Change base url and install the database")
+    .get("http://rood.rap.cs.ou.nl/api/v1/admin/installer?defaultPop=true")
+    .check(status.is(200))
+
+  val getOverviewHTML = http("Get the html")
+    .get("http://rood.rap.cs.ou.nl/app/project/ifcOverview.view.html")
+
+  val getDatabase = http("Go to the database")
+    .get("http://rood.rap.cs.ou.nl/api/v1/resource/SESSION/1/Overview")
+    .check(status.not(404))
 }

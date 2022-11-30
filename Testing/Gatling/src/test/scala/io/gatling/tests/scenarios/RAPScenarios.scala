@@ -97,4 +97,17 @@ object RAPScenarios {
     .exec(RAPRequests.getAtlas)
     .exec(RAPRequests.getContext)
     .exec(RAPRequests.deleteScript)
+
+  val runInstallDatabase = scenario("Compile script, click prototype and install the database")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.patchCorrectButtons)
+    .exec(RAPRequests.getPrototype)
+    .exec(RAPRequests.getOverviewHTML)
+    .exec(RAPRequests.getDatabase)
+    .exec(RAPRequests.deleteScript)
 }
