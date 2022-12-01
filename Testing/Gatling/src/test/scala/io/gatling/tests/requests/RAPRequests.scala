@@ -140,9 +140,6 @@ object RAPRequests {
     .check(jsonPath("$.successes[0].message").is("Application successfully reinstalled"))
     .check(status.is(200))
 
-  val getOverviewHTML = http("Get the html")
-    .get(s"${RAPDefaults.PROTOTYPE_URL}/app/project/ifcOverview.view.html")
-
   val getDatabase = http("Go to the database")
     .get(s"${RAPDefaults.PROTOTYPE_URL}/api/v1/resource/SESSION/1/Overview")
     .check(status.not(404))
