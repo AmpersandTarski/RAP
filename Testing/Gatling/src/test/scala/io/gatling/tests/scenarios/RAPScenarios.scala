@@ -100,6 +100,7 @@ object RAPScenarios {
     .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
     .exec(RAPRequests.patchCorrectButtons)
     .exec(RAPRequests.getAtlas)
+    .exec(RAPRequests.checkAtlas)
     .exec(RAPRequests.getContext)
     .exec(RAPRequests.deleteScript)
 
