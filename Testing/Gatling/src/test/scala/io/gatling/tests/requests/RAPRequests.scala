@@ -6,6 +6,7 @@ import io.gatling.jdbc.Predef._
 import io.gatling.jsonpath.JsonPath
 import io.gatling.tests.common
 
+
 object RAPRequests {
   val getHome = http("User gets Home page")
     .get("/")
@@ -26,7 +27,7 @@ object RAPRequests {
         .check(status.is(200)))
 
   val patchCorrectLogin = http("User enters correct credentials (username and password)")
-    .patch(s"/api/v1/resource/SESSION/1/")
+    .patch("/api/v1/resource/SESSION/1/")
     .body(ElFileBody("io/gatling/tests/requests/correct_login.json")).asJson
     .check(status.is(200))
 
@@ -122,4 +123,19 @@ object RAPRequests {
   val checkAtlas = http("Validate Atlas section")
     .get("/api/v1/resource/SESSION/1/Atlas")
     .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").exists)
+    .get("/api/v1/resource/SESSION/1/Atlas")
+    .check(jsonPath("$[0]._id_").saveAs("contextId"))
+    .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
+    .check(status.is(200))
+
+  val getContext = http("Go to the context page")
+    .get("/api/v1/resource/Context/${contextId}/Context")
+    .check(jsonPath("$._id_").is("${contextId}"))
+    .check(jsonPath("$.Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
+    .check(substring("Student").exists)
+    .check(substring("Course").exists)
+    .check(substring("ONE").exists)
+    .check(substring("Module").exists)
+    .check(substring("SESSION").exists)
+    .check(status.is(200))
 }
