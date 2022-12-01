@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Testing/Gatling/Gatling.iml" filepath="$PROJECT_DIR$/Testing/Gatling/Gatling.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/RAP.iml" filepath="$PROJECT_DIR$/.idea/RAP.iml" />
     </modules>
   </component>
