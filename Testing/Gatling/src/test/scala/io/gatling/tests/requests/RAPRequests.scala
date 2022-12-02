@@ -106,12 +106,13 @@ object RAPRequests {
     .patch("/api/v1/resource/Script/${scriptId}/Nieuw_32_script")
     .body(RawFileBody("io/gatling/tests/requests/correct_script_content.json")).asJson
     .check(jsonPath("$.content.Actual_32_info.Compiler_32_message").is("This script of Enrollment contains no type errors."))
-    .check(jsonPath("$.content.Actual_32_info.controls._id_").saveAs("ScrVersionId"))
+    .check(jsonPath("$.content.Actual_32_info.controls._id_").saveAs("scriptVersionId"))
     .check(status.is(200))
 
   val patchCorrectButtons = http("Press function and property button")
     .patch("/api/v1/resource/Script/${scriptId}/Nieuw_32_script")
     .body(ElFileBody("io/gatling/tests/requests/correct_script_buttons.json")).asJson
+    .check(jsonPath("$..Prototype[?(@.disabled!=null)]._id_").is("${scriptVersionId}"))
     .check(status.is(200))
 
   val deleteScript = http("Delete a script")
@@ -120,12 +121,9 @@ object RAPRequests {
 
   val getAtlas = http("Go to the atlas page")
     .get("/api/v1/resource/SESSION/1/Atlas")
-    .check(status.is(200))
-
-  val checkAtlas = http("check atlas")
-    .get("/api/v1/resource/SESSION/1/Atlas")
     .check(jsonPath("$[0]._id_").saveAs("contextId"))
     .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
+    .check(status.is(200))
 
   val getContext = http("Go to the context page")
     .get("/api/v1/resource/Context/${contextId}/Context")
