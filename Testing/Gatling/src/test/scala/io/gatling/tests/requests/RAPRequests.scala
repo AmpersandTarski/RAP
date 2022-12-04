@@ -2,6 +2,7 @@ package io.gatling.tests.requests
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
+import io.gatling.tests.common.RAPDefaults
 import io.gatling.jdbc.Predef._
 import io.gatling.jsonpath.JsonPath
 import io.gatling.tests.common
@@ -17,6 +18,7 @@ object RAPRequests {
     .check(jsonPath("$._id_").saveAs("sessId"))
     .check(status.is(200))
 
+
   val getRegister = http("User gets register page (by sessId)")
     .patch("/api/v1/resource/SESSION/1")
     .body(ElFileBody("io/gatling/tests/requests/get_register.json")).asJson
@@ -29,6 +31,7 @@ object RAPRequests {
   val patchCorrectLogin = http("User enters correct credentials (username and password)")
     .patch("/api/v1/resource/SESSION/1/")
     .body(ElFileBody("io/gatling/tests/requests/correct_login.json")).asJson
+    .check(jsonPath("$.patches[0].value").saveAs("loginName"))
     .check(status.is(200))
 
   val patchIncorrectLogin = http("User enters incorrect credentials")
@@ -117,9 +120,12 @@ object RAPRequests {
 
   val getAtlas = http("Go to the atlas page")
     .get("/api/v1/resource/SESSION/1/Atlas")
+    .check(status.is(200))
+
+  val checkAtlas = http("check atlas")
+    .get("/api/v1/resource/SESSION/1/Atlas")
     .check(jsonPath("$[0]._id_").saveAs("contextId"))
     .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
-    .check(status.is(200))
 
   val getContext = http("Go to the context page")
     .get("/api/v1/resource/Context/${contextId}/Context")
@@ -131,4 +137,14 @@ object RAPRequests {
     .check(substring("Module").exists)
     .check(substring("SESSION").exists)
     .check(status.is(200))
+
+  val getPrototype = http("Change base url and install the database")
+    .get(s"${RAPDefaults.PROTOTYPE_URL}/api/v1/admin/installer?defaultPop=true")
+    .check(jsonPath("$.successes[0].message").is("Application successfully reinstalled"))
+    .check(status.is(200))
+
+  val getDatabase = http("Go to the database")
+    .get(s"${RAPDefaults.PROTOTYPE_URL}/api/v1/resource/SESSION/1/Overview")
+    .check(status.not(404))
+
 }
