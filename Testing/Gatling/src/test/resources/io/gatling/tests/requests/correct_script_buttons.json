@@ -1,12 +1,12 @@
 [
   {
     "op": "replace",
-    "path": "/Actual_32_info/controls/${ScrVersionId}/Func_46__32_spec_32__43__32_pictures/property",
+    "path": "/Actual_32_info/controls/${scriptVersionId}/Func_46__32_spec_32__43__32_pictures/property",
     "value": true
   },
   {
     "op": "replace",
-    "path": "/Actual_32_info/controls/${ScrVersionId}/Prototype/property",
+    "path": "/Actual_32_info/controls/${scriptVersionId}/Prototype/property",
     "value": true
   }
 ]
