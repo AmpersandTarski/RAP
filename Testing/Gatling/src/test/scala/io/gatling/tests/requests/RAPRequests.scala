@@ -122,13 +122,14 @@ object RAPRequests {
   val getAtlas = http("Go to the atlas page")
     .get("/api/v1/resource/SESSION/1/Atlas")
     .check(jsonPath("$[0]._id_").saveAs("contextId"))
+    .check(jsonPath("$..concepts[?(@._label_=='Student')]._id_").saveAs("conceptId"))
     .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
     .check(status.is(200))
 
   val getContext = http("Go to the context page")
     .get("/api/v1/resource/Context/${contextId}/Context")
     .check(jsonPath("$._id_").is("${contextId}"))
-    .check(jsonPath("$.Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
+    .check(jsonPath("$.Terug_32_naar_32_script[?(@._label_=='Terug naar script')]._id_").is("${scriptId}"))
     .check(substring("Student").exists)
     .check(substring("Course").exists)
     .check(substring("ONE").exists)
@@ -145,4 +146,9 @@ object RAPRequests {
     .get(s"${RAPDefaults.PROTOTYPE_URL}/api/v1/resource/SESSION/1/Overview")
     .check(status.not(404))
 
+  val getConceptStudent = http("Click on student at concepts section")
+    .get("/api/v1/resource/Concept/${conceptId}/Concept")
+    .check(jsonPath("$.Concept_58_._id_").is("${conceptId}"))
+    .check(substring("Student").exists)
+    .check(status.is(200))
 }

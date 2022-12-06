@@ -114,4 +114,15 @@ object RAPScenarios {
     .exec(RAPRequests.getPrototype)
     .exec(RAPRequests.getDatabase)
     .exec(RAPRequests.deleteScript)
+
+  val runClickConceptItem = scenario("Click concept item in atlas page")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.getAtlas)
+    .exec(RAPRequests.getConceptStudent)
+    .exec(RAPRequests.deleteScript)
 }
