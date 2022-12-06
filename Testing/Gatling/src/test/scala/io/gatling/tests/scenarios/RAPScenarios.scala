@@ -125,4 +125,15 @@ object RAPScenarios {
     .exec(RAPRequests.getAtlas)
     .exec(RAPRequests.getConceptStudent)
     .exec(RAPRequests.deleteScript)
+
+  val runAtlasContainsElement = scenario("Test if Atlas contains the elements of your script")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.getAtlas)
+    .exec(RAPRequests.checkAtlas)
+    .exec(RAPRequests.deleteScript)
 }

@@ -126,6 +126,11 @@ object RAPRequests {
     .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
     .check(status.is(200))
 
+  val checkAtlas = http("Validate atlas section")
+    .get("/api/v1/resource/SESSION/1/Atlas")
+    .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").exists)
+    .check(status.is(200))
+
   val getContext = http("Go to the context page")
     .get("/api/v1/resource/Context/${contextId}/Context")
     .check(jsonPath("$._id_").is("${contextId}"))
