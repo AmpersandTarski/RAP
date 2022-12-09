@@ -114,4 +114,7 @@ object RAPScenarios {
     .exec(RAPRequests.getPrototype)
     .exec(RAPRequests.getDatabase)
     .exec(RAPRequests.deleteScript)
+
+  val runDemoApplicationEnroll = scenario("Check if demo application enroll is live upon deployment ")
+    .exec(RAPRequests.checkDemoApplicationEnroll)
 }

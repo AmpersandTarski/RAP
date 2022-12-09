@@ -10,6 +10,8 @@ object RAPDefaults {
 
   val PROTOTYPE_URL: String = "http://${loginName}.rap.cs.ou.nl"
 
+  val ENROLL_URL: String = "https://enroll.rap.cs.ou.nl"
+
   val httpProtocol = http
     .baseUrl(BASE_URL)
     .inferHtmlResources(BlackList(""".*\.js""", """.*\.css""", """.*\.gif""", """.*\.jpeg""", """.*\.jpg""", """.*\.ico""", """.*\.woff""", """.*\.woff2""", """.*\.(t|o)tf""", """.*\.png""", """.*detectportal\.firefox\.com.*"""), WhiteList())
