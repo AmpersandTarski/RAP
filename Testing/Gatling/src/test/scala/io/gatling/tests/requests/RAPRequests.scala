@@ -147,11 +147,5 @@ object RAPRequests {
 
   val checkDemoApplicationEnroll = http("Go to the test enroll prototype")
     .get(s"${RAPDefaults.ENROLL_URL}")
-    .check(status.not(500))
-    .check(status.not(400))
-    .check(status.not(401))
-    .check(status.not(403))
-    .check(status.not(404))
-    
     .check(status.is(200))
 }
