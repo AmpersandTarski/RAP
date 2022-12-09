@@ -145,4 +145,7 @@ object RAPRequests {
     .get(s"${RAPDefaults.PROTOTYPE_URL}/api/v1/resource/SESSION/1/Overview")
     .check(status.not(404))
 
+  val checkDemoApplicationEnroll = http("Go to the test enroll prototype")
+    .get(s"${RAPDefaults.ENROLL_URL}")
+    .check(status.is(200))
 }
