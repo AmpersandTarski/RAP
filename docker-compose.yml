@@ -12,6 +12,7 @@ networks:
   proxy: # network name is used by RAP4 script to make student prototype container accessible via traefik ingress
     external: true # must be external to prevent prefix with folder name
   rap_db: # network name is used by RAP4 script to let student prototype container connect to database
+    external: true # must be external to prevent prefix with folder name
   testchannel: # network testchannel is used by the test-elf to run API-tests on rap4
 
 services:
