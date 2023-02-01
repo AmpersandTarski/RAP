@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enroll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enroll
+  template:
+    metadata:
+      labels:
+        app: enroll
+    spec:
+      containers:
+        - name: enroll
+          image: ampersandtarski/enroll:latest
+          envFrom:
+            - configMapRef:
+                name: enroll-config
+            - configMapRef:
+                name: db-config
+          ports:
+            - containerPort: 80
