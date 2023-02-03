@@ -17,7 +17,7 @@ git version  # check if installed
 
 # Azure CLI
 # https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli
-az - v
+az -v
 choco install azure-cli
 
 # KUBECTL
