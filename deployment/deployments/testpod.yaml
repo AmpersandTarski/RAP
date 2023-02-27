@@ -1,0 +1,96 @@
+# configmap used to access rap4-dbd
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  namespace: rap
+data:
+  MYSQL_ROOT_PASSWORD: "TGdHVFNaNTF6Zg=="
+  MYSQL_USER: "ampersand"
+  MYSQL_PASSWORD: "ampersand"
+---
+# configmap used by student123
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: student123-config
+  namespace: rap
+data:
+  AMPERSAND_LOG_CONFIG: "logging.yaml"
+  AMPERSAND_DEBUG_MODE: "true"
+  AMPERSAND_PRODUCTION_MODE: "false"
+  AMPERSAND_DBHOST: "rap4-db"
+  AMPERSAND_DBUSER: "ampersand"
+  AMPERSAND_DBPASS: "ampersand"
+  AMPERSAND_DBNAME: "student123"
+  AMPERSAND_SERVER_URL: "https://localhost"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student123
+  namespace: rap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: student123
+  template:
+    metadata:
+      labels:
+        app: student123
+    spec:
+      containers:
+        - name: student123
+          image: sheriffbalunywa/rap4-student-proto:2.1
+          envFrom:
+            - configMapRef:
+                name: student123-config
+            - configMapRef:
+                name: db-config
+          ports:
+            - containerPort: 80
+
+          command: ["bash", "/run-student-prototype2.sh"]
+          args: ["Q09OVEVYVCBFbnJvbGxtZW50IElOIEVOR0xJU0gKUFVSUE9TRSBDT05URVhUIEVucm9sbG1lbnQKeysgQSBjb21wbGV0ZSBjb3Vyc2UgY29uc2lzdHMgb2Ygc2V2ZXJhbCBtb2R1bGVzLgpTdHVkZW50cyBvZiBhIGNvdXJzZSBjYW4gZW5yb2xsIGZvciBhbnkgbW9kdWxlIHRoYXQgaXMgcGFydCBvZiB0aGUgY291cnNlLgorfQoKUEFUVEVSTiBDb3Vyc2VzCi0tIFRoZSBjb25jZXB0cwpDT05DRVBUIFN0dWRlbnQgIlNvbWVvbmUgd2hvIHdhbnRzIHRvIHN0dWR5IGF0IHRoaXMgaW5zdGl0dXRlIgpQVVJQT1NFIENPTkNFUFQgU3R1ZGVudCAKeytXZSBoYXZlIHRvIGtub3cgd2hhdCBwZXJzb24gc3R1ZGllcyBhdCB0aGlzIGluc3RpdHV0ZSwgc28gdGhlIHN5c3RlbSBuZWVkcyB0byBrZWVwIHRyYWNrIG9mIHRoZW0uK30KQ09OQ0VQVCBDb3Vyc2UgIkEgY29tcGxldGUgY291cnNlIHRoYXQgcHJlcGFyZXMgZm9yIGEgZGlwbG9tYSIKUFVSUE9TRSBDT05DRVBUIENvdXJzZSAKeytXZSBoYXZlIHRvIGtub3cgd2hhdCBjb3Vyc2VzIHRoZXJlIGFyZSwgc28gdGhlIHN5c3RlbSBuZWVkcyB0byBrZWVwIHRyYWNrIG9mIHRoZW0uK30KQ09OQ0VQVCBNb2R1bGUgIkFuIGVkdWNhdGlvbmFsIGVudGl0eSB3aXRoIGEgc2luZ2xlIGV4YW0iClBVUlBPU0UgQ09OQ0VQVCBNb2R1bGUgCnsrV2UgaGF2ZSB0byBrbm93IHdoYXQgbW9kdWxlcyBleGlzdCwgc28gdGhlIHN5c3RlbSBuZWVkcyB0byBrZWVwIHRyYWNrIG9mIHRoZW0uK30KCi0tIFRoZSByZWxhdGlvbnMgYW5kIHRoZSBpbml0aWFsIHBvcHVsYXRpb24KUkVMQVRJT04gdGFrZXMgW1N0dWRlbnQqQ291cnNlXQpNRUFOSU5HICJBIHN0dWRlbnQgdGFrZXMgYSBjb21wbGV0ZSBjb3Vyc2UiCgpQT1BVTEFUSU9OIHRha2VzIENPTlRBSU5TClsgKCJQZXRlciIsICJNYW5hZ2VtZW50IikKOyAoIlN1c2FuIiwgIkJ1c2luZXNzIElUIikKOyAoIkpvaG4iLCAiQnVzaW5lc3MgSVQiKQpdCgpSRUxBVElPTiBpc1BhcnRPZltNb2R1bGUqQ291cnNlXQpNRUFOSU5HICJBIG1vZHVsZSBwYXJ0IG9mIGEgY29tcGxldGUgY291cnNlIgoKUE9QVUxBVElPTiBpc1BhcnRPZltNb2R1bGUqQ291cnNlXSBDT05UQUlOUwpbICgiRmluYW5jZSIsICJNYW5hZ2VtZW50IikKOyAoIkJ1c2luZXNzIFJ1bGVzIiwgIkJ1c2luZXNzIElUIikKOyAoIkJ1c2luZXNzIEFuYWx5dGljcyIsICJCdXNpbmVzcyBJVCIpCjsgKCJJVC1Hb3Zlcm5hbmNlIiwgIkJ1c2luZXNzIElUIikKOyAoIklULUdvdmVybmFuY2UiLCAiTWFuYWdlbWVudCIpCl0KClJFTEFUSU9OIGlzRW5yb2xsZWRGb3IgW1N0dWRlbnQqTW9kdWxlXQpNRUFOSU5HICJTdHVkZW50cyBlbnJvbGwgZm9yIGVhY2ggbW9kdWxlIGluIHRoZSBjb3Vyc2Ugc2VwYXJhdGVseSIKCi0tIFRoZSBvbmUgcnVsZSBpbiB0aGlzIG1vZGVsClJVTEUgTW9kdWxlRW5yb2xsbWVudDogaXNFbnJvbGxlZEZvciB8LSB0YWtlcztpc1BhcnRPZn4KTUVBTklORyAiQSBzdHVkZW50IGNhbiBlbnJvbGwgZm9yIGFueSBtb2R1bGUgdGhhdCBpcyBwYXJ0IG9mIHRoZSBjb3Vyc2UgdGhlIHN0dWRlbnQgdGFrZXMiCk1FU1NBR0UgIkF0dGVtcHQgdG8gZW5yb2xsIHN0dWRlbnQocykgZm9yIGEgbW9kdWxlIHRoYXQgaXMgbm90IHBhcnQgb2YgdGhlIHN0dWRlbnRgcyBjb3Vyc2UuIgpWSU9MQVRJT04gKFRYVCAiU3R1ZGVudCAiLCBTUkMgSSwgVFhUICIgZW5yb2xsZWQgZm9yIHRoZSBtb2R1bGUgIiwgVEdUIEksIFRYVCAiIHdoaWNoIGlzIG5vdCBwYXJ0IG9mIHRoZSBjb3Vyc2UgIiwgU1JDIElbU3R1ZGVudF07dGFrZXMpCkVORFBBVFRFUk4KCklOVEVSRkFDRSBPdmVydmlldyA6ICJfU0VTU0lPTiIgICAgICAgICAgICAgICAgICBjUnVkCkJPWCA8VEFCUz4KICAgICBbIFN0dWRlbnRzIDogVltTRVNTSU9OKlN0dWRlbnRdICAgICAgICAgICAgIGNSdUQKICAgICAgIEJPWCA8VEFCTEU+CiAgICAgICAgICAgICAgICBbICJTdHVkZW50IiA6IElbU3R1ZGVudF0gICAgICAgICBjUnVkCiAgICAgICAgICAgICAgICAsICJFbnJvbGxlZCBmb3IiIDogaXNFbnJvbGxlZEZvciBjUlVECiAgICAgICAgICAgICAgICAsICJDb3Vyc2UiIDogdGFrZXMgQ1JVRAogICAgICAgICAgICAgICAgXQogICAgICwgQ291cnNlIDogVltTRVNTSU9OKkNvdXJzZV0gICAgICAgICAgICAgICAgY1J1RAogICAgICAgQk9YIDxUQUJMRT4KICAgICAgICAgICAgICAgIFsgIkNvdXJzZSIgOiBJICAgICAgICAgICAgICAgICAgIGNSdWQKICAgICAgICAgICAgICAgICwgIk1vZHVsZXMiIDogaXNQYXJ0T2Z+ICAgICAgICAgIENSVUQKICAgICAgICAgICAgICAgIF0KICAgICAsIE1vZHVsZXMgOiBWW1NFU1NJT04qTW9kdWxlXSAgICAgICAgICAgICAgIGNSdWQKICAgICAgIEJPWCA8VEFCTEU+CiAgICAgICAgICAgICAgICBbICJNb2R1bGVzIiA6IEkgICAgICAgICAgICAgICAgICBjUnVECiAgICAgICAgICAgICAgICAsICJDb3Vyc2UiIDogaXNQYXJ0T2YgICAgICAgICAgICBjUlVkCiAgICAgICAgICAgICAgICAsICJTdHVkZW50cyIgOiBpc0Vucm9sbGVkRm9yfiAgICBDUlVECiAgICAgICAgICAgICAgICBdCiAgICAgXQoKRU5EQ09OVEVYVAo="]        
+ 
+        #dnsPolicy: ClusterFirst
+        #restartPolicy: Never
+---
+# ingress rule for rap
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rap4user-ingress
+  namespace: rap
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /student123(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: student123
+                port:
+                  number: 80
+---
+# rap4 user service
+apiVersion: v1
+kind: Service
+metadata:
+  name: student123
+  namespace: rap
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: student123
+---
+
