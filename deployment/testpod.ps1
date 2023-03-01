@@ -1,25 +1,15 @@
-# add/update manifest
-kubectl apply -f ./rap4-manifest.yaml
-
-# If you have this error:
-# Error from server (InternalError): error when creating "rap4-manifest.yaml": Internal error occurred: 
-# failed calling webhook "validate.nginx.ingress.kubernetes.io": failed to call webhook: 
-# Post "https://ingress-nginx-controller-admission.rap.svc:443/networking/v1/ingresses?timeout=10s": 
-# no endpoints available for service "ingress-nginx-controller-admission"
-# --- run apply command again ---
-
 # everything is deployed in the namespace "rap", which you have to include in ALL kubectl commands:
 kubectl get pods -o wide --namespace rap
 
 #copy testpod.yaml(studentprototype) file to internal-kubectl(elevated) pod
 # zet hier je "pad" neer
-kubectl cp /Users/sheriffbalunywa/Documents/RAP/deployment/deployments/testpod.yaml internal-kubectl:testpod.yaml -c internal-kubectl -n rap
+kubectl cp ./deployment/resources/testpod.yaml internal-kubectl:testpod.yaml -c internal-kubectl -n rap
 
 #Enter internal-kubectl commandline
-kubectl exec -it internal-kubectl -- /bin/sh
+kubectl exec -it internal-kubectl --namespace rap -- /bin/sh
 
 #Run student prototype
-kubectl apply -f ./testpod.yaml - n rap
+kubectl apply -f ./testpod.yaml --namespace rap
 
 #Base64 encode the script text. Used "`" instead of " ' " in the script in order to encode the whole block of text. USe the output of script in kubernetes yaml file as argument
 #echo -n "text" | base64
@@ -98,21 +88,5 @@ ENDCONTEXT' | base64
 
 # get external ip address from ingress controller
 $EXTERNALIP = (kubectl get service ingress-nginx-controller --namespace rap -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
-
-#az network dns record-set a add-record --record-set-name www --ipv4-address $EXTERNALIP --zone-name phpmyadmin-ampersandrap.com --resource-group ampersand-rap-rg
-
-#az network dns record-set show --name www --resource-group ampersand-rap-rg --zone-name phpmyadmin-ampersandrap.com --type A
-
-
-# open phpmyadmin
-# Server: rap4-db
-# Gebruikersnaam: ampersand
-# Wachtwoord: ampersand
-Start-Process "http://$EXTERNALIP/phpmyadmin/index.php"
-http://www.phpmyadmin-ampersandrap.com/phpmyadmin/index.php
-# open RAP
-Start-Process "http://$EXTERNALIP/rap/index.php"
-# open enroll
-Start-Process "http://$EXTERNALIP/enroll/index.php"
 # open student123
 Start-Process "http://$EXTERNALIP/student123/index.php"

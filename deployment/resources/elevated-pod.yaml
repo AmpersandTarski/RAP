@@ -1,0 +1,61 @@
+# # Service account that is used to give a pod elevated rights in the Kubernetes cluster
+# # https://trstringer.com/kubectl-from-within-pod/
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rap4svcaccount
+  namespace: rap
+---
+# # Role that is used to give a pod elevated rights in the Kubernetes cluster
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: modify-pods
+  namespace: rap
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["create", "delete", "get", "watch", "list"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "watch", "list", "create"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "watch", "list", "create"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "watch", "list", "create"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "watch", "list", "create"]
+
+---
+# # Role that is used to give a pod elevated rights in the Kubernetes cluster
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: modifypods
+  namespace: rap
+subjects:
+  - kind: ServiceAccount
+    name: rap4svcaccount
+    namespace: rap
+roleRef:
+  kind: Role
+  name: modify-pods
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# # Create a pod with elevated rights
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: internal-kubectl
+  namespace: rap
+spec:
+  serviceAccountName: rap4svcaccount
+  containers:
+    - name: internal-kubectl
+      image: sheriffbalunywa/internalkubectl:1.1
