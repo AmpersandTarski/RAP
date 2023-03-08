@@ -4,8 +4,14 @@
 
 # General
 $Region = 'westeurope'  # region to deploy
-$RG = 'ampersand-rap-rg'  # resource group name
-$Sub = '116deae5-2095-4a53-be28-e4b5b445ad78'  # subscription id
+$RG = 'RG_ampersand'  # resource group name
+$RG_nodepool = 'RG_ampersand_aks'
+$Sub = '87ed0a39-2947-4772-96ad-78806e5abc69'  # subscription id
+$Tenant = 'ordinanlosd.onmicrosoft.com'  # Ordina N.V. --> MTech (personal: ordinaweb.onmicrosoft.com)
+
+# Azure Container Registry
+$acrName = 'ampersandrap'
+$acrImage = 'ampersand-rap:' + (Get-Date -Format "yyyy-dd-MM")
 
 # Kubernetes Cluster configuration
 $AKSCluster = 'ampersand-rap-aks' # cluster name
