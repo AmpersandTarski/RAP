@@ -293,69 +293,82 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
-    $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
-
-    $serverName = getenv('RAP_HOST_NAME');
-    $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
-    $studentProtoLogConfig = getenv('RAP_STUDENT_PROTO_LOG_CONFIG');
-    if ($studentProtoLogConfig === false) {
-        $studentProtoLogConfig = 'logging.yaml';
+    if (getenv('KUBERNETES')) {
+        /** Deployed on Kubernetes Cluster
+         * Save student-manifest-template.yaml at a logical location
+         * - Copy student-manifest-template.yaml as student-manifest-{{student}}.yaml to /data/
+         * - replace {{student}} and {{namespace}}
+         * - replace {{adl-base64}} with base64 compiled adl file
+         * - save
+         * - run kubectl apply -f "student-manifest-{{student}}.yaml"
+        */
     }
+    else {
+        /** Deployed with Docker Compose */
+        $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
 
-    if (count($scriptContentPairs) != 1) {
-        throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
+        $serverName = getenv('RAP_HOST_NAME');
+        $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
+        $studentProtoLogConfig = getenv('RAP_STUDENT_PROTO_LOG_CONFIG');
+        if ($studentProtoLogConfig === false) {
+            $studentProtoLogConfig = 'logging.yaml';
+        }
+
+        if (count($scriptContentPairs) != 1) {
+            throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
+        }
+
+        $scriptContent = $scriptContentPairs[0]->tgt()->getId();
+        $scriptContentForCommandline = base64_encode($scriptContent);
+
+        // Stop any existing prototype container for this user
+        $remove = new Command(
+            "docker rm",
+            [ "-f",
+            "\"{$userName}\""
+            ],
+            $ee->getLogger()
+        );
+        $remove->execute();
+        
+        // Run student prototype with Docker
+        $command = new Command(
+            "echo \"{$scriptContentForCommandline}\" | docker run",
+            [ "--name \"{$userName}\"",
+            "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
+            "-i",
+            "-a stdin",  // stdin ensures that the content of the script is available in the container.
+            "--network proxy", // the reverse proxy Traefik is in the proxy network
+            "--label traefik.enable=true", // label for Traefik to route trafic
+            "--label traefik.docker.network=proxy",  // solving RAP issue #92
+            "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
+            "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
+            "-e AMPERSAND_DBHOST=" . getenv('AMPERSAND_DBHOST'), // use same database host as the RAP4 application itself
+            "-e AMPERSAND_DBNAME=\"student_{$userName}\"",
+            "-e AMPERSAND_DBUSER=" . getenv('AMPERSAND_DBUSER'), // TODO change db user to a student prototype specific user with less privileges and limited to databases with prefix 'student_'
+            "-e AMPERSAND_DBPASS=" . getenv('AMPERSAND_DBPASS'),
+            "-e AMPERSAND_PRODUCTION_MODE=\"false\"", // student must be able to reset his/her application
+            "-e AMPERSAND_DEBUG_MODE=\"true\"", // show student detailed log information, is needed otherwise user is e.g. not redirected to reinstall page
+            "-e AMPERSAND_SERVER_URL=\"https://{$userName}.{$serverName}\"",
+            "-e AMPERSAND_LOG_CONFIG={$studentProtoLogConfig}", // use high level logging
+            $studentProtoImage // image name to run
+            ],
+            $ee->getLogger()
+        );
+        $command->execute();
+        
+        // Add docker container also to rap_db network
+        $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
+        $command2->execute();
+
+        sleep(5); //  helps to reduce "bad gateway" and "404 page not found" errors.
+
+        // Populate 'protoOk' upon success
+        setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+
+        $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
+        $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     }
-
-    $scriptContent = $scriptContentPairs[0]->tgt()->getId();
-    $scriptContentForCommandline = base64_encode($scriptContent);
-
-    // Stop any existing prototype container for this user
-    $remove = new Command(
-        "docker rm",
-        [ "-f",
-          "\"{$userName}\""
-        ],
-        $ee->getLogger()
-    );
-    $remove->execute();
-    
-    // Run student prototype with Docker
-    $command = new Command(
-        "echo \"{$scriptContentForCommandline}\" | docker run",
-        [ "--name \"{$userName}\"",
-          "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
-          "-i",
-          "-a stdin",  // stdin ensures that the content of the script is available in the container.
-          "--network proxy", // the reverse proxy Traefik is in the proxy network
-          "--label traefik.enable=true", // label for Traefik to route trafic
-          "--label traefik.docker.network=proxy",  // solving RAP issue #92
-          "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
-          "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
-          "-e AMPERSAND_DBHOST=" . getenv('AMPERSAND_DBHOST'), // use same database host as the RAP4 application itself
-          "-e AMPERSAND_DBNAME=\"student_{$userName}\"",
-          "-e AMPERSAND_DBUSER=" . getenv('AMPERSAND_DBUSER'), // TODO change db user to a student prototype specific user with less privileges and limited to databases with prefix 'student_'
-          "-e AMPERSAND_DBPASS=" . getenv('AMPERSAND_DBPASS'),
-          "-e AMPERSAND_PRODUCTION_MODE=\"false\"", // student must be able to reset his/her application
-          "-e AMPERSAND_DEBUG_MODE=\"true\"", // show student detailed log information, is needed otherwise user is e.g. not redirected to reinstall page
-          "-e AMPERSAND_SERVER_URL=\"https://{$userName}.{$serverName}\"",
-          "-e AMPERSAND_LOG_CONFIG={$studentProtoLogConfig}", // use high level logging
-          $studentProtoImage // image name to run
-        ],
-        $ee->getLogger()
-    );
-    $command->execute();
-    
-    // Add docker container also to rap_db network
-    $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
-    $command2->execute();
-
-    sleep(5); //  helps to reduce "bad gateway" and "404 page not found" errors.
-
-    // Populate 'protoOk' upon success
-    setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
-
-    $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
-    $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
 
 /**
