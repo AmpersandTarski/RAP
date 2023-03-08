@@ -18,6 +18,7 @@ spec:
       labels:
         app: rap
     spec:
+      serviceAccountName: rap4svcaccount
       containers:
         - image: ampersandtarski/ampersand-rap:2021-10-22
           name: ampersand-rap
