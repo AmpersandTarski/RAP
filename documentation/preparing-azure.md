@@ -103,3 +103,6 @@ You can easily switch between cluster by listing all cluster and set the current
 kubectl config get-contexts
 kubectl config use-context 'NAME'
 ```
+
+## Next
+[Deploy Kubernetes](deployment-kubernetes.md)
