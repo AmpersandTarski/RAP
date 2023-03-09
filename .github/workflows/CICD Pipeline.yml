@@ -1,0 +1,27 @@
+name: CICD Pipeline
+
+on:
+  push:
+    branches: 
+      - development
+      - a_feature
+  pull_request:
+    branches: 
+      - development
+      - a_feature
+
+env:
+  workflow_variable: "workflow value"  
+
+jobs:
+  
+  Development:
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      env_name: Development
+
+  Staging:
+    if: github.ref_name == 'development'
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      env_name: Staging
