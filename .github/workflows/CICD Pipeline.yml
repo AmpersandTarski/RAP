@@ -4,11 +4,11 @@ on:
   push:
     branches: 
       - development
-      - a_feature
+      - 'feature/**'
   pull_request:
     branches: 
       - development
-      - a_feature
+      - 'feature/**'
 
 env:
   workflow_variable: "workflow value"  
