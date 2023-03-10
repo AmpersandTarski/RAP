@@ -1,0 +1,84 @@
+---
+# configmap used by student
+apiVersion: v1
+data:
+  AMPERSAND_DBHOST: rap-db
+  AMPERSAND_DBNAME: {{student}}
+  AMPERSAND_DEBUG_MODE: "true"
+  AMPERSAND_LOG_CONFIG: logging.yaml
+  AMPERSAND_PRODUCTION_MODE: "false"
+  AMPERSAND_SERVER_URL: https://localhost
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: {{student}}-config
+  namespace: {{namespace}}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{student}}
+  namespace: {{namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{student}}
+  template:
+    metadata:
+      labels:
+        app: {{student}}
+    spec:
+      containers:
+        - name: {{student}}
+          image: sheriffbalunywa/rap4-student-proto:2.1
+          envFrom:
+            - configMapRef:
+                name: {{student}}-config
+            - secretRef:
+                name: db-secrets
+          ports:
+            - containerPort: 80
+
+          command: ["bash", "/run-student-prototype2.sh"]
+          args: [{{scriptContent}}]
+        #dnsPolicy: ClusterFirst
+        #restartPolicy: Never
+---
+# rap4 user service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{student}}
+  namespace: {{namespace}}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: {{student}}
+---
+# ingress rule for rap
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{student}}-ingress
+  namespace: rap
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /{{student}}(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: {{student}}
+                port:
+                  number: 80
+

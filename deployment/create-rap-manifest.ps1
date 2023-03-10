@@ -106,7 +106,7 @@ kubectl create configmap enroll-config `
     --from-literal=AMPERSAND_PRODUCTION_MODE="false" `
     --from-literal=AMPERSAND_DBHOST="rap-db" `
     --from-literal=AMPERSAND_DBNAME="enroll" `
-    --from-literal=AMPERSAND_SERVER_URL="https://localhost" `
+    --from-literal=AMPERSAND_SERVER_URL="https://"$DOMAIN `
     --dry-run=client -o yaml `
     > $DIR_RAP/deployment/$DIR_RESOURCES'/enroll-configmap.yaml'
 
@@ -151,7 +151,12 @@ kubectl create configmap rap-config `
     --from-literal=AMPERSAND_PRODUCTION_MODE="false" `
     --from-literal=AMPERSAND_DBHOST="rap-db" `
     --from-literal=AMPERSAND_DBNAME="rap" `
-    --from-literal=AMPERSAND_SERVER_URL="https://localhost" `
+    --from-literal=AMPERSAND_SERVER_URL="https://"$DOMAIN `
+    --from-literal=RAP_HOST_NAME=$DOMAIN `
+    --from-literal=RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.1.1 `
+    --from-literal=RAP_STUDENT_PROTO_LOG_CONFIG=logging.yaml `
+    --from-literal=DEPLOYMENT=Kubernetes `
+    --from-literal=KUBERNETES_NAMESPACE=$NAMESPACE `
     --dry-run=client -o yaml `
     > $DIR_RAP/deployment/$DIR_RESOURCES'/rap-configmap.yaml'
 
