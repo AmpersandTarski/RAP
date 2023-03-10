@@ -36,12 +36,12 @@ docker login -u $acrName -p $acrPassword $acrServer
 
 # build RAP docker image
 cd RAP4
-docker build . -t $image
+docker build . -t $acrImage
 cd ..
 
 # push to ACR
-$imageTag = "$acrServer/$image"
-docker tag $image $imageTag
+$imageTag = "$acrServer/$acrImage-v4"
+docker tag $acrImage $imageTag
 docker push $imageTag
 
 # create secret for Kubernetes cluster
@@ -72,15 +72,16 @@ kubectl create deployment rap `
 #     resources: {}
 #     envFrom:
 #       - configMapRef:
-#           name: enroll-config
+#           name: rap-config
 #       - secretRef:
 #           name: db-secrets
 # imagePullSecrets:
 #   - name: acr-credentials
 
-
 kubectl apply -f $DIR_RAP/deployment/$DIR_RESOURCES'/acr-credentials.yaml'
 kubectl apply -f $DIR_RAP/deployment/$DIR_RESOURCES'/rap-deployment.yaml'
 
 kubectl get pods --namespace $NAMESPACE
-kubectl exec -it rap-57d6bb899b-h9mr4 --namespace $NAMESPACE -- /bin/sh
+$PODNAME = "rap-7595dfb9c7-w547z"
+kubectl exec -it $PODNAME --namespace $NAMESPACE -- /bin/sh
+kubectl delete pod $PODNAME --namespace $NAMESPACE
