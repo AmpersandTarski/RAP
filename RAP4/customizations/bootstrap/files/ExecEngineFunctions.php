@@ -293,7 +293,24 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
 
-    if (getenv('KUBERNETES')) {
+    $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
+
+    $serverName = getenv('RAP_HOST_NAME');
+    $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
+    $studentProtoLogConfig = getenv('RAP_STUDENT_PROTO_LOG_CONFIG');
+    if ($studentProtoLogConfig === false) {
+        $studentProtoLogConfig = 'logging.yaml';
+    }
+
+    if (count($scriptContentPairs) != 1) {
+        throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
+    }
+
+    $scriptContent = $scriptContentPairs[0]->tgt()->getId();
+    $scriptContentForCommandline = base64_encode($scriptContent);
+    $namespace="rap";
+
+    if (getenv('DEPLOYMENT') == 'Kubernetes') {
         /** Deployed on Kubernetes Cluster
          * Save student-manifest-template.yaml at a logical location
          * - Copy student-manifest-template.yaml as student-manifest-{{student}}.yaml to /data/
@@ -302,24 +319,26 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
          * - save
          * - run kubectl apply -f "student-manifest-{{student}}.yaml"
         */
+
+        // Open student-manifest-template.yaml and replace {{student}} and {{scriptContent}}
+        $manifest=file_get_contents('student-manifest-template.yaml');
+        $manifest=str_replace($manifest, "{{student}}", $username);
+        $manifest=str_replace($manifest, "{{namespace}}", $namespace);
+        $manifest=str_replace($manifest, "{{scriptContent}}", $scriptContentForCommandline);
+
+        // Save manifest file
+        $studentmanifestfile="student-manifest{$username}.yaml";
+        file_put_contents($studentmanifestfile, $manifest);
+        
+        // Call Kubernetes API to add script
+        $command = new Command(
+            ["kubectl apply -f",
+            "{$studentmanifestfile}"]
+        );
+        $command->execute();
     }
     else {
         /** Deployed with Docker Compose */
-        $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
-
-        $serverName = getenv('RAP_HOST_NAME');
-        $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
-        $studentProtoLogConfig = getenv('RAP_STUDENT_PROTO_LOG_CONFIG');
-        if ($studentProtoLogConfig === false) {
-            $studentProtoLogConfig = 'logging.yaml';
-        }
-
-        if (count($scriptContentPairs) != 1) {
-            throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
-        }
-
-        $scriptContent = $scriptContentPairs[0]->tgt()->getId();
-        $scriptContentForCommandline = base64_encode($scriptContent);
 
         // Stop any existing prototype container for this user
         $remove = new Command(
@@ -360,15 +379,15 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         // Add docker container also to rap_db network
         $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
         $command2->execute();
-
-        sleep(5); //  helps to reduce "bad gateway" and "404 page not found" errors.
-
-        // Populate 'protoOk' upon success
-        setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
-
-        $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
-        $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
     }
+
+    sleep(5); //  helps to reduce "bad gateway" and "404 page not found" errors.
+
+    // Populate 'protoOk' upon success
+    setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+
+    $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
+    $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
 
 /**
