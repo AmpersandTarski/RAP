@@ -308,9 +308,9 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = base64_encode($scriptContent);
-    $namespace="rap";
 
-    if (getenv('DEPLOYMENT') == 'Kubernetes') {
+    $deployment = getenv('DEPLOYMENT');
+    if ($deployment == 'Kubernetes') {
         /** Deployed on Kubernetes Cluster
          * Save student-manifest-template.yaml at a logical location
          * - Copy student-manifest-template.yaml as student-manifest-{{student}}.yaml to /data/
@@ -320,21 +320,25 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
          * - run kubectl apply -f "student-manifest-{{student}}.yaml"
         */
 
+        $namespace=getenv('KUBERNETES_NAMESPACE');
+
+        // Location to save files
+        $relDir       = pathinfo($path, PATHINFO_DIRNAME);
+        $workDir      = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
+        $manifestFile = $ee->getApp()->getSettings()->get('global.absolutePath') . '/templates/student-manifest-template.yaml';
+
         // Open student-manifest-template.yaml and replace {{student}} and {{scriptContent}}
-        $manifest=file_get_contents('student-manifest-template.yaml');
-        $manifest=str_replace($manifest, "{{student}}", $username);
-        $manifest=str_replace($manifest, "{{namespace}}", $namespace);
-        $manifest=str_replace($manifest, "{{scriptContent}}", $scriptContentForCommandline);
+        $manifest=file_get_contents($manifestFile);
+        $manifest=str_replace("{{student}}", $userName, $manifest);
+        $manifest=str_replace("{{namespace}}", $namespace, $manifest);
+        $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
 
         // Save manifest file
-        $studentmanifestfile="student-manifest{$username}.yaml";
-        file_put_contents($studentmanifestfile, $manifest);
+        $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";
+        file_put_contents($studentManifestFile, $manifest);
         
         // Call Kubernetes API to add script
-        $command = new Command(
-            ["kubectl apply -f",
-            "{$studentmanifestfile}"]
-        );
+        $command = new Command("kubectl apply -f {$studentManifestFile}", null, $ee->getLogger());
         $command->execute();
     }
     else {
