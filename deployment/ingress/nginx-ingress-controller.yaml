@@ -318,7 +318,7 @@ metadata:
   namespace: rap
 spec:
   type: LoadBalancer
-  loadBalancerIP: 108.142.178.22
+  loadBalancerIP: 13.94.199.199
   ipFamilyPolicy: SingleStack
   ipFamilies: 
     - IPv4

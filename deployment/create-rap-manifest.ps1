@@ -4,16 +4,9 @@ $DIR_RAP = '.'  # '.' if you run this file from the folder RAP
 # get variables
 . $DIR_RAP/deployment/variables.ps1
 
-# Get node resource group name of your AKS cluster
-$NODE_RG = (az aks show `
-        --resource-group $RG `
-        --name $AKSCluster `
-        --query nodeResourceGroup `
-        --output tsv)
-
 # Get public ip address
 $PUBLICIP = (az network public-ip show `
-        --resource-group $NODE_RG `
+        --resource-group $RG `
         --name $AKSClusterPublicIp `
         --query ipAddress `
         --output tsv)

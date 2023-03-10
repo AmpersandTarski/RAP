@@ -15,7 +15,7 @@ kubectl apply -f $DIR_RAP'/deployment/rap-manifest.yaml'
 # --- run apply command again ---
 
 # deploy files one-by-one
-kubectl apply -f $DIR_RAP/deployment/$FOLDER_INGRESS/ingress.yaml
+kubectl apply -f $DIR_RAP/deployment/$DIR_INGRESS/nginx-ingress-controller.yaml
 # ... work in progress
 
 # delete namespace all services/deployments inside
