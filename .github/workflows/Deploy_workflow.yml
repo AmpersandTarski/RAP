@@ -2,26 +2,23 @@
 
 name: Deploy workflow
 
-# Controls when the workflow will run
 on:
   workflow_call:
     inputs:
-      env_name:
-        description: environment to deploy to
+      environment_name:
+        description: Name of the environment to which is deployed
         required: true
         type: string
 
 env:
   workflow_variable: "workflow value"  
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   
-  # This workflow contains a single job called "build"
   EchoVariables:
-    # The type of runner that the job will run on
+    environment: ${{ inputs.environment_name }}
+    if: ${{ inputs.environment_name }} == ${{ vars.environment_name }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.env_name }}
 
     env:
       job_variable: "job value"  
@@ -44,5 +41,8 @@ jobs:
           echo Echoing github.repository * ${{ github.repository }} *
           echo Echoing github.run_id * ${{ github.run_id }} *
           echo Echoing github.workflow * ${{ github.workflow }} *
+          echo Echoing inputs.env_name * ${{ inputs.env_name }} *
           echo Echoing vars.AVARIABLE * ${{ vars.AVARIABLE }} *
+          echo Echoing inputs.environment_name * ${{ inputs.environment_name }} *
+          echo Echoing vars.environment_name * ${{ vars.environment_name }} *
           echo Echoing secrets.ASECRET * ${{ secrets.ASECRET }} *

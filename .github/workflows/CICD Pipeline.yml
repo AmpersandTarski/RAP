@@ -9,18 +9,25 @@ on:
     branches: 
       - development
       - 'feature/**'
+  workflow_dispatch:
 
 env:
   workflow_variable: "workflow value"  
 
 jobs:
   
+  Local:
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: 'Local${{ github.actor }}'
+
   Development:
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       env_name: Development
 
   Staging:
+    needs: Development
     if: github.ref_name == 'development'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
