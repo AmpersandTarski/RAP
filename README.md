@@ -3,7 +3,8 @@ RAP4 is a tool that is being used by the Open University of the Netherlands in t
 
 ## Deploy RAP4 on your own machine
 
-You can deploy RAP4 yourself by following these instructions: 
+You can deploy RAP4 yourself by following these instructions:
+Last verified by Fran Slot, 13 March 2023.
 
 ### Assumptions
 
@@ -43,11 +44,12 @@ Follow these steps to get up and running:
     * DISABLE_DB_INSTALL=<set to 'false' if you need to install the RAP4 database. Set to 'true' in production>
    ```
 
-3. Build an image and create a proxy network
+3. Build an image and create a proxy and a rap_db network.
    
    ```.bash
    docker-compose build
    docker network create proxy
+   docker network create rap_db
    ```
    
 4. Spin up RAP4. 
@@ -204,6 +206,8 @@ In the file .env you need to specify database passwords for the root account so 
       sjo@laptop:~/RAP %
    ```
    By the way, to change the protection is not an elegant way and may be a security risk. Normally this file should have code 660, which means that only the owner and members of the group docker have read and write access. TODO: find out a better way to grant RAP4 access to the docker-socket.
+   
+To gain access to phpmyadmin there are 2 user accounts: root and ampersand. Passwords for these accounts can be found in the .env file (see step 4).
 
 9. Step 8 should work without problems.
    When you set `DISABLE_DB_INSTALL` to `true` in your .env file, you have to make this known to the containers in RAP4.
