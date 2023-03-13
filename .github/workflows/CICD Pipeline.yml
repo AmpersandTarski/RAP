@@ -24,11 +24,11 @@ jobs:
   Development:
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      env_name: Development
+      environment_name: Development
 
   Staging:
     needs: Development
     if: github.ref_name == 'development'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      env_name: Staging
+      environment_name: Staging
