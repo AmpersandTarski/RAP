@@ -206,8 +206,6 @@ In the file .env you need to specify database passwords for the root account so 
       sjo@laptop:~/RAP %
    ```
    By the way, to change the protection is not an elegant way and may be a security risk. Normally this file should have code 660, which means that only the owner and members of the group docker have read and write access. TODO: find out a better way to grant RAP4 access to the docker-socket.
-   
-To gain access to phpmyadmin there are 2 user accounts: root and ampersand. Passwords for these accounts can be found in the .env file (see step 4).
 
 9. Step 8 should work without problems.
    When you set `DISABLE_DB_INSTALL` to `true` in your .env file, you have to make this known to the containers in RAP4.
@@ -216,3 +214,5 @@ To gain access to phpmyadmin there are 2 user accounts: root and ampersand. Pass
 9. Step 9 should work without problems.
    Since phpmyadmin is a stateless service,
    stopping or killing the phpmyadmin-service has the same effect: it disables database access by users. If, after some time, you need to enter the database (e.g. for checking things) you can start phpmyadmin again.
+   
+   Note: To gain access to phpmyadmin there are 2 user accounts: root and ampersand. Passwords for these accounts can be found in the .env file (see step 4).
