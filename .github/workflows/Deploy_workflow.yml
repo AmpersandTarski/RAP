@@ -15,34 +15,12 @@ env:
 
 jobs:
   
-  EchoVariables:
-    environment: ${{ inputs.environment_name }}
-    if: ${{ inputs.environment_name }} == ${{ vars.environment_name }}
+  Deploy:
+    environment: '${{ inputs.environment_name }}'
     runs-on: ubuntu-latest
-
-    env:
-      job_variable: "job value"  
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      #- uses: actions/checkout@v3
-
-      - name: Echoing variables
-        env:
-          step_variable: "step value"  
+      - name: Echo Environment Name
         run: |
-          echo Echoing workflow_variable * $workflow_variable *
-          echo Echoing job_variable * $job_variable * 
-          echo Echoing step_variable * $step_variable * 
-          echo Echoing github.actor * ${{ github.actor }} *
-          echo Echoing github.base_ref * ${{ github.base_ref }} *
-          echo Echoing github.ref_name * ${{ github.ref_name }} *
-          echo Echoing github.repository * ${{ github.repository }} *
-          echo Echoing github.run_id * ${{ github.run_id }} *
-          echo Echoing github.workflow * ${{ github.workflow }} *
-          echo Echoing inputs.env_name * ${{ inputs.env_name }} *
-          echo Echoing vars.AVARIABLE * ${{ vars.AVARIABLE }} *
-          echo Echoing inputs.environment_name * ${{ inputs.environment_name }} *
-          echo Echoing vars.environment_name * ${{ vars.environment_name }} *
-          echo Echoing secrets.ASECRET * ${{ secrets.ASECRET }} *
+          echo Deploying to ${{ inputs.environment_name }} ...
+          echo Environment variable vars.ENVIRONMENT_NAME has value * ${{ vars.ENVIRONMENT_NAME }} *
+
