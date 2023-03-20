@@ -28,7 +28,4 @@ $DOMAIN = 'ampersand-tarksi.com'
 
 # deployment variables
 $NAMESPACE = 'rap'
-$DIR_INGRESS = 'ingress'
-$DIR_RESOURCES = 'resources'
 $DBNAME = 'rap-db'
-$MANIFEST = 'rap-manifest.yaml'
