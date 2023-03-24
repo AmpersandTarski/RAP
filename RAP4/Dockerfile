@@ -17,12 +17,10 @@ RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debia
 RUN apt-get update \
   && apt-get install -y docker-ce-cli
 # We need to include kubernites cli to connect to the cluster
-RUN apt-get update && \
-  apt-get install -y curl && \
+RUN apt-get install -y curl && \
   curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
   chmod +x ./kubectl && \
   mv ./kubectl /usr/local/bin/kubectl
-
 
 # We use graphviz to create drawings in diagnosis and functional specifications.
 # and we need epstopdf to create pdf files for images
