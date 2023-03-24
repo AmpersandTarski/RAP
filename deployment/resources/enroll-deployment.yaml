@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: enroll
+  name: enroll
+  namespace: rap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enroll
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: enroll
+    spec:
+      containers:
+        - image: ampersandtarski/enroll:latest
+          name: enroll
+          ports:
+            - containerPort: 80
+          resources: {}
+          envFrom:
+            - configMapRef:
+                name: enroll-config
+            - secretRef:
+                name: db-secrets
+status: {}
