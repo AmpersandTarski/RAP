@@ -155,8 +155,8 @@ kubectl create configmap rap-config `
     --from-literal=RAP_HOST_NAME=$DOMAIN `
     --from-literal=RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.1.1 `
     --from-literal=RAP_STUDENT_PROTO_LOG_CONFIG=logging.yaml `
-    --from-literal=DEPLOYMENT=Kubernetes `
-    --from-literal=KUBERNETES_NAMESPACE=$NAMESPACE `
+    --from-literal=RAP_DEPLOYMENT=Kubernetes `
+    --from-literal=RAP_KUBERNETES_NAMESPACE=$NAMESPACE `
     --dry-run=client -o yaml `
     > $DIR_RAP/deployment/$DIR_RESOURCES'/rap-configmap.yaml'
 
