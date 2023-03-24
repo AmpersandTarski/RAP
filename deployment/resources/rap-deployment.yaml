@@ -20,7 +20,7 @@ spec:
     spec:
       serviceAccountName: rap4svcaccount
       containers:
-        - image: ampersandrap.azurecr.io/ampersand-rap:2023-10-03
+        - image: ampersandrap.azurecr.io/ampersand-rap:2023-22-03-v5
           name: ampersand-rap
           ports:
             - containerPort: 80
@@ -32,4 +32,3 @@ spec:
                 name: db-secrets
       imagePullSecrets:
         - name: acr-credentials
-status: {}
