@@ -10,7 +10,7 @@ $DIR_RESOURCES = $DIR_RAP + "/deployment/resources"
 
 # Get public ip address
 $PUBLICIP = (az network public-ip show `
-        --resource-group $RG_nodepool `
+        --resource-group $RG `
         --name $AKSClusterPublicIp `
         --query ipAddress `
         --output tsv)

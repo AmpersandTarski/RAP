@@ -25,7 +25,7 @@ az acr create `
     --location $Region
 
 # ACR: enable admin
-az acr update -n ampersandrap --admin-enabled true
+az acr update -n $acrName --admin-enabled true
 
 # ACR: get password and loginserver
 $acrPassword = az acr credential show --name $acrName `
@@ -34,6 +34,7 @@ $acrServer = az acr show --name $acrName `
     --query loginServer --output tsv
 
 # ACR: login with docker (make sure to have Docker Desktop (or similar) running)
+# Note: Docker Desktop should be run as Administrator
 docker login -u $acrName -p $acrPassword $acrServer
 
 # ACR: build RAP docker image
@@ -78,7 +79,7 @@ $PUBLICIP = az network public-ip create `
 
 # Get public ip address
 $PUBLICIP = (az network public-ip show `
-        --resource-group $RG_nodepool `
+        --resource-group $RG `
         --name $AKSClusterPublicIp `
         --query ipAddress `
         --output tsv)
