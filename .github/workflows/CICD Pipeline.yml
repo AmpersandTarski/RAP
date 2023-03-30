@@ -1,4 +1,4 @@
-name: CICD Pipeline  
+name: CICD Pipeline
 
 on:
   push:
@@ -11,17 +11,17 @@ on:
       - 'feature/**'
   workflow_dispatch:
 
-env:
-  workflow_variable: "workflow value"  
 
 jobs:
-  
+
   Local:
+    if: startsWith(github.ref_name, 'feature/')
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: 'Local${{ github.actor }}'
 
   Development:
+    if: github.ref_name == 'development'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Development
