@@ -1,38 +1,45 @@
 # Deploys RAP4 manifest file(s) to a Kubernetes cluster
 $DIR_RAP = '.'  # '.' if you run this file from the folder RAP
+# Set file directories
+$DIR_INGRESS = $DIR_RAP + "/deployment/ingress"
+$DIR_CERT = $DIR_RAP + "/deployment/cert-manager"
+$DIR_RESOURCES = $DIR_RAP + "/deployment/resources"
 
 # get variables
 . $DIR_RAP/deployment/variables.ps1
 
-# deploy manifest file
-kubectl apply -f $DIR_RAP'/deployment/rap-manifest.yaml'
+# deploy ingress controller ()
+kubectl apply -f $DIR_INGRESS/ingress-nginx-namespace.yaml
+kubectl apply -f $DIR_INGRESS/ingress-nginx-controller.yaml
 
-# If you have this error:
-# Error from server (InternalError): error when creating "rap4-manifest.yaml": Internal error occurred: 
-# failed calling webhook "validate.nginx.ingress.kubernetes.io": failed to call webhook: 
-# Post "https://ingress-nginx-controller-admission.rap.svc:443/networking/v1/ingresses?timeout=10s": 
-# no endpoints available for service "ingress-nginx-controller-admission"
-# --- run apply command again ---
+# deploy certificate manager
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes
+kubectl apply -f $DIR_CERT/cert-manager-namespace.yaml
+kubectl apply -f $DIR_CERT/cert-manager.yaml
+Start-Sleep -s 10  # sleep to wait for cert-manager to startup
+kubectl apply -f $DIR_CERT/letsencrypt-staging.yaml
+kubectl apply -f $DIR_CERT/letsencrypt-production.yaml
 
-# deploy files one-by-one
-kubectl apply -f $DIR_RAP/deployment/$FOLDER_INGRESS/ingress.yaml
-# ... work in progress
-
-# delete namespace all services/deployments inside
-kubectl delete namespace $NAMESPACE
-
-# everything is deployed in the namespace "rap", which you have to include in ALL kubectl commands:
-kubectl get pods -o wide --namespace rap
-
-# get external ip address from ingress controller
-$EXTERNALIP = (kubectl get service ingress-nginx-controller --namespace rap -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
-
-# open phpmyadmin
-# Server: rap4-db
-# Gebruikersnaam: ampersand
-# Wachtwoord: ampersand
-Start-Process "http://$EXTERNALIP/phpmyadmin/index.php"
-# open RAP
-Start-Process "http://$EXTERNALIP/rap/index.php"
-# open enroll
-Start-Process "http://$EXTERNALIP/enroll/index.php"
+# deploy resources (deployments, services, configmaps, secrets, ingress rules)
+# namespace
+kubectl apply -f $DIR_RESOURCES/$NAMESPACE-namespace.yaml
+# database
+kubectl apply -f $DIR_RESOURCES/db-secrets.yaml
+kubectl apply -f $DIR_RESOURCES/db-users.yaml
+kubectl apply -f $DIR_RESOURCES/mariadb.yaml
+# phpmyadmin
+kubectl apply -f $DIR_RESOURCES/phpmyadmin.yaml
+kubectl apply -f $DIR_INGRESS/phpmyadmin-ingress.yaml
+# RAP
+kubectl apply -f $DIR_RESOURCES/elevated-rights-service-account.yaml
+kubectl apply -f $DIR_RESOURCES/rap-configmap.yaml
+kubectl apply -f $DIR_RESOURCES/rap-service.yaml
+kubectl apply -f $DIR_RESOURCES/rap-deployment.yaml
+kubectl apply -f $DIR_INGRESS/rap-ingress.yaml
+# Enroll
+kubectl apply -f $DIR_RESOURCES/enroll-configmap.yaml
+kubectl apply -f $DIR_RESOURCES/enroll-service.yaml
+kubectl apply -f $DIR_RESOURCES/enroll-deployment.yaml
+kubectl apply -f $DIR_INGRESS/enroll-ingress.yaml
+# Student prototype
+kubectl apply -f $DIR_RESOURCES/student-prototype-deployment.yaml

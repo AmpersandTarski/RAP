@@ -1,42 +1,49 @@
-# Creates all required manifest files for the Kubernetes Cluster
+# Deploys RAP4 manifest file(s) to a Kubernetes cluster
 $DIR_RAP = '.'  # '.' if you run this file from the folder RAP
+# Set file directories
+$DIR_INGRESS = $DIR_RAP + "/deployment/ingress"
+$DIR_CERT = $DIR_RAP + "/deployment/cert-manager"
+$DIR_RESOURCES = $DIR_RAP + "/deployment/resources"
 
 # get variables
 . $DIR_RAP/deployment/variables.ps1
 
-# Get node resource group name of your AKS cluster
-$NODE_RG = (az aks show `
-        --resource-group $RG `
-        --name $AKSCluster `
-        --query nodeResourceGroup `
-        --output tsv)
-
 # Get public ip address
 $PUBLICIP = (az network public-ip show `
-        --resource-group $NODE_RG `
+        --resource-group $RG_nodepool `
         --name $AKSClusterPublicIp `
         --query ipAddress `
         --output tsv)
 
-# create folder for resource files
-if (! (Test-Path -Path $DIR_RAP/deployment/$DIR_INGRESS)) { New-Item $DIR_RAP/deployment/$DIR_INGRESS -ItemType Directory }
-if (! (Test-Path -Path $DIR_RAP/deployment/$DIR_RESOURCES)) { New-Item $DIR_RAP/deployment/$DIR_RESOURCES -ItemType Directory }
-
-# Create namespace resource
-kubectl create namespace $NAMESPACE --dry-run=client -o yaml > $DIR_RAP/deployment/$DIR_RESOURCES'/namespace.yaml'
+# Create namespace resources
+kubectl create namespace $NAMESPACE --dry-run=client -o yaml > $DIR_RESOURCES/$NAMESPACE-namespace.yaml
+kubectl create namespace ingress-nginx --dry-run=client -o yaml > $DIR_INGRESS/ingress-nginx-namespace.yaml
+kubectl create namespace cert-manager --dry-run=client -o yaml > $DIR_CERT/cert-manager-namespace.yaml
 
 # Add the Bitnami Helm repository to your local Helm configuration
 helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add bitnami-azure https://marketplace.azurecr.io/helm/v1/repo
 
 # add ingress-nginx repository
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
 
-# Create resource files from nginx helm chart
+# Use Helm to deploy an NGINX ingress controller
 helm template ingress-nginx ingress-nginx/ingress-nginx `
-    --namespace $NAMESPACE `
+    --version 4.5.2 `
+    --namespace ingress-nginx `
+    --create-namespace `
     --set controller.replicaCount=2 `
+    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz `
     --set controller.service.loadBalancerIP=$PUBLICIP `
-    > $DIR_RAP/deployment/$DIR_INGRESS'/nginx-ingress-controller.yaml'
+    > $DIR_INGRESS/ingress-nginx-controller.yaml
+
+# Create resource files from cert-manager helm chart
+helm template `
+    cert-manager jetstack/cert-manager `
+    --namespace cert-manager `
+    --set installCRDs=true `
+    > $DIR_CERT/cert-manager.yaml
 
 # Create files db-users.yaml:
 # apiVersion: v1
@@ -53,7 +60,7 @@ helm template ingress-nginx ingress-nginx/ingress-nginx `
 helm template $DBNAME bitnami/mariadb `
     --set fullnameOverride=$DBNAME `
     --namespace $NAMESPACE `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/mariadb.yaml'
+    > $DIR_RESOURCES'/mariadb.yaml'
 
 # MANUAL: CHANGE PART OF rap4-db.yaml
 # 211     volumeMounts:
@@ -75,26 +82,25 @@ helm template $DBNAME bitnami/mariadb `
 # Create resource files from phpmyadmin helm chart
 helm template phpmyadmin bitnami/phpmyadmin `
     --namespace $NAMESPACE `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/phpmyadmin.yaml'
+    > $DIR_RESOURCES'/phpmyadmin.yaml'
 
 # create phpmyadmin ingress rule
 kubectl create ingress phpmyadmin-ingress `
     --namespace $NAMESPACE `
-    --annotation nginx.ingress.kubernetes.io/ssl-redirect=false `
-    --annotation nginx.ingress.kubernetes.io/use-regex=true `
-    --annotation nginx.ingress.kubernetes.io/rewrite-target='/$2' `
+    --annotation nginx.ingress.kubernetes.io/ssl-redirect="true" `
+    --annotation cert-manager.io/cluster-issuer="letsencrypt-prod" `
     --class nginx `
-    --rule "/phpmyadmin(/|$)(.*)*=phpmyadmin:80" `
-    --rule "/(.*)*=phpmyadmin:80" `
+    --rule "phpmyadmin.rap.tarski.nl/=phpmyadmin:80,tls=phpmyadmin-tls" `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_INGRESS'/phpmyadmin-ingress.yaml'
+    > $DIR_INGRESS'/phpmyadmin-ingress.yaml'
+# !! change pathtype Exact to ImplementationSpecific
 
 # Create database secrets from .env
 kubectl create secret generic db-secrets `
     --namespace $NAMESPACE `
     --from-env-file=.env `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/db-secrets.yaml'
+    > $DIR_RESOURCES'/db-secrets.yaml'
 
 # Enroll configmap, service, deployment and ingress are 
 
@@ -108,14 +114,14 @@ kubectl create configmap enroll-config `
     --from-literal=AMPERSAND_DBNAME="enroll" `
     --from-literal=AMPERSAND_SERVER_URL="https://"$DOMAIN `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/enroll-configmap.yaml'
+    > $DIR_RESOURCES'/enroll-configmap.yaml'
 
 # Create enroll service
 kubectl create service clusterip enroll `
     --namespace $NAMESPACE `
     --tcp 80:80 `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/enroll-service.yaml'
+    > $DIR_RESOURCES'/enroll-service.yaml'
 
 # create enroll deployment
 kubectl create deployment enroll `
@@ -123,7 +129,7 @@ kubectl create deployment enroll `
     --image ampersandtarski/enroll:latest `
     --port 80 `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/enroll-deployment.yaml'
+    > $DIR_RESOURCES'/enroll-deployment.yaml'
 
 # add to enroll-deployment.yaml containers:
 # envFrom:
@@ -135,13 +141,13 @@ kubectl create deployment enroll `
 # create enroll ingress rule
 kubectl create ingress enroll-ingress `
     --namespace $NAMESPACE `
-    --annotation nginx.ingress.kubernetes.io/ssl-redirect=false `
-    --annotation nginx.ingress.kubernetes.io/use-regex=true `
-    --annotation nginx.ingress.kubernetes.io/rewrite-target='/$2' `
+    --annotation nginx.ingress.kubernetes.io/ssl-redirect="true" `
+    --annotation cert-manager.io/cluster-issuer="letsencrypt-prod" `
     --class nginx `
-    --rule "/enroll(/|$)(.*)*=enroll:80" `
+    --rule "enroll.rap.tarski.nl/=enroll:80,tls=enroll-tls" `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_INGRESS'/enroll-ingress.yaml'
+    > $DIR_INGRESS'/enroll-ingress.yaml'
+# !! change pathtype Exact to ImplementationSpecific
 
 # Create RAP configmap
 kubectl create configmap rap-config `
@@ -158,14 +164,14 @@ kubectl create configmap rap-config `
     --from-literal=RAP_DEPLOYMENT=Kubernetes `
     --from-literal=RAP_KUBERNETES_NAMESPACE=$NAMESPACE `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/rap-configmap.yaml'
+    > $DIR_RESOURCES'/rap-configmap.yaml'
 
 # Create RAP service
 kubectl create service clusterip rap `
     --namespace $NAMESPACE `
     --tcp 80:80 `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/rap-service.yaml'
+    > $DIR_RESOURCES'/rap-service.yaml'
 
 # create RAP deployment
 kubectl create deployment rap `
@@ -173,7 +179,7 @@ kubectl create deployment rap `
     --image ampersandtarski/ampersand-rap:2021-10-22 `
     --port 80 `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/rap-deployment.yaml'
+    > $DIR_RESOURCES'/rap-deployment.yaml'
 
 # add to rap-deployment.yaml containers:
 # envFrom:
@@ -185,66 +191,17 @@ kubectl create deployment rap `
 # create RAP4 ingress rule
 kubectl create ingress rap-ingress `
     --namespace $NAMESPACE `
-    --annotation nginx.ingress.kubernetes.io/ssl-redirect=false `
-    --annotation nginx.ingress.kubernetes.io/use-regex=true `
-    --annotation nginx.ingress.kubernetes.io/rewrite-target='/$2' `
+    --annotation nginx.ingress.kubernetes.io/ssl-redirect="true" `
+    --annotation cert-manager.io/cluster-issuer="letsencrypt-prod" `
     --class nginx `
-    --rule "/rap(/|$)(.*)*=rap:80" `
+    --rule "rap.tarski.nl/=rap:80,tls=rap-tls" `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_INGRESS'/rap-ingress.yaml'
+    > $DIR_INGRESS'/rap-ingress.yaml'
+# !! change pathtype Exact to ImplementationSpecific
 
 # create student prototype deployment
 kubectl create deployment student-prototype `
     --namespace $NAMESPACE `
     --image ampersandtarski/rap4-student-prototype:v1.1.1 `
     --dry-run=client -o yaml `
-    > $DIR_RAP/deployment/$DIR_RESOURCES'/student-prototype-deployment.yaml'
-
-# CREATE MANIFEST FILE
-
-# create new file (or overwrite existing)
-New-Item $DIR_RAP/deployment/$MANIFEST -ItemType File -Force
-
-# Namespace
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: NAMESPACE RESOURCES"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/namespace.yaml')
-# Ingress Controller
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: INGRESS CONTROLLER HELM CHART"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_INGRESS'/nginx-ingress-controller.yaml')
-# Database secrets (username/password)
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: DATABASE SECRETS (USERNAME, PASSWORD)"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/db-secrets.yaml')
-# Mariadb configmap, service, deployment
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: INIT DATABASE USER"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/db-users.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: MARIADB HELM CHART"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/mariadb.yaml')
-# Phpmyadmin service, deployment, ingress
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: PHPMYADMIN HELM CHART"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/phpmyadmin.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: PHPMYADMIN INGRESS RULE"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_INGRESS'/phpmyadmin-ingress.yaml')
-# Enroll configmap, service, deployment, ingress
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: ENROLL CONFIGMAP"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/enroll-configmap.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: ENROLL SERVICE"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/enroll-service.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: ENROLL DEPLOYMENT"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/enroll-deployment.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: ENROLL INGRESS RULE"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_INGRESS'/enroll-ingress.yaml')
-# RAP configmap, service, deployment, ingress
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: RAP CONFIGMAP"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/rap-configmap.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: RAP SERVICE"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/rap-service.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: RAP DEPLOYMENT"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/rap-deployment.yaml')
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: RAP INGRESS RULE"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_INGRESS'/rap-ingress.yaml')
-# Student prototype
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: STUDENT PROTOTYPE DEPLOYMENT"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/student-prototype-deployment.yaml')
-# ELEVATED POD: ONLY FOR TESTING
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value "--- `r`n# FILE: ELEVATED POD: ONLY FOR TESTING"
-Add-Content -Path $DIR_RAP/deployment/$MANIFEST -Value (Get-Content $DIR_RAP/deployment/$DIR_RESOURCES'/elevated-pod.yaml')
+    > $DIR_RESOURCES'/student-prototype-deployment.yaml'
