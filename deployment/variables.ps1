@@ -24,7 +24,7 @@ $VMsize = 'Standard_B2s'
 $MariaDbName = 'rap4-db'
 
 # DNS domain name
-$DOMAIN = 'ampersand-tarksi.com'
+$DOMAIN = 'tarski.nl'
 
 # deployment variables
 $NAMESPACE = 'rap'
