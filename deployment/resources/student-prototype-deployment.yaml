@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: student-prototype
+  name: student-prototype
+  namespace: rap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: student-prototype
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: student-prototype
+    spec:
+      containers:
+      - image: ampersandtarski/rap4-student-prototype:v1.1.1
+        name: rap4-student-prototype
+        resources: {}
+status: {}

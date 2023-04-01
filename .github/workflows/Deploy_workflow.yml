@@ -1,0 +1,26 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy workflow 
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        description: Name of the environment to which is deployed
+        required: true
+        type: string
+
+env:
+  workflow_variable: "workflow value"  
+
+jobs:
+  
+  Deploy:
+    environment: '${{ inputs.environment_name }}'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Environment Name
+        run: |
+          echo Deploying to ${{ inputs.environment_name }} ...
+          echo Environment variable vars.ENVIRONMENT_NAME has value * ${{ vars.ENVIRONMENT_NAME }} *
+
