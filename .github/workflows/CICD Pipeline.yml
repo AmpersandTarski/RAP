@@ -3,12 +3,8 @@ name: CICD Pipeline
 on:
   push:
     branches: 
-      - development
-      - 'feature/**'
+      - main
   pull_request:
-    branches: 
-      - development
-      - 'feature/**'
   workflow_dispatch:
 
 env:
