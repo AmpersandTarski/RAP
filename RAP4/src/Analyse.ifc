@@ -4,6 +4,14 @@ RELATION markup[Meaning*Markup][UNI]
 REPRESENT Text TYPE BIGALPHANUMERIC   -- Fix for AmpersandTarski/Ampersand issue #1199
 
 RULE defaultMarkupPurpose : I[Purpose] |- markup;V
+VIOLATION ( TXT "The markup of the purpose of Concept ",   SRC purpose[Concept*Purpose]~,   TXT "is not defined\n"
+          , TXT "The markup of the purpose of Rule ",      SRC purpose[Rule*Purpose]~,      TXT "is not defined\n"
+          , TXT "The markup of the purpose of Relation ",  SRC purpose[Relation*Purpose]~,  TXT "is not defined\n"
+          , TXT "The markup of the purpose of Interface ", SRC purpose[Interface*Purpose]~, TXT "is not defined\n"
+          , TXT "The markup of the purpose of Pattern ",   SRC purpose[Pattern*Purpose]~,   TXT "is not defined\n"
+          , TXT "The markup of the purpose of Context ",   SRC purpose[Context*Purpose]~,   TXT "is not defined\n"
+          , TXT "The markup of the purpose of View ",      SRC purpose[View*Purpose]~,      TXT "is not defined\n"
+          )
 
 RELATION name[Context*ContextName] [UNI]
 RELATION asMarkdown[Markup*Text][UNI,TOT]

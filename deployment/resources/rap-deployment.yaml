@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: rap
+  name: rap
+  namespace: rap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rap
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: rap
+    spec:
+      serviceAccountName: rap4svcaccount
+      containers:
+        - image: ampersandrap.azurecr.io/ampersand-rap:2023-22-03-v5
+          name: ampersand-rap
+          ports:
+            - containerPort: 80
+          resources: {}
+          envFrom:
+            - configMapRef:
+                name: rap-config
+            - secretRef:
+                name: db-secrets
+      imagePullSecrets:
+        - name: acr-credentials

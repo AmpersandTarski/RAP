@@ -69,8 +69,8 @@ VIOLATION (TXT "{EX} InsPair;itemInSeq;Item;", TGT I[ScriptVersion], TXT ";Seque
 ROLE ExecEngine MAINTAINS "Prepend version to non-empty sequence"
 RULE "Prepend version to non-empty sequence" :
    (I[Script] /\ (seqFirstItem;seqFirstItem~)) ;version[Script*ScriptVersion] |- itemInSeq[Item*Sequence]~
-VIOLATION (TXT "{EX} InsPair;itemInSeq;Item;", TGT I[ScriptVersion], TXT ";Sequence;", SRC I[Script]
-          ,TXT "{EX} InsPair;nextItem;Item;",TGT I[ScriptVersion], TXT ";Item;", SRC seqFirstItem
+VIOLATION ( TXT "{EX} InsPair;itemInSeq;Item;", TGT I[ScriptVersion], TXT ";Sequence;", SRC I[Script]
+          , TXT "{EX} InsPair;nextItem;Item;",TGT I[ScriptVersion], TXT ";Item;", SRC seqFirstItem
           )
 
 -- ROLE ExecEngine MAINTAINS "Destroy context of non-latest scriptversion"

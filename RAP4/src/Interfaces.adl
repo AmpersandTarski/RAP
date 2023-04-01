@@ -50,9 +50,9 @@ PATTERN "Data objects"
     A pair removed leads to the removal of the corresponding DIV-section. +}
     ROLE ExecEngine MAINTAINS "Create new DIV-section", "Delete DIV-section"
     RULE "Create new DIV-section" : pair;rAtom |- field~;content
-    VIOLATION ( TXT "{EX} NewStruct;Div"
-              , TXT ";field;Div;NULL;Field;", SRC I
-              , TXT ";content;Div;NULL;Field;", TGT I
+    VIOLATION ( TXT "{EX} InsAtom;Div"
+              , TXT "{EX} InsPair;field;Div;_NEW;Field;", SRC I
+              , TXT "{EX} InsPair;content;Div;_NEW;Field;", TGT I
               )
     RULE "Delete DIV-section" : content |- field;pair;rAtom
     VIOLATION ( TXT "{EX} DelAtom;Div;", SRC I)
@@ -89,10 +89,10 @@ PATTERN "Interface events"
             def;(edit\/editFlp);in~)
            ;rAtom
     MEANING "To insert an atom in a field means to insert a pair in the relation that corresponds to that field."
-    VIOLATION ( TXT "{EX} NewStruct;Pair"
-              , TXT ";lAtom;Pair;NULL;Atom;", SRC selfAtom
-              , TXT ";in;Pair;NULL;Relation;", SRC def;(edit\/editFlp)
-              , TXT ";rAtom;Pair;NULL;Atom;", TGT I
+    VIOLATION ( TXT "{EX} InsAtom;Pair"
+              , TXT "{EX} InsPair;lAtom;Pair;_NEW;Atom;", SRC selfAtom
+              , TXT "{EX} InsPair;in;Pair;_NEW;Relation;", SRC def;(edit\/editFlp)
+              , TXT "{EX} InsPair;rAtom;Pair;_NEW;Atom;", TGT I
               , TXT "{EX} InsPair;"
               , SRC def;(edit\/editFlp);name[Relation*RelationName], TXT ";"  -- <relation name>
               , SRC def;(edit;target\/editFlp;source), TXT ";"                -- <source concept>

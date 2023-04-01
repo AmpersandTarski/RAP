@@ -1,0 +1,120 @@
+package io.gatling.tests.scenarios
+
+import io.gatling.tests.requests.RAPRequests
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import io.gatling.jdbc.Predef._
+
+object RAPScenarios {
+  val runSuccessfulLogin =
+    scenario("Successful Login Scenario")
+      .exec(RAPRequests.getHome)
+      .exec(RAPRequests.getLogin)
+      .exec(RAPRequests.patchCorrectLogin)
+      .exec(RAPRequests.getMyScriptReturns200)
+
+  val runUnsuccessfulLogin =
+    scenario("Unsuccessful Login Scenario")
+      .exec(RAPRequests.getHome)
+      .exec(RAPRequests.getLogin)
+      .exec(RAPRequests.patchIncorrectLogin)
+      .exec(RAPRequests.getMyScriptReturns401)
+
+  val runCreateNewScript = scenario("Creation of a new script Scenario")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchNewScriptName)
+    .exec(RAPRequests.patchNewScriptContent)
+    .exec(RAPRequests.getMyScriptsScriptId)
+    .exec(RAPRequests.deleteScript)
+
+  val runCompileNewScript = scenario("Compiling a new script Scenario")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchNewScriptName)
+    .exec(RAPRequests.patchNewScriptContent)
+    .exec(RAPRequests.patchNewScriptCompile)
+    .exec(RAPRequests.getMyScriptsScriptId)
+    .exec(RAPRequests.deleteScript)
+
+
+  val runSuccessfulRegister = scenario("Successful Register scenario")
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.getRegister)
+    .exec(RAPRequests.patchCorrectRegister)
+    .exec(RAPRequests.getMyAccountReturns200)
+
+  val runUnsuccessfulRegister = scenario("Unsuccessful Register scenario")
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.getRegister)
+    .exec(RAPRequests.patchIncorrectRegister)
+    .exec(RAPRequests.getMyAccountReturns401)
+
+  val runUnsuccessfulCompile = scenario("Unsuccessful compile scenario")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchIncorrectCompileScriptContent)
+    .exec(RAPRequests.getCheckErrorMessage)
+    .exec(RAPRequests.deleteScript)
+
+  val runSuccessfulCompileButtons = scenario("Run successful script and press the script buttons")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.patchCorrectButtons)
+    .exec(RAPRequests.deleteScript)
+
+  val runDeleteAllScripts = scenario("Compile three scripts and delete those scripts")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.deleteScript)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.deleteScript)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.deleteScript)
+
+  val runGenerateConceptualAnalysis = scenario("Go to Atlas, check if concepts are created and check when enrollment script, you see the 'concepts'")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.patchCorrectButtons)
+    .exec(RAPRequests.getAtlas)
+    .exec(RAPRequests.getContext)
+    .exec(RAPRequests.deleteScript)
+
+  val runInstallDatabase = scenario("Compile script, click prototype and install the database")
+    .exec(RAPRequests.getHome)
+    .exec(RAPRequests.getLogin)
+    .exec(RAPRequests.patchCorrectLogin)
+    .exec(RAPRequests.getMyScriptReturns200)
+    .exec(RAPRequests.postNewScript)
+    .exec(RAPRequests.patchCorrectCompileScriptContentAndName)
+    .exec(RAPRequests.patchCorrectButtons)
+    .exec(RAPRequests.getPrototype)
+    .exec(RAPRequests.getDatabase)
+    .exec(RAPRequests.deleteScript)
+
+  val runDemoApplicationEnroll = scenario("Check if demo application enroll is live upon deployment ")
+    .exec(RAPRequests.checkDemoApplicationEnroll)
+}

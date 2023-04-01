@@ -20,14 +20,14 @@ VIOLATION (TXT "The Userid or Password do not match. Please try again.")
 ROLE ExecEngine MAINTAINS "U/PW Login"
 RULE "U/PW Login": sessionIsAnon;sessionLoginReq;(loginUserid;accUserid~ /\ loginPassword;accPassword~);accIsActive |- sessionIsUser;sessionAccount
 MEANING "When a user is authenticated, the corresponding Account will become the sessionAccount (provided it is active)."
-VIOLATION (TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", TGT I
-          ,TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", SRC I
-          ,TXT "{EX} DelPair;sessionLoginReq;SESSION;", SRC I, TXT ";SESSION;", SRC I
-          ,TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
-          ,TXT "{EX} DelPair;loginPassword;SESSION;", SRC I, TXT ";Password;", SRC loginPassword -- Do not remember login passwords.
-          ,TXT "{EX} DelPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", SRC I
-          ,TXT "{EX} SetNavToOnCommit;", SRC sessionUserIfc -- Setup for default user interface
-          ,TXT "{EX} SetNavToOnCommit;", TGT accUserIfc -- Override if Account has a specific setting
+VIOLATION ( TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", TGT I
+          , TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          , TXT "{EX} DelPair;sessionLoginReq;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          , TXT "{EX} DelPair;loginUserid;SESSION;", SRC I, TXT ";Userid;", SRC loginUserid
+          , TXT "{EX} DelPair;loginPassword;SESSION;", SRC I, TXT ";Password;", SRC loginPassword -- Do not remember login passwords.
+          , TXT "{EX} DelPair;sessionIsAnon;SESSION;", SRC I, TXT ";SESSION;", SRC I
+          , TXT "{EX} SetNavToOnCommit;", SRC sessionUserIfc -- Setup for default user interface
+          , TXT "{EX} SetNavToOnCommit;", TGT accUserIfc -- Override if Account has a specific setting
           )
 
 ENDCONTEXT

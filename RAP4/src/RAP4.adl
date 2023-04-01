@@ -38,13 +38,7 @@ RELATION scriptOk[ScriptVersion*ScriptVersion] [PROP] -- A ScriptVersion may hav
 
 RELATION compileRequest[Script*Script][PROP]
 ROLE ExecEngine MAINTAINS "Check script"
-{- 20161111/RJ: het is een goed gebruik om de regel zodanig op te stellen 
-   dat je zeker weet dat elke relatie/expressie die in het VIOLATION statement voorkomt, 
-   ook echt bestaat. Ik heb het nut van dit goede gebruik al enkele keren ervaren.
-   Dit leidt er ook vaak toe dat een InsPair (DelPair, ...) het 'genormaliseerde' formaat heeft:
-     VIOLATION ( TXT "{EX} InsPair;relation;SrcConcept;", SRC I, TXT ";TgtConcept;", TGT I)
-   en dat is wel zo netjes.
--}
+
 --RULE "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
 RULE "Check script" : compileRequest;submittor;accUserid |- -V[Script*Userid]
 VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT ";", TGT I
@@ -79,9 +73,6 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SR
 RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP4
 RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
 RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP4 when it is loaded into the meta tables
-
-
-RELATION name[Role*RoleName] [TOT,UNI]
 
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
 --RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
@@ -156,6 +147,8 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION conjunct[Conjunct*Term] -- 
     RELATION context[Concept*Context] [UNI] -- The context that contains the definition of a concept
     RELATION context[Interface*Context] [UNI] -- The context that contains an Interface
+    RULE "IDENT Interface" : name;name~ /\ context[Interface*Context];context~ |- I
+    VIOLATION (TXT "Interface ", SRC name, TXT " in context ", SRC context;name, TXT " is not unique.")
     RELATION context[Isa*Context] [UNI]
     RELATION context[IsE*Context] [UNI]
     RELATION context[Pattern*Context] [UNI] -- The context that contains a Pattern
@@ -217,6 +210,7 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION name[ObjectDef*ObjectName] [UNI]
     RELATION name[Pattern*PatternName] [UNI]
     RELATION name[Relation*RelationName] [UNI]
+    RELATION name[View*ViewDefName] [UNI,TOT]
     MEANING "Every relation has a name by which it can be referenced within its Context(s)."
     RELATION name[Role*RoleName] [UNI]
     RELATION name[Rule*RuleName] [UNI]
@@ -273,6 +267,11 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION uses[Context*Pattern]
     RELATION versionInfo[Context*AmpersandVersion] [UNI]
     RELATION viewBy[Concept*Concept]
+    RELATION vdats[View*ViewSegment]
+    RELATION vdcpt[View*Concept]
+    RELATION vdhtml[View*Concept]
+    RELATION vdIsDefault[View*Concept]
+    RELATION vdpos[View*Origin]
     RELATION violatable[Interface*Rule]
 ENDPATTERN
 
@@ -289,10 +288,10 @@ ROLE ExecEngine MAINTAINS "link cd of context"
 RULE "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]
                                |- conceptualDiagram[Context*FileObject];conceptualDiagram[Context*FileObject]~
 MEANING "Elke context in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Context;",SRC I[Context],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;LogicalDataModel"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Context;",SRC I[Context],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;LogicalDataModel"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
                                  , TXT "/images/LogicalDataModel.png"
@@ -302,10 +301,10 @@ ROLE ExecEngine MAINTAINS "link cd of pattern"
 RULE "link cd of pattern" : I[Pattern] /\ context[Pattern*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Pattern*Context]~
                                |- conceptualDiagram[Pattern*FileObject];conceptualDiagram[Pattern*FileObject]~
 MEANING "Elk pattern in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Pattern;",SRC I[Pattern],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Pattern;",SRC I[Pattern],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[Pattern*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
@@ -318,10 +317,10 @@ ROLE ExecEngine MAINTAINS "link cd of rule"
 RULE "link cd of rule" : I[Rule] /\ allRules[Rule*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];allRules[Rule*Context]~
                                |- conceptualDiagram[Rule*FileObject];conceptualDiagram[Rule*FileObject]~
 MEANING "Elke regel in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Rule;",SRC I[Rule],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Rule;",SRC I[Rule],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC allRules[Rule*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]
@@ -334,10 +333,10 @@ ROLE ExecEngine MAINTAINS "link cd of concept"
 RULE "link cd of concept" : I[Concept] /\(context[Concept*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Concept*Context]~)
                                |- conceptualDiagram[Concept*FileObject];conceptualDiagram[Concept*FileObject]~
 MEANING "Elk concept in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
-VIOLATION ( TXT "{EX} NewStruct;FileObject"
-                ,TXT ";conceptualDiagram;Concept;",SRC I[Concept],TXT ";FileObject;_NEW"
-                ,TXT ";originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
-                ,TXT ";filePath;FileObject;_NEW;FilePath;"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Concept;",SRC I[Concept],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
                                  , SRC context[Concept*Context];
                                        context[ScriptVersion*Context]~;
                                        basePath[ScriptVersion*FilePath]

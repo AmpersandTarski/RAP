@@ -9,9 +9,11 @@ volumes:
   letsencrypt:
 
 networks:
-  proxy:
-    external: true
-  db:
+  proxy: # network name is used by RAP4 script to make student prototype container accessible via traefik ingress
+    external: true # must be external to prevent prefix with folder name
+  rap_db: # network name is used by RAP4 script to let student prototype container connect to database
+    external: true # must be external to prevent prefix with folder name
+  testchannel: # network testchannel is used by the test-elf to run API-tests on rap4
 
 services:
   # reverse proxy
@@ -36,7 +38,7 @@ services:
       context: RAP4USER
 
   rap4:
-    image: ampersandtarski/ampersand-rap:2021-08-10
+    image: ampersandtarski/ampersand-rap:2021-10-22
     container_name: rap4
     build:
       context: RAP4
@@ -63,7 +65,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - proxy
-      - db
+      - rap_db
+      - testchannel
     labels:
       traefik.enable: "true"
       traefik.http.routers.rap4-insecure.rule: Host(`${SERVER_HOST_NAME}`)
@@ -87,7 +90,7 @@ services:
       - traefik
     networks:
       - proxy
-      - db
+      - rap_db
     environment:
       - AMPERSAND_LOG_CONFIG=logging.yaml
       - AMPERSAND_DEBUG_MODE=true
@@ -112,7 +115,7 @@ services:
     container_name: rap4-db
     image: mariadb:10.4
     restart: always
-    command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]
+    command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]  # Whatever is specified here gets appended to the entrypoint defined in the Dockerfile
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
       - MYSQL_USER=ampersand  # the database user is fixed. No need to make this variable. 
@@ -121,7 +124,7 @@ services:
       - db-data:/var/lib/mysql
       - ./db-init-scripts:/docker-entrypoint-initdb.d # script to setup db authorization for user ampersand. 
     networks:
-      - db
+      - rap_db
     logging:
       driver: "json-file"
       options:
@@ -143,5 +146,26 @@ services:
       - db
       - traefik
     networks:
-      - db
+      - rap_db
       - proxy
+
+  test-elf:
+    image:  ampersandtarski/gatling:3.7.2
+    container_name: gatling
+    build:
+      context: gatling-3-7-2
+    # restart: unless-stopped     # run only once, so never restart
+    command: "-s RAPtest"
+    volumes:
+      - ./gatling-3-7-2/conf:/opt/gatling/conf
+      - ./gatling-3-7-2/results:/opt/gatling/results
+      - ./gatling-3-7-2/user-files:/opt/gatling/user-files
+    depends_on:
+      - rap4
+    networks:
+      - testchannel
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"

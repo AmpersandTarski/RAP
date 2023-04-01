@@ -15,12 +15,7 @@ RELATION arfUserid[AccRegForm*Userid]       [UNI] -- Requested Userid
 RELATION arfPassword[AccRegForm*Password]   [UNI] -- Requested Password
 
 RELATION arfIsClean[AccRegForm*AccRegForm] [PROP] -- AccRegForm has property that a valid account can be created
-ROLE ExecEngine MAINTAINS "InsPair arfIsClean"
-RULE "InsPair arfIsClean": I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~ |- arfIsClean
-VIOLATION (TXT "{EX} InsPair;arfIsClean;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
-ROLE ExecEngine MAINTAINS "DelPair arfIsClean"
-RULE "DelPair arfIsClean": arfIsClean |- I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~
-VIOLATION (TXT "{EX} DelPair;arfIsClean;AccRegForm;", SRC I, TXT ";AccRegForm;", TGT I)
+ENFORCE arfIsClean := I /\ arfUserid;arfUserid~ /\ arfPassword;arfPassword~
 
 RELATION arfCancelReq[AccRegForm*AccRegForm] [PROP]
 ROLE ExecEngine MAINTAINS "Delete canceled AccRegForms"
@@ -39,8 +34,8 @@ RULE "An account may only be created if it has not been previously registered":
 
 ROLE ExecEngine MAINTAINS "Service Account create request"
 RULE "Service Account create request": arfCreateAccountReq /\ arfIsClean |- accRegForm~;accRegForm
-VIOLATION (TXT "{EX} InsAtom;Account" 
-          ,TXT "{EX} InsPair;accRegForm;Account;_NEW;AccRegForm;", SRC I
+VIOLATION ( TXT "{EX} InsAtom;Account" 
+          , TXT "{EX} InsPair;accRegForm;Account;_NEW;AccRegForm;", SRC I
           )
 ROLE ExecEngine MAINTAINS "Reset arfCreateARFReq"
 RULE "Reset arfCreateARFReq": I /\ accRegForm~;accRegForm |- -arfCreateAccountReq
@@ -86,8 +81,8 @@ RELATION sessionAccRegForm[SESSION*AccRegForm] [INJ,UNI] -- An AccRegForm may be
 
 ROLE ExecEngine MAINTAINS "Service AccRegForm create request"
 RULE "Service AccRegForm create request": sessionCreateARFReq |- sessionAccRegForm;sessionAccRegForm~
-VIOLATION (TXT "{EX} InsAtom;AccRegForm"
-          ,TXT "{EX} InsPair;sessionAccRegForm;SESSION;", SRC I, TXT ";AccRegForm;_NEW"
+VIOLATION ( TXT "{EX} InsAtom;AccRegForm"
+          , TXT "{EX} InsPair;sessionAccRegForm;SESSION;", SRC I, TXT ";AccRegForm;_NEW"
           )
 ROLE ExecEngine MAINTAINS "Reset sessionCreateARFReq"
 RULE "Reset sessionCreateARFReq": I /\ sessionAccRegForm;sessionAccRegForm~ |- -sessionCreateARFReq
@@ -107,8 +102,8 @@ VIOLATION (TXT "{EX} InsPair;arfCreateAccountReq;AccRegForm;", SRC I, TXT ";AccR
 
 ROLE ExecEngine MAINTAINS "Move arfAutoLoginReq to associated accAutoLoginReq"
 RULE "Move arfAutoLoginReq to associated accAutoLoginReq": accRegForm;arfAutoLoginReq |- accAutoLoginReq;accRegForm;(I-arfAutoLoginReq)
-VIOLATION (TXT "{EX} InsPair;accAutoLoginReq;Account;", SRC I, TXT ";Account;", SRC I
-          ,TXT "{EX} DelPair;arfAutoLoginReq;AccRegForm;", TGT I, TXT ";AccRegForm;", TGT I
+VIOLATION ( TXT "{EX} InsPair;accAutoLoginReq;Account;", SRC I, TXT ";Account;", SRC I
+          , TXT "{EX} DelPair;arfAutoLoginReq;AccRegForm;", TGT I, TXT ";AccRegForm;", TGT I
           )
 
 ROLE ExecEngine MAINTAINS "Service request to create an auto-login account"
