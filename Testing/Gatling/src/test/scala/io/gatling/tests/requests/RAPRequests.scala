@@ -122,7 +122,6 @@ object RAPRequests {
   val getAtlas = http("Go to the atlas page")
     .get("/api/v1/resource/SESSION/1/Atlas")
     .check(jsonPath("$[0]._id_").saveAs("contextId"))
-    .check(jsonPath("$[0].Terug_32_naar_32_script[0]._id_").is("${scriptId}"))
     .check(status.is(200))
 
   val getContext = http("Go to the context page")

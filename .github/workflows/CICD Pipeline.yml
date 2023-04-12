@@ -2,13 +2,9 @@ name: CICD Pipeline
 
 on:
   push:
-    branches: 
-      - development
-      - 'feature/**'
+    branches:
+      - main
   pull_request:
-    branches: 
-      - development
-      - 'feature/**'
   workflow_dispatch:
 
 
@@ -27,8 +23,7 @@ jobs:
       environment_name: Development
 
   Staging:
-    needs: Development
-    if: github.ref_name == 'development'
+    if: github.ref_name == 'main'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Staging

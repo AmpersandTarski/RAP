@@ -2,14 +2,7 @@ name: 🤖 Robot Framework Tests
 
 # Controls when the workflow will run
 on:
-  push:
-    branches:
-      - master
-      - development
   pull_request:
-    branches: 
-      - master
-      - development
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '* */2 * * *'
