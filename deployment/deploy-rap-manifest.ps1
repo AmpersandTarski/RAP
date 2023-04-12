@@ -32,12 +32,10 @@ kubectl apply -f $DIR_RESOURCES/phpmyadmin.yaml
 kubectl apply -f $DIR_INGRESS/phpmyadmin-ingress.yaml
 # RAP
 kubectl apply -f $DIR_RESOURCES/elevated-rights-service-account.yaml
-kubectl apply -f $DIR_RESOURCES/rap-configmap.yaml
 kubectl apply -f $DIR_RESOURCES/rap-service.yaml
 kubectl apply -f $DIR_RESOURCES/rap-deployment.yaml
 kubectl apply -f $DIR_INGRESS/rap-ingress.yaml
 # Enroll
-kubectl apply -f $DIR_RESOURCES/enroll-configmap.yaml
 kubectl apply -f $DIR_RESOURCES/enroll-service.yaml
 kubectl apply -f $DIR_RESOURCES/enroll-deployment.yaml
 kubectl apply -f $DIR_INGRESS/enroll-ingress.yaml

@@ -25,9 +25,30 @@ spec:
           ports:
             - containerPort: 80
           resources: {}
+          env:
+            - name: AMPERSAND_DBHOST
+              value: rap-db
+            - name: AMPERSAND_DBNAME
+              value: enroll
+            - name: AMPERSAND_DEBUG_MODE
+              value: "true"
+            - name: AMPERSAND_LOG_CONFIG
+              value: logging.yaml
+            - name: AMPERSAND_PRODUCTION_MODE
+              value: "false"
+            - name: AMPERSAND_SERVER_URL
+              value: https://localhost
+            - name: RAP_DEPLOYMENT
+              value: Kubernetes
+            - name: RAP_HOST_NAME
+              value: rap.tarski.nl
+            - name: RAP_KUBERNETES_NAMESPACE
+              value: rap
+            - name: RAP_STUDENT_PROTO_IMAGE
+              value: ampersandtarski/rap4-student-prototype:v1.1.1
+            - name: RAP_STUDENT_PROTO_LOG_CONFIG
+              value: logging.yaml
           envFrom:
-            - configMapRef:
-                name: rap-config
             - secretRef:
                 name: db-secrets
       imagePullSecrets:
