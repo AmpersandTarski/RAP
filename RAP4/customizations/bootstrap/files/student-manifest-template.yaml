@@ -4,6 +4,9 @@ kind: Deployment
 metadata:
   name: {{student}}
   namespace: {{namespace}}
+  labels:
+    app: {{student}}
+    container-image: student-prototype
 spec:
   replicas: 1
   selector:
@@ -13,6 +16,7 @@ spec:
     metadata:
       labels:
         app: {{student}}
+        container-image: student-prototype
     spec:
       containers:
         - name: {{student}}

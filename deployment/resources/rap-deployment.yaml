@@ -18,7 +18,7 @@ spec:
       labels:
         app: rap
     spec:
-      serviceAccountName: rap4svcaccount
+      serviceAccountName: elevated-rights-service-account
       containers:
         - image: ampersandrap.azurecr.io/ampersand-rap:2023-22-03-v5
           name: ampersand-rap
