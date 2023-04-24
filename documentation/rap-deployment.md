@@ -64,25 +64,42 @@ Mariadb is the database used by RAP, enroll and student prototypes. Phpmyadmin t
 
 ## Architecture
 
+The Docker-compose deployment chart consists of several components that work together to provide a robust and scalable platform for running the RAP application. The architecture includes the following:
+
+- Traefik reverse proxy
+- Networks
+- Applications (Enroll, RAP, PhpMyAdmin, MariaDB)
+- Persistant Storages
+
 The figure below shows how the container orchestration is configured in docker compose.
 
-**Reverse-proxy**
+**Architecture figure**
+![docker-architecture](figures/docker-compose-architecture.png)
+
+## Docker-compose components
+
+### Reverse-proxy
+
 Traefik, in combination with let's encrypt, is used as reverse proxy to route external traffic to the different containers.
 
-**Networks**
+### Networks
+
 Two virtual networks are created.
 
 The proxy network contains the traefik reverse proxy, that handles external traffic to containers in the virtual network. All containers except the database are running inside the proxy network.
 
 The rap_db network cannot be accessed from an external source. All containers are included in this network and can therefor make SQL queries.
 
-**Volumes**
+### Volumes
+
 The mariadb database and let's encrypt have persistant volumes for data storage.
 
-**Applications**
+### Applications
+
 RAP, enroll, mariadb and phpmyadmin are running continually. From the RAP application student prototypes are spun up, that run temporarily.
 
-**Student-prototype**
+### Student-prototype
+
 A student prototype is an information system generated with the RAP application. The student ADL-script is checked with Ampersand compiler and encoded as base64.
 
 The RAP application has Docker-cli installed and runs a new container with the following command:
@@ -94,9 +111,6 @@ echo <<base64 encoded ADL-script>> | docker run --name <<student-name>> ampersan
 The student-prototype container runs for 1 hour and is ended automatically.
 
 Multiple student prototypes can run in parallel.
-
-**Architecture figure**
-![docker-architecture](figures/docker-compose-architecture.png)
 
 ## Deployment
 
@@ -125,7 +139,38 @@ Traffic to the Kubernetes cluster is routed from a DNS service to an Azure publi
 
 A seperate document is available explaining how to create the Kubernetes cluster on Azure using Azure Kubernetes Service: [Preparing Kubernetes environment on Azure](preparing-azure.md)
 
-## Kubernetes resources
+## Kubernetes objects
+
+In this section all Kubernetes objects required in the cluster are defined. For development purposes a PowerShell script is available to create the objects: [create-rap-manifest.ps1](https://github.com/AmpersandTarski/RAP/blob/main/deployment/create-rap-manifest.ps1)
+
+Below the most important terms for Kubernetes are listed.
+
+**Infrastructure terminology**
+
+<!-- prettier-ignore -->
+| Term | Definition |
+| - | - |
+| Kubernetes object | Describe the desired state of your application, such as what container images to use, how many replicas to run, and what resources to allocate. Kubernetes objects include resources such as Deployments, Services, ConfigMaps, Secrets, Jobs, CronJobs, and many others. |
+| Container​ | A lightweight and portable executable unit that contains application code, libraries, and dependencies, and is run by a pod. Containers provide a consistent runtime environment across different infrastructure platforms.​ |
+| Pod​ | The smallest and simplest Kubernetes object. A pod encapsulates one or more containers and provides them with a shared network namespace, shared storage, and an IP address. Pods are scheduled on nodes and communicate with the Kubernetes API server.​ |
+| Node | A worker machine in a Kubernetes cluster that runs pods. A node can be a physical machine or a virtual machine, and it has all the necessary services to run containers, such as Docker or containerd. Nodes are managed by the control plane components of the Kubernetes master.​ |
+| Cluster | A set of nodes that run containerized applications managed by Kubernetes. A cluster typically consists of a master node and one or more worker nodes. The master node manages the control plane components of the Kubernetes system, while the worker nodes run the applications. |​
+| Cluster network | The network that connects the nodes in a Kubernetes cluster and facilitates communication between them. The cluster network is divided into two parts: the pod network, which is used for communication between pods, and the service network, which is used for communication between services.​ |
+| Ingress | An API object that manages external access to the services in a Kubernetes cluster. Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource.​ |
+
+The most important definitions of Kubernetes objects are in the table below.
+
+<!-- prettier-ignore -->
+| Term | Definition |
+| - | - |
+| Namespace | A virtual cluster that provides a way to divide cluster resources between multiple users, teams, or applications. Namespaces enable you to create virtual clusters within a physical cluster. Objects within a namespace are isolated from objects in other namespaces. |
+| Deployment | A Kubernetes object that manages a set of replica pods and their associated configuration. Deployments enable you to declaratively manage applications and their scaling, rolling updates, and rollbacks. |
+| Service | An abstraction that defines a set of pods and a policy for accessing them. Services enable loose coupling between dependent pods by providing a stable IP address and DNS name for a set of pods that perform the same function. |
+| Ingress rule | An Ingress rule is a Kubernetes resource that defines how incoming requests to a particular service should be routed within a cluster. It specifies the rules for mapping external traffic to internal services, based on criteria such as the URL path, the host name, or the request headers. |
+| ConfigMap | A Kubernetes object that provides a way to decouple configuration data from application code. ConfigMaps enable you to store key-value pairs or configuration files as objects in the Kubernetes API, and mount them as volumes or environment variables in a container. |
+| Secret | A Kubernetes object that provides a way to store and manage sensitive information, such as passwords, API keys, and certificates. Secrets enable you to decouple sensitive data from application code and manage it separately. |
+| Job | A Kubernetes object that creates one or more pods and ensures that a specified number of them successfully complete. Jobs enable you to run batch or single-task jobs, such as backups, migrations, or data processing. |
+| CronJob | A Kubernetes object that creates a job on a regular schedule, based on a cron-like syntax. CronJobs enable you to run batch or single-task jobs on a recurring basis, such as daily backups, weekly |
 
 ### Ingress Nginx Controller
 
@@ -161,6 +206,12 @@ Helm cli uses the active kubectl cli, directly adding the controller to your Kub
 
 The nginx ingress controller is deployed in the namespace `ingress-nginx`, only one nginx controller is required for multiple namespaces (development, staging, production).
 
+<!-- prettier-ignore -->
+| Name | Purpose | File |
+| - | - | - |
+| ingress-nginx-namespace.yaml  | Namespace                     | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/ingress/ingress-nginx-namespace.yaml) |
+| ingress-nginx-controller.yaml | Ingress controller Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/ingress/ingress-nginx-namespace.yaml) |
+
 ### Let's encrypt
 
 The Ingress Nginx Controller works together with Let’s Encrypt to secure the connection. Let's Encrypt is a Certificate Authority (CA) that provides an easy way to obtain and install free TLS/SSL certificates, thereby enabling encrypted HTTPS on web servers. It simplifies the process by providing a software client, Certbot, that attempts to automate most (if not all) of the required steps. Currently, the entire process of obtaining and installing a certificate is fully automated on both Apache and Nginx.
@@ -186,12 +237,26 @@ Once Let's Encrypt is running, a ClusterIssuer should be deployed that requests 
 - [Staging ClusterIssuer](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/letsencrypt-staging.yaml)
 - [Production ClusterIssuer](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/letsencrypt-production.yaml)
 
+<!-- prettier-ignore -->
+| Name | Purpose | File |
+| - | - | - |
+| cert-manager-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/cert-manager-namespace.yaml) |
+| cert-manager.yaml | Certificate manager Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/cert-manager.yaml) |
+| letsencrypt-production.yaml | ClusterIssuer | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/letsencrypt-production.yaml) |
+| letsencrypt-staging.yaml | ClusterIssuer for testing purposes (to avoid exceeded rate limit) | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/letsencrypt-staging.yaml) |
+
+**Rate limit**
+Let's encrypt uses with rate limits, the maximum certificates per registered domain is 50 per week. Depending on the number of enrolled students, it is possible to request a wildecard certificate for the domain `*.rap.tarski.nl`.
+
+Check the [let's encrypt website](https://letsencrypt.org/docs/rate-limits/) for more information on the rate limit and [this announcements](https://community.letsencrypt.org/t/acme-v2-production-environment-wildcards/55578) to request a wildcard certificate.
+
 ### Namespace
 
 Before other resources are deployed, the namespace has to be created. Typically namespaces are development, staging and/or production.
 
-| File               | Purpose   | File                                                                                                                             |
-| ------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+<!-- prettier-ignore -->
+| Name | Purpose | File |
+| - | - | - |
 | rap-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/resources/rap-namespace.yaml) |
 
 ### Enroll
@@ -200,8 +265,9 @@ The Enroll Pod is a containerized application that is used as an example in this
 
 Consists of the following files:
 
-| File                   | Purpose                                                      | File                                                                                                 |
-| ---------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+<!-- prettier-ignore -->
+| Name | Purpose | File |
+| - | - | - |
 | enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/enroll-deployment.yaml) |
 | enroll-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/enroll-service.yaml)    |
 | enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/enroll-ingress.yaml)      |
@@ -212,8 +278,9 @@ The RAP Pod is a containerized application that is used to generated information
 
 Consists of the following files:
 
-| File                | Purpose                                                      | File                                                                                              |
-| ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+<!-- prettier-ignore -->
+| Name | Purpose | File |
+| - | - | - |
 | rap-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-deployment.yaml) |
 | rap-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-service.yaml)    |
 | rap-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/rap-ingress.yaml)      |
@@ -222,9 +289,133 @@ Consists of the following files:
 
 The PhpMyAdmin Pod is a containerized application that provides a graphical user interface for managing the MariaDB MySQL database that is used the rap application. This pod contains the necessary software, libraries, and configuration files to run the PhpMyAdmin service for your application.
 
+| Name                    | Purpose               | File     |
+| ----------------------- | --------------------- | -------- |
+| phpmyadmin.yaml         | PhpMyAdmin Helm chart | [link]() |
+| phpmyadmin-ingress.yaml | Ingress rule          | [link]() |
+
 ### MariaDB
 
 The Rap4-DB Pod is a containerized MariaDB MySQL database instance that is used by your application. This pod contains the necessary software, libraries, and configuration files to run the MariaDB service for the rap application.
+
+<!-- prettier-ignore -->
+| Name | Purpose | File |
+| - | - | - |
+| db-secrets.yaml | Secret with username and password to connect to database, used by multiple resources | [link]() |
+| db-users.yaml   | ConfigMap used to create database user and password with privileges                  | [link]() |
+| mariadb.yaml    | MariaDB Helm chart                                                                   | [link]() |
+
+By default a root user with password is created by the Helm chart. To add another user in the manifest file, a ConfigMap is created, which is called when the mariadb manifest is created.
+
+ConfigMap:
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-users
+  namespace: rap
+data:
+  create-user.sql: |-
+    CREATE USER '<<username>>'@'%' IDENTIFIED BY '<<password>>';
+    GRANT ALL PRIVILEGES ON *.* TO '<<username>>'@'%';
+```
+
+Reference configMap in the mariadb deployment volumes:
+
+```
+volumes:
+  - name: mysql-inituser
+    configMap:
+      name: db-users
+```
+
+And the volumeMounts to call the sql script when the template is created.
+
+```
+volumeMounts:
+  - name: mysql-inituser
+  mountPath: /docker-entrypoint-initdb.d
+```
+
+## Kubernetes Deployment
+
+Deploying RAP on a Kubernetes Cluster is not a difficult task. Once connection is established to the Kubernetes API, is a matter of applying all manifest files covered in the previous section.
+
+To connect to an Azure Kubernetes Cluster with the CLI, run
+
+```
+az login
+az aks get-credentials -g <<resource-group>> -n <<AKS-name>> --overwrite-existing
+```
+
+Have all the mafinest files in a this folder structure
+
+```
+└── deployment/
+    ├── cert-manager/
+    │   ├── cert-manager.yaml
+    │   └── ...
+    ├── ingress/
+    │   ├── ingress-nginx-controller.yaml
+    │   └── ...
+    └── resources/
+        ├── enroll-deployment.yaml
+        ├── mariadb.yaml
+        ├── phpmyadmin.yaml
+        ├── rap-deployment.yaml
+        ├── student-prototype-cleanup.yaml
+        └── ...
+```
+
+Apply all manifest files to the cluster. Using the Kubernetes CLI commands below. Creating a new resource or updating an existing resource is executed with the same `kubectl apply` command.
+
+**Ingress conroller**
+
+```
+kubectl apply -f ./ingress/ingress-nginx-namespace.yaml
+kubectl apply -f ./ingress/ingress-nginx-controller.yaml
+```
+
+**Let's encrypt certificate manager**
+
+```
+kubectl apply -f ./cert-manager/cert-manager-namespace.yaml
+kubectl apply -f ./cert-manager//cert-manager.yaml
+Start-Sleep -s 10  # sleep to wait for cert-manager to startup
+kubectl apply -f ./cert-manager//letsencrypt-staging.yaml
+kubectl apply -f ./cert-manager//letsencrypt-production.yaml
+```
+
+**Resources**
+
+```
+# namespace (<<namespace>> = [development, staging, production])
+kubectl apply -f ./resources/<<namespace>>-namespace.yaml
+# database
+kubectl apply -f ./resources/db-secrets.yaml
+kubectl apply -f ./resources/db-users.yaml
+kubectl apply -f ./resources/mariadb.yaml
+# phpmyadmin
+kubectl apply -f ./resources/phpmyadmin.yaml
+kubectl apply -f ./ingress/phpmyadmin-ingress.yaml
+# RAP
+kubectl apply -f ./resources/elevated-rights-service-account.yaml
+kubectl apply -f ./resources/rap-service.yaml
+kubectl apply -f ./resources/rap-deployment.yaml
+kubectl apply -f ./ingress/rap-ingress.yaml
+# Enroll
+kubectl apply -f ./resources/enroll-configmap.yaml
+kubectl apply -f ./resources/enroll-service.yaml
+kubectl apply -f ./resources/enroll-deployment.yaml
+kubectl apply -f ./ingress/enroll-ingress.yaml
+# Student prototype
+kubectl apply -f ./resources/student-prototype-deployment.yaml
+# Student prototype cleanup CronJob
+kubectl apply -f ./resources/student-prototype-cleanup.yaml
+```
+
+If an error occurs applying the ingress rules, it is possible that the ingress controller is still starting. Wait a few minutes to try again.
 
 # Deep dive RAP
 
