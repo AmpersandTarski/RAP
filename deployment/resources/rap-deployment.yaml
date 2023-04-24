@@ -29,7 +29,7 @@ spec:
             - name: AMPERSAND_DBHOST
               value: rap-db
             - name: AMPERSAND_DBNAME
-              value: enroll
+              value: rap
             - name: AMPERSAND_DEBUG_MODE
               value: "true"
             - name: AMPERSAND_LOG_CONFIG
