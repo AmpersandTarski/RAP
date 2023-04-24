@@ -6,11 +6,12 @@ The deployment of RAP is elaborated in the following topics:
 
 Starting point for A-team developers.
 
-[Prepare Azure Kubernetes Service (AKS)](deployment-kubernetes.md)
+[Prepare Azure Kubernetes Service (AKS)](preparing-azure.md)
 
 Setting up an Kubernetes Cluster on Azure using the PaaS solution Azure Kubernetes Service (AKS)
 
 [Prepare windows environment](prepare-windows-environment.md)
+
 Prepare Windows to connect to a Kubernetes Cluster, create resources, etc.
 
 [RAP deployment](rap-deployment.md)
