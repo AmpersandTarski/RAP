@@ -24,9 +24,20 @@ spec:
           ports:
             - containerPort: 80
           resources: {}
+          env:
+            - name: AMPERSAND_DBHOST
+              value: rap-db
+            - name: AMPERSAND_DBNAME
+              value: enroll
+            - name: AMPERSAND_DEBUG_MODE
+              value: "true"
+            - name: AMPERSAND_LOG_CONFIG
+              value: logging.yaml
+            - name: AMPERSAND_PRODUCTION_MODE
+              value: "false"
+            - name: AMPERSAND_SERVER_URL
+              value: https://localhost
           envFrom:
-            - configMapRef:
-                name: enroll-config
             - secretRef:
                 name: db-secrets
 status: {}
