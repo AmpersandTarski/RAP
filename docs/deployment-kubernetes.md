@@ -4,11 +4,11 @@ Once the Kubernetes cluster is setup ([prepare Azure](preparing-azure.md)) and c
 
 ## Quick guide
 
-All Kubernetes resources are included in the repository as yaml files in the folder RAP/deployment. The files are generated using a PowerShell script `create-rap-manifest.ps1`.
+All Kubernetes resources are included in the repository as yaml files in the folder `RAP/deployment`. The files are generated using a PowerShell script `create-rap-manifest.ps1`.
 
 The Kubernetes resources are deployed with the PowerShell script `deploy-rap-manifest.ps1`.
 
-Note that the resources are based on the deployment on the MTech Azure subscription.
+Note that the resources are based on the deployment on the Azure subscription of Ordina/MTech.
 
 - Static ip address 13.94.199.199
 - DNS server of \*.tarski.nl forwarded to the static IP address
@@ -52,7 +52,7 @@ spec:
 
 ### Check prerequisites
 
-The following programs / APIs / SDKs should be installed in your system.
+To deploy RAP on Kubernetes, the following programs / APIs / SDKs should be installed in your system.
 
 - PowerShell
 - [GIT](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
