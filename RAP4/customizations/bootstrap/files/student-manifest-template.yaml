@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{student}}
+  namespace: {{namespace}}
+  labels:
+    app: {{student}}
+    container-image: student-prototype
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{student}}
+  template:
+    metadata:
+      labels:
+        app: {{student}}
+        container-image: student-prototype
+    spec:
+      containers:
+        - name: {{student}}
+          image: sheriffbalunywa/rap4-student-proto:2.1
+          env:
+            - name: AMPERSAND_DBHOST
+              value: rap-db
+            - name: AMPERSAND_DBNAME
+              value: {{student}}
+            - name: AMPERSAND_DEBUG_MODE
+              value: "true"
+            - name: AMPERSAND_LOG_CONFIG
+              value: logging.yaml
+            - name: AMPERSAND_PRODUCTION_MODE
+              value: "false"
+            - name: AMPERSAND_SERVER_URL
+              value: https://localhost
+          envFrom:
+            - secretRef:
+                name: db-secrets
+          ports:
+            - containerPort: 80
+          command: ["bash", "/run-student-prototype2.sh"]
+          args: [{{scriptContent}}]
+---
+# student-prototype user service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{student}}
+  namespace: {{namespace}}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: {{student}}
+---
+# ingress rule for student-prototype
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{student}}-ingress
+  namespace: {{namespace}}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - {{student}}.rap.tarski.nl
+      secretName: {{student}}-tls
+  rules:
+    - host: {{student}}.rap.tarski.nl
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{student}}
+                port:
+                  number: 80

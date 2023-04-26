@@ -1,0 +1,30 @@
+name: CICD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+
+jobs:
+
+  Local:
+    if: startsWith(github.ref_name, 'feature/')
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: 'Local${{ github.actor }}'
+
+  Development:
+    if: github.ref_name == 'main'
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: Development
+
+  Staging:
+    if: github.ref_name == 'main'
+    needs: Development
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: Staging

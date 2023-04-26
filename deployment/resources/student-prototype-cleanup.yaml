@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: student-prototype-cleanup
+  namespace: rap
+spec:
+  schedule: "0 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: elevated-rights-service-account
+          containers:
+            - name: student-prototype-cleanup
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/sh
+                - "-c"
+                - |
+                  # loop all deployments with label: container-image=student-prototype
+                  for deployment in $(kubectl get deployment -n rap -l container-image=student-prototype -o jsonpath='{.items[*].metadata.name}'); do
+                    # calculate age in seconds
+                    deployment_age=$(($(date +%s) - $(date +%s -d $(kubectl get deployment $deployment -n rap -o jsonpath='{.metadata.creationTimestamp}'))))
+                    # delete deployment, service and ingress if age > 1 hour
+                    if [ $deployment_age -gt 3600 ]; then
+                      echo "Deleting deployment $deployment"
+                      kubectl delete deployment $deployment -n rap
+                      kubectl delete service $deployment -n rap
+                      kubectl delete ingress $deployment-ingress -n rap
+                      # TODO: delete database tables?
+                    else
+                      echo "Deployment $deployment is not older than 1 hour"
+                    fi
+                  done
+              envFrom:
+                - secretRef:
+                    name: db-secrets
+          restartPolicy: OnFailure
