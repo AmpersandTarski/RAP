@@ -3,11 +3,11 @@ FROM ampersandtarski/prototype-framework:v1.12.0
 COPY --from=ampersandtarski/ampersand:v4.6.0 /bin/ampersand /usr/local/bin
 RUN chmod +x /usr/local/bin/ampersand
 
-COPY run-student-proto.sh /
+COPY run-student-prototype.sh /
 
 COPY templates /templates
 
-RUN chmod +x /run-student-proto.sh
+RUN chmod +x /run-student-prototype.sh
 
 # RUN chown -R www-data:www-data /var/www/log /var/www/data /var/www/generics \
 #  && cd /var/www \
@@ -17,4 +17,4 @@ RUN chmod +x /run-student-proto.sh
 #  # && gulp build-ampersand \
 #  # && gulp build-project
 
-ENTRYPOINT bash /run-student-proto.sh
+ENTRYPOINT bash /run-student-prototype.sh
