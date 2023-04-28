@@ -321,6 +321,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         */
 
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
+        $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
 
         // Location to save files
         $relDir       = pathinfo($path, PATHINFO_DIRNAME);
@@ -335,6 +336,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         // replace {{student}}, {{namespace}} and {{scriptContent}}
         $manifest=str_replace("{{student}}", $userName, $manifest);
         $manifest=str_replace("{{namespace}}", $namespace, $manifest);
+        $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
         $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
         
         // Save manifest file
