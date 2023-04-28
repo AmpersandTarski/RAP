@@ -19,6 +19,9 @@ spec:
                 - /bin/sh
                 - "-c"
                 - |
+                  # Install MySQL client
+                  # apt-get update && apt-get install -y mariadb-client
+
                   # loop all deployments with label: container-image=student-prototype
                   for deployment in $(kubectl get deployment -n rap -l container-image=student-prototype -o jsonpath='{.items[*].metadata.name}'); do
                     # calculate age in seconds
@@ -29,7 +32,8 @@ spec:
                       kubectl delete deployment $deployment -n rap
                       kubectl delete service $deployment -n rap
                       kubectl delete ingress $deployment-ingress -n rap
-                      # TODO: delete database tables?
+                      # delete student database (TODO: install mysql)
+                      # mysql -h rap-db -u ampersand -p$MYSQL_AMPERSAND_PASSWORD -e "DROP DATABASE IF EXISTS $deployment"
                     else
                       echo "Deployment $deployment is not older than 1 hour"
                     fi
