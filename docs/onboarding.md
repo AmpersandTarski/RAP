@@ -16,6 +16,8 @@ Request membership to
 - [Project A & NUT-Vluchtelingen opensource
 ](https://teams.microsoft.com/l/team/19%3ayM9P1tFiWIADqDUbLDyX7ksB1Oavi04StkxyS6grh7A1%40thread.tacv2/conversations?groupId=09b86f1c-3ba6-411d-9b16-f0915eb2ed8a&tenantId=a254b169-0a6b-47f9-af4c-169704421c2e)
 
+For this, contact Frank Teusink (Frank.Teusink@ordina.nl).
+
 ## Meetings
 
 Request invitations to the regular (Microsoft Teams) meetings.
