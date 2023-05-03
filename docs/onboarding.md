@@ -25,11 +25,11 @@ For this, contact Frank Teusink (Frank.Teusink@ordina.nl).
 Request invitations to the regular (Microsoft Teams) meetings.
 
 These are currently:
-- NUTwente/Ampersand wekelijkse overleg; every monday.
-- Daily standup; tuesday till friday
-- A-team: Sprint review; at end of sprint
-- A-team: Sprint retrospective; at end of sprint
-- A-team: Sprint planning; at end of sprint
+- NUTwente/Ampersand wekelijkse overleg; every monday 11:30, 1 hour.
+- Daily standup; tuesday till friday 11:30, 30 minutes
+- A-team: Sprint review; at end of sprint, friday 9:00, 50 minutes
+- A-team: Sprint retrospective; at end of sprint, friday 10:00, 50 minutes
+- A-team: Sprint planning; at end of sprint, friday 11:00, 50 minutes
 
 For this, contact Frank Teusink (Frank.Teusink@ordina.nl).
 
