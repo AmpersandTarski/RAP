@@ -289,10 +289,20 @@ Consists of the following files:
 
 The PhpMyAdmin Pod is a containerized application that provides a graphical user interface for managing the MariaDB MySQL database that is used the rap application. This pod contains the necessary software, libraries, and configuration files to run the PhpMyAdmin service for your application.
 
-| Name                    | Purpose               | File     |
-| ----------------------- | --------------------- | -------- |
-| phpmyadmin.yaml         | PhpMyAdmin Helm chart | [link]() |
-| phpmyadmin-ingress.yaml | Ingress rule          | [link]() |
+To access PhpMyAdmin you need access through the Kubernetes CLI. Create a port-forwarding service to your localhost:
+
+```
+# get pod name
+$POD = kubectl get pods -n rap -l app.kubernetes.io/name=phpmyadmin -o jsonpath='{.items[0].metadata.name}'
+# create port-forwarding
+kubectl port-forward $POD -n rap 8080:8080
+```
+
+Access PhpMyAdmin on http://localhost:8080
+
+| Name            | Purpose               | File     |
+| --------------- | --------------------- | -------- |
+| phpmyadmin.yaml | PhpMyAdmin Helm chart | [link]() |
 
 ### MariaDB
 
