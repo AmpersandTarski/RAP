@@ -19,7 +19,6 @@ spec:
         app: student-prototype
     spec:
       containers:
-      - image: ampersandtarski/rap4-student-prototype:v1.1.1
-        name: rap4-student-prototype
-        resources: {}
-status: {}
+        - image: ampersandtarski/rap4-student-prototype:v1.2.0
+          name: rap4-student-prototype
+          resources: {}
