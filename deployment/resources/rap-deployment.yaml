@@ -20,7 +20,7 @@ spec:
     spec:
       serviceAccountName: elevated-rights-service-account
       containers:
-        - image: ampersandrap.azurecr.io/ampersand-rap:2023-22-03-v5
+        - image: ampersandtarski/ampersand-rap:2023-04-28
           name: ampersand-rap
           ports:
             - containerPort: 80
@@ -43,7 +43,7 @@ spec:
             - name: RAP_KUBERNETES_NAMESPACE
               value: rap
             - name: RAP_STUDENT_PROTO_IMAGE
-              value: ampersandtarski/rap4-student-prototype:v1.1.1
+              value: ampersandtarski/rap4-student-prototype:v1.2.0
             - name: RAP_STUDENT_PROTO_LOG_CONFIG
               value: logging.yaml
           envFrom:
