@@ -25,7 +25,7 @@ Follow these steps to get up and running:
    ~~~.bash
    git clone https://github.com/AmpersandTarski/RAP.git RAP
    cd RAP
-   git checkout development
+   git checkout main
    ~~~
 
    This will clone the software and make it available on your machine. 
