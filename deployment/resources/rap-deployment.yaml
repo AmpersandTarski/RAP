@@ -34,8 +34,6 @@ spec:
               value: "true"
             - name: AMPERSAND_LOG_CONFIG
               value: logging.yaml
-            - name: AMPERSAND_PRODUCTION_MODE
-              value: "false"
             - name: AMPERSAND_SERVER_URL
               value: https://localhost
             - name: RAP_DEPLOYMENT
@@ -49,12 +47,7 @@ spec:
             - name: RAP_STUDENT_PROTO_LOG_CONFIG
               value: logging.yaml
           envFrom:
+            - configMapRef:
+                name: administration-configmap
             - secretRef:
                 name: db-secrets
-          volumeMounts:
-            - mountPath: /etc/config
-              name: config-volume
-      volumes:
-        - name: config-volume
-          configMap:
-            name: administration-configmap
