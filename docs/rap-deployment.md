@@ -209,8 +209,8 @@ The nginx ingress controller is deployed in the namespace `ingress-nginx`, only 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| ingress-nginx-namespace.yaml  | Namespace                     | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/ingress/ingress-nginx-namespace.yaml) |
-| ingress-nginx-controller.yaml | Ingress controller Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/ingress/ingress-nginx-namespace.yaml) |
+| ingress-nginx-namespace.yaml  | Namespace                     | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/ingress-nginx-namespace.yaml) |
+| ingress-nginx-controller.yaml | Ingress controller Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/ingress-nginx-namespace.yaml) |
 
 ### Let's encrypt
 
@@ -240,10 +240,10 @@ Once Let's Encrypt is running, a ClusterIssuer should be deployed that requests 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| cert-manager-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/cert-manager-namespace.yaml) |
-| cert-manager.yaml | Certificate manager Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/cert-manager.yaml) |
-| letsencrypt-production.yaml | ClusterIssuer | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/letsencrypt-production.yaml) |
-| letsencrypt-staging.yaml | ClusterIssuer for testing purposes (to avoid exceeded rate limit) | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/cert-manager/letsencrypt-staging.yaml) |
+| cert-manager-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/cert-manager-namespace.yaml) |
+| cert-manager.yaml | Certificate manager Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/cert-manager.yaml) |
+| letsencrypt-production.yaml | ClusterIssuer | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/letsencrypt-production.yaml) |
+| letsencrypt-staging.yaml | ClusterIssuer for testing purposes (to avoid exceeded rate limit) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/letsencrypt-staging.yaml) |
 
 **Rate limit**
 Let's encrypt uses with rate limits, the maximum certificates per registered domain is 50 per week. Depending on the number of enrolled students, it is possible to request a wildecard certificate for the domain `*.rap.tarski.nl`.
@@ -257,7 +257,7 @@ Before other resources are deployed, the namespace has to be created. Typically 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| rap-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/feature/configmaps_to_deployment_env/deployment/resources/rap-namespace.yaml) |
+| rap-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-namespace.yaml) |
 
 ### Enroll
 
@@ -314,7 +314,8 @@ Access PhpMyAdmin on http://localhost:8080
 
 | Name            | Purpose               | File     |
 | --------------- | --------------------- | -------- |
-| phpmyadmin.yaml | PhpMyAdmin Helm chart | [link]() |
+| phpmyadmin.yaml         | PhpMyAdmin Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/phpmyadmin.yaml) |
+| phpmyadmin-ingress.yaml | Ingress rule          | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/phpmyadmin-ingress.yaml) |
 
 ### MariaDB
 
@@ -323,9 +324,9 @@ The Rap4-DB Pod is a containerized MariaDB MySQL database instance that is used 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| db-secrets.yaml | Secret with username and password to connect to database, used by multiple resources | [link]() |
-| db-users.yaml   | ConfigMap used to create database user and password with privileges                  | [link]() |
-| mariadb.yaml    | MariaDB Helm chart                                                                   | [link]() |
+| db-secrets.yaml | Secret with username and password to connect to database, used by multiple resources | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/db-secrets.yaml) |
+| db-users.yaml   | ConfigMap used to create database user and password with privileges                  | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/db-users-configmap.yaml) |
+| mariadb.yaml    | MariaDB Helm chart                                                                   | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/mariadb.yaml) |
 
 By default a root user with password is created by the Helm chart. To add another user in the manifest file, a ConfigMap is created, which is called when the mariadb manifest is created.
 
