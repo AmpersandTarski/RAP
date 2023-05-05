@@ -276,21 +276,44 @@ Consists of the following files:
 
 The RAP Pod is a containerized application that is used to generated information systems. The tool stores ampersand-script in which the user can specify,analyze and building information systems.
 
+To avoid database resets after the first installation, two environment variables are moved to a ConfigMap, `AMPERSAND_PRODUCTION_MODE` and `DISABLE_DB_INSTALL`. Both should be turned to true after installing the database, to take effect the pod running the RAP container should be restarted.
+
+This can be executed through the (Azure) portal, or using Kubernetes CLI:
+
+```
+# get the pod name
+$POD = kubectl get pods -n rap -l app=rap -o jsonpath='{.items[0].metadata.name}'
+# delete the pod (the Deployment will restart the pod)
+kubectl delete pod $POD -n rap
+```
+
 Consists of the following files:
 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| rap-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-deployment.yaml) |
-| rap-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-service.yaml)    |
-| rap-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/rap-ingress.yaml)      |
+| rap-deployment.yaml | Docker image, environmental variables | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-deployment.yaml) |
+| rap-service.yaml | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-service.yaml)    |
+| rap-ingress.yaml | Ingress rule| [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/rap-ingress.yaml)|
+| administration-configmap.yaml | Administration ConfigMap | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/administration-configmap.yaml)|
 
 ### PhpMyAdmin
 
 The PhpMyAdmin Pod is a containerized application that provides a graphical user interface for managing the MariaDB MySQL database that is used the rap application. This pod contains the necessary software, libraries, and configuration files to run the PhpMyAdmin service for your application.
 
-| Name                    | Purpose               | File     |
-| ----------------------- | --------------------- | -------- |
+To access PhpMyAdmin you need access through the Kubernetes CLI. Create a port-forwarding service to your localhost:
+
+```
+# get pod name
+$POD = kubectl get pods -n rap -l app.kubernetes.io/name=phpmyadmin -o jsonpath='{.items[0].metadata.name}'
+# create port-forwarding
+kubectl port-forward $POD -n rap 8080:8080
+```
+
+Access PhpMyAdmin on http://localhost:8080
+
+| Name            | Purpose               | File     |
+| --------------- | --------------------- | -------- |
 | phpmyadmin.yaml         | PhpMyAdmin Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/phpmyadmin.yaml) |
 | phpmyadmin-ingress.yaml | Ingress rule          | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/phpmyadmin-ingress.yaml) |
 

@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: {{student}}
-          image: sheriffbalunywa/rap4-student-proto:2.1
+          image: {{containerImage}}
           env:
             - name: AMPERSAND_DBHOST
               value: rap-db
@@ -34,12 +34,16 @@ spec:
               value: "false"
             - name: AMPERSAND_SERVER_URL
               value: https://localhost
+            - name: RAP_DEPLOYMENT
+              value: Kubernetes
+            - name: RAP_KUBERNETES_NAMESPACE
+              value: rap
           envFrom:
             - secretRef:
                 name: db-secrets
           ports:
             - containerPort: 80
-          command: ["bash", "/run-student-prototype2.sh"]
+          command: ["bash", "/run-student-prototype.sh"]
           args: [{{scriptContent}}]
 ---
 # student-prototype user service
