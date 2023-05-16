@@ -91,6 +91,63 @@ kubectl config get-contexts
 kubectl config use-context 'NAME'
 ```
 
+## Open ID Connect
+
+To make use of Open ID Connect (OIDC) to allow GitHub Actions to apply new deployments to AKS the following steps are required.
+
+### Azure:
+
+1. Login to Azure and set the right subscription
+
+```
+az login --tenant <TENANT_NAME>
+az account set -n <SUBSCRIPTION_NAME>
+```
+
+2. Create an Azure Active Directory Application then get the appId and save it in an environment variable:
+
+```
+az ad app create --display-name <APP_NAME>
+$appId = $(az ad app list --display-name testApp --query "[].appId" -o tsv)
+```
+
+3. Create a service principal and save the id
+
+```
+az ad sp create --id $appId
+$assigneeObjectId = $(az ad sp show --id $appId --query id -o tsv)
+```
+
+4. Create a new role assignment
+
+```
+az role assignment create --role contributor --subscription $subscriptionId --assignee-object-id  $assigneeObjectId --assignee-principal-type ServicePrincipal --scope /subscriptions/$subscriptionId/resourceGroups/<RESOURCE_GROUP_NAME>
+```
+
+5. Create federated credentials for the active directory application
+   az ad app federated-credential create --id $appId --parameters credential.json
+
+6. Get the required ids:
+
+```
+$appId = $(az ad app list --display-name testApp --query "[].appId" -o tsv)
+$tenantId = $(az account show --query tenantId -o tsv)
+$subscriptionId = $(az account show --query id -o tsv)
+```
+
+### GitHub:
+
+1. Go to **Settings** in the GitHub repository
+
+2. Navigate to **Security** > **Secrets and variables** > **Actions**
+
+3. Create and save the following three secrets
+   | GitHub secret | Copy value from |
+   | --- | --- |
+   | AZURE_CLIENT_ID | $appId |
+   | AZURE_TENANT_ID | $tenantId |
+   | AZURE_SUBSCRIPTION_ID | $subscriptionId |
+
 ## Next
 
 [Deploy Kubernetes](rap-deployment.md)
