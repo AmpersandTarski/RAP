@@ -125,7 +125,21 @@ az role assignment create --role contributor --subscription $subscriptionId --as
 ```
 
 5. Create federated credentials for the active directory application
-   az ad app federated-credential create --id $appId --parameters credential.json
+
+```
+az ad app federated-credential create --id $appId --parameters credential.json
+
+credential.json
+{
+    "name": "<CREDENTIAL_NAME>",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "<REPOSITORY_REFERENCE>",
+    "description": "<DESCRIPTION>",
+    "audiences": [
+        "api://AzureADTokenExchange"
+    ]
+}
+```
 
 6. Get the required ids:
 
