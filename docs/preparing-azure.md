@@ -95,6 +95,12 @@ kubectl config use-context 'NAME'
 
 To make use of Open ID Connect (OIDC) to allow GitHub Actions to apply new deployments to AKS the following steps are required.
 
+### Requirements
+
+The following permissions are required for registering an app:
+
+- You must have sufficient permissions to register an application with your Azure AD tenant, and assign to the application a role in your Azure subscription. To complete these tasks, you require `Application.ReadWrite.Allpermission`.
+
 ### Azure:
 
 1. Login to Azure and set the right subscription
