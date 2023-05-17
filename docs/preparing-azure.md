@@ -108,7 +108,7 @@ az account set -n <SUBSCRIPTION_NAME>
 
 ```
 az ad app create --display-name <APP_NAME>
-$appId = $(az ad app list --display-name testApp --query "[].appId" -o tsv)
+$appId = $(az ad app list --display-name <APP_NAME> --query "[].appId" -o tsv)
 ```
 
 3. Create a service principal and save the id
@@ -130,7 +130,7 @@ az role assignment create --role contributor --subscription $subscriptionId --as
 6. Get the required ids:
 
 ```
-$appId = $(az ad app list --display-name testApp --query "[].appId" -o tsv)
+$appId = $(az ad app list --display-name <APP_NAME> --query "[].appId" -o tsv)
 $tenantId = $(az account show --query tenantId -o tsv)
 $subscriptionId = $(az account show --query id -o tsv)
 ```
