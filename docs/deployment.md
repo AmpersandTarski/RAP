@@ -244,7 +244,7 @@ This section will explain how to run the RAP4 application localy using kubernete
     kubectl create namespace argocd
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
     ```
-6. b
+6. TODO
     ```.bash
     cd (Location of RAP-argo.yml)
     kubectl apply -f RAP-argo.yml
@@ -264,12 +264,6 @@ This section will explain how to run the RAP4 application localy using kubernete
     ```.bash
     kubectl port-forward svc/argocd-server 8080:80 -n argocd
     ```
-9.  
-10. e
-11.  f
-12. g
-13. h
-
 ### Azure Deployment
 
 (Step by step explanation)
