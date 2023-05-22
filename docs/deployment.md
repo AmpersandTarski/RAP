@@ -216,7 +216,59 @@ Follow these steps to get up and running:
 
 ### Local Deployment
 
-(Step by step explanation)
+This section will explain how to run the RAP4 application localy using kubernetes.
+
+**Prerequisites**
+ - Make sure you have [docker](https://docs.docker.com/get-docker/) installed.
+ - Make sure you have [minikube](https://minikube.sigs.k8s.io/docs/start/) installed.
+
+**Instalation**
+1. Add the `minikube.exe` binary to your `PATH`
+    ```.bash
+    $oldPath = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::Machine)
+    if ($oldPath.Split(';') -inotcontains 'C:\minikube'){ `
+        [Environment]::SetEnvironmentVariable('Path', $('{0};C:\minikube' -f $oldPath), [EnvironmentVariableTarget]::Machine) `
+    }
+    ```
+2. Close the powershell windwon and reopen it
+3. Set the minikube standard driver to docker
+    ```.bash
+    minikube config set driver docker
+    ```
+4. Start minikube
+    ```.bash
+    minikube start
+    ```
+5. In the commandline run the following commands. This will create a namespace on kubernetes for Argocd and installs argocd to the cluster.
+    ```.bash
+    kubectl create namespace argocd
+    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    ```
+6. b
+    ```.bash
+    cd (Location of RAP-argo.yml)
+    kubectl apply -f RAP-argo.yml
+    ```
+7. Get the password for ArgoCd
+   In order to log in to ArgoCd you will need the admin password. With the following command you can print the base64 encrypted ArgoCD admin password to the console.
+    ```.bash
+    kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
+    ```
+
+    Paste the base64 encoded password into the following command do decode it
+
+    ```.bash
+    [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String('[ENCODED_PASSWORD]'))
+    ```
+8. Forward a port to the ArgoCd application
+    ```.bash
+    kubectl port-forward svc/argocd-server 8080:80 -n argocd
+    ```
+9.  
+10. e
+11.  f
+12. g
+13. h
 
 ### Azure Deployment
 
