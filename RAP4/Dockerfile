@@ -35,7 +35,7 @@ COPY . /usr/local/project/
 WORKDIR /usr/local/project
 
 # Generate prototype application from folder
-RUN ampersand proto RAP4/RAP4.adl \
+RUN ampersand proto RAP4.adl \
   --proto-dir /var/www \
   --build-recipe RAP \
   --verbose
@@ -43,7 +43,7 @@ RUN ampersand proto RAP4/RAP4.adl \
 WORKDIR /var/www
 
 # Copy customizations into generated application
-COPY RAP4/customizations /var/www/
+COPY customizations /var/www/
 
 RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
   && composer install --prefer-dist --no-dev --profile --optimize-autoloader \
