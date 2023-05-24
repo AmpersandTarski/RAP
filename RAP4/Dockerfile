@@ -35,7 +35,7 @@ COPY . /usr/local/project/
 WORKDIR /usr/local/project
 
 # Generate prototype application from folder
-RUN ampersand proto RAP4/RAP4.adl \
+RUN ampersand proto /RAP4/RAP4.adl \
   --proto-dir /var/www \
   --build-recipe RAP \
   --verbose
