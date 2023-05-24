@@ -69,6 +69,6 @@ jobs:
         with:
           namespace: "rap"
           manifests: |
-            rap-deployment.yaml
+            deployment/resources/rap-deployment.yaml
           images: |
             ${{ secrets.DOCKERHUB_USERNAME }}/rap:${{ github.sha }}
