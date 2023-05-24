@@ -212,7 +212,31 @@ Follow these steps to get up and running:
 
 ### Components
 
-(Show components of the Kubernetes)
+**Infrastructure terminology**
+<!-- prettier-ignore -->
+| Term              | Definition                                                                                                                                                                                                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kubernetes object | Describe the desired state of your application, such as what container images to use, how many replicas to run, and what resources to allocate. Kubernetes objects include resources such as Deployments, Services, ConfigMaps, Secrets, Jobs, CronJobs, and many others.                         |
+| Container​        | A lightweight and portable executable unit that contains application code, libraries, and dependencies, and is run by a pod. Containers provide a consistent runtime environment across different infrastructure platforms.​                                                                      |
+| Pod​              | The smallest and simplest Kubernetes object. A pod encapsulates one or more containers and provides them with a shared network namespace, shared storage, and an IP address. Pods are scheduled on nodes and communicate with the Kubernetes API server.​                                         |
+| Node              | A worker machine in a Kubernetes cluster that runs pods. A node can be a physical machine or a virtual machine, and it has all the necessary services to run containers, such as Docker or containerd. Nodes are managed by the control plane components of the Kubernetes master.​               |
+| Cluster           | A set of nodes that run containerized applications managed by Kubernetes. A cluster typically consists of a master node and one or more worker nodes. The master node manages the control plane components of the Kubernetes system, while the worker nodes run the applications.                 | ​ |
+| Cluster network   | The network that connects the nodes in a Kubernetes cluster and facilitates communication between them. The cluster network is divided into two parts: the pod network, which is used for communication between pods, and the service network, which is used for communication between services.​ |
+| Ingress           | An API object that manages external access to the services in a Kubernetes cluster. Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource.​                                       |
+
+The most important definitions of Kubernetes objects are in the table below.
+
+<!-- prettier-ignore -->
+| Term         | Definition                                                                                                                                                                                                                                                                                      |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Namespace    | A virtual cluster that provides a way to divide cluster resources between multiple users, teams, or applications. Namespaces enable you to create virtual clusters within a physical cluster. Objects within a namespace are isolated from objects in other namespaces.                         |
+| Deployment   | A Kubernetes object that manages a set of replica pods and their associated configuration. Deployments enable you to declaratively manage applications and their scaling, rolling updates, and rollbacks.                                                                                       |
+| Service      | An abstraction that defines a set of pods and a policy for accessing them. Services enable loose coupling between dependent pods by providing a stable IP address and DNS name for a set of pods that perform the same function.                                                                |
+| Ingress rule | An Ingress rule is a Kubernetes resource that defines how incoming requests to a particular service should be routed within a cluster. It specifies the rules for mapping external traffic to internal services, based on criteria such as the URL path, the host name, or the request headers. |
+| ConfigMap    | A Kubernetes object that provides a way to decouple configuration data from application code. ConfigMaps enable you to store key-value pairs or configuration files as objects in the Kubernetes API, and mount them as volumes or environment variables in a container.                        |
+| Secret       | A Kubernetes object that provides a way to store and manage sensitive information, such as passwords, API keys, and certificates. Secrets enable you to decouple sensitive data from application code and manage it separately.                                                                 |
+| Job          | A Kubernetes object that creates one or more pods and ensures that a specified number of them successfully complete. Jobs enable you to run batch or single-task jobs, such as backups, migrations, or data processing.                                                                         |
+| CronJob      | A Kubernetes object that creates a job on a regular schedule, based on a cron-like syntax. CronJobs enable you to run batch or single-task jobs on a recurring basis, such as daily backups, weekly                                                                                             |
 
 ### Local Deployment
 
@@ -239,6 +263,7 @@ This section will explain how to run the RAP4 application localy using kubernete
     ```.bash
     minikube start
     ```
+    Keep in mind Minikube has to be started again everytime your machine is restarted.
 5. In the commandline run the following commands. This will create a namespace on kubernetes for Argocd and installs argocd to the cluster.
     ```.bash
     kubectl create namespace argocd
@@ -260,10 +285,34 @@ This section will explain how to run the RAP4 application localy using kubernete
     ```.bash
     [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String('[ENCODED_PASSWORD]'))
     ```
-8. Forward a port to the ArgoCd application
+8. Forward a port to the ArgoCd cluster
     ```.bash
     kubectl port-forward svc/argocd-server 8080:80 -n argocd
     ```
+      Now you can navigate to the ArgoCd application in your browser by going to `localhost:8080`
+9.  Login to ArgoCd with the username `admin` and the password you got in step 7. You should see the page seen in the figure below.
+
+(TODO INSERT SCREEN CAPTURE)
+<sup>*Figure 3: ArgoCd Home page*</sup>
+
+10. Check if all pods are healthy, except for one(The student prototype isn't working yet)
+
+(TODO INSERT SCREEN CAPTURE)
+<sup>*Figure 3: ArgoCd Healthy pods*</sup>
+
+11. Forward a port to the RAP application.
+    ```.bash
+    kubectl port-forward svc/argocd-server 8081:80 -n rap
+    ```
+   Now you can navigate to the RAP application in your browser by going to `localhost:8081`
+
+12. You should now see this:
+   ![install the database](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20reinstall%20application%202020-11-02.png?raw=true)
+
+13. Now click the red "Reinstall application" button. This creates a fresh RAP4 database, so it may take a while.
+    
+14. 
 ### Azure Deployment
+
 
 (Step by step explanation)
