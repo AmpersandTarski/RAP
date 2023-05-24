@@ -43,7 +43,7 @@ RUN ampersand proto RAP4.adl \
 WORKDIR /var/www
 
 # Copy customizations into generated application
-COPY customizations /var/www/
+COPY RAP4/customizations /var/www/
 
 RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
   && composer install --prefer-dist --no-dev --profile --optimize-autoloader \
