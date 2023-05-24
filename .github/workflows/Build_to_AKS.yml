@@ -26,6 +26,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
+          context: .
+          file: ./RAP4/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/rap:latest
