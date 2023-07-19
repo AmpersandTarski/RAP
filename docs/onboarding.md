@@ -4,11 +4,13 @@ List of activities to get a new developer up-to speed with RAP development.
 
 ## GitHub memberships
 
+Ensure you have a GitHub account. This can be a 'professional' account connected to your Ordina email or any other account.
+
 Request membership to 
 - [AmpersandTarski](https://github.com/orgs/AmpersandTarski/people) organization and
 - [Ordina A-team](https://github.com/orgs/AmpersandTarski/teams/ordina-a-team/members).
 
-For this, contact [Han Joosten](https://github.com/hanjoosten).
+For this, contact [Han Joosten](https://github.com/hanjoosten), and provide him with the account name (or URL to your GitHub profile page).
 
 ## Microsoft Teams memberships
 
