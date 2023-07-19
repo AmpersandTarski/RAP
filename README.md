@@ -25,7 +25,7 @@ Follow these steps to get up and running:
    ~~~.bash
    git clone https://github.com/AmpersandTarski/RAP.git RAP
    cd RAP
-   git checkout development
+   git checkout main
    ~~~
 
    This will clone the software and make it available on your machine. 
@@ -65,13 +65,13 @@ Follow these steps to get up and running:
    ```
    
 5. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
-   ![install the database](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20reinstall%20application%202020-11-02.png?raw=true)
+   ![install the database](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstall_screen.png?raw=true)
 
 6. Now click the red "Reinstall application" button. This creates a fresh RAP4 database, so it may take a while.
 
 7. In your browser, click on Home or navigate to your hostname, e.g. http://localhost.
    Now you will see the RAP-application
-   ![landing page](https://github.com/AmpersandTarski/RAP/blob/master/RAP%20landing%20page%202020-11-02.png)
+   ![landing page](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstalled_screen.png)
 
 8. You're not done yet! Now enable RAP to generate prototypes for your users
    ```
