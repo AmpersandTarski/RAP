@@ -4,5 +4,5 @@ metadata:
   name: administration-configmap
   namespace: rap
 data:
-  DISABLE_DB_INSTALL: "true"
-  AMPERSAND_PRODUCTION_MODE: "true"
+  DISABLE_DB_INSTALL: "false"
+  AMPERSAND_PRODUCTION_MODE: "false" #sets the initial install
