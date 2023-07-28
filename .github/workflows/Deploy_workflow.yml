@@ -9,9 +9,8 @@ on:
         type: string
 
 jobs:
-
   CheckEnvironment:
-    environment: '${{ inputs.environment_name }}'
+    environment: "${{ inputs.environment_name }}"
     runs-on: ubuntu-latest
     outputs:
       environment-ok: ${{ steps.my-environment-check.outputs.defined }}
@@ -27,8 +26,36 @@ jobs:
             echo "defined=false" >> $GITHUB_OUTPUT;
           fi
 
+  Build:
+    environment: "${{ inputs.environment_name }}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ./RAP4
+          file: ./RAP4/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/rap-${{ inputs.environment_name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/rap-${{ inputs.environment_name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   Deploy:
-    environment: '${{ inputs.environment_name }}'
+    environment: "${{ inputs.environment_name }}"
     needs: [CheckEnvironment]
     if: needs.CheckEnvironment.outputs.environment-ok == 'true'
     runs-on: ubuntu-latest

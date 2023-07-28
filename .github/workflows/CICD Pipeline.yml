@@ -1,4 +1,4 @@
-name: CICD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -7,14 +7,12 @@ on:
   pull_request:
   workflow_dispatch:
 
-
 jobs:
-
   Local:
     if: startsWith(github.ref_name, 'feature/')
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      environment_name: 'Local${{ github.actor }}'
+      environment_name: "Local${{ github.actor }}"
 
   Development:
     if: github.ref_name == 'main'
@@ -28,3 +26,10 @@ jobs:
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Staging
+
+  Production:
+    if: github.ref_name == 'main'
+    needs: Staging
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: Production
