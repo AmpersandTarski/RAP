@@ -1,0 +1,64 @@
+name: Instantiate_Manifest
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        description: Name of the environment to which is deployed
+        required: true
+        type: string
+
+jobs:
+  CheckEnvironment:
+    environment: "${{ inputs.environment_name }}"
+    runs-on: ubuntu-latest
+    outputs:
+      environment-ok: ${{ steps.my-environment-check.outputs.defined }}
+    steps:
+      - name: Check for Environment availability
+        id: my-environment-check
+        # perform check & put boolean result as an output
+        shell: bash
+        run: |
+          if [ "${{ vars.ENVIRONMENT_NAME }}" == ${{ inputs.environment_name }} ]; then
+            echo "defined=true" >> $GITHUB_OUTPUT;
+          else
+            echo "defined=false" >> $GITHUB_OUTPUT;
+          fi
+
+  Build:
+    environment: "${{ inputs.environment_name }}"
+    env:
+      ENROLL_NAME: ${{ vars.enroll_name }}
+      RAP_NAME: ${{ vars.rap_name }}
+      DOMAIN_NAME: ${{ vars.domain_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Echoing variables
+        run: |
+          echo Echoing github.workspace * ${{ github.workspace }} *
+          echo Echoing runner.temp * ${{ runner.temp }} *
+          echo Echoing vars.enroll_name * ${{ vars.enroll_name }} *
+          echo Echoing vars.domain_name * ${{ vars.domain_name }} *
+      - name: Instantiate manifest templates
+        run: |
+          envsubst < ${{ github.workspace }}/deployment/manifest_templates/enroll-ingress-template.yaml > ${{ runner.temp }}/enroll-ingress.yaml
+
+  Deploy:
+    environment: "${{ inputs.environment_name }}"
+    needs: [CheckEnvironment]
+    if: needs.CheckEnvironment.outputs.environment-ok == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echoing variables
+        run: |
+          echo Echoing github.workspace * ${{ github.workspace }} *
+          echo Echoing runner.temp * ${{ runner.temp }} *
+          echo Echoing vars.enroll_name * ${{ vars.enroll_name }} *
+          echo Echoing vars.domain_name * ${{ vars.domain_name }} *
+      - name: Logging manifests
+        run: |
+          echo Log enroll-ingress.yaml
+          cat ${{ runner.temp }}//enroll-ingress.yaml
