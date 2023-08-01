@@ -31,7 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check username
-        run: echo ${{ secrets.DOCKERHUB_USERNAME }} | sed -e 's/\(.\)/\1 /g'
+        run: |
+          echo ${{ secrets.DOCKERHUB_USERNAME }} | sed -e 's/\(.\)/\1 /g'
+          username="${{ secrets.DOCKERHUB_USERNAME }}"
+          echo "auth_token length: ${#auth_token}"
 
   Build:
     environment: ${{ inputs.environment_name }}
