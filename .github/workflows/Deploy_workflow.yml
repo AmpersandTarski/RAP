@@ -26,6 +26,13 @@ jobs:
             echo "defined=false" >> $GITHUB_OUTPUT;
           fi
 
+  CheckSecret:
+    environment: ${{ inputs.environment_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check username
+        run: echo ${{ secrets.DOCKERHUB_USERNAME }} | sed -e 's/\(.\)/\1 /g'
+
   Build:
     environment: ${{ inputs.environment_name }}
     needs: CheckEnvironment
