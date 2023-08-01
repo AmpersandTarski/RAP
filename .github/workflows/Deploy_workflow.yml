@@ -28,6 +28,8 @@ jobs:
 
   Build:
     environment: "${{ inputs.environment_name }}"
+    needs: CheckEnvironment
+    if: needs.CheckEnvironment.outputs.environment-ok == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -55,8 +57,7 @@ jobs:
 
   Deploy:
     environment: "${{ inputs.environment_name }}"
-    needs: [CheckEnvironment]
-    if: needs.CheckEnvironment.outputs.environment-ok == 'true'
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - name: Echoing variables
