@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - "issue/**"
   pull_request:
   workflow_dispatch:
 
@@ -15,7 +16,8 @@ jobs:
       environment_name: "Local${{ github.actor }}"
 
   Development:
-    if: github.ref_name == 'main'
+    if: startsWith(github.ref_name, 'issue/')
+    # if: github.ref_name == 'main'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Development
