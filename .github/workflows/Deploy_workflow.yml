@@ -32,8 +32,8 @@ jobs:
     steps:
       - name: Check username
         run: |
-          echo ${{ secrets.DOCKERHUB_USERNAME }} | sed -e 's/\(.\)/\1 /g'
-          username="${{ secrets.DOCKERHUB_USERNAME }}"
+          echo ${{ env.DOCKERHUB_USERNAME }} | sed -e 's/\(.\)/\1 /g'
+          username="${{ env.DOCKERHUB_USERNAME }}"
           echo "auth_token length: ${#auth_token}"
 
   Build:
