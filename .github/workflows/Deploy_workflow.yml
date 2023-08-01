@@ -27,6 +27,7 @@ jobs:
           fi
 
   CheckSecret:
+    environment: LocalFranSlot
     runs-on: ubuntu-latest
     steps:
       - name: Check username
