@@ -30,13 +30,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: LocalFranSlot
     env:
-      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      username: ${{ secrets.USERNAME }}
     steps:
       - name: Check username 1
         run: |
           echo ${{ vars.ENVIRONMENT_NAME }}
           echo ${{ inputs.environment_name }}
-          echo ${{ secrets.DOCKERHUB_USERNAME }}
+          echo ${{ secrets.USERNAME }}
       - name: Check username 2
         if: ${{ env.username != '' }}
         run: |
