@@ -28,7 +28,7 @@ jobs:
 
   CheckSecret:
     runs-on: ubuntu-latest
-    environment: Development
+    environment: ${{ vars.ENVIRONMENT_NAME }}
     steps:
       - name: Check username 1
         run: |
