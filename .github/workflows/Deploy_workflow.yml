@@ -29,12 +29,15 @@ jobs:
   CheckSecret:
     runs-on: ubuntu-latest
     environment: Development
+    env:
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Check username
+        if: ${{ env.username != '' }}
         run: |
           echo ${{ vars.ENVIRONMENT_NAME }}
-          echo ${{ secrets.DOCKERHUB_USERNAME }} | sed -e 's/\(.\)/\1 /g'
-          username="${{ secrets.DOCKERHUB_USERNAME }}"
+          echo ${{ env.username }} | sed -e 's/\(.\)/\1 /g'
+          username="${{ env.username }}"
           echo "auth_token length: ${#auth_token}"
 
   Build:
