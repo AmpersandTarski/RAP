@@ -27,8 +27,6 @@ jobs:
           fi
 
   CheckSecret:
-    environment:
-      name: ${{ inputs.environment_name }}
     runs-on: ubuntu-latest
     steps:
       - name: Check username
