@@ -26,11 +26,13 @@ jobs:
             echo "defined=false" >> $GITHUB_OUTPUT;
           fi
   Build:
-    environment: "${{ inputs.environment_name }}"
+    environment: '${{ inputs.environment_name }}'
     env:
       ENROLL_NAME: ${{ vars.enroll_name }}
       RAP_NAME: ${{ vars.rap_name }}
       DOMAIN_NAME: ${{ vars.domain_name }}
+    needs: [CheckEnvironment]
+    if: needs.CheckEnvironment.outputs.environment-ok == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -63,9 +65,9 @@ jobs:
           # echo Echoing runner.temp * ${{ runner.temp }} *
           echo Echoing vars.enroll_name * ${{ vars.enroll_name }} *
           echo Echoing vars.domain_name * ${{ vars.domain_name }} *
-      - name: Instantiate manifest templates
-        run: |
-          envsubst < ${{ github.workspace }}/deployment/manifest_templates/enroll-ingress-template.yaml > ${{ runner.temp }}/enroll-ingress.yaml
+      # - name: Instantiate manifest templates
+      #   run: |
+      #     envsubst < ${{ github.workspace }}/deployment/manifest_templates/enroll-ingress-template.yaml > ${{ runner.temp }}/enroll-ingress.yaml
 
   # Deploy:
   #   environment: "${{ inputs.environment_name }}"
