@@ -27,7 +27,7 @@ jobs:
           fi
 
   Build:
-    environment: "${{ inputs.environment_name }}"
+    environment: "${{ vars.environment_name }}"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
