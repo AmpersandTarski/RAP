@@ -59,8 +59,8 @@ jobs:
 
       - name: Echoing variables
         run: |
-          echo Echoing github.workspace * ${{ github.workspace }} *
-          echo Echoing runner.temp * ${{ runner.temp }} *
+          # echo Echoing github.workspace * ${{ github.workspace }} *
+          # echo Echoing runner.temp * ${{ runner.temp }} *
           echo Echoing vars.enroll_name * ${{ vars.enroll_name }} *
           echo Echoing vars.domain_name * ${{ vars.domain_name }} *
       - name: Instantiate manifest templates
