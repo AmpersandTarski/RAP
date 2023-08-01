@@ -28,7 +28,7 @@ jobs:
 
   CheckSecret:
     runs-on: ubuntu-latest
-    environment: Development
+    environment: LocalFranSlot
     env:
       username: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
