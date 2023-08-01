@@ -1,4 +1,4 @@
-name: Manifest Templating Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -10,26 +10,27 @@ on:
 jobs:
   Local:
     if: startsWith(github.ref_name, 'feature/')
-    uses: ./.github/workflows/Instantiate_Manifest.yml
+    uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: "Local${{ github.actor }}"
 
   Development:
     if: github.ref_name == 'main'
-    uses: ./.github/workflows/Instantiate_Manifest.yml
+    uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Development
 
   Staging:
     if: github.ref_name == 'main'
     needs: Development
-    uses: ./.github/workflows/Instantiate_Manifest.yml
+    uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Staging
 
   Production:
     if: github.ref_name == 'main'
     needs: Staging
-    uses: ./.github/workflows/Instantiate_Manifest.yml
+    uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Production
+      
