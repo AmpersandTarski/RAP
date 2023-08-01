@@ -29,15 +29,15 @@ jobs:
   CheckSecret:
     runs-on: ubuntu-latest
     environment: Development
-    env:
-      username: ${{ secrets.USERNAME }}
     steps:
       - name: Check username 1
         run: |
           echo ${{ vars.ENVIRONMENT_NAME }}
           echo ${{ inputs.environment_name }}
-          echo ${{ secrets.USERNAME }}
+          echo ${{ secrets.DOCKERHUB_USERNAME }}
       - name: Check username 2
+        env:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
         if: ${{ env.username != '' }}
         run: |
           echo ${{ vars.ENVIRONMENT_NAME }}
