@@ -10,7 +10,7 @@ on:
 
 jobs:
   CheckEnvironment:
-    environment: "${{ inputs.environment_name }}"
+    environment: ${{ inputs.environment_name }}
     runs-on: ubuntu-latest
     outputs:
       environment-ok: ${{ steps.my-environment-check.outputs.defined }}
@@ -27,7 +27,7 @@ jobs:
           fi
 
   Build:
-    environment: "${{ inputs.environment_name }}"
+    environment: ${{ inputs.environment_name }}
     needs: CheckEnvironment
     if: needs.CheckEnvironment.outputs.environment-ok == 'true'
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   Deploy:
-    environment: "${{ inputs.environment_name }}"
+    environment: ${{ inputs.environment_name }}
     needs: Build
     runs-on: ubuntu-latest
     steps:
@@ -66,7 +66,6 @@ jobs:
           echo Echoing github.ref_name * ${{ github.ref_name }} *
           echo Echoing inputs.environment_name * ${{ inputs.environment_name }} *
           echo Echoing vars.ENVIRONMENT_NAME * ${{ vars.ENVIRONMENT_NAME }} *
-          echo Echoing environment-ok * ${{ needs.CheckEnvironment.outputs.environment-ok }} *
       - name: Deploy steps
         run: |
           echo Deploying to ${{ inputs.environment_name }} ...
