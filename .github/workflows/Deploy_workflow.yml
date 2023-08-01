@@ -27,7 +27,7 @@ jobs:
           fi
 
   Build:
-    environment: "${{ vars.environment_name }}"
+    environment: "${{ inputs.environment_name }}"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,6 +35,8 @@ jobs:
 
       - name: Check username
         run: |
+          echo Echoing inputs.environment_name * ${{ inputs.environment_name }} *
+          echo Echoing vars.ENVIRONMENT_NAME * ${{ vars.ENVIRONMENT_NAME }} *
           echo Echoing DOCKERHUB_USERNAME * ${{ secrets.DOCKERHUB_USERNAME }} *
 
       - name: Login to Docker Hub
