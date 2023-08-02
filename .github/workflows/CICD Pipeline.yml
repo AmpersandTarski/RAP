@@ -21,6 +21,7 @@ jobs:
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Development
+    secrets: inherit
 
   Staging:
     if: github.ref_name == 'main'
