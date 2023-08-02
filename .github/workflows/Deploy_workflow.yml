@@ -26,25 +26,6 @@ jobs:
             echo "defined=false" >> $GITHUB_OUTPUT;
           fi
 
-  CheckSecret:
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment_name }}
-    steps:
-      - name: Check username 1
-        run: |
-          echo ${{ vars.ENVIRONMENT_NAME }}
-          echo ${{ inputs.environment_name }}
-          echo ${{ secrets.DOCKERHUB_USERNAME }}
-      - name: Check username 2
-        env:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-        if: ${{ env.username != '' }}
-        run: |
-          echo ${{ vars.ENVIRONMENT_NAME }}
-          echo ${{ env.username }} | sed -e 's/\(.\)/\1 /g'
-          username="${{ env.username }}"
-          echo "auth_token length: ${#auth_token}"
-
   Build:
     environment: ${{ inputs.environment_name }}
     needs: CheckEnvironment

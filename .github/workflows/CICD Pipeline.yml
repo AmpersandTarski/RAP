@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - "issue/**"
+      - "feature/**"
   pull_request:
   workflow_dispatch:
 
@@ -14,10 +14,10 @@ jobs:
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: "Local${{ github.actor }}"
+    secrets: inherit
 
   Development:
-    if: startsWith(github.ref_name, 'issue/')
-    # if: github.ref_name == 'main'
+    if: github.ref_name == 'main'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Development
@@ -29,6 +29,7 @@ jobs:
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Staging
+    secrets: inherit
 
   Production:
     if: github.ref_name == 'main'
@@ -36,3 +37,4 @@ jobs:
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Production
+    secrets: inherit
