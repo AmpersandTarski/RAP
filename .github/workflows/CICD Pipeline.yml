@@ -18,8 +18,7 @@ jobs:
     secrets: inherit
 
   Development:
-    if: startsWith(github.ref_name, 'issue/')
-    # if: github.ref_name == 'main'
+    if: github.ref_name == 'main'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Development

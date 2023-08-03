@@ -54,10 +54,6 @@ jobs:
     if: ${{ needs.CheckEnvironment.outputs.environment-ok == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Print hasChanged
-        run: |
-          echo Echoing RAP4USER.hasChanged * ${{ needs.CheckRAP4USER.outputs.hasChanged }} *
-
       - name: Checkout
         uses: actions/checkout@v3
 
