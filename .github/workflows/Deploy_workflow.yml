@@ -48,7 +48,7 @@ jobs:
 
           # Set the output named "hasDiff"
           #Write-Host "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
-          Write-Host "::set-output name=docs_changed::$HasDiff"
+          Write-Host "::set-output name=hasDiff::$HasDiff"
 
   Build:
     environment: ${{ inputs.environment_name }}
