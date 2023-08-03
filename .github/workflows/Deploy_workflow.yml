@@ -27,7 +27,6 @@ jobs:
           fi
 
   CheckRAP4USER:
-    environment: ${{ inputs.environment_name }}
     runs-on: windows-latest
     outputs:
       hasChanged: ${{ steps.hasChanged.outputs.hasDiff }}
@@ -47,8 +46,8 @@ jobs:
           $HasDiff = $SourceDiff.Length -gt 0
 
           # Set the output named "hasDiff"
-          #Write-Host "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
-          Write-Host "::set-output name=hasDiff::$HasDiff"
+          Write-Host "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
+          #Write-Host "::set-output name=hasDiff::$HasDiff"
 
   Build:
     environment: ${{ inputs.environment_name }}
@@ -74,7 +73,7 @@ jobs:
 
       - name: Build and push RAP4USER
         uses: docker/build-push-action@v4
-        # if: ${{ needs.CheckRAP4USER.outputs.hasChanged == 'True' }}
+        if: ${{ needs.CheckRAP4USER.outputs.hasChanged == 'True' }}
         with:
           context: ./RAP4USER
           file: ./RAP4USER/Dockerfile
