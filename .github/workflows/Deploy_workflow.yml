@@ -27,7 +27,9 @@ jobs:
           fi
 
   CheckRAP4USER:
-    runs-on: "ubuntu-latest"
+    runs-on:
+      "ubuntu-latest"
+      # Declare outputs for next jobs
     outputs:
       hasChanged: ${{ steps.hasChanged.outputs.hasDiff }}
     steps:
@@ -35,18 +37,18 @@ jobs:
         with:
           # Checkout as many commits as needed for the diff
           fetch-depth: 2
-      - shell: bash
+      - shell: pwsh
         id: hasChanged
         run: |
           # Diff HEAD with the previous commit
-          export Diff=$(git diff --name-only HEAD^ HEAD)
+          $diff = git diff --name-only HEAD^ HEAD
 
           # Check if a file under RAP4USER/ has changed (added, modified, deleted)
-          export SourceDiff=$($Diff | Where-Object { $_ -match '^RAP4USER/' })
-          export HasDiff=$($SourceDiff.Length -gt 0)
+          $SourceDiff = $diff | Where-Object { $_ -match '^RAP4USER/' }
+          $HasDiff = $SourceDiff.Length -gt 0
 
-          # Set the output named "hasChanged"
-          echo "hasDiff=$HasDiff" >> $GITHUB_OUTPUT
+          # Set the output named "hasDiff"
+          Write-Host "hasDiff=$HasDiff" >> $GITHUB_OUTPUT
 
   Build:
     environment: ${{ inputs.environment_name }}
