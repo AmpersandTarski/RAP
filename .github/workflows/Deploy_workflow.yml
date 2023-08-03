@@ -27,6 +27,7 @@ jobs:
           fi
 
   CheckRAP4USER:
+    environment: ${{ inputs.environment_name }}
     runs-on: windows-latest
     outputs:
       hasChanged: ${{ steps.hasChanged.outputs.hasDiff }}
