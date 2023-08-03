@@ -31,7 +31,7 @@ jobs:
       "ubuntu-latest"
       # Declare outputs for next jobs
     outputs:
-      hasChanged: ${{ steps.hasChanged.outputs.value }}
+      hasChanged: ${{ steps.hasChanged.outputs.diff }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -48,7 +48,7 @@ jobs:
           $HasDiff = $SourceDiff.Length -gt 0
 
           # Set the output named "hasChanged"
-          echo "{value}={$HasDiff}" >> $GITHUB_OUTPUT
+          Write-Host "{diff}={$HasDiff}" >> $GITHUB_OUTPUT
 
   Build:
     environment: ${{ inputs.environment_name }}
