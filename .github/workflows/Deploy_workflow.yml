@@ -27,7 +27,7 @@ jobs:
           fi
 
   CheckRAP4USER:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     outputs:
       hasChanged: ${{ steps.hasChanged.outputs.hasDiff }}
     steps:
@@ -46,7 +46,7 @@ jobs:
           $HasDiff = $SourceDiff.Length -gt 0
 
           # Set the output named "hasDiff"
-          echo "hasDiff=$HasDiff" >> $GITHUB_OUTPUT
+          echo "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
 
   Build:
     environment: ${{ inputs.environment_name }}
