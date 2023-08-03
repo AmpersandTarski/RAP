@@ -47,7 +47,8 @@ jobs:
           $HasDiff = $SourceDiff.Length -gt 0
 
           # Set the output named "hasDiff"
-          Write-Host "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
+          #Write-Host "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
+          Write-Host "::set-output name=docs_changed::$HasDiff"
 
   Build:
     environment: ${{ inputs.environment_name }}
