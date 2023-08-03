@@ -27,9 +27,7 @@ jobs:
           fi
 
   CheckRAP4USER:
-    runs-on:
-      "ubuntu-latest"
-      # Declare outputs for next jobs
+    runs-on: windows-latest
     outputs:
       hasChanged: ${{ steps.hasChanged.outputs.hasDiff }}
     steps:
