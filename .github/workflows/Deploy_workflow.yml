@@ -46,7 +46,7 @@ jobs:
           $HasDiff = $SourceDiff.Length -gt 0
 
           # Set the output named "hasDiff"
-          Write-Host "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
+          echo "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
           #Write-Host "::set-output name=hasDiff::$HasDiff"
 
   Build:
