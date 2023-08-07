@@ -54,7 +54,6 @@ jobs:
     if: ${{ needs.CheckEnvironment.outputs.environment-ok == 'true' }}
     runs-on: ubuntu-latest
     env:
-      ENROLL_NAME: ${{ vars.enroll_name }}
       RAP_NAME: ${{ vars.rap_name }}
       DOMAIN_NAME: ${{ vars.domain_name }}
     steps:
@@ -64,10 +63,12 @@ jobs:
         run: |
           echo Instantiating manifest templates using ${{ inputs.environment_name }}
           mkdir ${{ runner.temp }}/manifests
-          envsubst < ${{ github.workspace }}/deployment/manifest-templates/cert-manager-namespace-template.yaml > ${{ runner.temp }}/manifests/cert-manager-namespace.yaml
-          envsubst < ${{ github.workspace }}/deployment/manifest-templates/cert-manager-template.yaml > ${{ runner.temp }}/manifests/cert-manager.yaml
+          cd ${{ github.workspace }}/deployment/manifest-templates
+          for t in *-template.yaml; do cp "$t" "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml"; done
+          #envsubst < ${{ github.workspace }}/deployment/manifest-templates/cert-manager-namespace-template.yaml > ${{ runner.temp }}/manifests/cert-manager-namespace.yaml
+          #envsubst < ${{ github.workspace }}/deployment/manifest-templates/cert-manager-template.yaml > ${{ runner.temp }}/manifests/cert-manager.yaml
           ls -al ${{ runner.temp }}/manifests/*.yaml
-          cat ${{ runner.temp }}/manifests/cert-manager-namespace.yaml
+          #cat ${{ runner.temp }}/manifests/cert-manager-namespace.yaml
           
       #- name: Login to Docker Hub
       #  uses: docker/login-action@v2
