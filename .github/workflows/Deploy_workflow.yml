@@ -54,8 +54,15 @@ jobs:
     if: ${{ needs.CheckEnvironment.outputs.environment-ok == 'true' }}
     runs-on: ubuntu-latest
     env:
-      RAP_NAME: ${{ vars.rap_name }}
-      DOMAIN_NAME: ${{ vars.domain_name }}
+      # Secrets
+      LETSENCRYPT_PRIVATE_KEY: ${{ secrets.LETSENCRYPT_PRIVATE_KEY }}
+      MYSQL_AMPERSAND_PASSWORD: ${{ secrets.MYSQL_AMPERSAND_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      # Variables
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+      LETSENCRYPT_EMAIL: ${{ vars.LETSENCRYPT_EMAIL }}
+      NAMESPACE_NAME: ${{ vars.NAMESPACE_NAME }}
+      SERVER_HOST_NAME: ${{ vars.SERVER_HOST_NAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
