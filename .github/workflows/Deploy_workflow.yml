@@ -121,6 +121,7 @@ jobs:
         uses: Azure/k8s-deploy@v4
         with:
           namespace: "rap"
+          # namespace: "rap-${{ inputs.environment_name }}"
           manifests: |
             deployment/resources/rap-deployment.yaml
           images: |
