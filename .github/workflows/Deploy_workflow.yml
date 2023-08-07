@@ -81,6 +81,8 @@ jobs:
             echo "##### Dumping $i" ; 
             cat "$i" ; 
           done
+
+      # Manifests will contain secrets. So delete this when manifest templates are working
       - name: Upload manifest artifact
         uses: actions/upload-artifact@v3
         with:
