@@ -65,10 +65,8 @@ jobs:
           echo Instantiating manifest templates using ${{ inputs.environment_name }}
           mkdir ${{ runner.temp }}/manifests
           envsubst < ${{ github.workspace }}/deployment/manifest-templates/enroll-ingress-template.yaml > ${{ runner.temp }}/manifests/enroll-ingress.yaml
-          ls -al ${{ runner.temp }}/manifests
+          ls -al ${{ runner.temp }}/manifests/*.yaml
           cat ${{ runner.temp }}/manifests/enroll-ingress.yaml
-          rm -rf ${{ runner.temp }}/manifests
-          ls -al ${{ runner.temp }}/manifests
           
       #- name: Login to Docker Hub
       #  uses: docker/login-action@v2
