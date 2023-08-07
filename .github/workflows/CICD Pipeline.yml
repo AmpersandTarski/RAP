@@ -18,14 +18,14 @@ jobs:
     secrets: inherit
 
   Development:
-    if: github.ref_name == 'main'
+    if: false # github.ref_name == 'main'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: Development
     secrets: inherit
 
   Staging:
-    if: github.ref_name == 'main'
+    if: false # github.ref_name == 'main'
     needs: Development
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
@@ -33,7 +33,7 @@ jobs:
     secrets: inherit
 
   Production:
-    if: github.ref_name == 'main'
+    if: false # github.ref_name == 'main'
     needs: Staging
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
