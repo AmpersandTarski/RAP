@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: enroll-ingress
-  namespace: rap
+  name: ${ENROLL_NAME}-ingress
+  namespace: ${NAMESPACE_NAME}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -10,15 +10,15 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - enroll.rap.tarski.nl
-      secretName: enroll-tls
+        - ${ENROLL_NAME}.${DOMAIN_NAME}
+      secretName: ${ENROLL_NAME}-tls
   rules:
-    - host: enroll.rap.tarski.nl
+    - host: ${ENROLL_NAME}.${DOMAIN_NAME}
       http:
         paths:
           - pathType: ImplementationSpecific
             backend:
               service:
-                name: enroll
+                name: ${ENROLL_NAME}
                 port:
                   number: 80
