@@ -66,7 +66,7 @@ jobs:
           cd ${{ github.workspace }}/deployment/manifest-templates
           #for t in *-template.yaml; do cp "$t" "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml"; done
           for t in *-template.yaml; do 
-            envsubst < $t > "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml
+            envsubst < $t > "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml"
           done
           #envsubst < ${{ github.workspace }}/deployment/manifest-templates/cert-manager-namespace-template.yaml > ${{ runner.temp }}/manifests/cert-manager-namespace.yaml
           cd ${{ runner.temp }}/manifests
