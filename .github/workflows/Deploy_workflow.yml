@@ -81,11 +81,11 @@ jobs:
             echo "##### Dumping $i" ; 
             cat "$i" ; 
           done
-      - name: Delete instantiated manifests
-        run: |
-          echo Deleting instantiated manifests
-          rm ${{ runner.temp }}/manifests/*
-          rmdir ${{ runner.temp }}/manifests
+      # - name: Delete instantiated manifests
+      #   run: |
+      #     echo Deleting instantiated manifests
+      #     rm ${{ runner.temp }}/manifests/*
+      #     rmdir ${{ runner.temp }}/manifests
       # Manifests will contain secrets. So delete this when manifest templates are working
       - name: Upload manifest artifact
         uses: actions/upload-artifact@v3
