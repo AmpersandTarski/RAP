@@ -1,4 +1,4 @@
-# Template variables:
+# Template variables and secrets from environment ${ENVIRONMENT_NAME}:
 # -
 #
 ---
