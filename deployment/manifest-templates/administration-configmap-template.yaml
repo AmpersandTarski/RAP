@@ -1,4 +1,4 @@
-# Tempplate variables:
+# Tempplate variables and secrets from environment ${ENVIRONMENT_NAME}:
 #   DOMAIN_NAME: ${DOMAIN_NAME}
 #   NAMESPACE_NAME: ${NAMESPACE_NAME}
 #   LETSENCRYPT_PRIVATE_KEY: ${LETSENCRYPT_PRIVATE_KEY}
