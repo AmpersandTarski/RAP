@@ -1,3 +1,5 @@
+# Template variables and secrets:
+#   NAMESPACE_NAME    : ${NAMESPACE_NAME} 
 apiVersion: v1
 kind: ConfigMap
 metadata:
