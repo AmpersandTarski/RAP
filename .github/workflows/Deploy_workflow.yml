@@ -40,17 +40,17 @@ jobs:
         run: |
           # Diff HEAD with the previous commit
           $diff = git diff --name-only HEAD^ HEAD
-  
+
           # Check if a file under RAP4USER/ has changed (added, modified, deleted)
           $SourceDiff = $diff | Where-Object { $_ -match '^RAP4USER/' }
           $HasDiff = $SourceDiff.Length -gt 0
-  
+
           # Set the output named "hasDiff"
           echo "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
 
   Build:
     environment: ${{ inputs.environment_name }}
-    needs: [CheckEnvironment] #, CheckRAP4USER]
+    needs: [CheckEnvironment, CheckRAP4USER]
     if: ${{ needs.CheckEnvironment.outputs.environment-ok == 'true' }}
     runs-on: ubuntu-latest
     env:
@@ -127,7 +127,7 @@ jobs:
     environment: ${{ inputs.environment_name }}
     needs: Build
     runs-on: ubuntu-latest
-   steps:
+    steps:
       - name: Echoing variables
         run: |
           echo Echoing github.actor * ${{ github.actor }} *
