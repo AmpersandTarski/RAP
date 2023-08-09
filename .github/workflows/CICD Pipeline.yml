@@ -17,25 +17,25 @@ jobs:
       environment_name: "Local${{ github.actor }}"
     secrets: inherit
 
-  #Development:
-  #  if: github.ref_name == 'main'
-  #  uses: ./.github/workflows/Deploy_workflow.yml
-  #  with:
-  #    environment_name: Development
-  #  secrets: inherit
+  Development:
+    if: github.ref_name == 'main'
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: Development
+    secrets: inherit
 
-  #Staging:
-  #  if: github.ref_name == 'main'
-  #  needs: Development
-  #  uses: ./.github/workflows/Deploy_workflow.yml
-  #  with:
-  #    environment_name: Staging
-  #  secrets: inherit
+  Staging:
+    if: github.ref_name == 'main'
+    needs: Development
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: Staging
+    secrets: inherit
 
-  #Production:
-  #  if: github.ref_name == 'main'
-  #  needs: Staging
-  #  uses: ./.github/workflows/Deploy_workflow.yml
-  #  with:
-  #    environment_name: Production
-  #  secrets: inherit
+  Production:
+    if: github.ref_name == 'main'
+    needs: Staging
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: Production
+    secrets: inherit
