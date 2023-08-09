@@ -73,7 +73,8 @@ jobs:
           cd ${{ github.workspace }}/deployment/manifest-templates
           #for t in *-template.yaml; do cp "$t" "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml"; done
           for t in *-template.yaml; do 
-            envsubst < $t > "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml"
+      
+            envsubst '$LETSENCRYPT_PRIVATE_KEY,$MYSQL_AMPERSAND_PASSWORD,$MYSQL_ROOT_PASSWORD,$DOMAIN_NAME,$LETSENCRYPT_EMAIL,$NAMESPACE_NAME,$SERVER_HOST_NAME' < $t > "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml"
           done
           #envsubst < ${{ github.workspace }}/deployment/manifest-templates/cert-manager-namespace-template.yaml > ${{ runner.temp }}/manifests/cert-manager-namespace.yaml
           cd ${{ runner.temp }}/manifests
