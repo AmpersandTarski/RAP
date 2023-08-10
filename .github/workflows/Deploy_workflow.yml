@@ -79,12 +79,16 @@ jobs:
             echo "##### Dumping $i" ; 
             cat "$i" ; 
           done
+      # Manifests will contain secrets. So deleting them after applying on Kubernetes might be wise.
+      # Note that GitHub will itself also clean ${{ runner.temp }} during cleanup.
       # - name: Delete instantiated manifests
       #   run: |
       #     echo Deleting instantiated manifests
       #     rm ${{ runner.temp }}/manifests/*
       #     rmdir ${{ runner.temp }}/manifests
-      # Manifests will contain secrets. So delete this when manifest templates are working
+
+      # Uploading an artifact with manifest originals, templates and instances helps with debugging templates.
+      # This artifact is only for debugging. the code can be deleted or commented-out when everything works.
       - name: Upload manifest artifact
         uses: actions/upload-artifact@v3
         with:
