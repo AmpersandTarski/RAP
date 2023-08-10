@@ -2,14 +2,16 @@
 (Explain 2 different types of deployment)
 
 ## RAP Docker image
-To understand the contents of the RAP docker imager, it is important to discuss two other images first; Ampersand and Prototype-framework.
+To understand the contents of the RAP docker image, it is important to discuss two other images first; Ampersand and Prototype-framework.
 
-**Ampersand** ([repository](https://github.com/AmpersandTarski/Ampersand))
+**Ampersand**
+([repository](https://github.com/AmpersandTarski/Ampersand))
 The application that checks and compiles ADL-scripts (business rules in Ampersand language). It returns a set of files (json and sql) containing the information system; backend, API and frontend and database queries.
 
-The Ampersand application is compiled with Haskell, a light-weight Linux OS is included in the Docker image to run the Ampersand application.
+The Docker image for Ampersand consists of a light-weight Linux OS and contains only software needed to run Ampersand.
 
-**Prototype-Framework** ([repository](https://github.com/AmpersandTarski/prototype))
+**Prototype-Framework**
+([repository](https://github.com/AmpersandTarski/prototype))
 The php framework that transforms output files from the Ampersand application into a web application. The Ampersand application is included in the image, see the lines from the prototype Dockerfile below.
 
 ```
@@ -53,8 +55,11 @@ Mariadb is the database used by RAP, enroll and student prototypes. Phpmyadmin t
 
 
 # Docker
+This section describes the deployment of RAP on just a docker platform.
+This deployment was used at the OU until 2023, where a docker platform was running on a virtual machine in the OU data center.
+This information can be useful for a reader without access to a Kubernetes platform, such as Rancher, Openshift or bare Kubernetes.
 
-(Explain docker)
+We assume the reader is familiar with docker. Details are on [www.docker.com](www.docker.com).
 
 ### Architecture
 
@@ -77,19 +82,19 @@ Traefik, in combination with let's encrypt, is used as reverse proxy to route ex
 
 **Networks**
 
-Two virtual networks are created.
+The application uses two virtual networks to separate traffic to and from the database from traffic to the outside world (via the proxy).
 
 The proxy network contains the traefik reverse proxy, that handles external traffic to containers in the virtual network. All containers except the database are running inside the proxy network.
 
-The rap_db network cannot be accessed from an external source. All containers are included in this network and can therefor make SQL queries.
+The rap_db network cannot be accessed from an external source. All containers are included in this network and can therefor make SQL queries. As a result, a malicious user who has gained access to the proxy network can still not approach the database.
 
 **Volumes**
 
-The mariadb database and let's encrypt have persistant volumes for data storage.
+The mariadb database and let's encrypt use volumes for persistent data storage, so their data survives container crashes.
 
 **Applications**
 
-RAP, enroll, mariadb and phpmyadmin are running continually. From the RAP application student prototypes are spun up, that run temporarily.
+RAP, enroll, and mariadb are running continually. Phpadmin is only there to verify data in the database and may only be live during maintenance (during which RAP is fully operational). Users of the RAP application can spin up Ampersand prototypes, to try out their work.
 
 **Student-prototype**
 
@@ -101,7 +106,7 @@ The RAP application has Docker-cli installed and runs a new container with the f
 echo <<base64 encoded ADL-script>> | docker run --name <<student-name>> ampersandtarski/rap4-student-prototype:v1.1.1
 ```
 
-The student-prototype container runs for 1 hour and is ended automatically.
+The student-prototype container runs for 1 hour and is ended automatically.  During that time, student-prototypes are accessible from the internet, so students can demo their work as a real information system.
 
 Multiple student prototypes can run in parallel.
 

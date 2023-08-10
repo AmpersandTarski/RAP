@@ -10,6 +10,7 @@ Last verified by Fran Slot, 13 March 2023.
 
 * RAP4 runs on linux. If you are on Windows, you need to install WSL2 in order to take full advantage of the functionality of RAP4. Here are the [installation instructions for WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10). There is also a [nice youtube item on how to configure WSL2 and a quick overview of it](https://www.youtube.com/watch?v=j0PPcUUtHlw).
 * For the rest of this Readme, we assume you have linux running.
+This recipe has worked on Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-149-generic x86_64).
 
 ### Prerequisites
 
@@ -47,7 +48,7 @@ Follow these steps to get up and running:
 3. Build an image and create a proxy and a rap_db network.
    
    ```.bash
-   docker-compose build
+   docker compose build
    docker network create proxy
    docker network create rap_db
    ```
@@ -56,12 +57,12 @@ Follow these steps to get up and running:
 
    If on your laptop, do it locally:
    ```.bash
-   docker-compose up -d
+   docker compose up -d
    ```
    
    Or, if you are working from a server other than localhost:
    ```
-   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
    
 5. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
@@ -110,14 +111,14 @@ When changes have been made to the master branch of the RAP-repository, you may 
    ```
        cd RAP
        git pull
-       docker-compose build
-       docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+       docker compose build
+       docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
-(or, if you work from localhost, simplify the last line to `docker-compose up -d`)
+(or, if you work from localhost, simplify the last line to `docker compose up -d`)
 
 For inspecting the database, bring up phpmyadmin:
 ```
- docker-compose up -d phpmyadmin
+ docker compose up -d phpmyadmin
 ```
 Then in your browser you can access the database with URL `phpmyadmin.<hostname>` (e.g. phpmyadmin.rap.cs.ou.nl). Of course you will need the database password for `root` or for `ampersand` that you invented in step 4 of the installation.
 
@@ -144,7 +145,7 @@ Here are a few things that could go wrong when you install RAP4. The numbers cor
 
    After you have cloned RAP4, stay in you working directory.
 
-2. The environment variables in .env are used in `docker-compose.yml`. For setting the environment variables, use any text editor (VS-code, vim, or whatever). For security reasons, use strong passwords and keep your .env file secret. If you set the variable `DISABLE_DB_INSTALL` to `true`, you won't be able to generate a new RAP4 database. During production, you want to disable that. If you are familiar with docker-compose, have a look at the environment variables. Check that `AMPERSAND_DEBUG_MODE=true` to get debug information if you have trouble refreshing the database.
+2. The environment variables in .env are used in `docker-compose.yml`. For setting the environment variables, use any text editor (VS-code, vim, or whatever). For security reasons, use strong passwords and keep your .env file secret. If you set the variable `DISABLE_DB_INSTALL` to `true`, you won't be able to generate a new RAP4 database. During production, you want to disable that. If you are familiar with docker compose, have a look at the environment variables. Check that `AMPERSAND_DEBUG_MODE=true` to get debug information if you have trouble refreshing the database.
 In the file .env you need to specify database passwords for the root account so you can always access the database for whatever purpose. You also specify the ampersand account to allow access to the database for yourself, for the rap4 service, for the demo application (enroll) and for the prototypes a user runs. These credentials are not stored in the RAP4 GitHub-repo (for obvious security concerns), so you must invent them and keep them secret.
 
     NOTE: The security risk for passwords, which was a known issue, has become smaller but it has not vanished. Anyone with access to the build-machine can access .env and see the passwords. From the outside, the Open University (OUNL) server is accessible only through a VPN-link and the machine itself is protected with a username/password. This is enough security for now. However, when an outsider gains access, bot passwords are readable in the .env file.
@@ -172,7 +173,7 @@ In the file .env you need to specify database passwords for the root account so 
 5. Step 5 is "the proof of the pudding". If it goes wrong, that is usually because of errors in the configuration. Check the previous steps carefully and verify you have made no mistakes.
    To diagnose, set `AMPERSAND_DEBUG_MODE=true` true in your `docker-compose.yml file (in the services rap4 and enroll) and redo step 4. For diagnosing the mistakes, inspect the log files:
    ```bash
-   docker-compose logs
+   docker compose logs
    ```
 
 6. If you see this error message, the cause is a missing RAP database.
@@ -195,7 +196,7 @@ In the file .env you need to specify database passwords for the root account so 
 8. The prototypes of a RAP4 user will run in a dedicated container for that user only.
    For this purpose, RAP4 needs access to the docker repository on its host. However, sometimes this access is protected. In that case you must allow the rap4 service to read and write in the docker repository. You can verify this by going into the rap4 service and checking whether it has access:
    ```
-      sjo@laptop:~/RAP % docker-compose exec rap4 bash
+      sjo@laptop:~/RAP % docker compose exec rap4 bash
       root@37b03f1540bd:/var/www# ls -lah /var/run/docker.sock
       srw-r--r-- 1 root root 0 Oct 22 20:40 /var/run/docker.sock
       root@37b03f1540bd:/var/www# chmod 666 /var/run/docker.sock
