@@ -89,7 +89,7 @@ jobs:
         run: |
           echo Organizing artifact source
           mkdir ${{ runner.temp }}/manifests/instances
-          cp ${{ runner.temp }}/manifests/*.yaml ${{ runner.temp }}/manifests/instances
+          mv ${{ runner.temp }}/manifests/*.yaml ${{ runner.temp }}/manifests/instances
           mkdir ${{ runner.temp }}/manifests/originals
           cp ${{ github.workspace }}/deployment/cert-manager/*.yaml ${{ runner.temp }}/manifests/originals
           cp ${{ github.workspace }}/deployment/ingress/*.yaml ${{ runner.temp }}/manifests/originals
