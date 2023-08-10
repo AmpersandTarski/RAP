@@ -75,6 +75,8 @@ RUN npm install
 # # # i think this is not needed anymore, since we go to the /app directory already with "WORKDIR /app/frontend"
 # COPY ./frontend/ /app/
 
+RUN npx ng g m ./generated/project --flat --module=app
+
 RUN npx ng build
 
 
