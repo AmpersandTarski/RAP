@@ -21,6 +21,11 @@ kubectl config get-contexts
 # connect to a cluster
 kubectl config use-context 'NAME'
 
+# ENTER POD COMMANDLINE
+kubectl get pods -o wide -n rap
+$POD = "rap-6fddf8858f-f94rk"
+kubectl exec -it $POD -n rap -- /bin/sh
+
 # AZURE: CREATE AN INTERACTIVE SHELL CONNECTION TO A (LINUX) NODE
 
 # list nodes and save as variable
