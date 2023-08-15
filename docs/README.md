@@ -2,10 +2,6 @@
 
 The deployment of RAP is elaborated in the following topics:
 
-[Onboarding](onboarding.md)
-
-Starting point for A-team developers.
-
 [Prepare Azure Kubernetes Service (AKS)](preparing-azure.md)
 
 Setting up an Kubernetes Cluster on Azure using the PaaS solution Azure Kubernetes Service (AKS)
@@ -18,6 +14,6 @@ Prepare Windows to connect to a Kubernetes Cluster, create resources, etc.
 
 The architecture of a deployed instance on RAP, for both Docker-compose and Kubernetes.
 
-[Gatlin Testing](tests.md)
+[Gatling Testing](tests.md)
 
-Testing RAP using the Gatlin test framework.
+Testing RAP using the [Gatling test framework](https://gatling.io/).

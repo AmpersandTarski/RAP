@@ -1,23 +1,20 @@
-# RAP4
-RAP4 is a tool that is being used by the Open University of the Netherlands in the course [Rule Based Design](https://www.ou.nl/-/IM0403_Rule-Based-Design). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](https://rap.cs.ou.nl) to try it out...
+# How to deploy RAP on Docker
+RAP4 is a tool that is being used by the Open University of the Netherlands (OUNL) in the course [Rule Based Design](https://www.ou.nl/-/IM0403_Rule-Based-Design## "click for more information."). It lets students analyse Ampersand models, generate functional designs and make prototypes of information systems. It is the primary tool for students in relation to Ampersand. [Click here](https://rap.cs.ou.nl## "go to the tool") to try it out...
 
-## Deploy RAP4 on your own machine
+You can deploy RAP4 yourself by following [the following instructions](## "Last verified by Fran Slot, 13 March 2023").
 
-You can deploy RAP4 yourself by following these instructions:
-Last verified by Fran Slot, 13 March 2023.
+#### Assumptions
 
-### Assumptions
-
-* RAP4 runs on linux. If you are on Windows, you need to install WSL2 in order to take full advantage of the functionality of RAP4. Here are the [installation instructions for WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10). There is also a [nice youtube item on how to configure WSL2 and a quick overview of it](https://www.youtube.com/watch?v=j0PPcUUtHlw).
+* RAP4 runs on linux. If you are on Windows, you need to install WSL2 in order to take full advantage of the functionality of RAP4. Here are the [installation instructions for WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10). There is also a [nice youtube item on how to configure WSL2 and a quick overview of it](https://www.youtube.com/watch?v=j0PPcUUtHlw## "watch this item").
 * For the rest of this Readme, we assume you have linux running.
 This recipe has worked on Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-149-generic x86_64).
 
-### Prerequisites
+#### Prerequisites
 
- * Make sure you have [docker](https://docs.docker.com/get-docker/) installed.
- * Make sure you have [git](https://git-scm.com/downloads) installed.
+ * Make sure you have [docker](https://docs.docker.com/get-docker/## "navigate to the Docker download page") installed.
+ * Make sure you have [git](https://git-scm.com/downloads## "navigate to the Git download page") installed.
  
-### Installation
+#### Installation
 
 Follow these steps to get up and running:
 
@@ -90,7 +87,7 @@ Follow these steps to get up and running:
 
    ```
 
-# Testing
+## Testing
  - Verify that you can register as a user
  - Verify that you can login as that same user.
  - Verify that you can create a new script (push the + in the north-east corner of your  - RAP4-screen)
@@ -106,7 +103,7 @@ Follow these steps to get up and running:
  - Verify that your prototype works.
  - Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
 
-# Maintaining and redeploying RAP4
+## Maintaining and redeploying RAP4
 When changes have been made to the master branch of the RAP-repository, you may want to redeploy the new version. Go into your server with a CLI and rebuild the application:
    ```
        cd RAP
@@ -126,7 +123,7 @@ Don't forget to shut phpmyadmin down afterwards.
 
 In the unlikely and undesirable event that you want to reinstall the RAP4 database, don't forget to set the environment variable that disables the reset to `false`. Switch it back after you're done.
 
-# Troubleshooting
+## Troubleshooting
 Here are a few things that could go wrong when you install RAP4. The numbers correspond to the installation steps above.
 
 1. If cloning RAP4 fails, you may need an account at github to create a token, which is necessary for your server to access the package. If you do not have one, you can register [here](https://github.com/). It's free.
@@ -159,7 +156,8 @@ In the file .env you need to specify database passwords for the root account so 
    Please include the build log.
    The network `proxy` is necessary for Traefik to connect to the internet. Traefik is an edge router, aka proxy, that takes care of HTTPS security.
 
-4. Spinning up the RAP4 services should work without problems. If this fails, something is wrong with Docker or with your installation of Docker.
+4. Spinning up the RAP4 services should work without problems.
+   If this fails, something is wrong with Docker or with your installation of Docker.
    Check with `docker ps` that your services are running. This is what it should look like:
    ```
    CONTAINER ID        IMAGE                                COMMAND                  CREATED             STATUS              PORTS                                      NAMES
@@ -170,7 +168,8 @@ In the file .env you need to specify database passwords for the root account so 
    4e442d15266a        traefik:v2.2                         "/entrypoint.sh trae…"   6 seconds ago       Up 4 seconds        0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   traefik
    ```
    
-5. Step 5 is "the proof of the pudding". If it goes wrong, that is usually because of errors in the configuration. Check the previous steps carefully and verify you have made no mistakes.
+5. Step 5 is "the proof of the pudding".
+   If it goes wrong, that is usually because of errors in the configuration. Check the previous steps carefully and verify you have made no mistakes.
    To diagnose, set `AMPERSAND_DEBUG_MODE=true` true in your `docker-compose.yml file (in the services rap4 and enroll) and redo step 4. For diagnosing the mistakes, inspect the log files:
    ```bash
    docker compose logs
