@@ -13,7 +13,7 @@ Note that the resources are based on the deployment on the Azure subscription of
 - Static ip address 13.94.199.199
 - DNS server of \*.tarski.nl forwarded to the static IP address
 
-In order to work with a different IP address, change line 322 of [ingress-nginx-controller.yaml](https://github.com/AmpersandTarski/RAP/blob/Rap4Manifest/deployment/ingress/ingress-nginx-controller.yaml). The ingress rules still work based on the tarski domain name. Change the ingress files like below. The application should be accessible at [your.ip.address/rap/index.php]()
+In order to work with a different IP address, change line 322 of [ingress-nginx-controller.yaml](https://github.com/AmpersandTarski/RAP/blob/Rap4Manifest/deployment/ingress/ingress-nginx-controller.yaml). The ingress rules still work based on the tarski domain name. Change the ingress files like below. The application should be accessible at [your.ip.address/rap/index.php](https://your.ip.address/rap/index.php)
 
 ```
 apiVersion: networking.k8s.io/v1
