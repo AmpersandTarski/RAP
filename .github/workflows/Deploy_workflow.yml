@@ -53,10 +53,56 @@ jobs:
     needs: [CheckEnvironment, CheckRAP4USER]
     if: ${{ needs.CheckEnvironment.outputs.environment-ok == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      # Secrets
+      LETSENCRYPT_PRIVATE_KEY: ${{ secrets.LETSENCRYPT_PRIVATE_KEY }}
+      MYSQL_AMPERSAND_PASSWORD: ${{ secrets.MYSQL_AMPERSAND_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      # Variables
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+      LETSENCRYPT_EMAIL: ${{ vars.LETSENCRYPT_EMAIL }}
+      NAMESPACE_NAME: ${{ vars.NAMESPACE_NAME }}
+      SERVER_HOST_NAME: ${{ vars.SERVER_HOST_NAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Instantiate manifest templates
+        run: |
+          echo Instantiating manifest templates using ${{ inputs.environment_name }}
+          mkdir ${{ runner.temp }}/manifests
+          cd ${{ github.workspace }}/deployment/manifest-templates
+          for t in *-template.yaml; do 
+            envsubst '$LETSENCRYPT_PRIVATE_KEY,$MYSQL_AMPERSAND_PASSWORD,$MYSQL_ROOT_PASSWORD,$DOMAIN_NAME,$LETSENCRYPT_EMAIL,$NAMESPACE_NAME,$SERVER_HOST_NAME' < $t > "${{ runner.temp }}/manifests/${t%-template.yaml}.yaml"
+          done
 
+      # Manifests will contain secrets. So deleting them after applying on Kubernetes might be wise.
+      # Note that GitHub will itself also clean ${{ runner.temp }} during cleanup.
+      # - name: Delete instantiated manifests
+      #   run: |
+      #     echo Deleting instantiated manifests
+      #     rm ${{ runner.temp }}/manifests/*
+      #     rmdir ${{ runner.temp }}/manifests
+
+      # Uploading an artifact with manifest originals, templates and instances helps with debugging templates.
+      # This artifact is only for debugging. the code can be deleted or commented-out when everything works.
+      - name: Organize artifact source
+        run: |
+          echo Organizing artifact source
+          mkdir ${{ runner.temp }}/manifests/instances
+          mv ${{ runner.temp }}/manifests/*.yaml ${{ runner.temp }}/manifests/instances
+          mkdir ${{ runner.temp }}/manifests/originals
+          cp ${{ github.workspace }}/deployment/cert-manager/*.yaml ${{ runner.temp }}/manifests/originals
+          cp ${{ github.workspace }}/deployment/ingress/*.yaml ${{ runner.temp }}/manifests/originals
+          cp ${{ github.workspace }}/deployment/resources/*.yaml ${{ runner.temp }}/manifests/originals
+          mkdir ${{ runner.temp }}/manifests/templates
+          cp ${{ github.workspace }}/deployment/manifest-templates/*.yaml ${{ runner.temp }}/manifests/templates
+      - name: Upload manifest artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: instantiated-manifest-templates
+            path: |
+              ${{ runner.temp }}/manifests
+    
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -103,4 +149,4 @@ jobs:
       - name: Deploy steps
         run: |
           echo Deploying to ${{ inputs.environment_name }} ...
-          echo Environment variable vars.ENVIRONMENT_NAME has value * ${{ vars.ENVIRONMENT_NAME }} *
+  #        echo Environment variable vars.ENVIRONMENT_NAME has value * ${{ vars.ENVIRONMENT_NAME }} *

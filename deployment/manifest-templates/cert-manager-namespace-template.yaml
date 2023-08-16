@@ -1,0 +1,10 @@
+# Template variables and secrets from environment ${ENVIRONMENT_NAME}:
+# -
+#
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: cert-manager
+spec: {}
+status: {}
