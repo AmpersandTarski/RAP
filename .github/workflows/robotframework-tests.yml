@@ -3,9 +3,9 @@ name: 🤖 Robot Framework Tests
 # Controls when the workflow will run
 on:
   pull_request:
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    # - cron:  '* */2 * * *'
+  # schedule:
+  #   # * is a special character in YAML so you have to quote this string
+  #   - cron:  '* */2 * * *'
   workflow_dispatch:
 
 jobs:
