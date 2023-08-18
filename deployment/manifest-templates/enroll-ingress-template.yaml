@@ -1,0 +1,27 @@
+# Template variables:
+#   DOMAIN_NAME       : ${DOMAIN_NAME} 
+#   NAMESPACE_NAME    : ${NAMESPACE_NAME} 
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: enroll-ingress
+  namespace: ${NAMESPACE_NAME}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - enroll.${DOMAIN_NAME}
+      secretName: enroll-tls
+  rules:
+    - host: enroll.${DOMAIN_NAME}
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: enroll
+                port:
+                  number: 80

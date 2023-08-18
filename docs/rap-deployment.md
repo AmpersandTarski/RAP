@@ -276,7 +276,9 @@ Consists of the following files:
 
 The RAP Pod is a containerized application that is used to generated information systems. The tool stores ampersand-script in which the user can specify,analyze and building information systems.
 
-To avoid database resets after the first installation, two environment variables are moved to a ConfigMap, `AMPERSAND_PRODUCTION_MODE` and `DISABLE_DB_INSTALL`. Both should be turned to true after installing the database, to take effect the pod running the RAP container should be restarted.
+Before installing make sure that the two variables in `administration-configmap` - `AMPERSAND_PRODUCTION_MODE` and `DISABLE_DB_INSTALL` - are set to `false`. This is to ensure that the database is properly installed and accessable.
+
+To avoid database resets after the first installation, both should be turned to `true` after installing the database, to take effect the pod running the RAP container should be restarted.
 
 This can be executed through the (Azure) portal, or using Kubernetes CLI:
 
