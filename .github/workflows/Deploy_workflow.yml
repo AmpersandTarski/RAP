@@ -136,17 +136,39 @@ jobs:
           cache-to: type=gha,mode=max
 
   Deploy:
-    environment: ${{ inputs.environment_name }}
     needs: Build
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    permissions: write-all
     steps:
-      - name: Echoing variables
-        run: |
-          echo Echoing github.actor * ${{ github.actor }} *
-          echo Echoing github.ref_name * ${{ github.ref_name }} *
-          echo Echoing inputs.environment_name * ${{ inputs.environment_name }} *
-          echo Echoing vars.ENVIRONMENT_NAME * ${{ vars.ENVIRONMENT_NAME }} *
-      - name: Deploy steps
-        run: |
-          echo Deploying to ${{ inputs.environment_name }} ...
-  #        echo Environment variable vars.ENVIRONMENT_NAME has value * ${{ vars.ENVIRONMENT_NAME }} *
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: "Az CLI login"
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.OU_TST_CLIENT_ID }}
+          tenant-id: ${{ secrets.OU_TST_TENANT_ID }}
+          subscription-id: ${{ secrets.OU_TST_SUBSCRIPTION_ID }}
+
+      - name: Set AKS context
+        id: set-context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: kubernetes-tst
+          cluster-name: ampersand-rap-aks-tst
+
+      - name: Setup kubectl
+        id: install-kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Deploy to AKS
+        id: deploy-aks
+        uses: Azure/k8s-deploy@v4
+        with:
+          namespace: "rap"
+          # namespace: "rap-${{ inputs.environment_name }}"
+          manifests: |
+            deployment/resources/rap-deployment.yaml
+          images: |
+            ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-latest
