@@ -1,0 +1,7 @@
+resources:
+  - namespace.yaml
+  - ../base
+namespace: rap-production
+nameSuffix: -production
+patches:
+- path: rap-deployment.yaml

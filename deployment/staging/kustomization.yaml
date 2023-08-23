@@ -1,0 +1,7 @@
+resources:
+  - namespace.yaml
+  - ../base
+namespace: rap-staging
+nameSuffix: -staging
+patches:
+- path: rap-deployment.yaml
