@@ -5,3 +5,4 @@ namespace: rap-production
 nameSuffix: -production
 patches:
 - path: rap-deployment.yaml
+- path: elevated-rights-service-account.yaml

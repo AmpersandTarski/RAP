@@ -1,0 +1,118 @@
+---
+# Source: phpmyadmin/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin
+  labels:
+    app.kubernetes.io/name: phpmyadmin
+    helm.sh/chart: phpmyadmin-10.4.3
+    app.kubernetes.io/instance: phpmyadmin
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: phpmyadmin
+    app.kubernetes.io/instance: phpmyadmin
+---
+# Source: phpmyadmin/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  labels:
+    app.kubernetes.io/name: phpmyadmin
+    helm.sh/chart: phpmyadmin-10.4.3
+    app.kubernetes.io/instance: phpmyadmin
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: phpmyadmin
+      app.kubernetes.io/instance: phpmyadmin
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: phpmyadmin
+        helm.sh/chart: phpmyadmin-10.4.3
+        app.kubernetes.io/instance: phpmyadmin
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      
+      # yamllint disable rule:indentation
+      hostAliases:
+        - hostnames:
+          - status.localhost
+          ip: 127.0.0.1
+      # yamllint enable rule:indentation
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: phpmyadmin
+                    app.kubernetes.io/instance: phpmyadmin
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+          
+      priorityClassName: ""
+      securityContext:
+        fsGroup: 1001
+      containers:
+        - name: phpmyadmin
+          image: docker.io/bitnami/phpmyadmin:5.2.1-debian-11-r3
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: DATABASE_PORT_NUMBER
+              value: "3306"
+            - name: DATABASE_HOST
+              value: ""
+            - name: PHPMYADMIN_ALLOW_NO_PASSWORD
+              value: "true"
+            - name: PHPMYADMIN_ALLOW_ARBITRARY_SERVER
+              value: "true"
+            - name: DATABASE_ENABLE_SSL
+              value: "no"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30

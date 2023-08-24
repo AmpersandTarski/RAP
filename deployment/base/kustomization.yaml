@@ -1,3 +1,7 @@
 resources:
+  - database
+  - phpmyadmin.yaml
+  - elevated-rights-service-account.yaml
+  - administration-configmap.yaml
   - rap-service.yaml
   - rap-deployment.yaml

@@ -1,0 +1,5 @@
+resources:
+  - db-secrets.yaml
+  - db-users-configmap.yaml
+  - db-users.yaml
+  - mariadb.yaml

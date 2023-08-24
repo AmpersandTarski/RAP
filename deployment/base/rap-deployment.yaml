@@ -21,8 +21,6 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: AMPERSAND_DBHOST
-              value: rap-db
             - name: AMPERSAND_DBNAME
               value: rap
             - name: AMPERSAND_DEBUG_MODE

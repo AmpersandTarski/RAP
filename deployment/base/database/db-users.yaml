@@ -1,10 +1,7 @@
-# Template variables and secrets:
-#   NAMESPACE_NAME    : ${NAMESPACE_NAME} 
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: db-users
-  namespace: ${NAMESPACE_NAME}
 data:
   create-user.sql: |-
     CREATE USER 'ampersand'@'%' IDENTIFIED BY 'ampersand';

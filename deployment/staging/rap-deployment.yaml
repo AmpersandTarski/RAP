@@ -8,6 +8,8 @@ spec:
       containers:
         - name: ampersand-rap
           env:
+            - name: AMPERSAND_DBHOST
+              value: rap-db-staging
             - name: RAP_HOST_NAME
               value: staging.rap.tarski.nl
             - name: RAP_KUBERNETES_NAMESPACE

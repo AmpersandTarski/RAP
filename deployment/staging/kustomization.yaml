@@ -5,3 +5,4 @@ namespace: rap-staging
 nameSuffix: -staging
 patches:
 - path: rap-deployment.yaml
+- path: elevated-rights-service-account.yaml
