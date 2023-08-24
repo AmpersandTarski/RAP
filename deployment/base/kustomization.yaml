@@ -5,3 +5,5 @@ resources:
   - administration-configmap.yaml
   - rap-service.yaml
   - rap-deployment.yaml
+  - student-prototype-deployment.yaml
+  - student-prototype-cleanup.yaml
