@@ -1,8 +1,9 @@
 resources:
   - namespace.yaml
-  - ../base
+  - ../../../../base/rap
 namespace: rap-production
 nameSuffix: -production
 patches:
 - path: rap-deployment.yaml
+- path: rap-ingress.yaml
 - path: elevated-rights-service-account.yaml

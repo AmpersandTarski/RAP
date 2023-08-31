@@ -1,0 +1,5 @@
+resources:
+  - ../../../general/rap/production
+patches:
+- path: rap-deployment.yaml
+- path: rap-ingress.yaml

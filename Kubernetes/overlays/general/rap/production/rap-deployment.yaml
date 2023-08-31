@@ -10,7 +10,5 @@ spec:
           env:
             - name: AMPERSAND_DBHOST
               value: rap-db-production
-            - name: RAP_HOST_NAME
-              value: rap.tarski.nl
             - name: RAP_KUBERNETES_NAMESPACE
               value: rap-production

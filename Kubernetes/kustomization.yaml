@@ -1,4 +1,2 @@
 resources:
-  - ingress
-  - certmanager
-  - rap
+  - general

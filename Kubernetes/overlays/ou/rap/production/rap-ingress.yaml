@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rap-ingress
+spec:
+  tls:
+    - hosts:
+        - cs.ou.nl
+  rules:
+    - host: cs.ou.nl

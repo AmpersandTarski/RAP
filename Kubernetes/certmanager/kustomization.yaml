@@ -1,5 +1,0 @@
-resources:
-  - cert-manager-namespace.yaml
-  - cert-manager.yaml
-  - staging
-  - production

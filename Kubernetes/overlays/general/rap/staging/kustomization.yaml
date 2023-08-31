@@ -1,6 +1,6 @@
 resources:
   - namespace.yaml
-  - ../base
+  - ../../../../base/rap
 namespace: rap-staging
 nameSuffix: -staging
 patches:
