@@ -407,7 +407,55 @@ done
 
 ## Kubernetes Deployment
 
-Deploying RAP on a Kubernetes Cluster is not a difficult task. Once connection is established to the Kubernetes API, is a matter of applying all manifest files covered in the previous section.
+### Local
+
+#### Requirements:
+
+Terminal running Powershell
+Minikube (or similar)
+Docker desktop (or similar)
+
+#### Steps:
+
+1. The first step is to start a minikube cluster using docker providing the virtualization. To do this run the following command in Powershell.
+
+```
+minikube start --driver=docker
+```
+
+2. Next navigate to the deployment/kubernetes folder.
+
+3. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
+
+   1. To deploy ingress and cert manager run the following command:
+   
+   ```
+   kubectl apply -k .\
+   ```
+
+   2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
+   
+   ```
+   kubectl get pods -A -w
+   ```
+
+   3. Once all pod are running or completed, the application can be deployed. In this example the Ordina deployment will be used.
+   
+   ```
+   kubectl apply -k .\overlays\ordina
+   ```
+
+   4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Make sure that all the pods are running as described above. Once everything is ready run the following command:
+   
+   ```
+   kubectl port-forward service/rap-staging -n rap-staging 8001:80
+   ```
+
+   5. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
+
+### Azure Kubernetes Service
+
+~~Deploying RAP on a Kubernetes Cluster is not a difficult task. Once connection is established to the Kubernetes API, is a matter of applying all manifest files covered in the previous section.
 
 To connect to an Azure Kubernetes Cluster with the CLI, run
 
@@ -482,7 +530,7 @@ kubectl apply -f ./resources/student-prototype-deployment.yaml
 kubectl apply -f ./resources/student-prototype-cleanup.yaml
 ```
 
-If an error occurs applying the ingress rules, it is possible that the ingress controller is still starting. Wait a few minutes to try again.
+If an error occurs applying the ingress rules, it is possible that the ingress controller is still starting. Wait a few minutes to try again.~~
 
 # Deep dive RAP
 
