@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: enroll-ingress
+spec:
+  tls:
+    - hosts:
+        - enroll.cs.ou.nl
+  rules:
+    - host: enroll.cs.ou.nl

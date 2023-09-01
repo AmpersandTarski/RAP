@@ -1,3 +1,4 @@
 resources:
   - ../general/certmanager
   - rap
+  - enroll
