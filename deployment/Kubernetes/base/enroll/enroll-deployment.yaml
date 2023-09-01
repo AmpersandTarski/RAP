@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: enroll
+  name: enroll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enroll
+  template:
+    metadata:
+      labels:
+        app: enroll
+    spec:
+      containers:
+        - image: ampersandtarski/enroll:latest
+          name: enroll
+          ports:
+            - containerPort: 80
+          env:
+            - name: AMPERSAND_DBNAME
+              value: enroll
+            - name: AMPERSAND_DEBUG_MODE
+              value: "true"
+            - name: AMPERSAND_LOG_CONFIG
+              value: logging.yaml
+            - name: AMPERSAND_PRODUCTION_MODE
+              value: "false"
+            - name: AMPERSAND_SERVER_URL
+              value: https://localhost
+          envFrom:
+            - secretRef:
+                name: db-secrets

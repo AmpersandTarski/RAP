@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: enroll-ingress
+spec:
+  tls:
+    - hosts:
+        - enroll.staging.rap.tarski.nl
+  rules:
+    - host: enroll.staging.rap.tarski.nl

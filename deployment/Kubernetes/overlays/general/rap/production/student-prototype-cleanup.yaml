@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: student-prototype-cleanup
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: elevated-rights-service-account
+          containers:
+            - name: student-prototype-cleanup
+              command:
+                - /bin/sh
+                - "-c"
+                - |
+                  # Install MySQL client
+                  # apt-get update && apt-get install -y mariadb-client
+
+                  # loop all deployments with label: container-image=student-prototype
+                  for deployment in $(kubectl get deployment -n rap-production -l container-image=student-prototype -o jsonpath='{.items[*].metadata.name}'); do
+                    # calculate age in seconds
+                    deployment_age=$(($(date +%s) - $(date +%s -d $(kubectl get deployment $deployment -n rap-production -o jsonpath='{.metadata.creationTimestamp}'))))
+                    # delete deployment, service and ingress if age > 1 hour
+                    if [ $deployment_age -gt 3600 ]; then
+                      echo "Deleting deployment $deployment"
+                      kubectl delete deployment $deployment -n rap-production
+                      kubectl delete service $deployment -n rap-production
+                      kubectl delete ingress $deployment-ingress -n rap-production
+                      # delete student database (TODO: install mysql)
+                      # mysql -h rap-db -u ampersand -p$MYSQL_AMPERSAND_PASSWORD -e "DROP DATABASE IF EXISTS $deployment"
+                    else
+                      echo "Deployment $deployment is not older than 1 hour"
+                    fi
+                  done

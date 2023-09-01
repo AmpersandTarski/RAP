@@ -1,0 +1,6 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: enroll-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
