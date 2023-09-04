@@ -1,5 +1,5 @@
 resources:
-  - ../../../general/enroll/production
+  - ../../../general/production/enroll
 patches:
 - path: enroll-deployment.yaml
 - path: enroll-ingress.yaml

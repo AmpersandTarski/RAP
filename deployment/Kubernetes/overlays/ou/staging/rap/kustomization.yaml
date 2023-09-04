@@ -1,5 +1,5 @@
 resources:
-  - ../../../general/rap/staging
+  - ../../../general/staging/rap
 patches:
 - path: rap-deployment.yaml
 - path: rap-ingress.yaml

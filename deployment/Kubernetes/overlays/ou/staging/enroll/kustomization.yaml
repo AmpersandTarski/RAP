@@ -1,5 +1,5 @@
 resources:
-  - ../../../general/enroll/staging
+  - ../../../general/staging/enroll
 patches:
 - path: enroll-deployment.yaml
 - path: enroll-ingress.yaml
