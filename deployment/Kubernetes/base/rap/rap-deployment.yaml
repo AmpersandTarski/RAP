@@ -16,8 +16,7 @@ spec:
     spec:
       serviceAccountName: elevated-rights-service-account
       containers:
-        - image: ampersandtarski/ampersand-rap:DevTest-latest
-          name: ampersand-rap
+        - name: ampersand-rap
           ports:
             - containerPort: 80
           env:
