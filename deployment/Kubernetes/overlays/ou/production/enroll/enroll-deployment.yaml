@@ -9,4 +9,4 @@ spec:
         - name: enroll
           env:
             - name: RAP_HOST_NAME
-              value: enroll.cs.ou.nl
+              value: enroll.rap.cs.ou.nl

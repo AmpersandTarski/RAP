@@ -9,4 +9,4 @@ spec:
         - name: enroll
           env:
             - name: RAP_HOST_NAME
-              value: enroll.staging.cs.ou.nl
+              value: enroll.staging.rap.cs.ou.nl

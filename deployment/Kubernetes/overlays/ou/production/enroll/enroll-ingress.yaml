@@ -5,6 +5,6 @@ metadata:
 spec:
   tls:
     - hosts:
-        - enroll.cs.ou.nl
+        - enroll.rap.cs.ou.nl
   rules:
-    - host: enroll.cs.ou.nl
+    - host: enroll.rap.cs.ou.nl

@@ -5,6 +5,6 @@ metadata:
 spec:
   tls:
     - hosts:
-        - staging.cs.ou.nl
+        - staging.rap.cs.ou.nl
   rules:
-    - host: staging.cs.ou.nl
+    - host: staging.rap.cs.ou.nl
