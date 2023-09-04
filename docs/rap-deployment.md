@@ -430,7 +430,7 @@ minikube start --driver=docker
    1. To deploy ingress and cert manager run the following command:
    
    ```
-   kubectl apply -k .\
+   kubectl apply -k .\general\
    ```
 
    2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
@@ -439,10 +439,10 @@ minikube start --driver=docker
    kubectl get pods -A -w
    ```
 
-   3. Once all pod are running or completed, the application can be deployed. In this example the Ordina deployment will be used.
+   3. Once all pod are running or completed, the application can be deployed. In this example the Ordina staging deployment will be used.
    
    ```
-   kubectl apply -k .\overlays\ordina
+   kubectl apply -k .\overlays\ordina\staging\
    ```
 
 4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Make sure that all the pods are running as described above. Once everything is ready run the following command:
@@ -478,7 +478,7 @@ Azure Active Directory with an AKS cluster running
    1. To deploy ingress and cert manager run the following command:
    
    ```
-   kubectl apply -k .\
+   kubectl apply -k .\general\
    ```
 
    2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
@@ -487,10 +487,10 @@ Azure Active Directory with an AKS cluster running
    kubectl get pods -A -w
    ```
 
-   3. Once all pod are running or completed, the application can be deployed. In this example the Ordina deployment will be used.
+   3. Once all pod are running or completed, the application can be deployed. In this example the Ordina staging deployment will be used.
    
    ```
-   kubectl apply -k .\overlays\ordina
+   kubectl apply -k .\overlays\ordina\staging\
    ```
 
 4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Make sure that all the pods are running as described above. Once everything is ready run the following command:
