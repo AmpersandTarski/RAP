@@ -1,10 +1,3 @@
 resources:
-  - db-users-configmap.yaml
-  - db-users.yaml
-  - mariadb.yaml
-secretGenerator:
-  - name: db-secrets
-    envs: 
-    - .env.secrets
-generatorOptions:
-  disableNameSuffixHash: true
+  - rap
+  - mariadb

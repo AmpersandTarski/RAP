@@ -11,20 +11,6 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 automountServiceAccountToken: false
 ---
-# Source: mariadb/templates/secrets.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: rap-db
-  labels:
-    app.kubernetes.io/name: mariadb
-    helm.sh/chart: mariadb-11.4.7
-    app.kubernetes.io/instance: rap-db
-    app.kubernetes.io/managed-by: Helm
-type: Opaque
-data:
-  mariadb-root-password: UUk4RWFleFNLYQ==
----
 # Source: mariadb/templates/primary/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
