@@ -1,9 +1,0 @@
-# Template variables and secrets:
-#   -
-apiVersion: v1
-kind: Namespace
-metadata:
-  creationTimestamp: null
-  name: ingress-nginx
-spec: {}
-status: {}
