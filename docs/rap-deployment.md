@@ -439,7 +439,9 @@ minikube start --driver=docker
    kubectl get pods -A -w
    ```
 
-   3. Once all pod are running or completed, the application can be deployed. In this example the Ordina staging deployment will be used.
+   3. While waiting for the pods to start, create an ```.env.secrets``` file in the ```.\base\rap\database``` folder. Use the existing ```example.env.secrets``` as a base. This file is used to generate a secret file on the cluster.
+   
+   4. Once all pod are running or completed and an ```.env.secrets``` file has been made, the application can be deployed. In this example the Ordina staging deployment will be used.
    
    ```
    kubectl apply -k .\overlays\ordina\staging\
@@ -487,7 +489,9 @@ Azure Active Directory with an AKS cluster running
    kubectl get pods -A -w
    ```
 
-   3. Once all pod are running or completed, the application can be deployed. In this example the Ordina staging deployment will be used.
+   3. While waiting for the pods to start, create an ```.env.secrets``` file in the ```.\base\rap\database``` folder. Use the existing ```example.env.secrets``` as a base. This file is used to generate a secret file on the cluster.
+   
+   4. Once all pod are running or completed, the application can be deployed. In this example the Ordina staging deployment will be used.
    
    ```
    kubectl apply -k .\overlays\ordina\staging\
