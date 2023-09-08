@@ -1,0 +1,4 @@
+resources:
+  - enroll-service.yaml
+  - enroll-deployment.yaml
+  - enroll-ingress.yaml

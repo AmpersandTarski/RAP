@@ -1,0 +1,10 @@
+resources:
+  - database
+  - phpmyadmin.yaml
+  - elevated-rights-service-account.yaml
+  - administration-configmap.yaml
+  - rap-service.yaml
+  - rap-deployment.yaml
+  - rap-ingress.yaml
+  - student-prototype-deployment.yaml
+  - student-prototype-cleanup.yaml

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-users
+data:
+  create-user.sql: |-
+    CREATE USER 'ampersand'@'%' IDENTIFIED BY 'ampersand';
+    GRANT ALL PRIVILEGES ON *.* TO 'ampersand'@'%';

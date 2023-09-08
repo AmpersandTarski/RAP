@@ -1,0 +1,4 @@
+resources:
+  - ../../general/production/certmanager
+  - rap
+  - enroll

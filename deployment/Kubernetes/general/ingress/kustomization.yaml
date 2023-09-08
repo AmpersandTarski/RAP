@@ -1,0 +1,3 @@
+resources:
+  - ingress-nginx-namespace.yaml
+  - ingress-nginx-controller.yaml

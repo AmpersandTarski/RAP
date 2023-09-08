@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rap
+spec:
+  template:
+    spec:
+      containers:
+        - name: ampersand-rap
+          image: ampersandtarski/ampersand-rap:Production-latest
+          env:
+            - name: RAP_HOST_NAME
+              value: rap.cs.ou.nl

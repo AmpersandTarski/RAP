@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enroll
+spec:
+  template:
+    spec:
+      containers:
+        - name: enroll
+          env:
+            - name: AMPERSAND_DBHOST
+              value: rap-db-staging

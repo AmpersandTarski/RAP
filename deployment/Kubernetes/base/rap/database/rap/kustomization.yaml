@@ -1,0 +1,9 @@
+resources:
+  - db-users-configmap.yaml
+  - db-users.yaml
+secretGenerator:
+  - name: db-secrets
+    envs: 
+    - .env.secrets
+generatorOptions:
+  disableNameSuffixHash: true

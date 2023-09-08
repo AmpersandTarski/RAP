@@ -23,7 +23,7 @@ spec:
           image: {{containerImage}}
           env:
             - name: AMPERSAND_DBHOST
-              value: rap-db
+              value: {{dbName}}
             - name: AMPERSAND_DBNAME
               value: {{student}}
             - name: AMPERSAND_DEBUG_MODE
@@ -37,10 +37,10 @@ spec:
             - name: RAP_DEPLOYMENT
               value: Kubernetes
             - name: RAP_KUBERNETES_NAMESPACE
-              value: rap
+              value: {{namespace}}
           envFrom:
             - secretRef:
-                name: db-secrets
+                name: {{dbSecrets}}
           ports:
             - containerPort: 80
           command: ["bash", "/run-student-prototype.sh"]

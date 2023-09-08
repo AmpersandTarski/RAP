@@ -1,0 +1,10 @@
+resources:
+  - namespace.yaml
+  - ../../../../base/rap
+namespace: rap-staging
+nameSuffix: -staging
+patches:
+- path: rap-deployment.yaml
+- path: rap-ingress.yaml
+- path: elevated-rights-service-account.yaml
+- path: student-prototype-cleanup.yaml

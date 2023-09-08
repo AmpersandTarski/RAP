@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: administration-configmap
+data:
+  DISABLE_DB_INSTALL: "false"
+  AMPERSAND_PRODUCTION_MODE: "false"

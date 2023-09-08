@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rap
+  name: rap
+spec:
+  selector:
+    matchLabels:
+      app: rap
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rap
+    spec:
+      serviceAccountName: elevated-rights-service-account
+      containers:
+        - name: ampersand-rap
+          ports:
+            - containerPort: 80
+          env:
+            - name: AMPERSAND_DBNAME
+              value: rap
+            - name: AMPERSAND_DEBUG_MODE
+              value: "true"
+            - name: AMPERSAND_LOG_CONFIG
+              value: logging.yaml
+            - name: AMPERSAND_SERVER_URL
+              value: https://localhost
+            - name: RAP_DEPLOYMENT
+              value: Kubernetes
+            - name: RAP_STUDENT_PROTO_IMAGE
+              value: ampersandtarski/rap4-student-prototype:v1.2.0
+            - name: RAP_STUDENT_PROTO_LOG_CONFIG
+              value: logging.yaml
+          envFrom:
+            - configMapRef:
+                name: administration-configmap
+            - secretRef:
+                name: db-secrets

@@ -1,0 +1,4 @@
+resources:
+  - ../../general/staging/certmanager
+  - rap
+  - enroll

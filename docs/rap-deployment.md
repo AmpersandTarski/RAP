@@ -407,82 +407,103 @@ done
 
 ## Kubernetes Deployment
 
-Deploying RAP on a Kubernetes Cluster is not a difficult task. Once connection is established to the Kubernetes API, is a matter of applying all manifest files covered in the previous section.
+### Local
 
-To connect to an Azure Kubernetes Cluster with the CLI, run
+#### Requirements:
 
-```
-az login
-az aks get-credentials -g <<resource-group>> -n <<AKS-name>> --overwrite-existing
-```
+Terminal running Powershell
+Minikube
+Docker desktop
 
-Have all the mafinest files in a this folder structure
+#### Steps:
 
-```
-└── deployment/
-    ├── cert-manager/
-    │   ├── cert-manager.yaml
-    │   └── ...
-    ├── ingress/
-    │   ├── ingress-nginx-controller.yaml
-    │   └── ...
-    └── resources/
-        ├── enroll-deployment.yaml
-        ├── mariadb.yaml
-        ├── phpmyadmin.yaml
-        ├── rap-deployment.yaml
-        ├── student-prototype-cleanup.yaml
-        └── ...
-```
-
-Apply all manifest files to the cluster. Using the Kubernetes CLI commands below. Creating a new resource or updating an existing resource is executed with the same `kubectl apply` command.
-
-**Ingress conroller**
+1. The first step is to start a minikube cluster using docker providing the virtualization. To do this run the following command in Powershell.
 
 ```
-kubectl apply -f ./ingress/ingress-nginx-namespace.yaml
-kubectl apply -f ./ingress/ingress-nginx-controller.yaml
+minikube start --driver=docker
 ```
 
-**Let's encrypt certificate manager**
+2. Next navigate to the deployment/kubernetes folder.
 
-```
-kubectl apply -f ./cert-manager/cert-manager-namespace.yaml
-kubectl apply -f ./cert-manager//cert-manager.yaml
-Start-Sleep -s 10  # sleep to wait for cert-manager to startup
-kubectl apply -f ./cert-manager//letsencrypt-staging.yaml
-kubectl apply -f ./cert-manager//letsencrypt-production.yaml
-```
+3. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
 
-**Resources**
+   1. To deploy ingress and cert manager run the following command:
+   
+   ```
+   kubectl apply -k .\general\
+   ```
 
+   2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
+   
+   ```
+   kubectl get pods -A -w
+   ```
+
+   3. While waiting for the pods to start, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
+   
+   4. Once all pod are running or completed and an ```.env.secrets``` file has been made, the application can be deployed. In this example the Ordina staging deployment will be used.
+   
+   ```
+   kubectl apply -k .\overlays\ordina\staging\
+   ```
+
+4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Make sure that all the pods are running as described above. Once everything is ready run the following command:
+   
 ```
-# namespace (<<namespace>> = [development, staging, production])
-kubectl apply -f ./resources/<<namespace>>-namespace.yaml
-# database
-kubectl apply -f ./resources/db-secrets.yaml
-kubectl apply -f ./resources/db-users.yaml
-kubectl apply -f ./resources/mariadb.yaml
-# phpmyadmin
-kubectl apply -f ./resources/phpmyadmin.yaml
-kubectl apply -f ./ingress/phpmyadmin-ingress.yaml
-# RAP
-kubectl apply -f ./resources/elevated-rights-service-account.yaml
-kubectl apply -f ./resources/rap-service.yaml
-kubectl apply -f ./resources/rap-deployment.yaml
-kubectl apply -f ./ingress/rap-ingress.yaml
-# Enroll
-kubectl apply -f ./resources/enroll-configmap.yaml
-kubectl apply -f ./resources/enroll-service.yaml
-kubectl apply -f ./resources/enroll-deployment.yaml
-kubectl apply -f ./ingress/enroll-ingress.yaml
-# Student prototype
-kubectl apply -f ./resources/student-prototype-deployment.yaml
-# Student prototype cleanup CronJob
-kubectl apply -f ./resources/student-prototype-cleanup.yaml
+kubectl port-forward service/rap-staging -n rap-staging 8001:80
 ```
 
-If an error occurs applying the ingress rules, it is possible that the ingress controller is still starting. Wait a few minutes to try again.
+5. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
+
+### Azure Kubernetes Service (AKS)
+
+The steps to deploym to AKS are almost identical to the steps described under Local.
+
+#### Requirements
+
+Terminal running Powershell
+Azure Active Directory with an AKS cluster running
+
+#### Steps:
+
+1. The first step is to log in to Azure using the Azure CLI, followed by connecting to the cluster.
+   
+   ```
+   az login
+   az aks get-credentials -g <<resource-group>> -n <<AKS-name>> --overwrite-existing
+   ```
+
+2. Next navigate to the deployment/kubernetes folder.
+
+3. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
+
+   1. To deploy ingress and cert manager run the following command:
+   
+   ```
+   kubectl apply -k .\general\
+   ```
+
+   2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
+   
+   ```
+   kubectl get pods -A -w
+   ```
+
+   3. While waiting for the pods to start, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
+   
+   4. Once all pod are running or completed, the application can be deployed. In this example the Ordina staging deployment will be used.
+   
+   ```
+   kubectl apply -k .\overlays\ordina\staging\
+   ```
+
+4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Make sure that all the pods are running as described above. Once everything is ready run the following command:
+   
+```
+kubectl port-forward service/rap-staging -n rap-staging 8001:80
+```
+
+5. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
 
 # Deep dive RAP
 

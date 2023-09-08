@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: student-prototype-cleanup
+spec:
+  schedule: "@hourly"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: elevated-rights-service-account
+          containers:
+            - name: student-prototype-cleanup
+              image: bitnami/kubectl:latest
+              envFrom:
+                - secretRef:
+                    name: db-secrets
+          restartPolicy: OnFailure
