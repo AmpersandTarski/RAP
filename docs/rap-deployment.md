@@ -411,26 +411,21 @@ done
 
 #### Requirements:
 
-Terminal running Powershell
-Minikube
-Docker desktop
+- VS Code
+- Docker desktop
+
+Refer to [this](prepare-windows-environment.md) guide to set up the required components.
 
 #### Steps:
 
-1. The first step is to start a minikube cluster using docker providing the virtualization. To do this run the following command in Powershell.
+1. Navigate to the deployment/kubernetes folder.
 
-```
-minikube start --driver=docker
-```
-
-2. Next navigate to the deployment/kubernetes folder.
-
-3. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
+2. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
 
    1. To deploy ingress and cert manager run the following command:
    
    ```
-   kubectl apply -k .\general\
+   kubectl apply -k ./general/
    ```
 
    2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
@@ -439,21 +434,52 @@ minikube start --driver=docker
    kubectl get pods -A -w
    ```
 
-   3. While waiting for the pods to start, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
-   
-   4. Once all pod are running or completed and an ```.env.secrets``` file has been made, the application can be deployed. In this example the Ordina staging deployment will be used.
-   
+   The output will resemble the following:
+
    ```
-   kubectl apply -k .\overlays\ordina\staging\
+   NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
+   cert-manager    cert-manager-cainjector-744bb89575-xchxd    1/1     Running     0          52s
+   cert-manager    cert-manager-startupapicheck-vv7n8          0/1     Completed   0          52s
+   cert-manager    cert-manager-webhook-759d6dcbf7-zbwwh       1/1     Running     0          52s
+   ingress-nginx   ingress-nginx-admission-create-gxhft        0/1     Completed   0          52s
+   ingress-nginx   ingress-nginx-admission-patch-b4nks         0/1     Completed   1          52s
+   ingress-nginx   ingress-nginx-controller-6f79748cff-npp8n   1/1     Running     0          52s
+   ingress-nginx   ingress-nginx-controller-6f79748cff-wr8qj   1/1     Running     0          52s
    ```
 
-4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Make sure that all the pods are running as described above. Once everything is ready run the following command:
+   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
+   
+   4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
+   
+   ```
+   kubectl apply -k ./overlays/ordina/staging/
+   ```
+
+   5. Make sure that all the pods are running.
+   
+   ```
+   kubectl get pod -n rap-staging -w
+   ```
+
+   The result should resemble:
+
+   ```
+   NAME                                               READY   STATUS             RESTARTS      AGE
+   enroll-staging-6cb55c694-5cxdl                     1/1     Running            0             66s
+   phpmyadmin-staging-6b559f4965-6vhf8                1/1     Running            0             66s
+   rap-db-staging-0                                   1/1     Running            0             65s
+   rap-staging-67cbdf4d5-w45m8                        1/1     Running            0             66s
+   student-prototype-cleanup-staging-28236180-tmbqh   0/1     Completed          0             26s
+   student-prototype-staging-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
+   ```
+
+3. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
    
 ```
 kubectl port-forward service/rap-staging -n rap-staging 8001:80
 ```
 
-5. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
+4. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to[localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
 
 ### Azure Kubernetes Service (AKS)
 
@@ -461,8 +487,10 @@ The steps to deploym to AKS are almost identical to the steps described under Lo
 
 #### Requirements
 
-Terminal running Powershell
-Azure Active Directory with an AKS cluster running
+- VS Code
+- Azure Active Directory with an AKS cluster running
+
+Refer to [this](prepare-windows-environment.md) guide to set up the required components.
 
 #### Steps:
 
@@ -480,7 +508,7 @@ Azure Active Directory with an AKS cluster running
    1. To deploy ingress and cert manager run the following command:
    
    ```
-   kubectl apply -k .\general\
+   kubectl apply -k ./general/
    ```
 
    2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
@@ -489,21 +517,52 @@ Azure Active Directory with an AKS cluster running
    kubectl get pods -A -w
    ```
 
-   3. While waiting for the pods to start, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
-   
-   4. Once all pod are running or completed, the application can be deployed. In this example the Ordina staging deployment will be used.
-   
+   The output will resemble the following:
+
    ```
-   kubectl apply -k .\overlays\ordina\staging\
+   NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
+   cert-manager    cert-manager-cainjector-744bb89575-xchxd    1/1     Running     0          52s
+   cert-manager    cert-manager-startupapicheck-vv7n8          0/1     Completed   0          52s
+   cert-manager    cert-manager-webhook-759d6dcbf7-zbwwh       1/1     Running     0          52s
+   ingress-nginx   ingress-nginx-admission-create-gxhft        0/1     Completed   0          52s
+   ingress-nginx   ingress-nginx-admission-patch-b4nks         0/1     Completed   1          52s
+   ingress-nginx   ingress-nginx-controller-6f79748cff-npp8n   1/1     Running     0          52s
+   ingress-nginx   ingress-nginx-controller-6f79748cff-wr8qj   1/1     Running     0          52s
    ```
 
-4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Make sure that all the pods are running as described above. Once everything is ready run the following command:
+   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
+   
+   4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
+   
+   ```
+   kubectl apply -k ./overlays/ordina/staging/
+   ```
+
+   5. Make sure that all the pods are running.
+   
+   ```
+   kubectl get pod -n rap-staging -w
+   ```
+
+   The result should resemble:
+
+   ```
+   NAME                                               READY   STATUS             RESTARTS      AGE
+   enroll-staging-6cb55c694-5cxdl                     1/1     Running            0             66s
+   phpmyadmin-staging-6b559f4965-6vhf8                1/1     Running            0             66s
+   rap-db-staging-0                                   1/1     Running            0             65s
+   rap-staging-67cbdf4d5-w45m8                        1/1     Running            0             66s
+   student-prototype-cleanup-staging-28236180-tmbqh   0/1     Completed          0             26s
+   student-prototype-staging-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
+   ```
+
+4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
    
 ```
 kubectl port-forward service/rap-staging -n rap-staging 8001:80
 ```
 
-5. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
+5. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to[localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
 
 # Deep dive RAP
 

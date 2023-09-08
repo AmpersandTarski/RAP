@@ -4,20 +4,9 @@
 
 The following programs / APIs / SDKs should be installed in your system.
 
-- PowerShell
-- [GIT](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [VS Code](https://code.visualstudio.com/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/)
-- [HELM CLI](https://helm.sh/docs/intro/install/)
-- BASE64
-
-Optional
-
-- Chocolatey (https://chocolatey.org/)
-
-For windows a powershell file called `prepare-windows.ps1` is provided to install all dependencies.
-
-It should be noted that the powershell scripts are cross-platform, but at this moment only tested from Windows.
 
 ## Connecting to the Kubernetes Cluster
 
@@ -40,10 +29,3 @@ And connect to a cluster using the NAME property
 ```
 kubectl config use-context <<NAME>>
 ```
-
-## Troubleshooting
-
-#### Q: I get an error stating that the script can't be loaded.
-
-A: Some scripts might not be signed. As such you need to set the propper execution policy. See https:/go.microso
-ft.com/fwlink/?LinkID=135170 for more information on this topic.
