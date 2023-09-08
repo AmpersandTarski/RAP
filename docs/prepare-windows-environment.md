@@ -1,8 +1,5 @@
 # Preparing Windows environment
-
-## Check prerequisites
-
-The following programs / APIs / SDKs should be installed in your system.
+If you want to deploy RAP on your own Windows computer, you need to make sure to have the following programs / APIs / SDKs installed on your system:
 
 - PowerShell
 - [GIT](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
@@ -11,11 +8,9 @@ The following programs / APIs / SDKs should be installed in your system.
 - [HELM CLI](https://helm.sh/docs/intro/install/)
 - BASE64
 
-Optional
+Optionally, you can use Chocolatey (https://chocolatey.org/) to make the automated installation and updating of the applications on your machine easier.
 
-- Chocolatey (https://chocolatey.org/)
-
-For windows a powershell file called `prepare-windows.ps1` is provided to install all dependencies.
+The powershell file `prepare-windows.ps1` installs all dependencies.
 
 It should be noted that the powershell scripts are cross-platform, but at this moment only tested from Windows.
 

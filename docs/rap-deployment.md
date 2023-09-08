@@ -80,18 +80,22 @@ The Kubernetes deployment chart consists of several components that work togethe
 
 - DNS routing
 - Ingress Nginx Controller with letsencrypt
-- Resources (Enroll, RAP, phpMyAdmin, MariaDB)
-- Persistent Storage
+- Application components (Enroll, RAP, PhpMyAdmin, MariaDB)
+- Persistent Storage to store the RAP database and student scripts.
 - Scheduled job (CronJob) to cleanup student prototypes
 - Service Account
-- Infrastructure (nodes)
+- Infrastructure (nodes) to host the application
 
 **Architecture figure**
 ![kubernetes-architecture](figures/Kubernetes-architecture.png)
 
 ## External routing
+A user of RAP uses the URL of RAP in her browser.
+The Kubernetes cluster receives this traffic.
+The Kubernetes cluster uses an Azure public IP address.
+Azur forwards this traffic through a load balancer to the ingress controller of the RAP application.
 
-Traffic to the Kubernetes cluster is routed from a DNS service to an Azure public IP address. A load balancer forwards traffic to the ingress controller.
+A seperate document is available explaining how to create the Kubernetes cluster on Azure using Azure Kubernetes Service: [Preparing Kubernetes environment on Azure](preparing-azure.md)
 
 ## Kubernetes objects
 
@@ -118,7 +122,7 @@ The most important definitions of Kubernetes objects are in the table below.
 | Term | Definition |
 | - | - |
 | Namespace | A virtual cluster that provides a way to divide cluster resources between multiple users, teams, or applications. Namespaces enable you to create virtual clusters within a physical cluster. Objects within a namespace are isolated from objects in other namespaces. |
-| Deployment | A Kubernetes object that manages a set of replica pods and their associated configuration. Deployments enable you to declaratively manage applications and their scaling, rolling updates, and rollbacks. |
+| Deployment | A Kubernetes object that manages a set of replica pods and their associated configuration. Deployments enable you to manage applications and their scaling, rolling updates, and rollbacks. A specific .yaml file, the manifest, describes the deployment declaratively. |
 | Service | An abstraction that defines a set of pods and a policy for accessing them. Services enable loose coupling between dependent pods by providing a stable IP address and DNS name for a set of pods that perform the same function. |
 | Ingress rule | An Ingress rule is a Kubernetes resource that defines how incoming requests to a particular service should be routed within a cluster. It specifies the rules for mapping external traffic to internal services, based on criteria such as the URL path, the host name, or the request headers. |
 | ConfigMap | A Kubernetes object that provides a way to decouple configuration data from application code. ConfigMaps enable you to store key-value pairs or configuration files as objects in the Kubernetes API, and mount them as volumes or environment variables in a container. |
