@@ -41,4 +41,4 @@ For these invites, contact [Frank Teusink](<mailto:Frank.Teusink@ordina.nl?subje
 
 ## Next
 
-[Prepare Windows](preparing-windows-environment.md)
+[Prepare Windows](preparing-windows.md)
