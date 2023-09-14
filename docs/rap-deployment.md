@@ -22,6 +22,10 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 #### Steps
 
 1. Navigate to the deployment/kubernetes folder.
+  
+   ```pwsh
+   cd ./deployment/kubernetes/
+   ```
 
 2. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
 
@@ -34,7 +38,7 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
    2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
   
       ```pwsh
-      kubectl get pods -A -w
+      kubectl get pods -A --field-selector metadata.namespace!=kube-system -w
       ```
 
       The output will resemble the following:
@@ -50,7 +54,9 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
       ingress-nginx   ingress-nginx-controller-6f79748cff-wr8qj   1/1     Running     0          52s
       ```
 
-   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
+      Use ```ctrl + c``` to stop watching.
+
+   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with localhost. These files are used to generate the required secret files on the cluster.
   
    4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
   
@@ -76,6 +82,8 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
       student-prototype-staging-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
       ```
 
+      Use ```ctrl + c``` to stop watching.
+
 3. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
 
       ```pwsh
@@ -86,7 +94,7 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 
 ### Azure Kubernetes Service (AKS)
 
-The steps to deploym to AKS are almost identical to the steps described under Local.
+The steps to deploy to AKS are almost identical to the steps described under Local.
 
 #### Requirements
 
@@ -106,6 +114,10 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 
 2. Next navigate to the deployment/kubernetes folder.
 
+   ```pwsh
+   cd ./deployment/kubernetes/
+   ```
+
 3. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
 
    1. To deploy ingress and cert manager run the following command:
@@ -117,7 +129,7 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
    2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
   
       ```pwsh
-      kubectl get pods -A -w
+      kubectl get pods -A --field-selector metadata.namespace!=kube-system -w
       ```
 
       The output will resemble the following:
@@ -133,7 +145,9 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
       ingress-nginx   ingress-nginx-controller-6f79748cff-wr8qj   1/1     Running     0          52s
       ```
 
-   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. These files are used to generate the required secret files on the cluster.
+      Use ```ctrl + c``` to stop watching.
+
+   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with localhost. These files are used to generate the required secret files on the cluster.
   
    4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
   
@@ -158,6 +172,8 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
       student-prototype-cleanup-staging-28236180-tmbqh   0/1     Completed          0             26s
       student-prototype-staging-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
       ```
+
+      Use ```ctrl + c``` to stop watching.
 
 4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
   
