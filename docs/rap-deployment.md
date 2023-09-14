@@ -112,13 +112,15 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 
 3. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
 
-   1. To deploy ingress and cert manager run the following command:
+   1. Find the ```ingress-nginx-controller.yaml``` file in the ```./general/ingress``` folder. Find the LoadBalancer Service and fill in the ```spec.loadBalancerIP``` using the value of the static IP resource.
+  
+   2. To deploy ingress and cert manager run the following command:
   
       ```pwsh
       kubectl apply -k ./general/
       ```
 
-   2. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
+   3. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
   
       ```pwsh
       kubectl get pods -A --field-selector metadata.namespace!=kube-system -w
@@ -139,15 +141,15 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 
       Use ```ctrl + c``` to stop watching.
 
-   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'. These files are used to generate the required secret files on the cluster.
+   4. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'. These files are used to generate the required secret files on the cluster.
   
-   4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
+   5. Now the application can be deployed. In this example the Ordina staging deployment will be used.
   
       ```pwsh
       kubectl apply -k ./overlays/ordina/staging/
       ```
 
-   5. Make sure that all the pods are running.
+   6. Make sure that all the pods are running.
   
       ```pwsh
       kubectl get pod -n rap-staging -w
