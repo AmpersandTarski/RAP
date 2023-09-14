@@ -199,10 +199,10 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 - Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
 - Try the Atlas. Browse through the elements of your script.
 - Generate a Prototype. Upon success you will see a link "Open Prototype".
-- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing localy use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-staging``` with ```svc/<yourname>```.
+- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-staging``` with ```svc/<yourname>```.
 - Install the database by pushing the red button.
 - Verify that your prototype works.
-- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
+- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-staging``` with ```svc/enroll-staging```.
 
 ## RAP docker image
 
