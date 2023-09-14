@@ -15,7 +15,7 @@ The first time installing Docker Desktop might require some additional set up.
 ### Windows
 
 To run docker desktop on windows wsl needs to be enabled.
-To do this follow the instructions provided [here](https://learn.microsoft.com/en-us/windows/wsl/install)
+To do this follow the instructions provided [here](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 [Source](https://docs.docker.com/desktop/install/windows-install/)
 
@@ -30,21 +30,44 @@ To do this follow the instructions provided [here](https://learn.microsoft.com/e
 
 ## Connecting to the Kubernetes Cluster
 
-Once you have created a Cluster, or if you have an existing Kubernetes Cluster on Azure, you can bind your Kubernetes CLI to this cluster with the command
+Once you have installed Docker Desktop and enabled Kubernetes, you can use kubectl commands.
+To check if it works run the following command.
+
+```pwsh
+kubectl version -o=yaml
+```
+
+Which should yield a result like below.
+
+```yaml
+clientVersion:
+  buildDate: "2023-03-15T13:40:17Z"
+  compiler: gc
+  gitCommit: 9e644106593f3f4aa98f8a84b23db5fa378900bd
+  gitTreeState: clean
+  gitVersion: v1.26.3
+  goVersion: go1.19.7
+  major: "1"
+  minor: "26"
+  platform: windows/amd64
+kustomizeVersion: v4.5.7
+```
+
+### Connecting to Azure
+
+Binding the Kubernetes CLI to Azure can be done with the following command. Note that you have to be logged in to Azure for this to work.
 
 ```pwsh
 az aks get-credentials -g <resource-group-name> -n <aks-cluster-name> --overwrite-existing
 ```
 
-After executing the command, all interactions with the Kubernetes Cluster are performed using the kubectl command. From this point forward, the commands will not be specific to Azure, but will work on any Kubernetes Cluster connected to the Kubernetes CLI, regardless if it is hosted locally, on Azure, AWS, or Google Cloud.
-
-To switch between Kubernetes cluster, list all clusters known the Kubernetes API
+After executing the command, any kubectl commands will be run on the connected cluster. To connect to a different cluster, first retreive a list of all available clusters.
 
 ```pwsh
 kubectl config get-contexts
 ```
 
-And connect to a cluster using the NAME property
+Then the following command can be used to switch to the desired cluster.
 
 ```pwsh
 kubectl config use-context <<NAME>>
