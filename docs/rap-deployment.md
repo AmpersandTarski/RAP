@@ -56,7 +56,7 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 
       Use ```ctrl + c``` to stop watching.
 
-   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with localhost. These files are used to generate the required secret files on the cluster.
+   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'. These files are used to generate the required secret files on the cluster.
   
    4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
   
@@ -83,14 +83,6 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
       ```
 
       Use ```ctrl + c``` to stop watching.
-
-3. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
-
-      ```pwsh
-      kubectl port-forward service/rap-staging -n rap-staging 8001:80
-      ```
-
-4. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
 
 ### Azure Kubernetes Service (AKS)
 
@@ -147,7 +139,7 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 
       Use ```ctrl + c``` to stop watching.
 
-   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with localhost. These files are used to generate the required secret files on the cluster.
+   3. Once all pods are running or completed, create an ```.env.secrets``` file in the ```.\base\rap\database\rap``` and ```.\base\rap\database\mariadb``` folders. Use the existing ```example.env.secrets``` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'. These files are used to generate the required secret files on the cluster.
   
    4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
   
@@ -175,13 +167,40 @@ Refer to [this](prepare-windows-environment.md) guide to set up the required com
 
       Use ```ctrl + c``` to stop watching.
 
-4. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
+## Testing the application
+
+1. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
   
    ```pwsh
-   kubectl port-forward service/rap-staging -n rap-staging 8001:80
+   kubectl port-forward svc/rap-staging -n rap-staging 8001:80
    ```
 
-5. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
+2. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
+  
+3. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
+   ![install the database](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstall_screen.png?raw=true)
+
+4. Now click the red "Reinstall application" button. This creates a fresh RAP4 database, so it may take a while.
+
+5. In your browser, click on Home or navigate to your hostname, e.g. http://localhost.
+   Now you will see the RAP-application
+   ![landing page](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstalled_screen.png)
+
+6. Verify the following.
+  
+- Verify that you can register as a user
+- Verify that you can login as that same user.
+- Verify that you can create a new script (push the + in the north-east corner of your  - RAP4-screen)
+- Verify that the compiler works by compiling an example script.
+- Verify that the compiler generates error message when you make a deliberate mistake in your example script.
+- Check that once the script is correct, the buttons Func Spec, Atlas, and Prototype are active.
+- Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
+- Try the Atlas. Browse through the elements of your script.
+- Generate a Prototype. Upon success you will see a link "Open Prototype".
+- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing localy use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-staging``` with ```svc/<yourname>```.
+- Install the database by pushing the red button.
+- Verify that your prototype works.
+- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
 
 ## RAP docker image
 
