@@ -72,3 +72,7 @@ Then the following command can be used to switch to the desired cluster.
 ```pwsh
 kubectl config use-context <<NAME>>
 ```
+
+## Next
+
+[Prepare Azure](preparing-azure.md)

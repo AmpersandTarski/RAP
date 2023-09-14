@@ -38,3 +38,7 @@ These are currently:
 - A-team: Sprint planning; at end of sprint, friday 11:00, 50 minutes
 
 For these invites, contact [Frank Teusink](<mailto:Frank.Teusink@ordina.nl?subject=Request for invitations of A-team meetings>).
+
+## Next
+
+[Prepare Windows](preparing-windows-environment.md)
