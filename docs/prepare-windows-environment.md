@@ -8,6 +8,17 @@ The following programs / APIs / SDKs should be installed in your system.
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
 
+## Setting up Docker Desktop
+
+The first time installing Docker Desktop might require some additional set up.
+
+### Windows
+
+To run docker desktop on windows wsl needs to be enabled.
+To do this follow the instructions provided [here](https://learn.microsoft.com/en-us/windows/wsl/install)
+
+[Source](https://docs.docker.com/desktop/install/windows-install/)
+
 ## Setting up Kubernetes on Docker Desktop
 
 1. From the Docker Dashboard, select the Settings.
