@@ -2,6 +2,7 @@
 # Ampersand compiler is also needed for RAP4 to compile student scripts
 
 FROM ampersandtarski/prototype-framework:v1.12.0
+# this prototype-framework builds on an Apache server
 
 # Install docker, so students can run their prototypes
 RUN apt-get update \
@@ -27,7 +28,7 @@ RUN apt-get install -y curl && \
 RUN apt-get update && apt-get install -y graphviz
 
 # Copy Ampersand compiler
-# COPY --from=ampersandtarski/ampersand:2021-10-22 /bin/ampersand /usr/local/bin
+# COPY --from=ampersandtarski/ampersand:2023-08-08 /bin/ampersand /usr/local/bin
 # RUN chmod +x /usr/local/bin/ampersand
 
 COPY . /usr/local/project/
