@@ -1,8 +1,8 @@
 # Preparing Kubernetes environment on Azure
-
+You need a Kubernetes cluster to install things on. Here, we install a Kubernetes cluster on Azure. 
 ## Prerequisites
 
-First of all an Azure subscription is required. This can be the Open University, Ordina or a personal account. If you have a Virtual Studio license, you can obtain a Azure subscription for development. [Click here](https://azure.microsoft.com/en-us/pricing/member-offers/credit-for-visual-studio-subscribers/)
+First of all, you need an Azure subscription. This can be the Open University, Ordina or a personal account. If you have a Virtual Studio license, you can obtain a Azure subscription for development. [Click here](https://azure.microsoft.com/en-us/pricing/member-offers/credit-for-visual-studio-subscribers/)
 
 Running the resources as described in this page will cost around €80/month.
 
@@ -77,14 +77,14 @@ For `tarski.nl`:
 
 ## Kubernetes CLI
 
-To connect to the Kubernetes Cluster with the CLI, run
+To connect yourself to the Kubernetes Cluster you need to log in on your command line interface (CLI):
 
 ```
 az login
 az aks get-credentials -g $RG -n $AKSCluster --overwrite-existing
 ```
 
-You can easily switch between cluster by listing all cluster and set the current using the NAME parameter.
+You can switch between clusters by listing all clusters and set the current using the NAME parameter.
 
 ```
 kubectl config get-contexts
@@ -93,7 +93,8 @@ kubectl config use-context 'NAME'
 
 ## Open ID Connect
 
-To make use of Open ID Connect (OIDC) to allow GitHub Actions to apply new deployments to AKS the following steps are required.
+We want to automate the deployment and let gitHub Actions do the work for us.
+This requires Open ID Connect (OIDC) to allow GitHub Actions to apply new deployments to AKS. The following steps show you how.
 
 ### Requirements
 
