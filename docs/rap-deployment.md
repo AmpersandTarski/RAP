@@ -93,7 +93,7 @@ The steps to deploy to AKS are almost identical to the steps described under Loc
 - VS Code
 - Azure Active Directory with an AKS cluster running
 
-Refer to [this](prepare-windows-environment.md) guide to set up the required components.
+Refer to [this](preparing-windows.md) guide to set up the required components.
 
 #### Steps
 
