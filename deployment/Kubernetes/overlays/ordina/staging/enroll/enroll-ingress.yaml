@@ -6,5 +6,14 @@ spec:
   tls:
     - hosts:
         - enroll.staging.rap.tarski.nl
+      secretName: enroll-tls-staging
   rules:
     - host: enroll.staging.rap.tarski.nl
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: enroll
+                port:
+                  number: 80
