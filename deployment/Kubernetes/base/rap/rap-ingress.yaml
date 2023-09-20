@@ -4,7 +4,6 @@ metadata:
   name: rap-ingress
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
   tls:
