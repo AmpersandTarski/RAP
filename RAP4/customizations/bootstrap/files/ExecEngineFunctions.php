@@ -323,11 +323,16 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
         $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
 
+        $hostname=getenv('RAP_HOST_NAME');
+        $hostname="{$userName}.{$hostname}";
+
         $suffix=substr($namespace, 3);
 
         $dbName="rap-db{$suffix}";
         
         $dbSecret="db-secrets{$suffix}";
+
+        $tlsSecret="{$userName}-tls{$suffix}";
 
         // Location to save files
         $relDir       = pathinfo($path, PATHINFO_DIRNAME);
@@ -346,6 +351,8 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
         $manifest=str_replace("{{dbName}}", $dbName, $manifest);
         $manifest=str_replace("{{dbSecrets}}", $dbSecret, $manifest);
+        $manifest=str_replace("{{hostName}}", $hostname, $manifest);
+        $manifest=str_replace("{{tlsSecret}}", $tlsSecret, $manifest);
         
         // Save manifest file
         $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";

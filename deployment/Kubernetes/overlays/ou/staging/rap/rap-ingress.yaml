@@ -6,5 +6,15 @@ spec:
   tls:
     - hosts:
         - staging.rap.cs.ou.nl
+      secretName: rap-tls-staging
   rules:
     - host: staging.rap.cs.ou.nl
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: rap
+                port:
+                  number: 80
+                      

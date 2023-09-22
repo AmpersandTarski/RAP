@@ -67,15 +67,15 @@ metadata:
   namespace: {{namespace}}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/issuer: "letsencrypt-production"
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - {{student}}.rap.tarski.nl
-      secretName: {{student}}-tls
+        - {{hostName}}
+      secretName: {{tlsSecret}}
   rules:
-    - host: {{student}}.rap.tarski.nl
+    - host: {{hostName}}
       http:
         paths:
           - pathType: ImplementationSpecific
