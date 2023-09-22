@@ -9,17 +9,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  Development:
-    if: startsWith(github.ref_name, 'feature/')
-    uses: ./.github/workflows/Deploy_workflow.yml
-    with:
-      environment_name: development
-    secrets: inherit
+  # Development:
+  #   if: startsWith(github.ref_name, 'feature/')
+  #   uses: ./.github/workflows/Deploy_workflow.yml
+  #   with:
+  #     environment_name: development
+  #   secrets: inherit
 
   Staging:
     if: startsWith(github.ref_name, 'feature/')
     # if: github.ref_name == 'main'
-    needs: Development
+    # needs: Development
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environment_name: staging
