@@ -5,23 +5,15 @@ on:
     branches:
       - main
       - "feature/**"
-      - "issue/**"
   pull_request:
   workflow_dispatch:
 
 jobs:
-  Local:
+  Development:
     if: startsWith(github.ref_name, 'feature/')
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      environment_name: "Local${{ github.actor }}"
-    secrets: inherit
-
-  Development:
-    if: github.ref_name == 'main'
-    uses: ./.github/workflows/Deploy_workflow.yml
-    with:
-      environment_name: Development
+      environment_name: development
     secrets: inherit
 
   Staging:
@@ -29,7 +21,7 @@ jobs:
     needs: Development
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      environment_name: Staging
+      environment_name: staging
     secrets: inherit
 
   Production:
@@ -37,5 +29,5 @@ jobs:
     needs: Staging
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      environment_name: Production
+      environment_name: production
     secrets: inherit
