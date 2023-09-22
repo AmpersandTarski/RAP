@@ -17,7 +17,8 @@ jobs:
     secrets: inherit
 
   Staging:
-    if: github.ref_name == 'main'
+    if: startsWith(github.ref_name, 'feature/')
+    # if: github.ref_name == 'main'
     needs: Development
     uses: ./.github/workflows/Deploy_workflow.yml
     with:

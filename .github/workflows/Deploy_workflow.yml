@@ -103,7 +103,7 @@ jobs:
 
       - name: Build and push RAP4
         uses: docker/build-push-action@v4
-        if: ${{ needs.CheckRAP4.outputs.hasChanged == 'True' }}
+        # if: ${{ needs.CheckRAP4.outputs.hasChanged == 'True' }}
         with:
           context: ./RAP4
           file: ./RAP4/Dockerfile
@@ -141,12 +141,18 @@ jobs:
         id: install-kubectl
         uses: azure/setup-kubectl@v3
 
-      - name: Deploy to AKS
-        id: deploy-aks
-        uses: Azure/k8s-deploy@v4
-        with:
-          namespace: "rap-${{ inputs.environment_name }}"
-          manifests: |
-            deployment/resources/rap-deployment.yaml
-          images: |
-            ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }}
+      - name: Update image
+        id: update-image
+        shell: bash
+        run: |
+          kubectl set image deployment/rap-${{ inputs.environment_name }} ampersand-rap=ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }}
+
+      # - name: Deploy to AKS
+      #   id: deploy-aks
+      #   uses: Azure/k8s-deploy@v4
+      #   with:
+      #     namespace: "rap-${{ inputs.environment_name }}"
+      #     manifests: |
+      #       deployment/resources/rap-deployment.yaml
+      #     images: |
+      #       ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }}
