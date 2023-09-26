@@ -6,7 +6,7 @@ spec:
   tls:
     - hosts:
         - rap.tarski.nl
-      secretName: rap-tls-production
+      secretName: rap-tls-production-secret
   rules:
     - host: rap.tarski.nl
       http:

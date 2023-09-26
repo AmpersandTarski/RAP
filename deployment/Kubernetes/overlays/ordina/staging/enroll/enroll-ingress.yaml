@@ -6,7 +6,7 @@ spec:
   tls:
     - hosts:
         - enroll.staging.rap.tarski.nl
-      secretName: enroll-tls-staging
+      secretName: enroll-tls-staging-secret
   rules:
     - host: enroll.staging.rap.tarski.nl
       http:

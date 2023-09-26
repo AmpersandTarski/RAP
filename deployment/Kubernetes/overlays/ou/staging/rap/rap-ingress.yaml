@@ -6,7 +6,7 @@ spec:
   tls:
     - hosts:
         - staging.rap.cs.ou.nl
-      secretName: rap-tls-staging
+      secretName: rap-tls-staging-secret
   rules:
     - host: staging.rap.cs.ou.nl
       http:

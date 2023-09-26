@@ -6,7 +6,7 @@ spec:
   tls:
     - hosts:
         - enroll.rap.cs.ou.nl
-      secretName: enroll-tls-production
+      secretName: enroll-tls-production-secret
   rules:
     - host: enroll.rap.cs.ou.nl
       http:

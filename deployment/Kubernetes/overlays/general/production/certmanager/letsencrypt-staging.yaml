@@ -11,7 +11,7 @@ spec:
     email: fran.slot@ordina.nl
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
-      name: rap-tls-staging
+      name: rap-tls-staging-key
     # Enable the HTTP-01 challenge provider
     solvers:
       - http01:

@@ -6,7 +6,7 @@ spec:
   tls:
     - hosts:
         - staging.rap.tarski.nl
-      secretName: rap-tls-staging
+      secretName: rap-tls-staging-secret
   rules:
     - host: staging.rap.tarski.nl
       http:
