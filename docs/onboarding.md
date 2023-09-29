@@ -2,7 +2,7 @@
 
 List of activities to get a new developer up-to speed with RAP development.
 
- - Schedule a meeting with [Stef Joosten](<mailto:Stef.Joosten@ordina.nl?subject=Request demo meeting&body=Hi Stef, This is an automated email to get an invitation for a meeting to get up and running in the Ampersant project.>) to get an explanation and demo about the Ampersant project.
+ - Schedule a meeting with [Stef Joosten](<mailto:Stef.Joosten@ordina.nl?subject=Request demo meeting&body=Hi Stef,>) to get an explanation and demo about the Ampersant project.
  - Join the upcomming sprint review meeting to meet the team.
  - Request access to the GitHub repository as described below.
  - Get invited to the different sprint meetings through teams as described below.
