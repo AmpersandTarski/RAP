@@ -4,7 +4,7 @@ module.exports = {
         {
             label: 'How to deploy RAP',
             type: 'doc',
-            id: 'rap/docker-deployment-guide',
+            id: 'rap/deployment-guide',
         },
     ],
     rapReferenceSidebar: [
