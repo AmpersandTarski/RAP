@@ -117,8 +117,6 @@ jobs:
   Deploy:
     needs: Build
     runs-on: ubuntu-latest
-    # environment: ${{ inputs.environment_name }}
-    # environment: "LocalFranSlot"
     permissions: write-all
     steps:
       - name: Check out repo
@@ -146,7 +144,7 @@ jobs:
         id: update-image
         shell: bash
         run: |
-          kubectl set image deployment/rap-${{ inputs.environment_name }} ampersand-rap=ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }}
+          kubectl set image deployment/rap-${{ inputs.environment_name }} ampersand-rap=ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }} -n ${{ inputs.environment_name }}
 
       # - name: Deploy to AKS
       #   id: deploy-aks
