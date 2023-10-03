@@ -7,73 +7,13 @@ on:
         description: Name of the environment to which is deployed
         required: true
         type: string
+      context:
+        description: Context and path for docker build
+        required: true
+        type: string
 
 jobs:
-  CheckEnvironment:
-    environment: ${{ inputs.environment_name }}
-    runs-on: ubuntu-latest
-    outputs:
-      environment-ok: ${{ steps.my-environment-check.outputs.defined }}
-    steps:
-      - name: Check for Environment availability
-        id: my-environment-check
-        # perform check & put boolean result as an output
-        shell: bash
-        run: |
-          if [ "${{ vars.ENVIRONMENT_NAME }}" == ${{ inputs.environment_name }} ]; then
-            echo "defined=true" >> $GITHUB_OUTPUT;
-          else
-            echo "defined=false" >> $GITHUB_OUTPUT;
-          fi
-
-  CheckRAP4USER:
-    runs-on: ubuntu-latest
-    outputs:
-      hasChanged: ${{ steps.hasChanged.outputs.hasDiff }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Checkout as many commits as needed for the diff
-          fetch-depth: 2
-      - shell: pwsh
-        id: hasChanged
-        run: |
-          # Diff HEAD with the previous commit
-          $diff = git diff --name-only HEAD^ HEAD
-
-          # Check if a file under RAP4USER/ has changed (added, modified, deleted)
-          $SourceDiff = $diff | Where-Object { $_ -match '^RAP4USER/' }
-          $HasDiff = $SourceDiff.Length -gt 0
-
-          # Set the output named "hasDiff"
-          echo "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
-
-  CheckRAP4:
-    runs-on: ubuntu-latest
-    outputs:
-      hasChanged: ${{ steps.hasChanged.outputs.hasDiff }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Checkout as many commits as needed for the diff
-          fetch-depth: 2
-      - shell: pwsh
-        id: hasChanged
-        run: |
-          # Diff HEAD with the previous commit
-          $diff = git diff --name-only HEAD^ HEAD
-
-          # Check if a file under RAP4/ has changed (added, modified, deleted)
-          $SourceDiff = $diff | Where-Object { $_ -match '^RAP4/' }
-          $HasDiff = $SourceDiff.Length -gt 0
-
-          # Set the output named "hasDiff"
-          echo "hasDiff=$HasDiff" >> $Env:GITHUB_OUTPUT
-
   Build:
-    environment: ${{ inputs.environment_name }}
-    needs: [CheckEnvironment, CheckRAP4USER, CheckRAP4]
-    if: ${{ needs.CheckEnvironment.outputs.environment-ok == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -88,29 +28,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push RAP4USER
+      - name: Build and push image
         uses: docker/build-push-action@v4
-        if: ${{ needs.CheckRAP4USER.outputs.hasChanged == 'True' }}
         with:
-          context: ./RAP4USER
-          file: ./RAP4USER/Dockerfile
+          context: ./${{ inputs.context }}
+          file: ./${{ inputs.context }}/Dockerfile
           push: true
           tags: |
             ampersandtarski/rap4-student-prototype:${{ inputs.environment_name }}-latest
             ampersandtarski/rap4-student-prototype:${{ inputs.environment_name }}-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and push RAP4
-        uses: docker/build-push-action@v4
-        # if: ${{ needs.CheckRAP4.outputs.hasChanged == 'True' }}
-        with:
-          context: ./RAP4
-          file: ./RAP4/Dockerfile
-          push: true
-          tags: |
-            ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-latest
-            ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -144,7 +70,8 @@ jobs:
         id: update-image
         shell: bash
         run: |
-          kubectl set image deployment/rap-${{ inputs.environment_name }} ampersand-rap=ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }} -n ${{ inputs.environment_name }}
+          echo 'updating image'
+          # kubectl set image deployment/rap-${{ inputs.environment_name }} ampersand-rap=ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }} -n ${{ inputs.environment_name }}
 
       # - name: Deploy to AKS
       #   id: deploy-aks

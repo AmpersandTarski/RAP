@@ -3,12 +3,19 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
-      - "feature/**"
-  pull_request:
-  workflow_dispatch:
+      - "issue/**"
 
 jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update image
+        id: update-image
+        shell: bash
+        run: |
+          echo 'updating image'
+  # if: github.event.pull_request.merged == true
+
   # Development:
   #   if: startsWith(github.ref_name, 'feature/')
   #   uses: ./.github/workflows/Deploy_workflow.yml
@@ -16,19 +23,19 @@ jobs:
   #     environment_name: development
   #   secrets: inherit
 
-  Staging:
-    if: startsWith(github.ref_name, 'feature/')
-    # if: github.ref_name == 'main'
-    # needs: Development
-    uses: ./.github/workflows/Deploy_workflow.yml
-    with:
-      environment_name: staging
-    secrets: inherit
+  # Staging:
+  #   if: startsWith(github.ref_name, 'feature/')
+  #   # if: github.ref_name == 'main'
+  #   # needs: Development
+  #   uses: ./.github/workflows/Deploy_workflow.yml
+  #   with:
+  #     environment_name: staging
+  #   secrets: inherit
 
-  Production:
-    if: github.ref_name == 'main'
-    needs: Staging
-    uses: ./.github/workflows/Deploy_workflow.yml
-    with:
-      environment_name: production
-    secrets: inherit
+  # Production:
+  #   if: github.ref_name == 'main'
+  #   needs: Staging
+  #   uses: ./.github/workflows/Deploy_workflow.yml
+  #   with:
+  #     environment_name: production
+  #   secrets: inherit

@@ -1,0 +1,30 @@
+name: RAP pipeline
+
+on:
+  push:
+    branches:
+      - "feature/**"
+  pull_request:
+    types:
+      - closed
+    paths:
+      - "./RAP4/"
+
+jobs:
+  Staging:
+    if: startsWith(github.ref_name, 'feature/')
+    # if: github.ref_name == 'main'
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: staging
+      context: RAP4
+    secrets: inherit
+
+  Production:
+    if: github.ref_name == 'main'
+    needs: Staging
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environment_name: production
+      context: RAP4
+    secrets: inherit
