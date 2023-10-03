@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - "feature/**"
+    paths:
+      - "./RAP4/"
   pull_request:
     types:
       - closed
@@ -18,7 +20,6 @@ jobs:
     with:
       environment_name: staging
       context: RAP4
-    secrets: inherit
 
   Production:
     if: github.ref_name == 'main'
@@ -27,4 +28,3 @@ jobs:
     with:
       environment_name: production
       context: RAP4
-    secrets: inherit
