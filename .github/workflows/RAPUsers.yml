@@ -3,14 +3,10 @@ name: RAP User pipeline
 on:
   push:
     branches:
+      - "main"
       - "feature/**"
-    paths:
-      - "./RAP4USER/"
-  pull_request:
-    types:
-      - closed
-    paths:
-      - "./RAP4USER/"
+    # paths:
+    #   - "./RAP4USER/"
 
 jobs:
   Staging:
