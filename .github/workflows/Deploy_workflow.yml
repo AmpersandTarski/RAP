@@ -83,7 +83,4 @@ jobs:
         id: update-image
         shell: bash
         run: |
-          echo 'Deployment = ${{inputs.deploymentName}}'
-          echo 'Container = ${{inputs.containerName}}'
-          echo 'Image = ${{inputs.imageName}}'
-          # kubectl set image deployment/${{inputs.deploymentName}}-${{inputs.environmentName}} ${{inputs.containerName}}=ampersandtarski/${{inputs.imageName}}:${{ inputs.environmentName }}-${{ github.sha }} -n rap-${{ inputs.environmentName }}
+          kubectl set image deployment/${{inputs.deploymentName}}-${{inputs.environmentName}} ${{inputs.containerName}}=ampersandtarski/${{inputs.imageName}}:${{ inputs.environmentName }}-${{ github.sha }} -n rap-${{ inputs.environmentName }}
