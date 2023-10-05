@@ -14,8 +14,11 @@ jobs:
     # if: github.ref_name == 'main'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      environment_name: staging
+      environmentName: staging
       context: RAP4USER
+      deploymentName: student-prototype
+      containerName: rap4-student-prototype
+      imageName: rap4-student-prototype
     secrets: inherit
 
   Production:
@@ -23,6 +26,9 @@ jobs:
     needs: Staging
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
-      environment_name: production
+      environmentName: production
       context: RAP4USER
+      deploymentName: student-prototype
+      containerName: rap4-student-prototype
+      imageName: rap4-student-prototype
     secrets: inherit

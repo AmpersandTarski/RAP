@@ -3,12 +3,24 @@ name: Deploy workflow
 on:
   workflow_call:
     inputs:
-      environment_name:
+      environmentName:
         description: Name of the environment to which is deployed
         required: true
         type: string
       context:
         description: Context and path for docker build
+        required: true
+        type: string
+      deploymentName:
+        description: Name of the deployment to change
+        required: true
+        type: string
+      containerName:
+        description: Name of the container to change
+        required: true
+        type: string
+      imageName:
+        description: Name of the image to change
         required: true
         type: string
 
@@ -35,8 +47,8 @@ jobs:
           file: ./${{ inputs.context }}/Dockerfile
           push: true
           tags: |
-            ampersandtarski/rap4-student-prototype:${{ inputs.environment_name }}-latest
-            ampersandtarski/rap4-student-prototype:${{ inputs.environment_name }}-${{ github.sha }}
+            ampersandtarski/${{inputs.imageName}}:${{ inputs.environmentName }}-latest
+            ampersandtarski/${{inputs.imageName}}:${{ inputs.environmentName }}-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -71,14 +83,4 @@ jobs:
         shell: bash
         run: |
           echo 'updating image'
-          # kubectl set image deployment/rap-${{ inputs.environment_name }} ampersand-rap=ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }} -n ${{ inputs.environment_name }}
-
-      # - name: Deploy to AKS
-      #   id: deploy-aks
-      #   uses: Azure/k8s-deploy@v4
-      #   with:
-      #     namespace: "rap-${{ inputs.environment_name }}"
-      #     manifests: |
-      #       deployment/resources/rap-deployment.yaml
-      #     images: |
-      #       ampersandtarski/ampersand-rap:${{ inputs.environment_name }}-${{ github.sha }}
+          # kubectl set image deployment/${{inputs.deploymentName}}-${{inputs.environmentName}} ${{inputs.containerName}}=ampersandtarski/${{inputs.imageName}}:${{ inputs.environmentName }}-${{ github.sha }} -n rap-${{ inputs.environmentName }}
