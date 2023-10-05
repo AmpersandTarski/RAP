@@ -72,8 +72,8 @@ jobs:
         id: set-context
         uses: azure/aks-set-context@v3
         with:
-          resource-group: kubernetes-tst
-          cluster-name: ampersand-rap-aks-tst
+          resource-group: kubernetes-prd
+          cluster-name: ampersand-rap-aks-prd
 
       - name: Setup kubectl
         id: install-kubectl
