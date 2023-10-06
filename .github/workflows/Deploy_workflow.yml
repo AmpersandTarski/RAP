@@ -65,6 +65,7 @@ jobs:
 
   Deploy:
     needs: Build
+    if: ${{ always() && needs.Build.result == 'success'}}
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
