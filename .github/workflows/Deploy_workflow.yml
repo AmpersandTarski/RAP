@@ -26,6 +26,7 @@ on:
 
 jobs:
   Approval:
+    if: ${{inputs.environmentName == 'production'}}
     runs-on: ubuntu-latest
     environment: Production
     steps:
