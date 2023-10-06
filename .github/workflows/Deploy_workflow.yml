@@ -36,7 +36,7 @@ jobs:
 
   Build:
     needs: Approval
-    if: ${{ needs.Approval.result == 'skipped' || needs.Approval.result == 'success'}}
+    if: ${{ always() && (needs.Approval.result == 'skipped' || needs.Approval.result == 'success')}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
