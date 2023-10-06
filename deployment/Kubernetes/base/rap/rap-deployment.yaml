@@ -30,8 +30,7 @@ spec:
               value: https://localhost
             - name: RAP_DEPLOYMENT
               value: Kubernetes
-            - name: RAP_STUDENT_PROTO_IMAGE
-              value: ampersandtarski/rap4-student-prototype:v1.2.0
+            
             - name: RAP_STUDENT_PROTO_LOG_CONFIG
               value: logging.yaml
           envFrom:

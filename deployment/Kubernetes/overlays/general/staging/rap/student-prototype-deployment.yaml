@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-prototype
+spec:
+  template:
+    spec:
+      containers:
+        - image: ampersandtarski/rap4-student-prototype:staging-latest
+          name: rap4-student-prototype          
