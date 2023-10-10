@@ -1,0 +1,32 @@
+name: RAP User pipeline
+
+on:
+  push:
+    branches:
+      - "main"
+    # paths:
+    #   - "./RAP4USER/"
+
+jobs:
+  Staging:
+    if: github.ref_name == 'main'
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environmentName: staging
+      context: RAP4USER
+      deploymentName: student-prototype
+      containerName: rap4-student-prototype
+      imageName: rap4-student-prototype
+    secrets: inherit
+
+  Production:
+    if: github.ref_name == 'main'
+    needs: Staging
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environmentName: production
+      context: RAP4USER
+      deploymentName: student-prototype
+      containerName: rap4-student-prototype
+      imageName: rap4-student-prototype
+    secrets: inherit
