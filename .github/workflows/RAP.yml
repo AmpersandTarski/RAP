@@ -1,0 +1,32 @@
+name: RAP pipeline
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "./RAP4/"
+
+jobs:
+  Staging:
+    if: github.ref_name == 'main'
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environmentName: staging
+      context: RAP4
+      deploymentName: rap
+      containerName: ampersand-rap
+      imageName: ampersand-rap
+    secrets: inherit
+
+  Production:
+    if: github.ref_name == 'main'
+    needs: Staging
+    uses: ./.github/workflows/Deploy_workflow.yml
+    with:
+      environmentName: production
+      context: RAP4
+      deploymentName: rap
+      containerName: ampersand-rap
+      imageName: ampersand-rap
+    secrets: inherit

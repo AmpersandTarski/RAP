@@ -319,7 +319,7 @@ metadata:
   namespace: ingress-nginx
 spec:
   type: LoadBalancer
-  loadBalancerIP: 13.94.199.199
+  loadBalancerIP: 20.31.106.36
   ipFamilyPolicy: SingleStack
   ipFamilies: 
     - IPv4
