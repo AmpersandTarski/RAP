@@ -1,0 +1,5 @@
+resources:
+  - ../../../general/dev/enroll
+patches:
+- path: enroll-deployment.yaml
+- path: enroll-ingress.yaml

@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: rap-ingress
+  name: enroll-ingress
 spec:
   tls:
     - hosts:
-        - rap.cs.ou.nl
-      secretName: rap-tls-production-secret
+        - enroll.dev.rap.tarski.nl
+      secretName: enroll-tls-dev-secret
   rules:
-    - host: rap.cs.ou.nl
+    - host: enroll.dev.rap.tarski.nl
       http:
         paths:
           - pathType: ImplementationSpecific
             backend:
               service:
-                name: rap
+                name: enroll
                 port:
-                  number: 80    
+                  number: 80

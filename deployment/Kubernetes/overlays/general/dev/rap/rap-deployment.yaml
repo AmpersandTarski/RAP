@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rap
+spec:
+  template:
+    spec:
+      containers:
+        - name: ampersand-rap
+          env:
+            - name: AMPERSAND_DBHOST
+              value: rap-db-dev
+            - name: RAP_HOST_NAME
+              value: dev.rap.tarski.nl
+            - name: RAP_KUBERNETES_NAMESPACE
+              value: rap-dev
+            - name: RAP_STUDENT_PROTO_IMAGE
+              value: ampersandtarski/rap4-student-prototype:dev-latest

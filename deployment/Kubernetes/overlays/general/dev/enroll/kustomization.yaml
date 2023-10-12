@@ -1,0 +1,7 @@
+resources:
+  - ../../../../base/enroll
+namespace: rap-dev
+nameSuffix: -dev
+patches:
+- path: enroll-deployment.yaml
+- path: enroll-ingress.yaml

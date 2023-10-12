@@ -5,10 +5,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - rap.cs.ou.nl
-      secretName: rap-tls-production-secret
+        - dev.rap.tarski.nl
+      secretName: rap-tls-dev-secret
   rules:
-    - host: rap.cs.ou.nl
+    - host: dev.rap.tarski.nl
       http:
         paths:
           - pathType: ImplementationSpecific
@@ -16,4 +16,5 @@ spec:
               service:
                 name: rap
                 port:
-                  number: 80    
+                  number: 80
+                        

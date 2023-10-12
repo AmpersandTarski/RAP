@@ -1,13 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rap
+  name: enroll
 spec:
   template:
     spec:
       containers:
-        - name: ampersand-rap
-          image: ampersandtarski/ampersand-rap:production-latest
+        - name: enroll
           env:
             - name: RAP_HOST_NAME
-              value: rap.tarski.nl
+              value: enroll.dev.rap.tarski.nl
