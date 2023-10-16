@@ -186,28 +186,26 @@ For local deployment an ampersand-rap and a rap4-student-prototype image need to
   
    4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
   
-<!-- TODO -->
-
       ```pwsh
-      kubectl apply -k ./overlays/ordina/staging/
+      kubectl apply -k ./overlays/local/dev/
       ```
 
    5. Make sure that all the pods are running.
   
       ```pwsh
-      kubectl get pod -n rap-staging -w
+      kubectl get pod -n rap-dev -w
       ```
 
       The result should resemble:
 
       ```txt
       NAME                                               READY   STATUS             RESTARTS      AGE
-      enroll-staging-6cb55c694-5cxdl                     1/1     Running            0             66s
-      phpmyadmin-staging-6b559f4965-6vhf8                1/1     Running            0             66s
-      rap-db-staging-0                                   1/1     Running            0             65s
-      rap-staging-67cbdf4d5-w45m8                        1/1     Running            0             66s
-      student-prototype-cleanup-staging-28236180-tmbqh   0/1     Completed          0             26s
-      student-prototype-staging-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
+      enroll-dev-6cb55c694-5cxdl                     1/1     Running            0             66s
+      phpmyadmin-dev-6b559f4965-6vhf8                1/1     Running            0             66s
+      rap-db-dev-0                                   1/1     Running            0             65s
+      rap-dev-67cbdf4d5-w45m8                        1/1     Running            0             66s
+      student-prototype-cleanup-dev-28236180-tmbqh   0/1     Completed          0             26s
+      student-prototype-dev-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
       ```
 
       Use ```ctrl + c``` to stop watching.
@@ -291,7 +289,7 @@ For local deployment an ampersand-rap and a rap4-student-prototype image need to
 1. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
   
    ```pwsh
-   kubectl port-forward svc/rap-staging -n rap-staging 8001:80
+   kubectl port-forward svc/rap-dev -n rap-dev 8001:80
    ```
 
 2. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). ```ctrl + c``` can be used to cancle the port-forward.
@@ -316,8 +314,8 @@ For local deployment an ampersand-rap and a rap4-student-prototype image need to
 - Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
 - Try the Atlas. Browse through the elements of your script.
 - Generate a Prototype. Upon success you will see a link "Open Prototype".
-- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-staging``` with ```svc/<yourname>```.
+- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-dev``` with ```svc/<yourname>```.
 - Install the database by pushing the red button.
 - Verify that your prototype works.
-- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-staging``` with ```svc/enroll-staging```.
+- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace ```svc/rap-dev``` with ```svc/enroll-dev```.
   
