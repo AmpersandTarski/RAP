@@ -12,7 +12,7 @@ All commands in this guide are run in VS Code's built-in terminal. On Windows th
 
 ## Clone
 
-Using VS Code's built-in git functionality to clone the RAP repository. All the directories in this guide will be relative to the root of the repository.
+Use VS Code's built-in git functionality to clone the RAP repository. All the directories in this guide will be relative to the root of the repository.
 
 ## Docker
 
@@ -114,7 +114,38 @@ Using VS Code's built-in git functionality to clone the RAP repository. All the 
 
 This guide will show how to install to a kubernetes cluster locally and to Azure Kubernetes Service.
 
+### Images
+
+The process for building images will be explained here.
+
+RAP makes use of two images: [ampersand-rap](https://hub.docker.com/repository/docker/ampersandtarski/ampersand-rap/general) and [rap4-student-prototype](https://hub.docker.com/repository/docker/ampersandtarski/rap4-student-prototype/general). These images are built from the RAP4 and the RAP4USER folders respectively.
+
+1. Images are built using Docker, so start Docker Desktop.
+2. Open a terminal and navigate to the desired folder (RAP4 or RAP4USER).
+
+   ```pwsh
+   # For the ampersand-rap image
+   cd ./RAP4 
+
+   # For the rap4-student-prototype image
+   cd ./RAP4USER
+   ```
+
+3. In this folder execute the following command:
+
+   ```pwsh
+   # To build ampersand-rap
+   docker build -t ampersandtarski/ampersand-rap:dev-latest .
+
+   # To build rap4-student-prototype
+   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
+   ```
+
+   This will build the image and assign the dev-latest tag to it. An image with this tag will be stored by Docker for later use.
+
 ### Local
+
+For local deployment an ampersand-rap and a rap4-student-prototype image need to be built following the instructions above.
 
 1. Navigate to the deployment/kubernetes folder.
   
@@ -155,6 +186,8 @@ This guide will show how to install to a kubernetes cluster locally and to Azure
   
    4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
   
+<!-- TODO -->
+
       ```pwsh
       kubectl apply -k ./overlays/ordina/staging/
       ```
