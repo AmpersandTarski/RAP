@@ -405,3 +405,18 @@ Unable to connect to the server: EOF
 ```
 
 There might be something wrong with the kubernetes server. Have a look at the docker desktop settings, in the kubernetes tab. There might be a message telling that the kubernetes server failed to start. If so, there is a button to 'Reset Kubernetes Cluster'.
+
+You will notice a green symbol at the bottom left of the Kubernetes settings page, indicating that the server is running.
+
+In some cases docker desktop indicates that the service is running, but actually it is not, resulting in the above error.
+
+Open a terminal, and give the following command:
+
+```
+kubectl config view
+```
+
+This will show the configuration of Kubernetes. In my case, it says that minicube is configured to run on the port. I played with minicube some time ago, and uninstalled it. Uninstall didn't remove all loose ends: Check the contents of `$HOME/.kube/config`.
+I also found [help at stackoverflow](https://stackoverflow.com/questions/37921222/kubectl-connection-to-server-was-refused).
+
+Good luck & Happy coding!
