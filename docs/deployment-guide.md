@@ -45,16 +45,26 @@ Which should yield a result like below.
 
 ```yaml
 clientVersion:
-  buildDate: "2023-03-15T13:40:17Z"
+  buildDate: "2023-05-17T14:20:07Z"
   compiler: gc
-  gitCommit: 9e644106593f3f4aa98f8a84b23db5fa378900bd
+  gitCommit: 7f6f68fdabc4df88cfea2dcf9a19b2b830f1e647
   gitTreeState: clean
-  gitVersion: v1.26.3
-  goVersion: go1.19.7
+  gitVersion: v1.27.2
+  goVersion: go1.20.4
   major: "1"
-  minor: "26"
-  platform: windows/amd64
-kustomizeVersion: v4.5.7
+  minor: "27"
+  platform: linux/amd64
+kustomizeVersion: v5.0.1
+serverVersion:
+  buildDate: "2023-05-17T14:13:28Z"
+  compiler: gc
+  gitCommit: 7f6f68fdabc4df88cfea2dcf9a19b2b830f1e647
+  gitTreeState: clean
+  gitVersion: v1.27.2
+  goVersion: go1.20.4
+  major: "1"
+  minor: "27"
+  platform: linux/amd64
 ```
 
 ### Connecting to Azure
