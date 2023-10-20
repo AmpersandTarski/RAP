@@ -67,7 +67,7 @@ serverVersion:
   platform: linux/amd64
 ```
 
-### Connecting to Azure
+## Connecting to Azure
 
 Binding the Kubernetes CLI to Azure can be done with the following command. Note that you have to be logged in to Azure for this to work.
 
