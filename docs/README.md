@@ -6,7 +6,7 @@ The deployment of RAP is elaborated in the following topics:
 
 Setting up an Kubernetes Cluster on Azure using the PaaS solution Azure Kubernetes Service (AKS)
 
-[Prepare windows environment](prepare-windows-environment.md)
+[Prepare windows environment](preparing-windows.md)
 
 Prepare Windows to connect to a Kubernetes Cluster, create resources, etc.
 
