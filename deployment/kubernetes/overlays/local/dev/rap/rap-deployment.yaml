@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: ampersand-rap
-          image: ampersandtarski/ampersand-rap:Staging-latest
+          image: ampersandtarski/ampersand-rap:dev-latest
           env:
             - name: RAP_HOST_NAME
-              value: staging.rap.tarski.nl
+              value: dev.rap.tarski.nl

@@ -6,7 +6,7 @@ spec:
   tls:
     - hosts:
         - rap.cs.ou.nl
-      secretName: rap-tls-production
+      secretName: rap-tls-production-secret
   rules:
     - host: rap.cs.ou.nl
       http:

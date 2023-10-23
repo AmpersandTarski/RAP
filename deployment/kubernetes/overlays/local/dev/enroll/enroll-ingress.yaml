@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: enroll-ingress
+spec:
+  tls:
+    - hosts:
+        - enroll.dev.rap.tarski.nl
+      secretName: enroll-tls-dev-secret
+  rules:
+    - host: enroll.dev.rap.tarski.nl
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: enroll
+                port:
+                  number: 80

@@ -1,0 +1,11 @@
+resources:
+  - namespace.yaml
+  - ../../../../base/rap
+namespace: rap-dev
+nameSuffix: -dev
+patches:
+- path: rap-deployment.yaml
+- path: rap-ingress.yaml
+- path: elevated-rights-service-account.yaml
+- path: student-prototype-cleanup.yaml
+- path: student-prototype-deployment.yaml
