@@ -4,16 +4,20 @@ version: '3.7'
 # run it literally (change NOTHING!) and expect the result in documentation/docker-compose.png
 
 volumes:
-  rap4-data: 
+  rap4-data:
   db-data:
   letsencrypt:
 
+
 networks:
-  proxy: # network name is used by RAP4 script to make student prototype container accessible via traefik ingress
+  proxy:
+    # network name is used by RAP4 script to make student prototype container accessible via traefik ingress
     external: true # must be external to prevent prefix with folder name
-  rap_db: # network name is used by RAP4 script to let student prototype container connect to database
+  rap_db:
+    # network name is used by RAP4 script to let student prototype container connect to database
     external: true # must be external to prevent prefix with folder name
-  testchannel: # network testchannel is used by the test-elf to run API-tests on rap4
+  testchannel:
+    # network testchannel is used by the test-elf to run API-tests on rap4
 
 services:
   # reverse proxy
@@ -31,14 +35,14 @@ services:
       - "letsencrypt:/letsencrypt"
     networks:
       - proxy
-  
+
   dummy-student-prototype:
-    image: ampersandtarski/rap4-student-prototype:v1.1.1
+    image: ampersandtarski/rap4-student-prototype:dev-latest
     build:
       context: RAP4USER
 
   rap4:
-    image: ampersandtarski/ampersand-rap:2021-10-22
+    image: ampersandtarski/ampersand-rap:latest
     container_name: rap4
     build:
       context: RAP4
@@ -78,7 +82,7 @@ services:
         max-size: "200k"
         max-file: "100"
 
-# demo application Enrollment
+  # demo application Enrollment
   enroll:
     image: ampersandtarski/enroll:latest
     container_name: enroll
@@ -110,15 +114,19 @@ services:
       options:
         max-size: "200k"
         max-file: "100"
- 
+
   db:
     container_name: rap4-db
     image: mariadb:10.4
     restart: always
-    command: ["--lower-case-table-names=1", "--sql-mode=ANSI,TRADITIONAL"]  # Whatever is specified here gets appended to the entrypoint defined in the Dockerfile
+    command:
+      [
+        "--lower-case-table-names=1",
+        "--sql-mode=ANSI,TRADITIONAL"
+      ] # Whatever is specified here gets appended to the entrypoint defined in the Dockerfile
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # from .env file, which must be in the build environment
-      - MYSQL_USER=ampersand  # the database user is fixed. No need to make this variable. 
+      - MYSQL_USER=ampersand # the database user is fixed. No need to make this variable. 
       - MYSQL_PASSWORD=${MYSQL_AMPERSAND_PASSWORD} # from .env file
     volumes:
       - db-data:/var/lib/mysql
@@ -150,7 +158,7 @@ services:
       - proxy
 
   test-elf:
-    image:  ampersandtarski/gatling:3.7.2
+    image: ampersandtarski/gatling:3.7.2
     container_name: gatling
     build:
       context: gatling-3-7-2
