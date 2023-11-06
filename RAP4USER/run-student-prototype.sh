@@ -20,7 +20,6 @@ ampersand proto /script.adl \
     --proto-dir=/var/www \
     --verbose
 
-# chown -R www-data:www-data /var/www/log /var/www/data /var/www/generics
 chown -R www-data:www-data /var/www/data /var/www/generics
 
 if [[ -n $RAP_DEPLOYMENT && $RAP_DEPLOYMENT == "Kubernetes" ]]; then
