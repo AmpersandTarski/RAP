@@ -21,6 +21,35 @@ To do this follow the instructions provided [here](https://learn.microsoft.com/e
 
 [Source](https://docs.docker.com/desktop/install/windows-install/)
 
+## Building Images
+
+RAP makes use of two images: [ampersand-rap](https://hub.docker.com/repository/docker/ampersandtarski/ampersand-rap/general) and [rap4-student-prototype](https://hub.docker.com/repository/docker/ampersandtarski/rap4-student-prototype/general). These images are built from the RAP4 and the RAP4USER folders respectively.
+
+The process for building images will be explained here.
+
+1. Images are built using Docker, so start Docker Desktop.
+2. Open a terminal and navigate to the desired folder (RAP4 or RAP4USER).
+
+   ```pwsh
+   # For the ampersand-rap image
+   cd ./RAP4
+
+   # For the rap4-student-prototype image
+   cd ./RAP4USER
+   ```
+
+3. In this folder execute the following command:
+
+   ```pwsh
+   # To build ampersand-rap
+   docker build -t ampersandtarski/ampersand-rap:dev-latest .
+
+   # To build rap4-student-prototype
+   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
+   ```
+
+   This will build the image and assign the dev-latest tag to it. An image with this tag will be stored by Docker for later use.
+
 ## Docker
 
 ### Installation
