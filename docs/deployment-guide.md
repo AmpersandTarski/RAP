@@ -52,7 +52,7 @@ The process for building images will be explained here.
 
 ## Docker
 
-### Installation
+### Deploying to docker
 
 1. On a command line, paste the following commands:
 
@@ -129,7 +129,7 @@ docker stop phpmyadmin
 
 ```
 
-### Testing
+### Testing the docker deployment
 
 - Verify that you can register as a user
 - Verify that you can login as that same user.
@@ -261,6 +261,41 @@ For local deployment an ampersand-rap and a rap4-student-prototype image need to
 
       Use `ctrl + c` to stop watching.
 
+### Testing the local deployment
+
+1. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
+
+   ```pwsh
+   kubectl port-forward svc/rap-dev -n rap-dev 8001:80
+   ```
+
+2. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). `ctrl + c` can be used to cancle the port-forward.
+
+3. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
+   ![install the database](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstall_screen.png?raw=true)
+
+4. Now click the red "Reinstall application" button. This creates a fresh RAP4 database, so it may take a while.
+
+5. In your browser, click on Home or navigate to your hostname, e.g. [http://localhost](http://localhost).
+   Now you will see the RAP-application
+   ![landing page](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstalled_screen.png)
+
+6. Verify the following.
+
+- Verify that you can register as a user
+- Verify that you can login as that same user.
+- Verify that you can create a new script (push the + in the north-east corner of your - RAP4-screen)
+- Verify that the compiler works by compiling an example script.
+- Verify that the compiler generates error message when you make a deliberate mistake in your example script.
+- Check that once the script is correct, the buttons Func Spec, Atlas, and Prototype are active.
+- Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
+- Try the Atlas. Browse through the elements of your script.
+- Generate a Prototype. Upon success you will see a link "Open Prototype".
+- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace `svc/rap-dev` with `svc/<yourname>`.
+- Install the database by pushing the red button.
+- Verify that your prototype works.
+- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace `svc/rap-dev` with `svc/enroll-dev`.
+
 ## Azure Kubernetes Service
 
 ### Requirements
@@ -366,3 +401,38 @@ kubectl config use-context <<NAME>>
       ```
 
       Use `ctrl + c` to stop watching.
+
+### Testing the AKS deployment
+
+1. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
+
+   ```pwsh
+   kubectl port-forward svc/rap-dev -n rap-dev 8001:80
+   ```
+
+2. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). `ctrl + c` can be used to cancle the port-forward.
+
+3. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
+   ![install the database](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstall_screen.png?raw=true)
+
+4. Now click the red "Reinstall application" button. This creates a fresh RAP4 database, so it may take a while.
+
+5. In your browser, click on Home or navigate to your hostname, e.g. [http://localhost](http://localhost).
+   Now you will see the RAP-application
+   ![landing page](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstalled_screen.png)
+
+6. Verify the following.
+
+- Verify that you can register as a user
+- Verify that you can login as that same user.
+- Verify that you can create a new script (push the + in the north-east corner of your - RAP4-screen)
+- Verify that the compiler works by compiling an example script.
+- Verify that the compiler generates error message when you make a deliberate mistake in your example script.
+- Check that once the script is correct, the buttons Func Spec, Atlas, and Prototype are active.
+- Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
+- Try the Atlas. Browse through the elements of your script.
+- Generate a Prototype. Upon success you will see a link "Open Prototype".
+- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace `svc/rap-dev` with `svc/<yourname>`.
+- Install the database by pushing the red button.
+- Verify that your prototype works.
+- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace `svc/rap-dev` with `svc/enroll-dev`.
