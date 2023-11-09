@@ -146,7 +146,7 @@ docker stop phpmyadmin
 - Verify that your prototype works.
 - Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
 
-## Kubernetes
+## Local Kubernetes
 
 Before deploying to a local Kubernetes cluster, Kubernetes on Docker Desktop needs to be enabled.
 
@@ -193,6 +193,73 @@ serverVersion:
   minor: "27"
   platform: linux/amd64
 ```
+
+### Deploying to a local cluster
+
+For local deployment an ampersand-rap and a rap4-student-prototype image need to be built following the instructions above.
+
+1. Navigate to the deployment/kubernetes folder.
+
+   ```pwsh
+   cd ./deployment/kubernetes/
+   ```
+
+2. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
+
+   1. To deploy ingress and cert manager run the following command:
+
+      ```pwsh
+      kubectl apply -k ./general/
+      ```
+
+   2. You must now wait for the ingress and cert manager to be up and running, as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
+
+      ```pwsh
+      kubectl get pods -A --field-selector metadata.namespace!=kube-system -w
+      ```
+
+      The output will resemble the following:
+
+      ```txt
+      NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
+      cert-manager    cert-manager-cainjector-744bb89575-xchxd    1/1     Running     0          52s
+      cert-manager    cert-manager-startupapicheck-vv7n8          0/1     Completed   0          52s
+      cert-manager    cert-manager-webhook-759d6dcbf7-zbwwh       1/1     Running     0          52s
+      ingress-nginx   ingress-nginx-admission-create-gxhft        0/1     Completed   0          52s
+      ingress-nginx   ingress-nginx-admission-patch-b4nks         0/1     Completed   1          52s
+      ingress-nginx   ingress-nginx-controller-6f79748cff-npp8n   1/1     Running     0          52s
+      ingress-nginx   ingress-nginx-controller-6f79748cff-wr8qj   1/1     Running     0          52s
+      ```
+
+      Use `ctrl + c` to stop watching.
+
+   3. Once all pods are running or completed, create an `.env.secrets` file in the `.\base\rap\database\rap` and `.\base\rap\database\mariadb` folders. Use the existing `example.env.secrets` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'. These files are used to generate the required secret files on the cluster.
+
+   4. Now the application can be deployed. In this example the Ordina staging deployment will be used.
+
+      ```pwsh
+      kubectl apply -k ./overlays/local/dev/
+      ```
+
+   5. Make sure that all the pods are running.
+
+      ```pwsh
+      kubectl get pod -n rap-dev -w
+      ```
+
+      The result should resemble:
+
+      ```txt
+      NAME                                               READY   STATUS             RESTARTS      AGE
+      enroll-dev-6cb55c694-5cxdl                     1/1     Running            0             66s
+      phpmyadmin-dev-6b559f4965-6vhf8                1/1     Running            0             66s
+      rap-db-dev-0                                   1/1     Running            0             65s
+      rap-dev-67cbdf4d5-w45m8                        1/1     Running            0             66s
+      student-prototype-cleanup-dev-28236180-tmbqh   0/1     Completed          0             26s
+      student-prototype-dev-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
+      ```
+
+      Use `ctrl + c` to stop watching.
 
 ## Azure
 
