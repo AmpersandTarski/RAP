@@ -261,7 +261,7 @@ For local deployment an ampersand-rap and a rap4-student-prototype image need to
 
       Use `ctrl + c` to stop watching.
 
-## Azure
+## Azure Kubernetes Service
 
 ### Requirements
 
@@ -292,3 +292,77 @@ Then the following command can be used to switch to the desired cluster.
 ```pwsh
 kubectl config use-context <<NAME>>
 ```
+
+### Deploying to AKS
+
+1. The first step is to log in to Azure using the Azure CLI, followed by connecting to the cluster.
+
+   ```pwsh
+   az login
+   az aks get-credentials -g <<resource-group>> -n <<AKS-name>> --overwrite-existing
+   ```
+
+2. Next navigate to the deployment/kubernetes folder.
+
+   ```pwsh
+   cd ./deployment/kubernetes/
+   ```
+
+3. The rap deployment consists of two parts. The first will deploy ingress and cert manager. The second will deploy the application and related things. Deployment is done by applying the proper kustomization.yaml files. By pointing kubectl to a directory containing a kustomization file Kubernetes will aggregate and patch the files or directories that are set as resources in said file.
+
+   1. Find the `ingress-nginx-controller.yaml` file in the `./general/ingress` folder. Find the LoadBalancer Service and fill in the `spec.loadBalancerIP` using the value of the static IP resource.
+
+   2. To deploy ingress and cert manager run the following command:
+
+      ```pwsh
+      kubectl apply -k ./general/
+      ```
+
+   3. After it is done applying the files it is imperative to wait for the ingress and cert manager to be up and running as this will guarantee that all resources required in the next step are available for use. To check and monitor the progress run:
+
+      ```pwsh
+      kubectl get pods -A --field-selector metadata.namespace!=kube-system -w
+      ```
+
+      The output will resemble the following:
+
+      ```txt
+      NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
+      cert-manager    cert-manager-cainjector-744bb89575-xchxd    1/1     Running     0          52s
+      cert-manager    cert-manager-startupapicheck-vv7n8          0/1     Completed   0          52s
+      cert-manager    cert-manager-webhook-759d6dcbf7-zbwwh       1/1     Running     0          52s
+      ingress-nginx   ingress-nginx-admission-create-gxhft        0/1     Completed   0          52s
+      ingress-nginx   ingress-nginx-admission-patch-b4nks         0/1     Completed   1          52s
+      ingress-nginx   ingress-nginx-controller-6f79748cff-npp8n   1/1     Running     0          52s
+      ingress-nginx   ingress-nginx-controller-6f79748cff-wr8qj   1/1     Running     0          52s
+      ```
+
+      Use `ctrl + c` to stop watching.
+
+   4. Once all pods are running or completed, create an `.env.secrets` file in the `.\base\rap\database\rap` and `.\base\rap\database\mariadb` folders. Use the existing `example.env.secrets` found in each respective folder as a base for the file to be created in that folder. Replace the values for the passwords with a secure password. Replace the value for the server host name with the full domain name of the host, e.g. 'localhost' or 'rap.cs.ou.nl'. These files are used to generate the required secret files on the cluster.
+
+   5. Now the application can be deployed. In this example the Ordina staging deployment will be used.
+
+      ```pwsh
+      kubectl apply -k ./overlays/ordina/staging/
+      ```
+
+   6. Make sure that all the pods are running.
+
+      ```pwsh
+      kubectl get pod -n rap-staging -w
+      ```
+
+      The result should resemble:
+
+      ```txt
+      NAME                                               READY   STATUS             RESTARTS      AGE
+      enroll-staging-6cb55c694-5cxdl                     1/1     Running            0             66s
+      phpmyadmin-staging-6b559f4965-6vhf8                1/1     Running            0             66s
+      rap-db-staging-0                                   1/1     Running            0             65s
+      rap-staging-67cbdf4d5-w45m8                        1/1     Running            0             66s
+      student-prototype-cleanup-staging-28236180-tmbqh   0/1     Completed          0             26s
+      student-prototype-staging-cdd59fbb8-s9vmk          0/1     CrashLoopBackOff   3 (18s ago)   66s
+      ```
+
+      Use `ctrl + c` to stop watching.
