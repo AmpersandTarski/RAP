@@ -1,7 +1,7 @@
-FROM ampersandtarski/prototype-framework:v1.12.0
+FROM ampersandtarski/prototype-framework:main
 
-COPY --from=ampersandtarski/ampersand:v4.6.0 /bin/ampersand /usr/local/bin
-RUN chmod +x /usr/local/bin/ampersand
+# COPY --from=ampersandtarski/ampersand:v4.6.0 /bin/ampersand /usr/local/bin
+# RUN chmod +x /usr/local/bin/ampersand
 
 COPY run-student-prototype.sh /
 

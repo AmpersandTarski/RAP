@@ -1,7 +1,7 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Ampersand compiler is also needed for RAP4 to compile student scripts
 
-FROM ampersandtarski/prototype-framework:v1.12.0
+FROM ampersandtarski/prototype-framework:main
 # this prototype-framework builds on an Apache server
 
 # Install docker, so students can run their prototypes
@@ -46,10 +46,10 @@ WORKDIR /var/www
 # Copy customizations into generated application
 COPY customizations /var/www/
 
-RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
-  && composer install --prefer-dist --no-dev --profile --optimize-autoloader \
-  && npm update \
-  && npm audit fix \
-  && npm install \
-  && gulp build-ampersand \
-  && gulp build-project
+RUN chown -R www-data:www-data /var/www/data /var/www/generics
+RUN composer install --prefer-dist --no-dev --profile --optimize-autoloader
+RUN npm update 
+#RUN npm audit fix 
+RUN npm install 
+RUN gulp build-ampersand 
+RUN gulp build-project
