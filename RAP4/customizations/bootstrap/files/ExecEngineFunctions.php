@@ -357,7 +357,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $manifest=str_replace("{{tlsSecret}}", $tlsSecret, $manifest);
         
         // Save manifest file
-        $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";
+        $studentManifestFile="{$workDir}/student-manifest-{$studentName}.yaml";
         file_put_contents($studentManifestFile, $manifest);
         
         // Call Kubernetes API to add script
