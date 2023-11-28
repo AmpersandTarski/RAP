@@ -3,13 +3,14 @@ name: RAP pipeline
 on:
   push:
     branches:
-      - "main"
+      - main
+      - "feature/**"
     paths:
-      - "./RAP4/"
+      - "RAP4/**"
 
 jobs:
   Staging:
-    if: github.ref_name == 'main'
+    # if: github.ref_name == 'main'
     uses: ./.github/workflows/Deploy_workflow.yml
     with:
       environmentName: staging
