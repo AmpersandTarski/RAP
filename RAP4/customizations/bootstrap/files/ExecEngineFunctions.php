@@ -320,6 +320,8 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
          * - run kubectl apply -f "student-manifest-{{student}}.yaml"
         */
 
+        $studentName=strtolower($userName);
+
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
         $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
 
@@ -345,7 +347,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
             throw new Exception("Student manifest template not found for '{$scriptVersionAtom}', workDir: {$workDir}, manifestFile: {$manifestFile}", 500);
         }
         // replace {{student}}, {{namespace}} and {{scriptContent}}
-        $manifest=str_replace("{{student}}", $userName, $manifest);
+        $manifest=str_replace("{{student}}", $studentName, $manifest);
         $manifest=str_replace("{{namespace}}", $namespace, $manifest);
         $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
         $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
