@@ -326,7 +326,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
 
         $hostname=getenv('RAP_HOST_NAME');
-        $hostname="{$userName}.{$hostname}";
+        $hostname="{$studentName}.{$hostname}";
 
         $suffix=substr($namespace, 3);
 
@@ -334,7 +334,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         
         $dbSecret="db-secrets{$suffix}";
 
-        $tlsSecret="{$userName}-tls{$suffix}";
+        $tlsSecret="{$studentName}-tls{$suffix}";
 
         // Location to save files
         $relDir       = pathinfo($path, PATHINFO_DIRNAME);
