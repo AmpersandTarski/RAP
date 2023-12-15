@@ -320,10 +320,10 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
          * - run kubectl apply -f "student-manifest-{{student}}.yaml"
         */
 
-        $pattern = "\W+";
+        $pattern = '/[\W+]/';
 
         $studentName=strtolower($userName);
-        $studentName = preg_replace($pattern, "-", $studentName);
+        $studentName = preg_replace($pattern, '-', $studentName);
 
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
         $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
