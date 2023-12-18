@@ -22,7 +22,7 @@ fi
 # cat /script.adl
 
 # First generate Ampersand proto from student script
-ampersand proto $entry \
+ampersand proto /out/$entry \
     --proto-dir=/var/www \
     --verbose
 # ampersand proto /script.adl \
