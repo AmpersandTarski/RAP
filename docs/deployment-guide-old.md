@@ -2,57 +2,98 @@
 
 This guide will lay down the steps required to deploy to Docker and to Kubernetes.
 
-## General Requirements
+## Requirements
 
 The following programs / APIs / SDKs should be installed in your system.
 
 - [VS Code](https://code.visualstudio.com/) (for development and the built-in terminal)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for building and running local containers)
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) (AKS only)
 
 All commands in this guide are run in VS Code's built-in terminal. On Windows this is Powershell, on Linux/macOS the default is Bash, but others are supported.
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for building and running local containers)
+## Setting up Docker Desktop
 
 The first time installing Docker Desktop might require some additional set up.
 
-### Setting up Docker Desktop on Windows
+### Windows
 
 To run docker desktop on windows wsl needs to be enabled.
 To do this follow the instructions provided [here](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 [Source](https://docs.docker.com/desktop/install/windows-install/)
 
-## Building Images
+## Setting up Kubernetes on Docker Desktop
 
-RAP makes use of two images: [ampersand-rap](https://hub.docker.com/repository/docker/ampersandtarski/ampersand-rap/general) and [rap4-student-prototype](https://hub.docker.com/repository/docker/ampersandtarski/rap4-student-prototype/general). These images are built from the RAP4 and the RAP4USER folders respectively.
+1. From the Docker Dashboard, select the Settings.
+2. Select Kubernetes from the left sidebar.
+3. Next to Enable Kubernetes, select the checkbox.
+4. Select Apply & Restart to save the settings and then select Install to confirm. This instantiates images required to run the Kubernetes server as containers, and installs the /usr/local/bin/kubectl command on your machine.
 
-The process for building images will be explained here.
+[Source](https://docs.docker.com/desktop/kubernetes/)
 
-1. Images are built using Docker, so start Docker Desktop.
-2. Open a terminal and navigate to the desired folder (RAP4 or RAP4USER).
+## Connecting to the Kubernetes Cluster
 
-   ```pwsh
-   # For the ampersand-rap image
-   cd ./RAP4
+Once you have installed Docker Desktop and enabled Kubernetes, you can use kubectl commands.
+To check if it works run the following command.
 
-   # For the rap4-student-prototype image
-   cd ./RAP4USER
-   ```
+```pwsh
+kubectl version -o=yaml
+```
 
-3. In this folder execute the following command:
+Which should yield a result like below.
 
-   ```pwsh
-   # To build ampersand-rap
-   docker build -t ampersandtarski/ampersand-rap:dev-latest .
+```yaml
+clientVersion:
+  buildDate: "2023-05-17T14:20:07Z"
+  compiler: gc
+  gitCommit: 7f6f68fdabc4df88cfea2dcf9a19b2b830f1e647
+  gitTreeState: clean
+  gitVersion: v1.27.2
+  goVersion: go1.20.4
+  major: "1"
+  minor: "27"
+  platform: linux/amd64
+kustomizeVersion: v5.0.1
+serverVersion:
+  buildDate: "2023-05-17T14:13:28Z"
+  compiler: gc
+  gitCommit: 7f6f68fdabc4df88cfea2dcf9a19b2b830f1e647
+  gitTreeState: clean
+  gitVersion: v1.27.2
+  goVersion: go1.20.4
+  major: "1"
+  minor: "27"
+  platform: linux/amd64
+```
 
-   # To build rap4-student-prototype
-   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
-   ```
+## Connecting to Azure
 
-   This will build the image and assign the dev-latest tag to it. An image with this tag will be stored by Docker for later use.
+Binding the Kubernetes CLI to Azure can be done with the following command. Note that you have to be logged in to Azure for this to work.
+
+```pwsh
+az aks get-credentials -g <resource-group-name> -n <aks-cluster-name> --overwrite-existing
+```
+
+After executing the command, any kubectl commands will be run on the connected cluster. To connect to a different cluster, first retreive a list of all available clusters.
+
+```pwsh
+kubectl config get-contexts
+```
+
+Then the following command can be used to switch to the desired cluster.
+
+```pwsh
+kubectl config use-context <<NAME>>
+```
+
+## Clone
+
+Use VS Code's built-in git functionality to clone the RAP repository. All the directories in this guide will be relative to the root of the repository.
 
 ## Docker
 
-### Deploying to docker
+### Installation
 
 1. On a command line, paste the following commands:
 
@@ -129,7 +170,7 @@ docker stop phpmyadmin
 
 ```
 
-### Testing the docker deployment
+### Testing
 
 - Verify that you can register as a user
 - Verify that you can login as that same user.
@@ -146,55 +187,40 @@ docker stop phpmyadmin
 - Verify that your prototype works.
 - Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
 
-## Local Kubernetes
+## Kubernetes
 
-Before deploying to a local Kubernetes cluster, Kubernetes on Docker Desktop needs to be enabled.
+This guide will show how to install to a kubernetes cluster locally and to Azure Kubernetes Service.
 
-### Setting up Kubernetes on Docker Desktop
+### Images
 
-1. From the Docker Dashboard, select the Settings.
-2. Select Kubernetes from the left sidebar.
-3. Next to Enable Kubernetes, select the checkbox.
-4. Select Apply & Restart to save the settings and then select Install to confirm. This instantiates images required to run the Kubernetes server as containers, and installs the /usr/local/bin/kubectl command on your machine.
+The process for building images will be explained here.
 
-[Source](https://docs.docker.com/desktop/kubernetes/)
+RAP makes use of two images: [ampersand-rap](https://hub.docker.com/repository/docker/ampersandtarski/ampersand-rap/general) and [rap4-student-prototype](https://hub.docker.com/repository/docker/ampersandtarski/rap4-student-prototype/general). These images are built from the RAP4 and the RAP4USER folders respectively.
 
-### Connecting to the Kubernetes Cluster
+1. Images are built using Docker, so start Docker Desktop.
+2. Open a terminal and navigate to the desired folder (RAP4 or RAP4USER).
 
-Once you have installed Docker Desktop and enabled Kubernetes, you can use kubectl commands.
-To check if it works run the following command.
+   ```pwsh
+   # For the ampersand-rap image
+   cd ./RAP4
 
-```pwsh
-kubectl version -o=yaml
-```
+   # For the rap4-student-prototype image
+   cd ./RAP4USER
+   ```
 
-Which should yield a result like below.
+3. In this folder execute the following command:
 
-```yaml
-clientVersion:
-  buildDate: "2023-03-15T13:40:17Z"
-  compiler: gc
-  gitCommit: 9e644106593f3f4aa98f8a84b23db5fa378900bd
-  gitTreeState: clean
-  gitVersion: v1.26.3
-  goVersion: go1.19.7
-  major: "1"
-  minor: "26"
-  platform: windows/amd64
-kustomizeVersion: v4.5.7
-serverVersion:
-  buildDate: "2023-05-17T14:13:28Z"
-  compiler: gc
-  gitCommit: 7f6f68fdabc4df88cfea2dcf9a19b2b830f1e647
-  gitTreeState: clean
-  gitVersion: v1.27.2
-  goVersion: go1.20.4
-  major: "1"
-  minor: "27"
-  platform: linux/amd64
-```
+   ```pwsh
+   # To build ampersand-rap
+   docker build -t ampersandtarski/ampersand-rap:dev-latest .
 
-### Deploying to a local cluster
+   # To build rap4-student-prototype
+   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
+   ```
+
+   This will build the image and assign the dev-latest tag to it. An image with this tag will be stored by Docker for later use.
+
+### Local
 
 For local deployment an ampersand-rap and a rap4-student-prototype image need to be built following the instructions above.
 
@@ -261,74 +287,7 @@ For local deployment an ampersand-rap and a rap4-student-prototype image need to
 
       Use `ctrl + c` to stop watching.
 
-### Testing the local deployment
-
-1. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
-
-   ```pwsh
-   kubectl port-forward svc/rap-dev -n rap-dev 8001:80
-   ```
-
-2. Running this command will connect the service to port 8001. The application can be tested by opening a browser and navigating to [localhost:8001](http://localhost:8001). `ctrl + c` can be used to cancle the port-forward.
-
-3. In your browser, navigate to your hostname, e.g. `localhost`. You should now see this:
-   ![install the database](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstall_screen.png?raw=true)
-
-4. Now click the red "Reinstall application" button. This creates a fresh RAP4 database, so it may take a while.
-
-5. In your browser, click on Home or navigate to your hostname, e.g. [http://localhost](http://localhost).
-   Now you will see the RAP-application
-   ![landing page](https://github.com/AmpersandTarski/RAP/blob/main/RAP_reinstalled_screen.png)
-
-6. Verify the following.
-
-- Verify that you can register as a user
-- Verify that you can login as that same user.
-- Verify that you can create a new script (push the + in the north-east corner of your - RAP4-screen)
-- Verify that the compiler works by compiling an example script.
-- Verify that the compiler generates error message when you make a deliberate mistake in your example script.
-- Check that once the script is correct, the buttons Func Spec, Atlas, and Prototype are active.
-- Try to generate a conceptual analysis. At the bottom of the screen you should find the result, which is a Word-file. Open it in Word and check that it contains text.
-- Try the Atlas. Browse through the elements of your script.
-- Generate a Prototype. Upon success you will see a link "Open Prototype".
-- Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace `svc/rap-dev` with `svc/<yourname>`.
-- Install the database by pushing the red button.
-- Verify that your prototype works.
-- Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace `svc/rap-dev` with `svc/enroll-dev`.
-
-## Azure Kubernetes Service
-
-### Requirements
-
-Azure CLI is required to be able to interact with Azure through the command line.
-
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) (AKS only)
-
-### Permissions
-
-In order to manage the AKS cluster Contributor rights to the cluster are required.
-
-### Connecting to Azure
-
-Binding the Kubernetes CLI to Azure can be done with the following command. Note that you have to be logged in to Azure for this to work.
-
-```pwsh
-az aks get-credentials -g <resource-group-name> -n <aks-cluster-name> --overwrite-existing
-```
-
-After executing the command, any kubectl commands will be run on the connected cluster. To connect to a different cluster, first retreive a list of all available clusters.
-
-```pwsh
-kubectl config get-contexts
-```
-
-Then the following command can be used to switch to the desired cluster.
-
-```pwsh
-kubectl config use-context <<NAME>>
-```
-
-### Deploying to AKS
+### Azure Kubernetes Service
 
 1. The first step is to log in to Azure using the Azure CLI, followed by connecting to the cluster.
 
@@ -402,7 +361,7 @@ kubectl config use-context <<NAME>>
 
       Use `ctrl + c` to stop watching.
 
-### Testing the AKS deployment
+### Testing
 
 1. To check whether the application is deployed porperly, port-forward the service and open it in a browser. Once everything is ready run the following command:
 
@@ -441,17 +400,17 @@ kubectl config use-context <<NAME>>
 
 Sometimes, during installation, you might run into unexpected situations. It is impossible to mention all of them, but we mention those that are known to us:
 
-### Connection issues to the Kubernetes server
+### Connection issues to the Kubernetes server:
 
 You get an error:
 
-```txt
+```
 The connection to the server 127.0.0.1:62454 was refused - did you specify the right host or port?
 ```
 
 or:
 
-```txt
+```
 Unable to connect to the server: EOF
 ```
 
@@ -463,11 +422,13 @@ In some cases docker desktop indicates that the service is running, but actually
 
 Open a terminal, and give the following command:
 
-```pwsh
+```
 kubectl config view
 ```
 
 This will show the configuration of Kubernetes. In my case, it says that minicube is configured to run on the port. I played with minicube some time ago, and uninstalled it. Uninstall didn't remove all loose ends: Check the contents of `$HOME/.kube/config`.
 I also found [help at stackoverflow](https://stackoverflow.com/questions/37921222/kubectl-connection-to-server-was-refused).
+
+## MariaDB Secrets
 
 Good luck & Happy coding!
