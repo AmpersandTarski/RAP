@@ -309,6 +309,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = base64_encode($scriptContent);
 
+    $pattern = '/[\W+]/';
+
+    $userName=strtolower($userName);
+    $userName = preg_replace($pattern, '-', $userName);
+
     $deployment = getenv('RAP_DEPLOYMENT');
     if ($deployment == 'Kubernetes') {
         /** Deployed on Kubernetes Cluster
@@ -320,16 +325,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
          * - run kubectl apply -f "student-manifest-{{student}}.yaml"
         */
 
-        $pattern = '/[\W+]/';
-
-        $studentName=strtolower($userName);
-        $studentName = preg_replace($pattern, '-', $studentName);
-
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
         $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
 
         $hostname=getenv('RAP_HOST_NAME');
-        $hostname="{$studentName}.{$hostname}";
+        $hostname="{$userName}.{$hostname}";
 
         $suffix=substr($namespace, 3);
 
@@ -337,7 +337,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         
         $dbSecret="db-secrets{$suffix}";
 
-        $tlsSecret="{$studentName}-tls{$suffix}";
+        $tlsSecret="{$userName}-tls{$suffix}";
 
         // Location to save files
         $relDir       = pathinfo($path, PATHINFO_DIRNAME);
@@ -350,7 +350,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
             throw new Exception("Student manifest template not found for '{$scriptVersionAtom}', workDir: {$workDir}, manifestFile: {$manifestFile}", 500);
         }
         // replace {{student}}, {{namespace}} and {{scriptContent}}
-        $manifest=str_replace("{{student}}", $studentName, $manifest);
+        $manifest=str_replace("{{student}}", $userName, $manifest);
         $manifest=str_replace("{{namespace}}", $namespace, $manifest);
         $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
         $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
@@ -360,7 +360,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $manifest=str_replace("{{tlsSecret}}", $tlsSecret, $manifest);
         
         // Save manifest file
-        $studentManifestFile="{$workDir}/student-manifest-{$studentName}.yaml";
+        $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";
         file_put_contents($studentManifestFile, $manifest);
         
         // Call Kubernetes API to add script
