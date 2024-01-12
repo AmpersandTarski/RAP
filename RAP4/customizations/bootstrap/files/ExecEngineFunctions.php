@@ -344,6 +344,35 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $workDir      = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
         $manifestFile = $ee->getApp()->getSettings()->get('global.absolutePath') . '/bootstrap/files/student-manifest-template.yaml';
 
+        $projectFolder = "{$workDir}/project";
+        $mainAdl = "{$projectFolder}/main.adl";
+        
+        mkdir($projectFolder);
+        file_put_contents($mainAdl, $scriptContent);
+
+        $zipFile = "{$workDir}/project.zip";
+        $zip = new \ZipArchive;
+        $zip->open($zipFile, \ZipArchive::CREATE);
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($projectFolder),
+            \RecursiveIteratorIterator::LEAVES_ONLY
+        );
+
+        foreach ($files as $name => $file) {
+            if (!$file->isDir()) {
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($projectFolder) + 1);
+        
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+
+        $zip->close();
+
+        $zipContent = file_get_contents($zipFile);
+        $zipContentForCommandline = base64_encode($zipContent);
+        $mainAldForCommandLine = base64_encode("main.adl");
+
         // Open student-manifest-template.yaml
         $manifest=file_get_contents($manifestFile);
         if ($manifest === false) {
@@ -353,11 +382,13 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $manifest=str_replace("{{student}}", $studentName, $manifest);
         $manifest=str_replace("{{namespace}}", $namespace, $manifest);
         $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
-        $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
+        // $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
         $manifest=str_replace("{{dbName}}", $dbName, $manifest);
         $manifest=str_replace("{{dbSecrets}}", $dbSecret, $manifest);
         $manifest=str_replace("{{hostName}}", $hostname, $manifest);
         $manifest=str_replace("{{tlsSecret}}", $tlsSecret, $manifest);
+        $manifest=str_replace("{{zipContent}}", $zipContentForCommandline, $manifest);
+        $manifest=str_replace("{{mainAdl}}", $mainAldForCommandLine, $manifest);
         
         // Save manifest file
         $studentManifestFile="{$workDir}/student-manifest-{$studentName}.yaml";
