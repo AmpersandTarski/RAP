@@ -413,7 +413,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $command->execute();
         
         // Add docker container also to rap_db network
-        $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
+        $command2 = new Command(
+            "docker network connect rap_db {$userName}",
+            [],
+            $ee->getLogger()
+        );
         $command2->execute();
     }
 
