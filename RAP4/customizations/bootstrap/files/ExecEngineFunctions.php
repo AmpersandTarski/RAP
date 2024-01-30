@@ -309,6 +309,40 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptContent = $scriptContentPairs[0]->tgt()->getId();
     $scriptContentForCommandline = base64_encode($scriptContent);
 
+    //paths
+    $relDir       = pathinfo($path, PATHINFO_DIRNAME);
+    $workDir      = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
+
+    //zip
+    $projectFolder = "{$workDir}/project";
+    $mainAdl = "{$projectFolder}/main.adl";
+    
+    mkdir($projectFolder);
+    file_put_contents($mainAdl, $scriptContent);
+
+    $zipFile = "{$workDir}/project.zip";
+    $zip = new \ZipArchive;
+    $zip->open($zipFile, \ZipArchive::CREATE);
+    $files = new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator($projectFolder),
+        \RecursiveIteratorIterator::LEAVES_ONLY
+    );
+
+    foreach ($files as $name => $file) {
+       if (!$file->isDir()) {
+           $filePath = $file->getRealPath();
+           $relativePath = substr($filePath, strlen($projectFolder) + 1);
+
+           $zip->addFile($filePath, $relativePath);
+       }
+    }
+
+    $zip->close();
+
+    $zipContent = file_get_contents($zipFile);
+    $zipContentForCommandline = base64_encode($zipContent);
+    $mainAldForCommandLine = base64_encode("main.adl");
+
     $deployment = getenv('RAP_DEPLOYMENT');
     if ($deployment == 'Kubernetes') {
         /** Deployed on Kubernetes Cluster
@@ -340,38 +374,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $tlsSecret="{$studentName}-tls{$suffix}";
 
         // Location to save files
-        $relDir       = pathinfo($path, PATHINFO_DIRNAME);
-        $workDir      = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
         $manifestFile = $ee->getApp()->getSettings()->get('global.absolutePath') . '/bootstrap/files/student-manifest-template.yaml';
-
-        $projectFolder = "{$workDir}/project";
-        $mainAdl = "{$projectFolder}/main.adl";
-        
-        mkdir($projectFolder);
-        file_put_contents($mainAdl, $scriptContent);
-
-        $zipFile = "{$workDir}/project.zip";
-        $zip = new \ZipArchive;
-        $zip->open($zipFile, \ZipArchive::CREATE);
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($projectFolder),
-            \RecursiveIteratorIterator::LEAVES_ONLY
-        );
-
-        foreach ($files as $name => $file) {
-            if (!$file->isDir()) {
-                $filePath = $file->getRealPath();
-                $relativePath = substr($filePath, strlen($projectFolder) + 1);
-        
-                $zip->addFile($filePath, $relativePath);
-            }
-        }
-
-        $zip->close();
-
-        $zipContent = file_get_contents($zipFile);
-        $zipContentForCommandline = base64_encode($zipContent);
-        $mainAldForCommandLine = base64_encode("main.adl");
 
         // Open student-manifest-template.yaml
         $manifest=file_get_contents($manifestFile);
@@ -419,7 +422,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         
         // Run student prototype with Docker
         $command = new Command(
-            "echo \"{$scriptContentForCommandline}\" | docker run",
+            "echo \"{$zipContentForCommandline} {$mainAldForCommandLine}\" | docker run",
             [ "--name \"{$userName}\"",
             "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
             "-i",
