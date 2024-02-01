@@ -18,7 +18,7 @@ class Command
      *
      * @var string[]
      */
-    protected $args;
+    protected array $args;
 
     /**
      * Exit code returned after execution of command
@@ -39,7 +39,7 @@ class Command
      */
     protected $logger = null;
 
-    public function __construct(string $cmd, array $args = null, LoggerInterface $logger = null)
+    public function __construct(string $cmd, array $args = [], LoggerInterface $logger = null)
     {
         $this->cmd = $cmd;
         $this->args = $args;

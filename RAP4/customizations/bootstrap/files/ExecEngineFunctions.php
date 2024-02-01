@@ -392,6 +392,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
             [ "--name \"{$userName}\"",
             "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
             "-i",
+            "-p 8000:80",
             "-a stdin",  // stdin ensures that the content of the script is available in the container.
             "--network proxy", // the reverse proxy Traefik is in the proxy network
             "--label traefik.enable=true", // label for Traefik to route trafic
@@ -413,7 +414,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $command->execute();
         
         // Add docker container also to rap_db network
-        $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
+        $command2 = new Command(
+            "docker network connect rap_db {$userName}",
+            [],
+            $ee->getLogger()
+        );
         $command2->execute();
     }
 
