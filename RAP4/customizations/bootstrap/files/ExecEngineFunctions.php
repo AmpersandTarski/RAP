@@ -385,7 +385,6 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $manifest=str_replace("{{student}}", $studentName, $manifest);
         $manifest=str_replace("{{namespace}}", $namespace, $manifest);
         $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
-        // $manifest=str_replace("{{scriptContent}}", $scriptContentForCommandline, $manifest);
         $manifest=str_replace("{{dbName}}", $dbName, $manifest);
         $manifest=str_replace("{{dbSecrets}}", $dbSecret, $manifest);
         $manifest=str_replace("{{hostName}}", $hostname, $manifest);

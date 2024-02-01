@@ -6,7 +6,6 @@ set -e
 # Put content of stdin to file script.adl
 if [[ -n $RAP_DEPLOYMENT && $RAP_DEPLOYMENT == "Kubernetes" ]]; then
     # Kubernetes
-    # echo "$1" | base64 -d > /script.adl
     echo "$1" | base64 -d > /out.zip
 
     main="$2"
@@ -19,12 +18,9 @@ else
     main="${line#* }"   # Everything after the first space
 
     echo -n $zip | base64 -d > /out.zip
-
-    # base64 -d /dev/stdin > /script.adl
 fi
 
 # Print script for debugging purposes
-# cat /script.adl
 unzip /out.zip -d /out
 
 entry=$(echo -n $main | base64 -d)
@@ -33,9 +29,6 @@ entry=$(echo -n $main | base64 -d)
 ampersand proto /out/$entry \
     --proto-dir=/var/www \
     --verbose
-# ampersand proto /script.adl \
-#     --proto-dir=/var/www \
-#     --verbose
 
 chown -R www-data:www-data /var/www/data /var/www/generics
 
