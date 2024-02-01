@@ -42,7 +42,7 @@ services:
       context: RAP4USER
 
   rap4:
-    image: ampersandtarski/ampersand-rap:latest
+    image: ampersandtarski/ampersand-rap:dev-latest
     container_name: rap4
     build:
       context: RAP4
@@ -61,7 +61,7 @@ services:
       - AMPERSAND_DBNAME=rap4
       - AMPERSAND_SERVER_URL=https://${SERVER_HOST_NAME} # from .env file
       - RAP_HOST_NAME=${SERVER_HOST_NAME}
-      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:v1.1.1
+      - RAP_STUDENT_PROTO_IMAGE=ampersandtarski/rap4-student-prototype:dev-latest
       - RAP_STUDENT_PROTO_LOG_CONFIG=logging.yaml
       - APACHE_RUN_DIR=/var/www
     volumes:

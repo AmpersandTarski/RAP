@@ -343,6 +343,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $zipContentForCommandline = base64_encode($zipContent);
     $mainAldForCommandLine = base64_encode("main.adl");
 
+    $pattern = '/[\W+]/';
+
+    $userName=strtolower($userName);
+    $userName = preg_replace($pattern, '-', $userName);
+
     $deployment = getenv('RAP_DEPLOYMENT');
     if ($deployment == 'Kubernetes') {
         /** Deployed on Kubernetes Cluster
@@ -354,16 +359,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
          * - run kubectl apply -f "student-manifest-{{student}}.yaml"
         */
 
-        $pattern = '/[\W+]/';
-
-        $studentName=strtolower($userName);
-        $studentName = preg_replace($pattern, '-', $studentName);
-
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
         $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
 
         $hostname=getenv('RAP_HOST_NAME');
-        $hostname="{$studentName}.{$hostname}";
+        $hostname="{$userName}.{$hostname}";
 
         $suffix=substr($namespace, 3);
 
@@ -371,7 +371,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         
         $dbSecret="db-secrets{$suffix}";
 
-        $tlsSecret="{$studentName}-tls{$suffix}";
+        $tlsSecret="{$userName}-tls{$suffix}";
 
         // Location to save files
         $manifestFile = $ee->getApp()->getSettings()->get('global.absolutePath') . '/bootstrap/files/student-manifest-template.yaml';
@@ -382,7 +382,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
             throw new Exception("Student manifest template not found for '{$scriptVersionAtom}', workDir: {$workDir}, manifestFile: {$manifestFile}", 500);
         }
         // replace {{student}}, {{namespace}} and {{scriptContent}}
-        $manifest=str_replace("{{student}}", $studentName, $manifest);
+        $manifest=str_replace("{{student}}", $userName, $manifest);
         $manifest=str_replace("{{namespace}}", $namespace, $manifest);
         $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
         $manifest=str_replace("{{dbName}}", $dbName, $manifest);
@@ -393,7 +393,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $manifest=str_replace("{{mainAdl}}", $mainAldForCommandLine, $manifest);
         
         // Save manifest file
-        $studentManifestFile="{$workDir}/student-manifest-{$studentName}.yaml";
+        $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";
         file_put_contents($studentManifestFile, $manifest);
         
         // Call Kubernetes API to add script
@@ -425,6 +425,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
             [ "--name \"{$userName}\"",
             "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
             "-i",
+            "-p 8000:80",
             "-a stdin",  // stdin ensures that the content of the script is available in the container.
             "--network proxy", // the reverse proxy Traefik is in the proxy network
             "--label traefik.enable=true", // label for Traefik to route trafic
@@ -446,7 +447,11 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $command->execute();
         
         // Add docker container also to rap_db network
-        $command2 = new Command("docker network connect rap_db {$userName}", null, $ee->getLogger());
+        $command2 = new Command(
+            "docker network connect rap_db {$userName}",
+            [],
+            $ee->getLogger()
+        );
         $command2->execute();
     }
 
