@@ -27,6 +27,8 @@ RUN apt-get install -y curl && \
 # and we need epstopdf to create pdf files for images
 RUN apt-get update && apt-get install -y graphviz
 
+RUN apt-get update && apt-get install -y libzip-dev && docker-php-ext-install zip
+
 # Copy Ampersand compiler
 # COPY --from=ampersandtarski/ampersand:2023-08-08 /bin/ampersand /usr/local/bin
 # RUN chmod +x /usr/local/bin/ampersand

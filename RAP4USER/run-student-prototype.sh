@@ -6,17 +6,27 @@ set -e
 # Put content of stdin to file script.adl
 if [[ -n $RAP_DEPLOYMENT && $RAP_DEPLOYMENT == "Kubernetes" ]]; then
     # Kubernetes
-    echo "$1" | base64 -d > /script.adl
+    echo "$1" | base64 -d > /out.zip
+
+    main="$2"
 else
     # Docker-compose
-    base64 -d /dev/stdin > /script.adl
+    read -r line
+
+    # Split the line into input1 and input2
+    zip="${line%% *}"  # Everything before the first space
+    main="${line#* }"   # Everything after the first space
+
+    echo -n $zip | base64 -d > /out.zip
 fi
 
 # Print script for debugging purposes
-cat /script.adl
+unzip /out.zip -d /out
+
+entry=$(echo -n $main | base64 -d)
 
 # First generate Ampersand proto from student script
-ampersand proto /script.adl \
+ampersand proto /out/$entry \
     --proto-dir=/var/www \
     --verbose
 
