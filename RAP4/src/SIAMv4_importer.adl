@@ -40,7 +40,7 @@ CONTEXT SIAMv4_0 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
 --[Identifying constraints for user accounts]
 -- IDENT Accounts: Account(accUserid,accPassword) -- Only needed when accUserid is not [INJ]
 -- accUserid :: Account * Userid [INJ,UNI,TOT] -- By default, `accUserid` is only UNI
--- RULE "U/PW Unicity": (I /\ accUserid;accUserid~);(accUserid~\accUserid~ /\ accPassword~\accPassword~) |- I -- Only needed when you don't require accounts to have Userids
+-- RULE UPWunicity LABEL "U/PW Unicity": (I /\ accUserid;accUserid~);(accUserid~\accUserid~ /\ accPassword~\accPassword~) |- I -- Only needed when you don't require accounts to have Userids
 
 --[[Examples of possibly useful VIEWs]]--
 -- VIEW Sessions: SESSION(TXT "User is ", sessionUserid \/ (I[SESSION]-(sessionUserid;sessionUserid~));V;"unknown. Please login"[Userid])   POPULATION Userid CONTAINS [ "unknown - please login" ]
@@ -52,19 +52,19 @@ CONTEXT SIAMv4_0 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
 --[Session Menu (in)visibility]
 RELATION isVisible[PF_NavMenuItem*PF_NavMenuItem] [PROP] -- Defined in SystemContext.adl
 RELATION isInvisible[PF_NavMenuItem*PF_NavMenuItem] [PROP]
-ROLE ExecEngine MAINTAINS "DelPair `isInvisible`"
-RULE "DelPair `isInvisible`": isInvisible |- I-isVisible
+ROLE ExecEngine MAINTAINS DelPairIsInvisible
+RULE DelPairIsInvisible LABEL "DelPair `isInvisible`": isInvisible |- I-isVisible
 VIOLATION (TXT "{EX} DelPair;isVisible;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenuItem;", TGT I)
-ROLE ExecEngine MAINTAINS "InsPair `isInvisible`"
-RULE "InsPair `isInvisible`": I-isInvisible |- isVisible
+ROLE ExecEngine MAINTAINS InsPairIsInvisible
+RULE InsPairIsInvisible LABEL "InsPair `isInvisible`": I-isInvisible |- isVisible
 VIOLATION (TXT "{EX} InsPair;isVisible;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenuItem;", TGT I)
 
 RELATION label[PF_NavMenuItem*PF_Label] [UNI]    REPRESENT PF_Label TYPE ALPHANUMERIC
 RELATION isPartOf[PF_NavMenuItem*PF_NavMenu] [UNI,TOT]
 -- POPULATION isInvisible CONTAINS [ ("NavMenuItemsTrashBin", "NavMenuItemsTrashBin") ]
--- INTERFACE NavMenuItemsTrashBin: I[SESSION] cRud BOX [ "Something to please the compiler": I ]
-ROLE ExecEngine MAINTAINS "Fix bugs in PF_NavMenu Stuff"
-RULE "Fix bugs in PF_NavMenu Stuff": I[PF_NavMenuItem] |- isPartOf;isPartOf~ /\ label;label~
+-- INTERFACE NavMenuItemsTrashBin LABEL "Trash bin for NavMenu items": I[SESSION] cRud BOX [ "Something to please the compiler": I ]
+ROLE ExecEngine MAINTAINS FixNavMenuStuff
+RULE FixNavMenuStuff LABEL "Fix bugs in PF_NavMenu Stuff": I[PF_NavMenuItem] |- isPartOf;isPartOf~ /\ label;label~
 VIOLATION ( TXT "{EX} InsPair;isPartOf;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenu;", TGT I
           , TXT "{EX} InsPair;label;PF_NavMenuItem;", SRC I, TXT ";PF_Label;", TGT I
           )
@@ -76,41 +76,41 @@ For example, its property `accIsActive` must be set before it can be used to log
 The property `accIsInitialized` is defined to help distinguish between Accounts that are, and those that are not initialized.
 Note: setting the property `accIsActive` will automatically also set `accIsInitialized`.-}
 
-   ROLE ExecEngine MAINTAINS "Account activation/initialization"
-   RULE "Account activation/initialization": I[Account] |- accIsInitialized
+   ROLE ExecEngine MAINTAINS ActivateAccount
+   RULE ActivateAccount LABEL "Account activation/initialization": I[Account] |- accIsInitialized
    VIOLATION ( TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
              -- `accIsInitialized` will now automatically be set by RULE `Active accounts are initialized`
              )
 
 --[[The following RULEs are listed here so that developers may (cherry)pick them as necessary:]]--
 --[Set default interfaces for anonymous sessions and user sessions]
-   ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
-   RULE "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
+   ROLE ExecEngine MAINTAINS SetNavTo
+   RULE SetNavTo LABEL "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
    VIOLATION ( TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/MyScripts" -- <-- Deze interface verschijnt als je net bent ingelogd
              , TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/Login" -- Hier kun je inloggen.
              ) --}
 
 --[Auto activate auto-login accounts]
-{- ROLE ExecEngine MAINTAINS "Auto activate auto-login accounts"
-   RULE "Auto activate auto-login accounts": accAutoLoginReq |- accIsActive
+{- ROLE ExecEngine MAINTAINS AutoLoginAccounts
+   RULE AutoLoginAccounts LABEL "Auto activate auto-login accounts": accAutoLoginReq |- accIsActive
    VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I) --}
 
 --[Initially, allowed roles are default Roles]--
-{- ROLE ExecEngine MAINTAINS "Initially, allowed roles are also default roles"
-   RULE "Initially, allowed roles are also default roles": 
+{- ROLE ExecEngine MAINTAINS AllowedRoles
+   RULE AllowedRoles LABEL "Initially, allowed roles are also default roles": 
    (I-(accDefaultRoles;(I-"User");accDefaultRoles~));accAllowedRoles |- accDefaultRoles
    VIOLATION (TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
 
 --[Always, allowed roles are default Roles]--
-{- ROLE ExecEngine MAINTAINS "Always, allowed roles are also default roles"
-   RULE "Always, allowed roles are also default roles": accAllowedRoles |- accDefaultRoles
+{- ROLE ExecEngine MAINTAINS AllowedDefault
+   RULE AllowedDefault LABEL "Always, allowed roles are also default roles": accAllowedRoles |- accDefaultRoles
    VIOLATION (TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
 
 --[Organization roles]--
 {- RELATION orgRole[Organization*Role] MEANING "Roles that are applicable to all accounts of the organization"
-   RULE "Systemroles cannot be organization-roles": orgRole;systemRole |- -V
-   ROLE ExecEngine MAINTAINS "Automatically assign organization roles"
-   RULE "Automatically assign organization roles" : accOrg;orgRole |- accAllowedRoles
+   RULE SystemRoles LABEL "Systemroles cannot be organization-roles": orgRole;systemRole |- -V
+   ROLE ExecEngine MAINTAINS OrganizationRoles
+   RULE OrganizationRoles LABEL "Automatically assign organization roles" : accOrg;orgRole |- accAllowedRoles
    VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
 
 ENDCONTEXT

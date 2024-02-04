@@ -11,18 +11,18 @@ REPRESENT BigText TYPE BIGALPHANUMERIC
 itemPhrase :: Item * BigText [UNI] 
 itemBigText :: Item * BigText [UNI] 
 
-ROLE ExecEngine MAINTAINS "Set BigText of first item in sequence"
-RULE "Set BigText of first item in sequence": 
+ROLE ExecEngine MAINTAINS SetBigTextFirst
+RULE SetBigTextFirst LABEL "Set BigText of first item in sequence": 
    seqFirstItem;itemPhrase |- seqFirstItem;itemBigText
 VIOLATION (TXT "{EX} InsPair;itemBigText;Item;", SRC seqFirstItem, TXT ";BigText;", TGT I)
 
-ROLE ExecEngine MAINTAINS "Clear BigText of first item in sequence"
-RULE "Clear BigText of first item in sequence": 
+ROLE ExecEngine MAINTAINS ClearBigTextFirst
+RULE ClearBigTextFirst LABEL "Clear BigText of first item in sequence": 
    seqFirstItem;itemBigText |- seqFirstItem;itemPhrase
 VIOLATION (TXT "{EX} DelPair;itemBigText;Item;", SRC seqFirstItem, TXT ";BigText;", TGT I)
 
-ROLE ExecEngine MAINTAINS "Set BigText of next items in sequence"
-RULE "Set BigText of next items in sequence": 
+ROLE ExecEngine MAINTAINS SetBigTextNext
+RULE SetBigTextNext LABEL "Set BigText of next items in sequence": 
    (nextItem~;itemBigText;tcPrefix~ /\ itemPhrase;tcLabel~);tcResult |- itemBigText
 VIOLATION (TXT "{EX} InsPair;itemBigText;Item;", SRC I, TXT ";BigText;", TGT I)
 
@@ -31,8 +31,8 @@ tcPrefix :: TextConstruct * BigText [UNI]
 tcLabel  :: TextConstruct * BigText [UNI]
 tcResult :: TextConstruct * BigText [UNI]
 
-ROLE ExecEngine MAINTAINS "Create TextConstructs"
-RULE "Create TextConstructs": itemBigText~;nextItem;itemPhrase |- tcPrefix~;tcLabel
+ROLE ExecEngine MAINTAINS CreateTextConstructs
+RULE CreateTextConstructs LABEL "Create TextConstructs": itemBigText~;nextItem;itemPhrase |- tcPrefix~;tcLabel
 VIOLATION ( TXT "{EX} InsAtom;TextConstruct"
           , TXT "{EX} InsPair;tcPrefix;TextConstruct;_NEW;BigText;", SRC I
           , TXT "{EX} InsPair;tcLabel;TextConstruct;_NEW;BigText;", TGT I
@@ -40,12 +40,12 @@ VIOLATION ( TXT "{EX} InsAtom;TextConstruct"
 --        , TXT "{EX} InsPair;tcResult;TextConstruct;_NEW;BigText;{php}implode('',array(", SRC I, TXT ",", TGT I, TXT "))"
           )
 
-ROLE ExecEngine MAINTAINS "Compute TextConstructs"
-RULE "Compute TextConstructs": I /\ tcPrefix;tcPrefix~ /\ tcLabel;tcLabel~ |- tcResult;tcResult~
+ROLE ExecEngine MAINTAINS ComputeTextConstructs
+RULE ComputeTextConstructs LABEL "Compute TextConstructs": I /\ tcPrefix;tcPrefix~ /\ tcLabel;tcLabel~ |- tcResult;tcResult~
 VIOLATION (TXT "{EX} ConstrucText;tcResult;TextConstruct;", SRC I, TXT ";BigText;", SRC tcPrefix, TXT ";", SRC tcLabel)
 
-ROLE ExecEngine MAINTAINS "Delete TextConstructs"
-RULE "Delete TextConstructs": I |- tcPrefix;itemBigText~;nextItem;itemPhrase;tcLabel~
+ROLE ExecEngine MAINTAINS DeleteTextConstructs
+RULE DeleteTextConstructs LABEL "Delete TextConstructs": I |- tcPrefix;itemBigText~;nextItem;itemPhrase;tcLabel~
 VIOLATION (TXT "{EX} DelAtom;TextConstruct;", SRC I)
 
 ENDCONTEXT

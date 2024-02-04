@@ -1,21 +1,21 @@
 CONTEXT RAP
 
-VIEW "Interface": Interface DEFAULT
+VIEW Interface: Interface DEFAULT
    { name : name[Interface*InterfaceName]
    }
 ENDVIEW
 
-VIEW "FieldDef": FieldDef DEFAULT
+VIEW FieldDef: FieldDef DEFAULT
    { name : label[FieldDef*FieldName]
    }
 ENDVIEW
 
-VIEW "Field": Field DEFAULT
+VIEW Field: Field DEFAULT
    { name : def;label[FieldDef*FieldName]
    }
 ENDVIEW
 
-INTERFACE "Overview" FOR Advanced : I[SESSION] ; "_SESSION" cRud BOX<TABS>
+INTERFACE Overview FOR Advanced : I[SESSION] ; "_SESSION" cRud BOX<TABS>
    [ interfaces : V[SESSION*Interface]
      BOX <TABLE>
        [ "Interface" : I

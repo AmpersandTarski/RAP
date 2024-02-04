@@ -1,4 +1,4 @@
-CONTEXT "Person References" IN ENGLISH
+CONTEXT Persons LABEL "Person References" IN ENGLISH
 {- The purpose of this file is to provide 'PersonRef's, 
 i.e. textstrings that may be used to refer to a person.
 -}
@@ -20,11 +20,11 @@ MEANING "An Account may have a textstring that refers to the Person for which th
 
 sessionPersonRef :: SESSION * PersonRef [UNI]
 MEANING "In a SESSION, a textstring that refers to the user (i.e. the Person that acts 'at the other side') may be known."
-ROLE ExecEngine MAINTAINS "Determine the personRef in a session"
-RULE "Determine the personRef in a session": sessionAccount;accPersonRef |- sessionPersonRef
+ROLE ExecEngine MAINTAINS PersonRef
+RULE PersonRef LABEL "Determine the personRef in a session": sessionAccount;accPersonRef |- sessionPersonRef
 VIOLATION (TXT "{EX} InsPair;sessionPersonRef;SESSION;", SRC I, TXT ";PersonRef;", TGT I)
-ROLE ExecEngine MAINTAINS "Clear the personRef in a session"
-RULE "Clear the personRef in a session": sessionIsUser;sessionPersonRef |- sessionAccount;accPersonRef
+ROLE ExecEngine MAINTAINS ClearPersonRef
+RULE ClearPersonRef LABEL "Clear the personRef in a session": sessionIsUser;sessionPersonRef |- sessionAccount;accPersonRef
 VIOLATION (TXT "{EX} DelPair;sessionPersonRef;SESSION;", SRC I, TXT ";PersonRef;", TGT I)
 
 --[Glossary]--

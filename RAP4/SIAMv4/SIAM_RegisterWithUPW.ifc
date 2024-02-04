@@ -1,6 +1,6 @@
-CONTEXT "Account Registration Interface"
+CONTEXT Accounts LABEL "Account Registration Interface"
 
-INTERFACE "AccRegForm" FOR SYSTEM: I[AccRegForm] cRud BOX
+INTERFACE AccRegForm LABEL "Account registration form" FOR SYSTEM: I[AccRegForm] cRud BOX
    [ "Userid (*)"   : arfUserid cRUd
    , "Password (*)" : arfPassword cRUd
    , "Your name"    : arfPersonRef cRUd
@@ -8,8 +8,8 @@ INTERFACE "AccRegForm" FOR SYSTEM: I[AccRegForm] cRud BOX
    ]
 
 POPULATION PopoverText CONTAINS [ "Click this button to create your account" ]
-INTERFACE "Register" FOR Anonymous: I[AccRegForm] cRud BOX <RAW>
-   [ "Form to fill in": I INTERFACE "AccRegForm"
+INTERFACE Register FOR Anonymous: I[AccRegForm] cRud BOX <RAW>
+   [ "Form to fill in": I INTERFACE AccRegForm
    , "Buttons": I cRud BOX <TABLE noHeader>
       [ "Create account": I cRud BOX <PROPBUTTON>
          [ "property": arfAutoLoginReq cRUd

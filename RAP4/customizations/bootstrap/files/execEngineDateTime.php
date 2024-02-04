@@ -9,13 +9,14 @@ The date and time formats that can be used are pretty much arbitrary. A precise 
 use Ampersand\Rule\ExecEngine;
 
 /* sessionToday :: SESSION * Date -- or whatever the DateTime concept is called
-   ROLE ExecEngine MAINTAINS "Initialize today's date"
-   RULE "Initialize today's date": I[SESSION] |- sessionToday;sessionToday~
+   ROLE ExecEngine MAINTAINS InitializeToday
+   RULE InitializeToday LABEL "Initialize today's date": I[SESSION] |- sessionToday;sessionToday~
    VIOLATION (TXT "{EX} SetToday;sessionToday;SESSION;", SRC I, TXT ";Date;")
 
    For $formatSpec see http://php.net/manual/en/function.date.php
    Default is 'd-m-Y' -> e.g: "01-01-2015", other examples include time, like 'd-m-Y G:i:s' -> e.g.: "01-01-2015 1:00:00"
 */
+
 /**
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
@@ -55,8 +56,8 @@ ExecEngine::registerFunction('DateDifferencePlusOne', function ($relation, $srcC
     if ($datediff < 0) {
         throw new Exception("First arg (earliestDate) must be smaller than second arg (latestDate).", 500);
     }
-    
-    $result = 1 + max(0, floor($datediff/(60*60*24)));
+
+    $result = 1 + max(0, floor($datediff / (60 * 60 * 24)));
     ExecEngine::getFunction('InsPair')->call($this, $relation, $srcConcept, $srcAtom, $integerConcept, $result);
 });
 
@@ -78,8 +79,8 @@ ExecEngine::registerFunction('DateDifference', function ($relation, $srcConcept,
     if ($datediff < 0) {
         throw new Exception("First arg (earliestDate) must be smaller than second arg (latestDate).", 500);
     }
-    
-    $result = max(0, floor($datediff/(60*60*24)));
+
+    $result = max(0, floor($datediff / (60 * 60 * 24)));
     ExecEngine::getFunction('InsPair')->call($this, $relation, $srcConcept, $srcAtom, $integerConcept, $result);
 });
 
@@ -91,8 +92,8 @@ ExecEngine::registerFunction('DateDifference', function ($relation, $srcConcept,
 >> EXAMPLES OF USE:
    stdDateTime :: DateTime * DateTimeStdFormat [UNI] PRAGMA "Standard output format for " " is "
 
-   ROLE ExecEngine MAINTAINS "compute DateTime std values"
-   RULE "compute DateTime std values": I[DateTime] |- stdDateTime;stdDateTime~
+   ROLE ExecEngine MAINTAINS computeDateTime
+   RULE computeDateTime LABEL "compute DateTime std values": I[DateTime] |- stdDateTime;stdDateTime~
    VIOLATION (TXT "{EX} datimeStdFormat;stdDateTime;DateTime;", SRC I, TXT ";DateTimeStdFormat;Y-m-d") -- The text 'Y-m-d' may be replaced by any other format specification, see the 'Parameters' section on http://www.php.net/manual/en/function.date.php
 
    eqlDateTime :: DateTime * DateTime PRAGMA "" " occurred simultaneously "
@@ -100,8 +101,8 @@ ExecEngine::registerFunction('DateDifference', function ($relation, $srcConcept,
     ltDateTime :: DateTime * DateTime PRAGMA "" " has occurred before "
     gtDateTime :: DateTime * DateTime PRAGMA "" " has occurred after "
 
-   ROLE ExecEngine MAINTAINS "compute DateTime comparison relations"
-   RULE "compute DateTime comparison relations": V[DateTime] |- eqlDateTime \/ neqDateTime
+   ROLE ExecEngine MAINTAINS computeComparison
+   RULE computeComparison LABEL "compute DateTime comparison relations": V[DateTime] |- eqlDateTime \/ neqDateTime
    VIOLATION (TXT "{EX} datimeEQL;eqlDateTime;DateTime;", SRC I, TXT ";", TGT I
              ,TXT "{EX} datimeNEQ;neqDateTime;DateTime;", SRC I, TXT ";", TGT I
              ,TXT "{EX} datimeLT;ltDateTime;DateTime;", SRC I, TXT ";", TGT I
@@ -125,10 +126,10 @@ ExecEngine::registerFunction('datimeEQL', function ($eqlRelation, $DateConcept, 
     if (($dt2 = strtotime($tgtAtom)) === false) {
         throw new Exception("Illegal date '{$tgtAtom}' specified in tgtAtom (4th arg)", 500);
     }
-    
+
     if ($dt1 == $dt2) {
         ExecEngine::getFunction('InsPair')->call($this, $eqlRelation, $DateConcept, $srcAtom, $DateConcept, $tgtAtom);
-        
+
         // Accommodate for different representations of the same time:
         if ($srcAtom != $tgtAtom) {
             ExecEngine::getFunction('InsPair')->call($this, $eqlRelation, $DateConcept, $tgtAtom, $DateConcept, $srcAtom);
@@ -150,7 +151,7 @@ ExecEngine::registerFunction('datimeNEQ', function ($neqRelation, $DateConcept, 
     if (($dt2 = strtotime($tgtAtom)) === false) {
         throw new Exception("Illegal date '{$tgtAtom}' specified in tgtAtom (4th arg)", 500);
     }
-    
+
     if ($dt1 != $dt2) {
         ExecEngine::getFunction('InsPair')->call($this, $neqRelation, $DateConcept, $srcAtom, $DateConcept, $tgtAtom);
         ExecEngine::getFunction('InsPair')->call($this, $neqRelation, $DateConcept, $tgtAtom, $DateConcept, $srcAtom);
@@ -174,7 +175,7 @@ ExecEngine::registerFunction('datimeLT', function ($ltRelation, $DateConcept, $s
     if ($dt1 == $dt2) {
         return;
     }
-    
+
     if ($dt1 < $dt2) {
         ExecEngine::getFunction('InsPair')->call($this, $ltRelation, $DateConcept, $srcAtom, $DateConcept, $tgtAtom);
     } else {
@@ -198,7 +199,7 @@ ExecEngine::registerFunction('datimeGT', function ($gtRelation, $DateConcept, $s
     if ($dt1 == $dt2) {
         return;
     }
-    
+
     if ($dt1 > $dt2) {
         ExecEngine::getFunction('InsPair')->call($this, $gtRelation, $DateConcept, $srcAtom, $DateConcept, $tgtAtom);
     } else {

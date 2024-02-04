@@ -1,13 +1,13 @@
 ﻿CONTEXT SeqTextPhrasesInterface IN ENGLISH 
 
-INTERFACE "TextConstructs": V[SESSION*TextConstruct] cRud BOX <TABLE>
+INTERFACE TextConstructs LABEL "Text constructs": V[SESSION*TextConstruct] cRud BOX <TABLE>
    [ "TextConstruct" : I cRud
    , "tcPrefix" : tcPrefix cRUd
    , "tcLabel" : tcLabel cRUd
    , "tcResult" : tcResult cRUd
    ]
 
-INTERFACE "SeqTextPhrases": "_SESSION" cRud BOX
+INTERFACE SeqTextPhrases LABEL "Sequence text phrases": "_SESSION" cRud BOX
     [ "New Sequence" : sessionNewSeq cRUd
     , "Sequences" : V[SESSION*Sequence] cRud BOX <TABLE>
        [ "Sequence name"  : seqName cRud

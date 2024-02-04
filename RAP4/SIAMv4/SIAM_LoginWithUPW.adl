@@ -1,5 +1,5 @@
-CONTEXT "Login with Username and Password" IN ENGLISH
-PURPOSE CONTEXT "Login with Username and Password" LATEX
+CONTEXT LoginUPW LABEL "Login with Username and Password" IN ENGLISH
+PURPOSE CONTEXT LoginUPW LATEX
 {+Het 'inloggen' (van een user in een session) met Username en Password bestaat uit 
 \begin{itemize}
 \item het identificeren van een Account en 
@@ -12,13 +12,13 @@ sessionLoginReq :: SESSION * SESSION [PROP] -- Request to login (might be realiz
 loginUserid     :: SESSION * Userid   [UNI] -- Userid as specified by the user
 loginPassword   :: SESSION * Password [UNI] -- Password as specified by the user
 
-RULE "Authenticate user": loginUserid~;sessionIsAnon;sessionLoginReq;loginPassword |- accUserid~;accPassword
+RULE AuthenticateUser LABEL "Authenticate user": loginUserid~;sessionIsAnon;sessionLoginReq;loginPassword |- accUserid~;accPassword
 MESSAGE "You may only login with valid credentials (username/password)."
 VIOLATION (TXT "The Userid or Password do not match. Please try again.")
 --VIOLATION (TXT "Voor de combinatie UID/PW = ('", SRC I, TXT "','", TGT I, TXT "') bestaat geen account.")
 
-ROLE ExecEngine MAINTAINS "U/PW Login"
-RULE "U/PW Login": sessionIsAnon;sessionLoginReq;(loginUserid;accUserid~ /\ loginPassword;accPassword~);accIsActive |- sessionIsUser;sessionAccount
+ROLE ExecEngine MAINTAINS UPWLogin
+RULE UPWLogin LABEL "Username/Password Login": sessionIsAnon;sessionLoginReq;(loginUserid;accUserid~ /\ loginPassword;accPassword~);accIsActive |- sessionIsUser;sessionAccount
 MEANING "When a user is authenticated, the corresponding Account will become the sessionAccount (provided it is active)."
 VIOLATION ( TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", TGT I
           , TXT "{EX} InsPair;sessionIsUser;SESSION;", SRC I, TXT ";SESSION;", SRC I

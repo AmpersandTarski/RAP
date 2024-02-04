@@ -30,8 +30,8 @@ RELATION itemUsedPostfix[Item*SinText] [UNI] -- Postfix that was used for the it
    ----------------------------------------------------------------
 -}
 -- The reason why the rules 'Auto-delete itemSinTexts' have distinct instances for the Prefixes, Postfixes and Sinvalues, is that Ampersand v3.2.0 [9f8f087] runs into memory problems if you OR these rules together.
-ROLE ExecEngine MAINTAINS "Auto-delete itemSinTexts (Prefixes)" --
-RULE "Auto-delete itemSinTexts (Prefixes)":
+ROLE ExecEngine MAINTAINS DeleteSINtextsPrefix
+RULE DeleteSINtextsPrefix LABEL "Auto-delete itemSinTexts (Prefixes)":
    (itemUsedPrefix;V  /\ itemInSeq;(I - seqSinPrefix;seqSinPrefix~)) -- yes[2] for 'Prefix'
    \/ (itemInSeq /\  itemUsedPrefix;-I;seqSinPrefix~)                -- yes[1] for 'Prefix'
    |- -V
@@ -41,8 +41,8 @@ VIOLATION ( TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC
           , TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
           )
 
-ROLE ExecEngine MAINTAINS "Auto-delete itemSinTexts (Postfixes)" --
-RULE "Auto-delete itemSinTexts (Postfixes)":
+ROLE ExecEngine MAINTAINS DeleteSINtextsPostfix
+RULE DeleteSINtextsPostfix LABEL "Auto-delete itemSinTexts (Postfixes)":
    (itemUsedPostfix;V /\ itemInSeq;(I-seqSinPostfix;seqSinPostfix~)) -- yes[2] for 'Postfix'
    \/ (itemInSeq /\ itemUsedPostfix;-I;seqSinPostfix~)               -- yes[1] for 'Postfix'
    |- -V
@@ -52,8 +52,8 @@ VIOLATION ( TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC
           , TXT "{EX} DelPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemUsedPostfix
           )
 
-ROLE ExecEngine MAINTAINS "Auto-delete itemSinTexts (SinValues)"
-RULE "Auto-delete itemSinTexts (SinValues)": 
+ROLE ExecEngine MAINTAINS DeleteSINitem
+RULE DeleteSINitem LABEL "Auto-delete itemSinTexts (SinValues)": 
    (itemUsedValue;V /\ (I - itemSinValue;itemSinValue~)) -- yes[2] for 'SinValue'
    \/ (I /\ itemSinValue;-I;itemUsedValue~)              -- yes[1] for 'SinValue'
    |- -V
@@ -73,8 +73,8 @@ VIOLATION ( TXT "{EX} DelPair;itemSinText;Item;",    SRC I, TXT ";SinText;", SRC
    -------------------------------------------------------------------
 -}
 
-ROLE ExecEngine MAINTAINS "Auto-create itemSinTexts upon SinValue changes"
-RULE "Auto-create itemSinTexts upon SinValue changes":
+ROLE ExecEngine MAINTAINS CreateSINtexts
+RULE CreateSINtexts LABEL "Auto-create itemSinTexts upon SinValue changes":
    itemSinValue |- itemUsedValue
 VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
                  , TXT ";SinText;", SRC itemInSeq;seqSinPrefix
@@ -85,8 +85,8 @@ VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
           , TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
           )
 
-ROLE ExecEngine MAINTAINS "Auto-create itemSinTexts upon seqSinPrefix changes"
-RULE "Auto-create itemSinTexts upon seqSinPrefix changes":
+ROLE ExecEngine MAINTAINS CreateSINtextsPrefix
+RULE CreateSINtextsPrefix LABEL "Auto-create itemSinTexts upon seqSinPrefix changes":
    (I /\ itemSinValue;itemSinValue~);itemInSeq;seqSinPrefix |- itemUsedPrefix
 VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
                  , TXT ";SinText;", SRC itemInSeq;seqSinPrefix
@@ -97,8 +97,8 @@ VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
           , TXT "{EX} InsPair;itemUsedPostfix;Item;",SRC I, TXT ";SinText;", SRC itemInSeq;seqSinPostfix
           )
 
-ROLE ExecEngine MAINTAINS "Auto-create itemSinTexts upon seqSinPostfix changes"
-RULE "Auto-create itemSinTexts upon seqSinPostfix changes":
+ROLE ExecEngine MAINTAINS CreateSINtextsPostfix
+RULE CreateSINtextsPostfix LABEL "Auto-create itemSinTexts upon seqSinPostfix changes":
    (I /\ itemSinValue;itemSinValue~);itemInSeq;seqSinPostfix |- itemUsedPostfix
 VIOLATION ( TXT "{EX} sinComputeItemText;itemSinText;Item;", SRC I
                  , TXT ";SinText;", SRC itemInSeq;seqSinPrefix

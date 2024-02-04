@@ -1,6 +1,6 @@
 ﻿CONTEXT SeqItemTextsInterface IN ENGLISH 
 
-INTERFACE "SeqItemTexts": "_SESSION" cRud BOX
+INTERFACE SeqItemTexts LABEL "Sequence Texts": "_SESSION" cRud BOX
     [ "New Sequence" : sessionNewSeq cRUd
     , "Sequences" : V[SESSION*Sequence] BOX <TABLE>
        [ "Sequence name"  : seqName cRud

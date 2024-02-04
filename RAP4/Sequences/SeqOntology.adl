@@ -37,28 +37,34 @@ RELATION itemName[Item*ItemName] [UNI] REPRESENT ItemName TYPE ALPHANUMERIC -- A
 RELATION itemInSeq[Item*Sequence] [UNI] -- Not having the TOT-multiplicity allows the use of concepts that might CLASSIFY as Items, but also have other purposes than to be part of a Sequence. 
 RELATION nextItem[Item*Item] [UNI,INJ,IRF] -- an item may have a successor (not being itself)
 
-RULE "The first item of a sequence has no predecessor": -(seqFirstItem;nextItem~)
-RULE "A non-first item of a sequence has a predecessor": (itemInSeq;seqFirstItem)-I |- nextItem~;V
-RULE "The last item of a sequence has no successor": -(seqLastItem;nextItem)
-RULE "A non-last item of a sequence has a successor": (itemInSeq;seqLastItem)-I |- nextItem;V
-RULE "A non-empty sequence has a first item and a last item": itemInSeq~;itemInSeq |- seqFirstItem;V;seqLastItem~
-RULE "Successors/predecessors are part of the same sequence": nextItem |- itemInSeq;itemInSeq~
+RULE NoPredecessor LABEL "The first item of a sequence has no predecessor":
+   -(seqFirstItem;nextItem~)
+RULE NonFirstPredecessor LABEL "A non-first item of a sequence has a predecessor":
+   (itemInSeq;seqFirstItem)-I |- nextItem~;V
+RULE LastNoSuccessor LABEL "The last item of a sequence has no successor":
+   -(seqLastItem;nextItem)
+RULE NonLastSuccessor LABEL "A non-last item of a sequence has a successor":
+   (itemInSeq;seqLastItem)-I |- nextItem;V
+RULE NonEmptyFirstLast LABEL "A non-empty sequence has a first item and a last item":
+   itemInSeq~;itemInSeq |- seqFirstItem;V;seqLastItem~
+RULE PartofSameSequence LABEL "Successors/predecessors are part of the same sequence":
+   nextItem |- itemInSeq;itemInSeq~
 
-ROLE ExecEngine MAINTAINS "Automatically set first Item of Sequence"
-RULE "Automatically set first Item of Sequence": itemInSeq-(nextItem~;itemInSeq) |- seqFirstItem~
+ROLE ExecEngine MAINTAINS FirstItem
+RULE FirstItem LABEL "Automatically set first Item of Sequence": itemInSeq-(nextItem~;itemInSeq) |- seqFirstItem~
 VIOLATION (TXT "{EX} InsPair;seqFirstItem;Sequence;", TGT I, TXT ";Item;", SRC I)
 
 -- Automatically set the last Item of a Sequence"
 ENFORCE seqLastItem >: itemInSeq~ - (nextItem;itemInSeq)~
 
-ROLE ExecEngine MAINTAINS "Automatically detect emptiness of a Sequence"
-RULE "Automatically detect emptiness of a Sequence": seqFirstItem \/ seqLastItem |- itemInSeq~;V
+ROLE ExecEngine MAINTAINS IsEmpty
+RULE IsEmpty LABEL "Automatically detect emptiness of a Sequence": seqFirstItem \/ seqLastItem |- itemInSeq~;V
 VIOLATION ( TXT "{EX} DelPair;seqFirstItem;Sequence;", SRC I, TXT ";Item;", SRC seqFirstItem
           , TXT "{EX} DelPair;seqLastItem;Sequence;", SRC I, TXT ";Item;", SRC seqLastItem
           )
 
-ROLE ExecEngine MAINTAINS "Automatically remove next-item-link from orphaned items"
-RULE "Automatically remove next-item-link from orphaned items": I[Item]-(itemInSeq;itemInSeq~) |- (V[Item]-nextItem);V
+ROLE ExecEngine MAINTAINS RemoveNext
+RULE RemoveNext LABEL "Automatically remove next-item-link from orphaned items": I[Item]-(itemInSeq;itemInSeq~) |- (V[Item]-nextItem);V
 VIOLATION (TXT "{EX} DelPair;nextItem;Item;", SRC I, TXT ";Item;", SRC nextItem)
 -- While the following line should not fire, it may so happen that people use this Ontology and make their own SeqInterfacing service that does not take care of this condition.
 -- This rule automatically removes the next-item-link if it points outside the sequence
@@ -72,8 +78,8 @@ ENFORCE nextItem :< itemInSeq;itemInSeq~
 --  MEANING "`succPlus` is the transitive closure of `nextItem`."
 
     RELATION succCopy[Item*Item] -- necessary only for calling the Transitive closure function.
-    ROLE ExecEngine MAINTAINS "Compute transitive closure of nextItem"
-    RULE "Compute transitive closure of nextItem" : nextItem = succCopy
+    ROLE ExecEngine MAINTAINS TransClosNext
+    RULE TransClosNext LABEL "Compute transitive closure of nextItem" : nextItem = succCopy
     VIOLATION (TXT "{EX} TransitiveClosure;nextItem;Item;succCopy;succPlus")
 
     ENFORCE succStar := succPlus\/I

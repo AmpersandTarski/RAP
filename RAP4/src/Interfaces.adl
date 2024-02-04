@@ -1,7 +1,7 @@
 CONTEXT RAP
 -- This module describes the operational semantics of Interfaces.
 
-PATTERN "Data objects"
+PATTERN DataObjects LABEL "Data objects"
     PURPOSE CONCEPT Field
     {+The concept of Field is used to link the content of a term to data in an interface.+}
     CONCEPT Field "A field is a labeled part of an object, which displays a number of atoms." ""
@@ -27,41 +27,41 @@ PATTERN "Data objects"
     RELATION eval[Term*Pair]
     MEANING "This relation contains the pairs that are obtained by evaluating the term. The combination of a pair and an term yields a statement or a phrase, which makes sense to users."
 
-    PURPOSE RULE "Object definitions"
+    PURPOSE RULE ObjectDefinitions LABEL "Object definitions"
     {+ To maintain strong typing we impose that every object satisfies its definition.+}
-    RULE "Object definitions" : def;fieldIn = fieldIn;def
+    RULE ObjectDefinitions LABEL "Object definitions" : def;fieldIn = fieldIn;def
     MEANING "Every field in an object is defined in the field definition of that object's definition."
 
-    PURPOSE RULE "DelPair pair"  -- , "InsPair pair"
+    PURPOSE RULE DelPairPair  -- , "InsPair pair LABEL "DelPair pair"  -- , "InsPair pair"
     {+ The pairs in a field are determined by evaluating the term in the definition of the field,
     restricted to those with this object's left atom.+}
-    ROLE ExecEngine MAINTAINS "DelPair pair", "InsPair pair"
-    RULE "DelPair pair" : pair |- def[Field*FieldDef];eval /\ fieldIn;selfAtom;lAtom~
+    ROLE ExecEngine MAINTAINS DelPairPair, InsPairPair
+    RULE DelPairPair LABEL "DelPair pair" : pair |- def[Field*FieldDef];eval /\ fieldIn;selfAtom;lAtom~
     VIOLATION ( TXT "{EX} DelPair;pair;Field;", SRC I, TXT ";Pair;", SRC I )
-    RULE "InsPair pair" : def[Field*FieldDef];eval /\ fieldIn;selfAtom;lAtom~ |- pair
+    RULE InsPairPair LABEL "InsPair pair" : def[Field*FieldDef];eval /\ fieldIn;selfAtom;lAtom~ |- pair
     VIOLATION ( TXT "{EX} InsPair;pair;Field;", SRC I, TXT ";Pair;", SRC I )
 
     RULE lksjdflksdj : def;(edit\/editFlp) |- field~;(I[Div]-content;content~);V
 
-    PURPOSE RULE "Create new DIV-section"
+    PURPOSE RULE NewDIV LABEL "Create new DIV-section"
     {+ If the population of a field changes, this is visible in the relation "pair".
     For each pair, there should be a DIV-section in the interface to display it.
     So pairs created that show up in a field yield a new DIV-section to display an atom.
     A pair removed leads to the removal of the corresponding DIV-section. +}
-    ROLE ExecEngine MAINTAINS "Create new DIV-section", "Delete DIV-section"
-    RULE "Create new DIV-section" : pair;rAtom |- field~;content
+    ROLE ExecEngine MAINTAINS NewDIV, DelDIV
+    RULE NewDIV LABEL "Create new DIV-section" : pair;rAtom |- field~;content
     VIOLATION ( TXT "{EX} InsAtom;Div"
               , TXT "{EX} InsPair;field;Div;_NEW;Field;", SRC I
               , TXT "{EX} InsPair;content;Div;_NEW;Field;", TGT I
               )
-    RULE "Delete DIV-section" : content |- field;pair;rAtom
+    RULE DelDIV LABEL "Delete DIV-section" : content |- field;pair;rAtom
     VIOLATION ( TXT "{EX} DelAtom;Div;", SRC I)
 ENDPATTERN
 
-PURPOSE PATTERN "Interface events"
+PURPOSE PATTERN InterfaceEvents LABEL "Interface events"
 {+This pattern describes how an insertion in a DIV-section on the screen
 causes the desired insertion of a pair in a relation.+}
-PATTERN "Interface events"
+PATTERN InterfaceEvents LABEL "Interface events"
     PURPOSE CONCEPT InsAtom
     {+This event causes a new atom in a DIV-section of the user interface.+}
     CONCEPT InsAtom "An InsAtom event inserts an atom in a DIV-section of a user interface." ""
@@ -69,7 +69,7 @@ PATTERN "Interface events"
     RELATION div[InsAtom * Div]
     RELATION atom[InsAtom * Atom]
 
-    ROLE ExecEngine MAINTAINS "userFillsDiv"
+    ROLE ExecEngine MAINTAINS userFillsDiv
     RULE userFillsDiv :
       div~;I[InsAtom];atom |- content
     VIOLATION ( TXT "{EX} DelPair;content;DivSection;", SRC I, TXT ";Atom;", SRC content
@@ -82,7 +82,7 @@ PATTERN "Interface events"
     Note that this can only be done if the term of that field is editable,
     i.e. one of `edit` or `editFlp` is populated.
     +}
-    ROLE ExecEngine MAINTAINS "InsertInField"
+    ROLE ExecEngine MAINTAINS InsertInField
     RULE InsertInField :
       field~;div~;atom
         |- (selfAtom;lAtom~ /\
@@ -105,7 +105,7 @@ PATTERN "Interface events"
 --    {+To remove an atom from an interface field (i.e. the `minus`-icon. Not the `bin`-icon) results
 --    in the deletion of a pair from the appropriate relation.
 --    +}
---    ROLE ExecEngine MAINTAINS "RemoveFromField"
+--    ROLE ExecEngine MAINTAINS RemoveFromField
 --    RULE RemoveFromField :
 --      field~;(I[Div]/\content;content~);div~
 --        |- (selfAtom;lAtom~ /\ def;(edit\/editFlp);in~);rAtom
@@ -120,13 +120,13 @@ PATTERN "Interface events"
 ENDPATTERN
 
 {- HJO, 20170825 Disabled this rule, for kleenePlus is currently not supported by the database 
-RULE "possible inputs" : ifcInputs |- fieldIn~+;getTermRelation
+RULE PossibleInputs LABEL "possible inputs" : ifcInputs |- fieldIn~+;getTermRelation
 MEANING "Allow only those input relations that have an editable field inside the interface."
 MESSAGE "Unusable input relation in interface:"
 VIOLATION (TXT "Relation ", TGT I, TXT " has no editable field in interface ", SRC I)
-RULE "accessible relations" : V[Context*Interface];getTermRelation
+RULE AccessibleRelations LABEL "accessible relations" : V[Context*Interface];getTermRelation
 MEANING "For every relation that is potentially editable, there exists an interface through which it can be accessed."
-ROLE "FormalAmpersand" MAINTAINS "accessible relations"
+ROLE "FormalAmpersand" MAINTAINS AccessibleRelations
 -}
 ENDPATTERN
 
@@ -138,9 +138,9 @@ RELATION sessIfc[SESSION*Interface] [UNI,TOT]
 MEANING "Each session has a current interface."
 RELATION sessionRole[SESSION*Role] [UNI,TOT]
 MEANING "The current role of the session user is registered with the session a user is in."
-RULE "Current role" : sessIfc |- sessionRole;ifcRoles~ \/ -(V;ifcRoles~)
+RULE CurrentRole LABEL "Current role" : sessIfc |- sessionRole;ifcRoles~ \/ -(V;ifcRoles~)
 MEANING "Each session has a current interface, which is linked to one of the roles allowed for that interface, or to any interface if no roles are specified."
-RULE "Current atom" : sessIfc |- sessAtom;right~;in
+RULE CurrentAtom LABEL "Current atom" : sessIfc |- sessAtom;right~;in
 MEANING "Each session has a current interface, which is linked to one of the roles allowed for that interface, or to any interface if no roles are specified."
 ENDPATTERN
 -}
@@ -153,9 +153,9 @@ PATTERN InterfaceSemantics
     RELATION fieldIn[FieldDef*ObjectDef] [UNI,TOT]
     MEANING "Every field belongs to an ObjectDef."
     CLASSIFY Field ISA Object
-    RULE "fields in objects" : selfAtom |- pair;lAtom
+    RULE FieldsInObjects LABEL "fields in objects" : selfAtom |- pair;lAtom
     MEANING "A left atom in a field of an object is the right atom in that object's instance."
-    RULE "fields with unique names" : -I[FieldDef] |- label;-I;label~
+    RULE FieldsUnique LABEL "fields with unique names" : -I[FieldDef] |- label;-I;label~
     MEANING "Every field within one object definition has a unique name."
     VIOLATION (TXT "Multiple fields are labeled identically: ", SRC label)
     

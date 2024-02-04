@@ -7,7 +7,7 @@ There are 3 types of templates:
 
 e.g.
 ```adl
-INTERFACE "Project" : I[Project] cRud BOX           <-- the default FORM box template is used
+INTERFACE Project : I[Project] cRud BOX           <-- the default FORM box template is used
   [ "Name"                : projectName             <-- the default atomic template for a alphanumeric type is used
   , "Description"         : projectDescription
   , "(Planned) start date": projectStartDate 
@@ -73,7 +73,7 @@ Possible attributes are:
 
 ### TABS
 Interface template for a form structure with different tabs. For each sub interface a tab is added.
-This template is used best in combination with univalent interface expressions (e.g. `INTERFACE "Test" : univalentExpression BOX <TABS>`), because for each target atom of the expression a complete form (with all tabs) is shown.
+This template is used best in combination with univalent interface expressions (e.g. `INTERFACE Test : univalentExpression BOX <TABS>`), because for each target atom of the expression a complete form (with all tabs) is shown.
 
 Usage `BOX <TABS attributes*>`
 
@@ -241,7 +241,7 @@ This template can be used to specify the interface to which the user must naviga
 
 Usage:
 ```
-  "label": expr LINKTO INTERFACE "InterfaceName"
+  "label": expr LINKTO INTERFACE InterfaceName
 ```
 
 where:

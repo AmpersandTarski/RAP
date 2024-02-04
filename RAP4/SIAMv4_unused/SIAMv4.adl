@@ -53,36 +53,36 @@ For example, its property `accIsActive` must be set before it can be used to log
 The property `accIsInitialized` is defined to help distinguish between Accounts that are, and those that are not initialized.
 Note: setting the property `accIsActive` will automatically also set `accIsInitialized`.-}
 
-   ROLE ExecEngine MAINTAINS "Account activation/initialization"
-   RULE "Account activation/initialization": I[Account] |- accIsInitialized
+   ROLE ExecEngine MAINTAINS ActivateAccount
+   RULE ActivateAccount LABEL "Account activation/initialization": I[Account] |- accIsInitialized
    VIOLATION ( TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I
              -- `accIsInitialized` will now automatically be set by RULE `Active accounts are initialized`
              )
 
 --[Set default interfaces for anonymous sessions and user sessions]
-   ROLE ExecEngine MAINTAINS "Set NavTo interfaces for session"
-   RULE "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
+   ROLE ExecEngine MAINTAINS SetNavTo
+   RULE SetNavTo LABEL "Set NavTo interfaces for session": I[SESSION] |- sessionIfcsSet
    VIOLATION ( TXT "{EX} InsPair;sessionAnonIfc;SESSION;", SRC I, TXT ";NavToIfc;/AnonHome"
              , TXT "{EX} InsPair;sessionUserIfc;SESSION;", SRC I, TXT ";NavToIfc;/UserHome"
              ) --}
 
 -- The following RULEs are listed here so that developers may (cherry)pick them as necessary:
 --[Auto activate auto-login accounts]
-{- ROLE ExecEngine MAINTAINS "Auto activate auto-login accounts"
-   RULE "Auto activate auto-login accounts": accAutoLoginReq |- accIsActive
+{- ROLE ExecEngine MAINTAINS ActivateAutoLogin
+   RULE ActivateAutoLogin LABEL "Auto activate auto-login accounts": accAutoLoginReq |- accIsActive
    VIOLATION (TXT "{EX} InsPair;accIsActive;Account;", SRC I, TXT ";Account;", TGT I) --}
 
 --[Initially, allowed roles are default Roles]--
-{- ROLE ExecEngine MAINTAINS "Initially, allowed roles are also default roles"
-   RULE "Initially, allowed roles are also default roles": 
+{- ROLE ExecEngine MAINTAINS AllowedIsDefault
+   RULE AllowedIsDefault LABEL "Initially, allowed roles are also default roles": 
    (I-(accDefaultRoles;accDefaultRoles~));accAllowedRoles |- accDefaultRoles
    VIOLATION (TXT "{EX} InsPair;accDefaultRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
 
 --[Organization roles]--
 {- RELATION orgRole[Organization*Role] MEANING "Roles that are applicable to all accounts of the organization"
-   RULE "Systemroles cannot be organization-roles": orgRole;systemRole |- -V
-   ROLE ExecEngine MAINTAINS "Automatically assign organization roles"
-   RULE "Automatically assign organization roles" : accOrg;orgRole |- accAllowedRoles
+   RULE ExcludeSystemRoles LABEL "Systemroles cannot be organization-roles": orgRole;systemRole |- -V
+   ROLE ExecEngine MAINTAINS AssignOrganizationRoles
+   RULE AssignOrganizationRoles LABEL "Automatically assign organization roles" : accOrg;orgRole |- accAllowedRoles
    VIOLATION (TXT "{EX}InsPair;accAllowedRoles;Account;", SRC I, TXT ";Role;", TGT I) --}
 
 ENDCONTEXT

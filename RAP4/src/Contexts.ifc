@@ -10,7 +10,7 @@ She can browse around in it. The Atlas displays only the contexts that are loade
 +}
 INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<FORM hideLabels>
    [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud   -- This works because VIEW Script: Script(TXT "Terug naar script")
-   , "" : I
+   , l2 LABEL "" : I
       BOX<TABLE sortable>
            [ context       : I                              cRud
            , patterns      : context[Pattern*Context]~      cRud
@@ -25,11 +25,11 @@ INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;s
 INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
       [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
       , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
-      , ""     : I[Context] cRud
+      , l3 LABEL ""     : I[Context] cRud
       BOX <TABS>
          [ "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ cRud
             BOX <TABLE sortable hideOnNoRecords>
-                 [ "Concepts:"   : I cRud LINKTO INTERFACE "Concept"
+                 [ "Concepts:"   : I cRud LINKTO INTERFACE Concept
                  , "Definition:" : name;acdcpt~;(acddef2\/acdmean) cRud -- acddef2 is old syntax, acdmean is new syntax.
                  , "Waartoe?"    : purpose[Concept*Purpose]        cRud 
                  ]
@@ -42,27 +42,27 @@ INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
          , "Regels"    : I
             BOX <TABS>
                  [ "regels met RULE"         : udefrules~     cRud BOX <TABLE sortable hideOnNoRecords>
-                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
+                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE Rule
                       , "Formele expressie:" : formalTerm     cRud
                       ]
                  , "multipliciteits regels"  : proprules[PropertyRule*Context]~     cRud BOX <TABLE sortable hideOnNoRecords>
-                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "PropRule"
+                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE PropRule
                       , "Formele expressie:" : formalTerm     cRud
                       ]
                  , "identiteitsregels"       : identityRules~ cRud BOX <TABLE sortable hideOnNoRecords>
-                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE "Rule"
+                      [ "Regel:" : I[Rule] cRud LINKTO INTERFACE Rule
                       , "Formele expressie:" : formalTerm     cRud
                       ]
                  ]
-         , "Patterns"   : context [Pattern * Context]~ INTERFACE "Patterns"
+         , "Patterns"   : context [Pattern * Context]~ INTERFACE Patterns
          ]
   ]
 
 
-INTERFACE "ContextDetailed" FOR Advanced : I[Context] cRud BOX<FORM hideLabels>
+INTERFACE ContextDetailed LABEL "Context in detail" FOR Advanced : I[Context] cRud BOX<FORM hideLabels>
   [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud
   , "Gegevensmodel" : conceptualDiagram cRud <ShowConceptualDiagram>
-  , ""     : I[Context] cRud
+  , l3 LABEL ""     : I[Context] cRud
     BOX <TABS>
       [ "About" : I BOX
         [ "name"  : name[Context*ContextName]
@@ -84,7 +84,7 @@ INTERFACE "ContextDetailed" FOR Advanced : I[Context] cRud BOX<FORM hideLabels>
                     ( -(genspc[Isa*Concept]~;genspc[Isa*Concept]))) 
              -- INTERFACE IsaTree 
       , "Concepts" : context[Concept*Context]~
-      , "Relations" : relsDefdIn[Relation*Context]~  -- LINKTO INTERFACE "Relation"
+      , "Relations" : relsDefdIn[Relation*Context]~  -- LINKTO INTERFACE Relation
            BOX<TABLE sortable>
                [ relation   : I
                , "declared in pattern" : declaredIn[Relation*Pattern]
@@ -92,7 +92,7 @@ INTERFACE "ContextDetailed" FOR Advanced : I[Context] cRud BOX<FORM hideLabels>
                ]
       , "Roles" : allRoles[Context*Role]
     --  , "allConjuncts" : allConjuncts[Context*Conjunct]
-    --  , "Rules" : allRules[Rule*Context] INTERFACE "Rule"
+    --  , "Rules" : allRules[Rule*Context] INTERFACE Rule
       ]
   ]
 

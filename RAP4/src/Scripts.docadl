@@ -1,6 +1,6 @@
 CONTEXT RAP4 IN ENGLISH
 
-PURPOSE PATTERN "Registration of Ampersand source files"
+PURPOSE PATTERN AmpersandSource
 {+As a student, I need to submit files for Ampersand to compile, so that I can get a conceptual analysis and all other goodies that Ampersand has in store for me.
 In order to submit an Ampersand script in RAP4, the user uploads text in the web-application.
 This pattern defines what administration RAP4 will do in order before compiling the script/
@@ -29,7 +29,7 @@ PURPOSE INTERFACE StudentScripts
 {+This interface gives a tutor an overview of the scripts submitted by students.
 +}
 
-PURPOSE RULE "Submission Timestamping"
+PURPOSE RULE SubmissionTimestamping
 {+To ensure that the submittor of every script is known, the following rule automatically stamps every script with its submittor and a timestamp.
 The account logged in when creating a new script is considered to be the submittor.
 +}

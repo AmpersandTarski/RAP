@@ -1,4 +1,4 @@
-CONTEXT "RAP4 AccountMgt" IN ENGLISH
+CONTEXT RAP4AccountMgt IN ENGLISH
 -----------------------------------------------------------
 
 VIEW Accounts: Account DEFAULT { "uid": accUserid } ENDVIEW
@@ -12,40 +12,40 @@ RELATION accEmail[Account * Emailaddress] [UNI] REPRESENT Emailaddress TYPE ALPH
 
 --[Password (re)setting]--
 
-ROLE ExecEngine MAINTAINS "Het default wachtwoord voor accounts is 'welkom'"
-RULE "Het default wachtwoord voor accounts is 'welkom'": I[Account] |- accPassword;accPassword~
+ROLE ExecEngine MAINTAINS Welkom
+RULE Welkom LABEL "Het default wachtwoord voor accounts is 'welkom'": I[Account] |- accPassword;accPassword~
 VIOLATION (TXT "{EX}InsPair;accPassword;Account;", SRC I, TXT ";Password;welkom")
 
 -- The following has been removed, because it is patronizing code.
---ROLE User MAINTAINS "Wilt u uw wachtwoord veranderen?"
---RULE "Wilt u uw wachtwoord veranderen?": "_SESSION";sessionAccount;accPassword;"welkom" |- -V
+--ROLE User MAINTAINS WachtwoordVeranderen
+--RULE WachtwoordVeranderen LABEL "Wilt u uw wachtwoord veranderen?": "_SESSION";sessionAccount;accPassword;"welkom" |- -V
 --MESSAGE "Het wachtwoord 'welkom' dient te worden aangepast."
 --VIOLATION (TXT "U dient uw wachtwoord te wijzigen in de interface 'MyAccount' in de menubalk.")
 
 accNewPassword :: Account * Password [UNI]
-ROLE ExecEngine MAINTAINS "(Re)set the password of an account"
-RULE "(Re)set the password of an account": 
+ROLE ExecEngine MAINTAINS ResetPassword
+RULE ResetPassword LABEL "(Re)set the password of an account": 
    accNewPassword /\ (sessionAccount \/ sessionActiveRoles;"AccountManager";V)~;"_SESSION";V |- -V
 MEANING "(Re)setting the password for an account can only be done by an AccountManager or the account user."
 VIOLATION ( TXT "{EX} InsPair;accPassword;Account;", SRC I, TXT ";Password;", TGT I
           , TXT "{EX} DelPair;accNewPassword;Account;", SRC I, TXT ";Password;", TGT I
           )
-RULE "(Re)setting the password for an account can only be done by an AccountManager or the account user":
+RULE ResetByAccountManager LABEL "(Re)setting the password for an account can only be done by an AccountManager or the account user":
    accNewPassword |- (sessionAccount \/ sessionActiveRoles;"AccountManager";V)~;"_SESSION";V
 
 --[AccountManager Interfaces]--
 
 POPULATION Role CONTAINS [ "AccountManager" ]
 
-INTERFACE "Accounts" FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX <TABLE sortable>
-   [ "Userid": I cRud LINKTO INTERFACE "Account"
+INTERFACE Accounts FOR AccountManager: "_SESSION";V[SESSION*Account] CRuD BOX <TABLE sortable>
+   [ "Userid": I cRud LINKTO INTERFACE Account
    , "Persoon"           : accPerson CRUD
    , "Toegestane rollen" : accAllowedRoles cRud
    , "Default rollen"    : accDefaultRoles cRud
    , "Persoonlijk ID"    : accUserid CRUD
    ]
            
-INTERFACE "Account" FOR AccountManager: I[Account] cRud BOX
+INTERFACE Account FOR AccountManager: I[Account] cRud BOX
    [ "Userid": accUserid cRUd
    , "(Re)set password": accNewPassword cRUd -- crUd is needed for Passwords
 -- , "Organization": accOrg cRUd
@@ -54,10 +54,10 @@ INTERFACE "Account" FOR AccountManager: I[Account] cRud BOX
    , "Default rollen": accDefaultRoles cRUd
    ]
 
-PURPOSE INTERFACE "Roles"
+PURPOSE INTERFACE Roles
 {+This interface allows account manager to change assigned roles to accounts.
 +}
-INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <TABLE sortable>
+INTERFACE Roles FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <TABLE sortable>
    [ "Role": I cRud
    , "Assigned to": accAllowedRoles~ cRUd
    , "Default for": accDefaultRoles~ cRud
@@ -66,10 +66,10 @@ INTERFACE "Roles" FOR AccountManager: "_SESSION";V[SESSION*Role] cRud BOX <TABLE
 
 --[User account management]--
 
-PURPOSE INTERFACE "MyAccount"
+PURPOSE INTERFACE MyAccount
 {+This interface provides basic account information and allows a user to change his or her password.
 +}
-INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <FORM hideLabels>
+INTERFACE MyAccount LABEL "My account" FOR User: "_SESSION" cRud BOX <FORM hideLabels>
    [ "no session account": (I-sessionAccount;sessionAccount~);V;"Editing your account requires that you are logged in"[LoginMessage] cRud
    , "session account": sessionAccount cRud BOX
       [ "Userid": accUserid cRud
@@ -83,12 +83,12 @@ INTERFACE "MyAccount" FOR "User": "_SESSION" cRud BOX <FORM hideLabels>
    ]
 POPULATION LoginMessage CONTAINS [ "Editing your account requires that you are logged in" ]
 
-PURPOSE RULE "Remove expired sessions" MARKDOWN
+PURPOSE RULE RemoveExpired
 {+When a browser-session ceases to exist, RAP4 still has a link between session and account.
 The next time a session is linked to this account, the previous sessions should be removed.
 +}
-ROLE ExecEngine MAINTAINS "Remove expired sessions"
-RULE "Remove expired sessions":
+ROLE ExecEngine MAINTAINS RemoveExpired
+RULE RemoveExpired LABEL "Remove expired sessions":
    "_SESSION";sessionAccount;sessionAccount~ |- "_SESSION"
 VIOLATION (TXT "{EX} DelAtom;SESSION;", TGT I)
 
@@ -99,12 +99,12 @@ RELATION regPassword2   [SESSION * Password]     [UNI]
 RELATION registerButton [SESSION * SESSION]      [PROP] -- knopje om expliciet te zeggen dat met deze gegevens geregistreerd moet gaan worden.
 RELATION loginButton    [SESSION * SESSION]      [PROP]      -- knopje om expliciet te zeggen dat de gebruiker wil inloggen.
 
-PURPOSE RULE "Login upon request"
+PURPOSE RULE LoginRequest
 {+This rule links the current session to one account,
 being the account that corresponds to the `loginUserid` and `loginPassword` fields.
 +}
-ROLE ExecEngine MAINTAINS "Login upon request"
-RULE "Login upon request": 
+ROLE ExecEngine MAINTAINS LoginRequest
+RULE LoginRequest LABEL "Login upon request": 
    ("_SESSION" - sessionAccount;sessionAccount~)          -- the current session is not logged in,
    /\ loginUserid;accUserid~;accPassword;loginPassword~   -- the password and userid match to the account, and
    /\ loginButton                                         -- the login button is pressed
@@ -115,8 +115,8 @@ VIOLATION ( TXT "{EX} InsPair;sessionAccount;SESSION;", SRC I, TXT ";Account;", 
           )
 
 --[Studenten mogen een eigen account aanmaken middels een specifieke interface]--
-ROLE ExecEngine MAINTAINS "Login on a new account when registering"
-RULE "Login on a new account when registering": 
+ROLE ExecEngine MAINTAINS LoginRegistering
+RULE LoginRegistering LABEL "Login on a new account when registering": 
    (registerButton - sessionAccount;sessionAccount~)  -- button is pushed with no-one logged in
    /\ regUserID;-accUserid~;V[Account*SESSION]        -- the new userID does not exist
    /\ regPassword1;regPassword2~                      -- both passwords are equal
@@ -129,8 +129,8 @@ VIOLATION ( TXT "{EX} InsAtom;Account"
           )
 
 --[Users may change their password when logged in]--
-ROLE ExecEngine MAINTAINS "Change password"
-RULE "Change password": 
+ROLE ExecEngine MAINTAINS ChangePassword
+RULE ChangePassword: 
    ("_SESSION" /\ sessionAccount;sessionAccount~)
    /\ regPassword1;regPassword2~
 |-    sessionAccount;accPassword;regPassword2~

@@ -1,6 +1,6 @@
-﻿CONTEXT "SeqItemNumberingInterface" IN ENGLISH
+﻿CONTEXT SeqItemNumberingInterface IN ENGLISH
 
-INTERFACE "SeqItemNumbering": "_SESSION" cRud BOX
+INTERFACE SeqItemNumbering LABEL "Sequence Item Numbering": "_SESSION" cRud BOX
     [ "New Sequence" : sessionNewSeq cRUd
     , "Sequences" : V[SESSION*Sequence] cRud BOX <TABLE>
        [ "Sequence name"  : seqName cRud

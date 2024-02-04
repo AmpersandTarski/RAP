@@ -14,8 +14,8 @@
    INCLUDE "../Sequences/SeqTextPhrases.ifc"    -- Test interface for text/phrase construction   
 
 sessionNewSeq :: SESSION * SeqName
-ROLE ExecEngine MAINTAINS "Create new Sequence"
-RULE "Create new Sequence": sessionNewSeq |- -V
+ROLE ExecEngine MAINTAINS NewSequence
+RULE NewSequence LABEL "Create new Sequence": sessionNewSeq |- -V
    VIOLATION ( TXT "{EX} InsAtom;Sequence;seqName;Sequence;_NEW;SeqName;", TGT I
              , TXT "{EX} DelPair;sessionNewSeq;SESSION;", SRC I, TXT ";SeqName;", TGT I
              )

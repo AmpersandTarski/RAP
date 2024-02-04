@@ -4,6 +4,6 @@ ab :: A * B
 bc :: B * C
 ac :: A * C
 
-RULE "testrule": ab;bc |- ac
+RULE testrule: ab;bc |- ac
 
 ENDCONTEXT

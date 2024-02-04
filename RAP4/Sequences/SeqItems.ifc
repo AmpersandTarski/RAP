@@ -1,6 +1,6 @@
 ﻿CONTEXT "SeqItemsInterface" IN ENGLISH
 
-INTERFACE "SeqItems"
+INTERFACE SeqItems LABEL "Sequence Items"
     (sessionNewSeq, seqName
     ,seqNewFirstItem, seqNewLastItem
     ,itemInsNextItem, itemInsPrevItem

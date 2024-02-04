@@ -1,4 +1,4 @@
-CONTEXT "Login" IN ENGLISH LATEX
+CONTEXT Login IN ENGLISH LATEX
 -----------------------------------------------------------
 {- This file contains an INTERFACE by which a user can:
 - Login (with a username and password)
@@ -17,7 +17,7 @@ INCLUDE "./SIAM_RegisterWithUPW.ifc"     -- Interface for RegisterWithUPW Extens
 POPULATION LoginMessage CONTAINS [ "You are currently logged in as " ]           REPRESENT LoginMessage TYPE ALPHANUMERIC
 POPULATION PopoverText  CONTAINS [ "Click this button to create your account" ]  REPRESENT PopoverText  TYPE ALPHANUMERIC
 -- POPULATION isInvisible CONTAINS [ ("Login", "Login") ]
-INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <RAW>
+INTERFACE Login FOR Anonymous: sessionIsAnon cRud BOX <RAW>
    [ "Login": I-sessionAccRegForm;sessionAccRegForm~ cRud BOX <TABLE hideOnNoRecords>
       [ "Userid": loginUserid cRUd
       , "Password": loginPassword cRUd -- crUd is needed for Passwords
@@ -42,7 +42,7 @@ INTERFACE "Login" FOR Anonymous: sessionIsAnon cRud BOX <RAW>
 --#ENDIF
       ]
 --#IFNOT NoRegistrationWithLogin
-   , "Register": sessionIsAnon;sessionAccRegForm INTERFACE "Register"
+   , "Register": sessionIsAnon;sessionAccRegForm INTERFACE Register
 --#ENDIF
    ]
 
