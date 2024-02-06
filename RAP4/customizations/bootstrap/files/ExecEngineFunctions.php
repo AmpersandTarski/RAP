@@ -362,7 +362,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
 
         $getImageCommand = new Command(
-            "kubectl get deployment flags",
+            "kubectl get deployment/student-prototype{$suffix} -n {$namespace}",
             [ "-o=jsonpath='{$.spec.template.spec.containers[0].image}'"
             ],
             $ee->getLogger()
