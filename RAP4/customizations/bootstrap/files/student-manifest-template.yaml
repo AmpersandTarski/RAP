@@ -45,7 +45,6 @@ spec:
             - containerPort: 80
           command: ["bash", "/run-student-prototype.sh"]
           args: [{{zipContent}},{{mainAdl}}]
-          imagePullPolicy: Always
 ---
 # student-prototype user service
 apiVersion: v1
