@@ -12,7 +12,5 @@ spec:
               value: rap-db-staging
             - name: RAP_HOST_NAME
               value: staging.rap.tarski.nl
-            - name: RAP_KUBERNETES_NAMESPACE
-              value: rap-staging
             - name: RAP_STUDENT_PROTO_IMAGE
               value: ampersandtarski/rap4-student-prototype:staging-latest

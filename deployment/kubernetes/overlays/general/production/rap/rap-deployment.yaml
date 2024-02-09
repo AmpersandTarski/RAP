@@ -10,7 +10,5 @@ spec:
           env:
             - name: AMPERSAND_DBHOST
               value: rap-db-production
-            - name: RAP_KUBERNETES_NAMESPACE
-              value: rap-production
             - name: RAP_STUDENT_PROTO_IMAGE
               value: ampersandtarski/rap4-student-prototype:production-latest

@@ -12,7 +12,5 @@ spec:
               value: rap-db-dev
             - name: RAP_HOST_NAME
               value: dev.rap.tarski.nl
-            - name: RAP_KUBERNETES_NAMESPACE
-              value: rap-dev
             - name: RAP_STUDENT_PROTO_IMAGE
               value: ampersandtarski/rap4-student-prototype:dev-latest

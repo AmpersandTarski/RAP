@@ -30,9 +30,12 @@ spec:
               value: https://localhost
             - name: RAP_DEPLOYMENT
               value: Kubernetes
-            
             - name: RAP_STUDENT_PROTO_LOG_CONFIG
               value: logging.yaml
+            - name: RAP_KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           envFrom:
             - configMapRef:
                 name: administration-configmap
