@@ -9,6 +9,7 @@ use Ampersand\Core\Concept;
 use Ampersand\Rule\ExecEngine;
 use Ampersand\Core\Link;
 use Ampersand\Extension\RAP4\Command;
+use RAP4\Prototype;
 
 /* Ampersand commands must not be changed in this file, but in a configuration yaml file.
  *
@@ -290,179 +291,193 @@ ExecEngine::registerFunction('Diagnosis', function (string $path, Atom $scriptVe
  * Phan analyzes the inner body of this closure as if it were a closure declared in ExecEngine.
  */
 ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $userName) {
-    /** @var \Ampersand\Rule\ExecEngine $ee */
     $ee = $this; // because autocomplete does not work on $this
+    $prototype = new Prototype($path, $scriptAtom, $scriptVersionAtom, $userName, $ee);
+    $prototype->execute();
+});
+//ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAtom, Atom $scriptVersionAtom, string $userName) {
+    ///** @var \Ampersand\Rule\ExecEngine $ee */
+    //$ee = $this; // because autocomplete does not work on $this
 
-    $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
+    // $scriptContentPairs = $scriptVersionAtom->getLinks('content[ScriptVersion*ScriptContent]');
 
-    $serverName = getenv('RAP_HOST_NAME');
-    $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
-    $studentProtoLogConfig = getenv('RAP_STUDENT_PROTO_LOG_CONFIG');
-    if ($studentProtoLogConfig === false) {
-        $studentProtoLogConfig = 'logging.yaml';
-    }
+    // $serverName = getenv('RAP_HOST_NAME');
+    // $studentProtoImage = getenv('RAP_STUDENT_PROTO_IMAGE');
+    // $studentProtoLogConfig = getenv('RAP_STUDENT_PROTO_LOG_CONFIG');
+    // if ($studentProtoLogConfig === false) {
+    //     $studentProtoLogConfig = 'logging.yaml';
+    // }
 
-    if (count($scriptContentPairs) != 1) {
-        throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
-    }
+    // if (count($scriptContentPairs) != 1) {
+    //     throw new Exception("No (or multiple) script content found for '{$scriptVersionAtom}'", 500);
+    // }
 
-    $scriptContent = $scriptContentPairs[0]->tgt()->getId();
-    $scriptContentForCommandline = base64_encode($scriptContent);
+    // $scriptContent = $scriptContentPairs[0]->tgt()->getId();
 
     //paths
-    $relDir       = pathinfo($path, PATHINFO_DIRNAME);
-    $workDir      = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
+    // $relDir       = pathinfo($path, PATHINFO_DIRNAME);
+    // $workDir      = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
 
     //zip
-    $projectFolder = "{$workDir}/project";
-    $mainAdl = "{$projectFolder}/main.adl";
+    // $projectFolder = "{$workDir}/project";
+    // $mainAdl = "{$projectFolder}/main.adl";
     
-    mkdir($projectFolder);
-    file_put_contents($mainAdl, $scriptContent);
+    // mkdir($projectFolder);
+    // file_put_contents($mainAdl, $scriptContent);
 
-    $zipFile = "{$workDir}/project.zip";
-    $zip = new \ZipArchive;
-    $zip->open($zipFile, \ZipArchive::CREATE);
-    $files = new \RecursiveIteratorIterator(
-        new \RecursiveDirectoryIterator($projectFolder),
-        \RecursiveIteratorIterator::LEAVES_ONLY
-    );
+    // $zipFile = "{$workDir}/project.zip";
+    // $zip = new \ZipArchive;
+    // $zip->open($zipFile, \ZipArchive::CREATE);
+    // $files = new \RecursiveIteratorIterator(
+    //     new \RecursiveDirectoryIterator($projectFolder),
+    //     \RecursiveIteratorIterator::LEAVES_ONLY
+    // );
 
-    foreach ($files as $name => $file) {
-       if (!$file->isDir()) {
-           $filePath = $file->getRealPath();
-           $relativePath = substr($filePath, strlen($projectFolder) + 1);
+    // foreach ($files as $name => $file) {
+    //    if (!$file->isDir()) {
+    //        $filePath = $file->getRealPath();
+    //        $relativePath = substr($filePath, strlen($projectFolder) + 1);
 
-           $zip->addFile($filePath, $relativePath);
-       }
-    }
+    //        $zip->addFile($filePath, $relativePath);
+    //    }
+    // }
 
-    $zip->close();
+    // $zip->close();
 
-    $zipContent = file_get_contents($zipFile);
-    $zipContentForCommandline = base64_encode($zipContent);
-    $mainAldForCommandLine = base64_encode("main.adl");
+    // $zipContent = file_get_contents($zipFile);
+    // $zipContentForCommandline = base64_encode($zipContent);
+    // $mainAldForCommandLine = base64_encode("main.adl");
 
-    $pattern = '/[\W+]/';
+    // $pattern = '/[\W+]/';
 
-    $userName=strtolower($userName);
-    $userName = preg_replace($pattern, '-', $userName);
+    // $userName=strtolower($userName);
+    // $userName = preg_replace($pattern, '-', $userName);
 
-    $deployment = getenv('RAP_DEPLOYMENT');
-    if ($deployment == 'Kubernetes') {
-        /** Deployed on Kubernetes Cluster
-         * Save student-manifest-template.yaml at a logical location
-         * - Copy student-manifest-template.yaml as student-manifest-{{student}}.yaml to /data/
-         * - replace {{student}} and {{namespace}}
-         * - replace {{adl-base64}} with base64 compiled adl file
-         * - save
-         * - run kubectl apply -f "student-manifest-{{student}}.yaml"
-        */
+    // $deployment = getenv('RAP_DEPLOYMENT');
+    // if ($deployment == 'Kubernetes') {
+    //     /** Deployed on Kubernetes Cluster
+    //      * Save student-manifest-template.yaml at a logical location
+    //      * - Copy student-manifest-template.yaml as student-manifest-{{student}}.yaml to /data/
+    //      * - replace {{student}} and {{namespace}}
+    //      * - replace {{adl-base64}} with base64 compiled adl file
+    //      * - save
+    //      * - run kubectl apply -f "student-manifest-{{student}}.yaml"
+    //     */
 
-        $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
-        $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
+    //     $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
 
-        $hostname=getenv('RAP_HOST_NAME');
-        $hostname="{$userName}.{$hostname}";
+    //     $getImageCommand = new Command(
+    //         "kubectl get deployment/student-prototype{$suffix} -n {$namespace}",
+    //         [ "-o=jsonpath='{$.spec.template.spec.containers[0].image}'"
+    //         ],
+    //         $ee->getLogger()
+    //     );
 
-        $suffix=substr($namespace, 3);
+    //     $getImageCommand->execute();
 
-        $dbName="rap-db{$suffix}";
+    //     $containerImage=$getImageCommand->getResponse();
+
+    //     $hostname=getenv('RAP_HOST_NAME');
+    //     $hostname="{$userName}.{$hostname}";
+
+    //     $suffix=substr($namespace, 3);
+
+    //     $dbName="rap-db{$suffix}";
         
-        $dbSecret="db-secrets{$suffix}";
+    //     $dbSecret="db-secrets{$suffix}";
 
-        $tlsSecret="{$userName}-tls{$suffix}";
+    //     $tlsSecret="{$userName}-tls{$suffix}";
 
-        // Location to save files
-        $manifestFile = $ee->getApp()->getSettings()->get('global.absolutePath') . '/bootstrap/files/student-manifest-template.yaml';
+    //     // Location to save files
+    //     $manifestFile = $ee->getApp()->getSettings()->get('global.absolutePath') . '/bootstrap/files/student-manifest-template.yaml';
 
-        // Open student-manifest-template.yaml
-        $manifest=file_get_contents($manifestFile);
-        if ($manifest === false) {
-            throw new Exception("Student manifest template not found for '{$scriptVersionAtom}', workDir: {$workDir}, manifestFile: {$manifestFile}", 500);
-        }
-        // replace {{student}}, {{namespace}} and {{scriptContent}}
-        $manifest=str_replace("{{student}}", $userName, $manifest);
-        $manifest=str_replace("{{namespace}}", $namespace, $manifest);
-        $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
-        $manifest=str_replace("{{dbName}}", $dbName, $manifest);
-        $manifest=str_replace("{{dbSecrets}}", $dbSecret, $manifest);
-        $manifest=str_replace("{{hostName}}", $hostname, $manifest);
-        $manifest=str_replace("{{tlsSecret}}", $tlsSecret, $manifest);
-        $manifest=str_replace("{{zipContent}}", $zipContentForCommandline, $manifest);
-        $manifest=str_replace("{{mainAdl}}", $mainAldForCommandLine, $manifest);
+    //     // Open student-manifest-template.yaml
+    //     $manifest=file_get_contents($manifestFile);
+    //     if ($manifest === false) {
+    //         throw new Exception("Student manifest template not found for '{$scriptVersionAtom}', workDir: {$workDir}, manifestFile: {$manifestFile}", 500);
+    //     }
+    //     // replace {{student}}, {{namespace}} and {{scriptContent}}
+    //     $manifest=str_replace("{{student}}", $userName, $manifest);
+    //     $manifest=str_replace("{{namespace}}", $namespace, $manifest);
+    //     $manifest=str_replace("{{containerImage}}", $containerImage, $manifest);
+    //     $manifest=str_replace("{{dbName}}", $dbName, $manifest);
+    //     $manifest=str_replace("{{dbSecrets}}", $dbSecret, $manifest);
+    //     $manifest=str_replace("{{hostName}}", $hostname, $manifest);
+    //     $manifest=str_replace("{{tlsSecret}}", $tlsSecret, $manifest);
+    //     $manifest=str_replace("{{zipContent}}", $zipContentForCommandline, $manifest);
+    //     $manifest=str_replace("{{mainAdl}}", $mainAldForCommandLine, $manifest);
         
-        // Save manifest file
-        $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";
-        file_put_contents($studentManifestFile, $manifest);
+    //     // Save manifest file
+    //     $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";
+    //     file_put_contents($studentManifestFile, $manifest);
         
-        // Call Kubernetes API to add script
-        $command = new Command(
-            "kubectl apply",
-            [ "-f",
-            "\"{$studentManifestFile}\""
-            ],
-            $ee->getLogger()
-        );
-        $command->execute();
-    }
-    else {
-        /** Deployed with Docker Compose */
+    //     // Call Kubernetes API to add script
+    //     $command = new Command(
+    //         "kubectl apply",
+    //         [ "-f",
+    //         "\"{$studentManifestFile}\""
+    //         ],
+    //         $ee->getLogger()
+    //     );
+    //     $command->execute();
+    // }
+    // else {
+    //     /** Deployed with Docker Compose */
 
-        // Stop any existing prototype container for this user
-        $remove = new Command(
-            "docker rm",
-            [ "-f",
-            "\"{$userName}\""
-            ],
-            $ee->getLogger()
-        );
-        $remove->execute();
+    //     // Stop any existing prototype container for this user
+    //     $remove = new Command(
+    //         "docker rm",
+    //         [ "-f",
+    //         "\"{$userName}\""
+    //         ],
+    //         $ee->getLogger()
+    //     );
+    //     $remove->execute();
         
-        // Run student prototype with Docker
-        $command = new Command(
-            "echo \"{$zipContentForCommandline} {$mainAldForCommandLine}\" | docker run",
-            [ "--name \"{$userName}\"",
-            "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
-            "-i",
-            "-p 8000:80",
-            "-a stdin",  // stdin ensures that the content of the script is available in the container.
-            "--network proxy", // the reverse proxy Traefik is in the proxy network
-            "--label traefik.enable=true", // label for Traefik to route trafic
-            "--label traefik.docker.network=proxy",  // solving RAP issue #92
-            "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
-            "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
-            "-e AMPERSAND_DBHOST=" . getenv('AMPERSAND_DBHOST'), // use same database host as the RAP4 application itself
-            "-e AMPERSAND_DBNAME=\"student_{$userName}\"",
-            "-e AMPERSAND_DBUSER=" . getenv('AMPERSAND_DBUSER'), // TODO change db user to a student prototype specific user with less privileges and limited to databases with prefix 'student_'
-            "-e AMPERSAND_DBPASS=" . getenv('AMPERSAND_DBPASS'),
-            "-e AMPERSAND_PRODUCTION_MODE=\"false\"", // student must be able to reset his/her application
-            "-e AMPERSAND_DEBUG_MODE=\"true\"", // show student detailed log information, is needed otherwise user is e.g. not redirected to reinstall page
-            "-e AMPERSAND_SERVER_URL=\"https://{$userName}.{$serverName}\"",
-            "-e AMPERSAND_LOG_CONFIG={$studentProtoLogConfig}", // use high level logging
-            $studentProtoImage // image name to run
-            ],
-            $ee->getLogger()
-        );
-        $command->execute();
+    //     // Run student prototype with Docker
+    //     $command = new Command(
+    //         "echo \"{$zipContentForCommandline} {$mainAldForCommandLine}\" | docker run",
+    //         [ "--name \"{$userName}\"",
+    //         "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
+    //         "-i",
+    //         "-p 8000:80",
+    //         "-a stdin",  // stdin ensures that the content of the script is available in the container.
+    //         "--network proxy", // the reverse proxy Traefik is in the proxy network
+    //         "--label traefik.enable=true", // label for Traefik to route trafic
+    //         "--label traefik.docker.network=proxy",  // solving RAP issue #92
+    //         "--label traefik.http.routers.{$userName}-insecure.rule=\"Host(\\`{$userName}.{$serverName}\\`)\"", // e.g. student123.rap.cs.ou.nl
+    //         "--label student-prototype", // label used by cleanup process to remove all (expired) student prototypes
+    //         "-e AMPERSAND_DBHOST=" . getenv('AMPERSAND_DBHOST'), // use same database host as the RAP4 application itself
+    //         "-e AMPERSAND_DBNAME=\"student_{$userName}\"",
+    //         "-e AMPERSAND_DBUSER=" . getenv('AMPERSAND_DBUSER'), // TODO change db user to a student prototype specific user with less privileges and limited to databases with prefix 'student_'
+    //         "-e AMPERSAND_DBPASS=" . getenv('AMPERSAND_DBPASS'),
+    //         "-e AMPERSAND_PRODUCTION_MODE=\"false\"", // student must be able to reset his/her application
+    //         "-e AMPERSAND_DEBUG_MODE=\"true\"", // show student detailed log information, is needed otherwise user is e.g. not redirected to reinstall page
+    //         "-e AMPERSAND_SERVER_URL=\"https://{$userName}.{$serverName}\"",
+    //         "-e AMPERSAND_LOG_CONFIG={$studentProtoLogConfig}", // use high level logging
+    //         $studentProtoImage // image name to run
+    //         ],
+    //         $ee->getLogger()
+    //     );
+    //     $command->execute();
         
-        // Add docker container also to rap_db network
-        $command2 = new Command(
-            "docker network connect rap_db {$userName}",
-            [],
-            $ee->getLogger()
-        );
-        $command2->execute();
-    }
+    //     // Add docker container also to rap_db network
+    //     $command2 = new Command(
+    //         "docker network connect rap_db {$userName}",
+    //         [],
+    //         $ee->getLogger()
+    //     );
+    //     $command2->execute();
+    // }
 
-    sleep(5); //  helps to reduce "bad gateway" and "404 page not found" errors.
+    // sleep(5); //  helps to reduce "bad gateway" and "404 page not found" errors.
 
     // Populate 'protoOk' upon success
-    setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
+    // setProp('protoOk[ScriptVersion*ScriptVersion]', $scriptVersionAtom, $command->getExitcode() == 0);
 
-    $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
-    $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
-});
+    // $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
+    // $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
+//});
 
 /**
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
