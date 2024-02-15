@@ -360,12 +360,22 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         */
 
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
-        $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
+        $suffix=substr($namespace, 3);
+
+        $getImageCommand = new Command(
+            "kubectl get deployment/student-prototype{$suffix} -n {$namespace}",
+            [ "-o=jsonpath='{\$.spec.template.spec.containers[0].image}'"
+            ],
+            $ee->getLogger()
+        );
+
+        $getImageCommand->execute();
+
+        $containerImage=$getImageCommand->getResponse();
 
         $hostname=getenv('RAP_HOST_NAME');
         $hostname="{$userName}.{$hostname}";
 
-        $suffix=substr($namespace, 3);
 
         $dbName="rap-db{$suffix}";
         
