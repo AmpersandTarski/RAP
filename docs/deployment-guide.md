@@ -468,7 +468,7 @@ Open a terminal, and give the following command:
 kubectl config view
 ```
 
-This will show the configuration of Kubernetes. In my case, it says that minicube is configured to run on the port. I played with minicube some time ago, and uninstalled it. Uninstall didn't remove all loose ends: Check the contents of `$HOME/.kube/config`.
+This will show the configuration of Kubernetes. In my case, it says that minikube is configured to run on the port. I played with minikube some time ago, and uninstalled it. Uninstall didn't remove all loose ends: Check the contents of `$HOME/.kube/config`.
 I also found [help at stackoverflow](https://stackoverflow.com/questions/37921222/kubectl-connection-to-server-was-refused).
 
 Good luck & Happy coding!
