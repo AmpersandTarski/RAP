@@ -33,12 +33,12 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
       ]
    , "Content":  content cRUd
    , "Actual info": I cRud BOX
-      [ compile : I BOX <PROPBUTTON>
+      [ Compile : I BOX <PROPBUTTON>
                   [ disabled : I-I
                   , property : compileRequest
                   ]
       , "Compiler message"  : compileresponse cRud
-      , controls: seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
+      , Controls: seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
          [ "Functional spec. document" : I BOX <PROPBUTTON>
                            [ property : funcSpecRequest cRUd
                            , disabled : I /\ funcSpec;funcSpec~  cRud
@@ -59,10 +59,11 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
                            ]
          , "Message" : compileresponse[ScriptVersion*CompileResponse] cRud <ParseAsHtml>
          ]
-      , "links to your results": seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
+      , "Results": seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
          [ "Download document" : funcSpec cRud
 --       , "Atlas" :      context cRud LINKTO INTERFACE "Context"
          , "Prototype" :  protoOk;version~;proto cRud
+         , "Atlas population": I LINKTO INTERFACE "Atlas population"
          ]
       ]
    ]
