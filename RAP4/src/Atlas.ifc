@@ -1,0 +1,13 @@
+CONTEXT RAP IN ENGLISH
+
+    INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
+        [ context       : I                              cRud
+        , patterns      : context[Pattern*Context]~      cRud
+        , concepts      : context[Concept*Context]~      cRud
+        , rules         : allRules~ - proprules~         cRud
+        , properties    : proprules[PropertyRule*Context]~ cRud
+        , relations     : relsDefdIn[Relation*Context]~  cRud
+        , "versionInfo" : versionInfo                    cRud
+        ]
+
+ENDCONTEXT
