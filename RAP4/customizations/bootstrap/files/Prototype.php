@@ -7,6 +7,11 @@ use RAP4\KubernetesDeployment;
 use RAP4\DockerDeployment;
 
 class Prototype {
+    const PATTERN = '/[\W+]/';
+    const REPLACEMENT = '-';
+
+    const KUBERNETES_DEPLOYMENT = 'Kubernetes';
+
     private $scriptAtom;
     private $scriptVersionAtom;
     private $userName;
@@ -39,12 +44,10 @@ class Prototype {
         $relDir = pathinfo($path, PATHINFO_DIRNAME);
         $this->$workDir = realpath($ee->getApp()->getSettings()->get('global.absolutePath')) . "/data/" . $relDir;
 
-        $pattern = '/[\W+]/';
-
         $user = strtolower($userName);
-        $this->$userName = preg_replace($pattern, '-', $user);
+        $this->$userName = preg_replace(Prototype::PATTERN, Prototype::REPLACEMENT, $user);
 
-        if ($deployment == 'Kubernetes') {
+        if ($deployment == Prototype::KUBERNETES_DEPLOYMENT) {
             $this->deploymentHandler = new KubernetesDeployment($userName, $ee);
         } else {
             $this->deploymentHandler = new DockerDeployment($userName, $ee);
