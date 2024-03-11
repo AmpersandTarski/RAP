@@ -343,10 +343,13 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $zipContentForCommandline = base64_encode($zipContent);
     $mainAldForCommandLine = base64_encode("main.adl");
 
+    //sanitize the username for usage later
     $pattern = '/[\W+]/';
 
     $userName=strtolower($userName);
     $userName = preg_replace($pattern, '-', $userName);
+
+    $userName = 'st-' . $userName;
 
     $deployment = getenv('RAP_DEPLOYMENT');
     if ($deployment == 'Kubernetes') {
