@@ -118,7 +118,7 @@ The process for building images will be explained here.
    exit
    ```
 
-   This step may not be possible on Windows. If that's the case then skip it.
+   This step may not be possible on Windows. If that's the case then try it without "sudo" (or skip it).
 
 9. For security reasons, set `DISABLE_DB_INSTALL` to `true` in your `.env` file and repeat step 4 to effectuate this change.
 
@@ -142,6 +142,7 @@ docker stop phpmyadmin
 - Generate a Prototype. Upon success you will see a link "Open Prototype".
   If you get a permission error for `/var/run/docker.sock` something went wrong with step 8. Turn to "troubleshooting" for possible solutions.
 - Open the prototype. The URL `<yourname>.<hostname>` (e.g. `student123.rap.cs.ou.nl`) should appear in a new tab in your browser.
+  If you get a "404 page not found", look in the student prototype container log in Docker. If it starts with "$'\r': command not found", then convert the line-endings of RAP4USER/run-student-prototype.sh to Unix style with a tool (f.e. NotePad++ on Windows) and rebuild the image (see above)
 - Install the database by pushing the red button.
 - Verify that your prototype works.
 - Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works
@@ -467,7 +468,7 @@ Open a terminal, and give the following command:
 kubectl config view
 ```
 
-This will show the configuration of Kubernetes. In my case, it says that minicube is configured to run on the port. I played with minicube some time ago, and uninstalled it. Uninstall didn't remove all loose ends: Check the contents of `$HOME/.kube/config`.
+This will show the configuration of Kubernetes. In my case, it says that minikube is configured to run on the port. I played with minikube some time ago, and uninstalled it. Uninstall didn't remove all loose ends: Check the contents of `$HOME/.kube/config`.
 I also found [help at stackoverflow](https://stackoverflow.com/questions/37921222/kubectl-connection-to-server-was-refused).
 
 Good luck & Happy coding!
