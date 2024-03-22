@@ -81,38 +81,4 @@ INTERFACE "JsonTerm" : I[Term] BOX
      term               : I            cRud
 ]
 
-INTERFACE "JsonTerm3" : I[Term] BOX
-[
-     arg                :      I[UnaryTerm]                                 cRud
-    , UnaryTermOperator :      operator[UnaryTerm*Operator]                 cRud
-    , conjunct          :      conjunct[Conjunct*Term]~                     cRud
-    , first             :      first[BinaryTerm * Term]                     cRud
-    , formalTermName    :      formalTerm[Rule * Term]~                     cRud  
-    , second            :      second[BinaryTerm * Term]                    INTERFACE "JsonTerm2" 
-    , signature         :      sign[Term * Signature]                       cRud 
-    , usedIn            :      usedIn[Relation*Term]~                       cRud
-    , source            :      userSrc[Term*Concept];name                   cRud
-    , target            :      userTgt[Term*Concept];name                   cRud
-    , singleton         :      I[Singleton]                                 cRUd
-    , epsilon           :      I[Epsilon]                                   cRud
-    , term              :      I[Term]                                      cRud
-    , atomvaluesing     :      I[Singleton];singleton[Singleton*AtomValue]  cRud
-    , ruleRelatie       :      I[Singleton];usedIn~                         INTERFACE JsonRelation
-]
-
-INTERFACE "JsonTerm2" : I[Term] BOX
-[
-     arg                :      arg[UnaryTerm*Term]                          cRud
-    , UnaryTerm         :      operator[UnaryTerm*Operator]                 cRud
-    , conjunct          :      conjunct[Conjunct*Term]~                     cRud
-    , first             :      first[BinaryTerm * Term]                     cRud
-    , formalTermName    :      formalTerm[Rule * Term]~                     cRud  
-    , second            :      second[BinaryTerm * Term]                    cRud 
-    , signature         :      sign[Term * Signature]                       cRud 
-    , usedIn            :      usedIn[Relation*Term]~                       cRud
-    , source            :      userSrc[Term*Concept];name                   cRud
-    , target            :      userTgt[Term*Concept];name                   cRud 
-]
-
-
 ENDCONTEXT
