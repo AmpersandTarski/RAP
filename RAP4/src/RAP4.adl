@@ -106,6 +106,27 @@ ROLE ExecEngine MAINTAINS "Destroy Context"  -- ExecEngine is een echte pyrotech
 RULE "Destroy Context" : requestDestroy |- -V
 VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
           )
+
+
+--[[Interactive ATLAS -MO-]]--
+-- dit wordt gebruikt om de ATLAS --> .ADL file te genereren
+-- RELATION convertToADL[Script*Script][PROP]
+-- ROLE ExecEngine MAINTAINS "Convert adl"
+
+--[ATLAS converter]--
+RELATION adlRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested the script to be converted into a functional specification
+RELATION adlOk[ScriptVersion*ScriptVersion] [PROP] -- a functional specification has actually been generated (no errors)
+RELATION adl[ScriptVersion*FileObject] [UNI] -- the file **containing** the funcspec of the script, it has the property 'funcSpecOk'
+
+ROLE ExecEngine MAINTAINS "Convert adl" -- reset funcSpecRequest after an attempt to create it has been performed.
+--RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Convert adl" : (adlRequest-adl;adl~);source;filePath |- -V[ScriptVersion*FilePath]
+VIOLATION ( TXT "{EX}ConvertToADL;", SRC version~, TXT ";", SRC I, TXT ";", TGT I, TXT ";", SRC version~;submittor;accUserid
+          , TXT "{EX}DelPair;adlRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
+          )
+
+
+
 ENDPATTERN
 
 PATTERN "Runtime"
