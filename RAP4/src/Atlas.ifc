@@ -1,46 +1,59 @@
-CONTEXT RAP4 IN ENGLISH
+CONTEXT RAarser4 IN ENGLISH
 
 
     INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
         [ 
-            context       : I;name                                  cRud
-            , patterns      : context[Pattern*Context]~;name        cRud
-            , concepts      : context[Concept*Context]~             INTERFACE "JsonConcept"
-            , purpose       : purpose[Context * Purpose]            INTERFACE "JsonPurpose"
-            , rules         : allRules[Rule*Context]~ - proprules~  INTERFACE "JsonRule"
-            , properties    : proprules[PropertyRule*Context]~      INTERFACE "JsonProperty"
-            , relations     : relsDefdIn[Relation*Context]~         INTERFACE "JsonRelation"
-            , "versionInfo" : versionInfo                           cRud
-            , scripts : context[ScriptVersion*Context]~             BOX <PROPBUTTON>       
-            [ property : adlRequest                                 cRUd
+              name       : I;name                                           cRud
+            , patterns      : context[Pattern*Context]~                     INTERFACE "JsonPattern"
+            , interfaces    : context[Interface*Context]~                   INTERFACE "JsonInterface"
+            , purposes      :   purpose[Context*Purpose] \/
+                                context[Interface*Context]~;purpose[Interface*Purpose]  INTERFACE "JsonPurpose"
+                                --view nog toevoegen
+            , "versionInfo" : versionInfo                                   cRud
+            , scripts       : context[ScriptVersion*Context]~               BOX <PROPBUTTON>       
+            [ property  : adlRequest                                        cRUd
             -- , disabled : I /\ funcSpec;funcSpec~  cRud
             ]
         ]
 
+    INTERFACE "JsonPattern" : I[Pattern]      BOX
+    [
+            name         : name                                          cRud
+            , concepts      : concepts[Pattern*Concept]                     INTERFACE "JsonConcept"            
+            , rules         : allRules[Pattern*Rule] - proprules~           INTERFACE "JsonRule"
+            , relations     : declaredIn[Relation*Pattern]~                 INTERFACE "JsonRelation"
+            , properties    : proprules[PropertyRule*Pattern]~;declaredthrough[PropertyRule*Property]       cRud
+            , purposes      :   purpose[Pattern*Purpose] \/                                     -- purpose of the pattern
+                                concepts[Pattern*Concept];purpose[Concept*Purpose] \/           -- purpose of the concepts
+                                declaredIn[Relation*Pattern]~;purpose[Relation*Purpose] \/      -- purpose of the relations
+                                (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
+    ]
+
+
     INTERFACE "JsonConcept" : I[Concept] BOX
         [
-          name       : name[Concept*ConceptName]                     cRud
-        , definition : name;acdcpt~                                  cRud
-        , definitionmean : name;acdcpt~;acdmean                      cRud
-        , definitionold : name;acdcpt~;acddef2                       cRud
-        , purpose    : purpose[Concept*Purpose];markup;asMarkdown    cRud
-        , ttype      : ttype                                         cRud
-        ]
-    
-    INTERFACE "JsonPurpose" : I[Purpose] BOX
-        [
-          name       : markup[Purpose*Markup];asMarkdown             cRud
+            name       : name[Concept*ConceptName]                            cRud
+            ,definition : name;acdcpt~                                         cRud
+        -- , definitionmean : name;acdcpt~;acdmean                      cRud
+        -- , definitionold : name;acdcpt~;acddef2                       cRud
         ]
 
-    -- Todo: dit is een interface wat het mogelijk probeert te maken om de legacy dingen mee te nemen. eruit laten voor nu
-    -- INTERFACE "JsonDefinition" : I[ConceptDef] BOX
-    -- [
-    --     conceptDef    : I                                                 cRud
-    --     , meaning     : acdmean[ConceptDef*Meaning];markup;asMarkdown     cRud  -- atual meaning/definition of the concept
-    --     , legacyDef   : acddef2[ConceptDef*Meaning]                       cRud  -- old syntax
-    --     , legacyDref  : acdfrom[ConceptDef*Pattern]                       cRud  --todo: find what this actually should be
-    -- ]
-        -- temporary definition interface
+    INTERFACE "JsonPurpose" : I [Purpose] BOX
+    [
+            patternName         :           purpose[Pattern*Purpose]~;name                      cRud
+            , conceptName       :           purpose[Concept*Purpose]~;name                      cRud
+            , relation      :           purpose[Relation*Purpose]~ BOX
+            [   
+                relationName       : name[Relation*RelationName]                                cRud
+                , sign           : sign[Relation*Signature]                                     INTERFACE "JsonSignature"
+            ]
+            , ruleName          :           purpose[Rule*Purpose]~;name                         cRud                                   
+            , meaning           :           markup;asMarkdown                                   cRud
+            , markup            :           markup                                              cRud
+            , purpose           :           I[Purpose]                                          cRud
+
+
+    ]
 
     INTERFACE "JsonRelation" : I[Relation] BOX
        [    
@@ -48,7 +61,6 @@ CONTEXT RAP4 IN ENGLISH
         , sign           : sign[Relation*Signature] INTERFACE "JsonSignature"        -- signature of the relation (source and target)
         , properties     : prop[Relation*Property]                          cRud    -- properties of the relation ([uni],[tot])
         , meaning        : decMean[Relation*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text] cRud  -- todo: make this the actual text of the meaning
-        , purpose        : purpose[Relation*Purpose];markup[Purpose*Markup];asMarkdown[Markup*Text] cRud    -- purpose of relation
        ] 
     
     INTERFACE "JsonSignature" : I[Signature] BOX                                    -- signature of the relation (source and target)
@@ -61,13 +73,12 @@ CONTEXT RAP4 IN ENGLISH
 INTERFACE "JsonRule" : I[Rule] BOX                      -- todo: hulp vragen bij formal expression!!!!!
        [    
          name            : name[Rule*RuleName]                              cRud    -- name of the rule
-        , fromexp       : formalTerm[Rule*Term]                             cRud  
-       -- , formexp       : formalTerm[Rule*Term]                             INTERFACE "JsonTerm"    -- Formal Expression of the rule
-        --, properties     : prop[Relation*Property]                        cRud    -- properties of the relation ([uni],[tot])
-        , meaning        : meaning[Rule*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text]        cRud    -- Actual text of the meaning
-        , purpose        : purpose[Rule*Purpose];markup[Purpose*Markup];asMarkdown[Markup*Text]        cRud    -- purpose of relation
+        , formexp       : formalTerm[Rule*Term];showADL[Term * ShowADL]     cRud    -- formal expression of the Rule
+        -- , properties     : prop[Relation*Property]                       cRud    -- properties of the relation ([uni],[tot])
+        -- , meaning        : meaning[Rule*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text]        cRud    -- Actual text of the meaning
+        , meaning        : meaning[Rule*Meaning];markup;asMarkdown          cRud    -- Actual text of the meaning
+        -- , purpose        : purpose[Rule*Purpose];markup[Purpose*Markup];asMarkdown[Markup*Text]        cRud    -- purpose of relation
         , message        : message[Rule*Message]                            cRud    -- Message of the rule
-        , formExptext    : formalTerm[Rule*Term]                            cRud
        ]
 
 INTERFACE "JsonProperty" : I[PropertyRule] BOX   -- on hold (samen doen met termen)
@@ -75,10 +86,29 @@ INTERFACE "JsonProperty" : I[PropertyRule] BOX   -- on hold (samen doen met term
             property        : declaredthrough[PropertyRule*Property]                 cRud
         ]
 
-
-INTERFACE "JsonTerm" : I[Term] BOX
+INTERFACE "JsonInterface" : I[Interface] BOX
+    [
+        name            : name[Interface*InterfaceName]                      cRud
+        , roles         : ifcRoles[Interface*Role]                           cRud
+        , isAPI         : ifcRoles;pf_ifcRoles~;isAPI                        cRud
+        , conjunct      : ifcConjuncts[Interface*Conjunct]                   cRud
+        , objectDef     : ifcObj[Interface*ObjectDef];name                    cRud
+        , quad          : ifcQuads[Interface*Quad]                           cRud
+        
+    ]
+INTERFACE "JsonObjectDef" : I [ObjectDef] BOX  --dit zijn de tabs in een box
+    [
+        name            : name[ObjectDef*ObjectName]                            cRud
+        ,view            : objView[ObjectDef*View]                             INTERFACE "JsonView"
+        ,fields         : fieldIn[FieldDef * ObjectDef]~                       cRud
+    ]
+INTERFACE "JsonView"    : I [View] BOX
 [
-     term               : I            cRud
+    name                : name[View*ViewDefName]                              cRud
+    ,viewSegment        : vdats[View*ViewSegment]                             cRud
+    ,concept        : vdcpt[View*Concept]                                       cRud 
+    --, objectDef     : objView[ObjectDef*View]~                                  INTERFACE "JsonObjectDef"                
 ]
+
 
 ENDCONTEXT
