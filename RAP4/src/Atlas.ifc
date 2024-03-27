@@ -1,4 +1,4 @@
-CONTEXT RAarser4 IN ENGLISH
+CONTEXT RAP IN ENGLISH
 
 
     INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
@@ -6,9 +6,10 @@ CONTEXT RAarser4 IN ENGLISH
               name       : I;name                                           cRud
             , patterns      : context[Pattern*Context]~                     INTERFACE "JsonPattern"
             , interfaces    : context[Interface*Context]~                   INTERFACE "JsonInterface"
-            , purposes      :   purpose[Context*Purpose] \/
+            , purposes      :   purpose[Context*Purpose] \/                 -- purposes of the context
                                 context[Interface*Context]~;purpose[Interface*Purpose]  INTERFACE "JsonPurpose"
-                                --view nog toevoegen
+                                --todo: add view
+                                --todo: add ident
             , "versionInfo" : versionInfo                                   cRud
             , scripts       : context[ScriptVersion*Context]~               BOX <PROPBUTTON>       
             [ property  : adlRequest                                        cRUd
@@ -39,20 +40,20 @@ CONTEXT RAarser4 IN ENGLISH
         ]
 
     INTERFACE "JsonPurpose" : I [Purpose] BOX
-    [
-            patternName         :           purpose[Pattern*Purpose]~;name                      cRud
-            , conceptName       :           purpose[Concept*Purpose]~;name                      cRud
-            , relation      :           purpose[Relation*Purpose]~ BOX
-            [   
-                relationName       : name[Relation*RelationName]                                cRud
-                , sign           : sign[Relation*Signature]                                     INTERFACE "JsonSignature"
-            ]
-            , ruleName          :           purpose[Rule*Purpose]~;name                         cRud                                   
-            , meaning           :           markup;asMarkdown                                   cRud
-            , markup            :           markup                                              cRud
-            , purpose           :           I[Purpose]                                          cRud
-
-
+    [         
+            conceptPurp          :       purpose[Concept*Purpose]~;name                  cRud
+            , relationPurp       :       purpose[Relation*Purpose]~ BOX
+                [   
+                    relationName        : name[Relation*RelationName]                   cRud
+                    , sign              : sign[Relation*Signature]                      INTERFACE "JsonSignature"
+                ]
+            , rulePurp           :       purpose[Rule*Purpose]~;name                     cRud
+            --, identPurp          :       purpose[Ident*Purpose]~;name                  cRud -- the purpose for IDENT is not yet passed to ATLAS
+            , viewPurp           :       purpose[View*Purpose]~;name                     cRud
+            , patternPurp        :       purpose[Pattern*Purpose]~;name                  cRud
+            , interfacePurp      :       purpose[Interface*Purpose]~;name                cRud
+            , contextPurp        :       purpose[Context*Purpose]~;name                  cRud                           
+            , meaning               :       markup;asMarkdown                               cRud
     ]
 
     INTERFACE "JsonRelation" : I[Relation] BOX
@@ -77,7 +78,6 @@ INTERFACE "JsonRule" : I[Rule] BOX                      -- todo: hulp vragen bij
         -- , properties     : prop[Relation*Property]                       cRud    -- properties of the relation ([uni],[tot])
         -- , meaning        : meaning[Rule*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text]        cRud    -- Actual text of the meaning
         , meaning        : meaning[Rule*Meaning];markup;asMarkdown          cRud    -- Actual text of the meaning
-        -- , purpose        : purpose[Rule*Purpose];markup[Purpose*Markup];asMarkdown[Markup*Text]        cRud    -- purpose of relation
         , message        : message[Rule*Message]                            cRud    -- Message of the rule
        ]
 
