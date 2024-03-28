@@ -3,13 +3,17 @@ CONTEXT RAP IN ENGLISH
 
     INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
         [ 
-              name       : I;name                                           cRud
-            , patterns      : context[Pattern*Context]~                     INTERFACE "JsonPattern"
-            , interfaces    : context[Interface*Context]~                   INTERFACE "JsonInterface"
-            , purposes      :   purpose[Context*Purpose] \/                 -- purposes of the context
-                                context[Interface*Context]~;purpose[Interface*Purpose]  INTERFACE "JsonPurpose"
-                                --todo: add view
-                                --todo: add ident
+              name                  : I[Context];name                                           cRud
+            , patterns              : context[Pattern*Context]~                     INTERFACE "JsonPattern"
+            , interfaces            : context[Interface*Context]~                   INTERFACE "JsonInterface"
+            , objects               : context[Interface*Context]~                   INTERFACE "JsonObjectDef"
+            , conceptsContext       : context[Concept*Context]~     -(context~;concepts)    INTERFACE "JsonConcept"    -- all concepts within the Context - those in Patterns      
+            , rulesContext          : allRules[Rule*Context]~       -(context~;allRules)    INTERFACE "JsonRule"       -- all rules within the Context - those in Patterns 
+            , relationsContext      : relsDefdIn[Relation*Context]~ -(context~;declaredIn~) INTERFACE "JsonRelation"   -- all relations within the Context - those in Pattern
+            , purposes              : purpose[Context*Purpose] \/                 -- purposes of the context
+                                        context[Interface*Context]~;purpose[Interface*Purpose]  INTERFACE "JsonPurpose"
+                                        --todo: add view
+                                        --todo: add ident
             , "versionInfo" : versionInfo                                   cRud
             , scripts       : context[ScriptVersion*Context]~               BOX <PROPBUTTON>       
             [ property  : adlRequest                                        cRUd
@@ -28,13 +32,15 @@ CONTEXT RAP IN ENGLISH
                                 concepts[Pattern*Concept];purpose[Concept*Purpose] \/           -- purpose of the concepts
                                 declaredIn[Relation*Pattern]~;purpose[Relation*Purpose] \/      -- purpose of the relations
                                 (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
+            -- , views         :   views[Pattern*Views]    cRud
     ]
 
 
     INTERFACE "JsonConcept" : I[Concept] BOX
         [
-            name       : name[Concept*ConceptName]                            cRud
-            ,definition : name;acdcpt~                                         cRud
+            name            : name[Concept*ConceptName]                 cRud
+            ,definition     : name;acdcpt~                              cRud
+            , type          : ttype[Concept*TType]                    cRud
         -- , definitionmean : name;acdcpt~;acdmean                      cRud
         -- , definitionold : name;acdcpt~;acddef2                       cRud
         ]
@@ -42,10 +48,10 @@ CONTEXT RAP IN ENGLISH
     INTERFACE "JsonPurpose" : I [Purpose] BOX
     [         
             conceptPurp          :       purpose[Concept*Purpose]~;name                  cRud
-            , relationPurp       :       purpose[Relation*Purpose]~ BOX
+            , relationPurp       :       purpose[Relation*Purpose]~                      BOX
                 [   
-                    relationName        : name[Relation*RelationName]                   cRud
-                    , sign              : sign[Relation*Signature]                      INTERFACE "JsonSignature"
+                    relation            : name[Relation*RelationName]                    cRud
+                    , sign              : sign[Relation*Signature]                       INTERFACE "JsonSignature"
                 ]
             , rulePurp           :       purpose[Rule*Purpose]~;name                     cRud
             --, identPurp          :       purpose[Ident*Purpose]~;name                  cRud -- the purpose for IDENT is not yet passed to ATLAS
@@ -58,9 +64,9 @@ CONTEXT RAP IN ENGLISH
 
     INTERFACE "JsonRelation" : I[Relation] BOX
        [    
-         name            : name[Relation*RelationName]                       cRud    -- name of the relation
-        , sign           : sign[Relation*Signature] INTERFACE "JsonSignature"        -- signature of the relation (source and target)
-        , properties     : prop[Relation*Property]                          cRud    -- properties of the relation ([uni],[tot])
+         name            : name[Relation*RelationName]                                      cRud    -- name of the relation
+        , sign           : sign[Relation*Signature]                                         INTERFACE "JsonSignature"        -- signature of the relation (source and target)
+        , properties     : prop[Relation*Property]                                          cRud    -- properties of the relation ([uni],[tot])
         , meaning        : decMean[Relation*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text] cRud  -- todo: make this the actual text of the meaning
        ] 
     
@@ -92,21 +98,33 @@ INTERFACE "JsonInterface" : I[Interface] BOX
         , roles         : ifcRoles[Interface*Role]                           cRud
         , isAPI         : ifcRoles;pf_ifcRoles~;isAPI                        cRud
         , conjunct      : ifcConjuncts[Interface*Conjunct]                   cRud
-        , objectDef     : ifcObj[Interface*ObjectDef];name                    cRud
+        , objectDef     : ifcObj[Interface*ObjectDef]                        INTERFACE "JsonObjectDef"
         , quad          : ifcQuads[Interface*Quad]                           cRud
         
     ]
-INTERFACE "JsonObjectDef" : I [ObjectDef] BOX  --dit zijn de tabs in een box
+INTERFACE "JsonObjectDef" : I [ObjectDef] BOX  --dit is een box
     [
         name            : name[ObjectDef*ObjectName]                            cRud
-        ,view            : objView[ObjectDef*View]                             INTERFACE "JsonView"
-        ,fields         : fieldIn[FieldDef * ObjectDef]~                       cRud
+        ,view            : objView[ObjectDef*View]                              INTERFACE "JsonView"
+        ,fields         : fieldIn[FieldDef * ObjectDef]~                        INTERFACE "JsonFieldDef"
     ]
+
+
+INTERFACE "JsonFieldDef"    : I[FieldDef] BOX
+    [
+        name            : label[FieldDef*FieldName]                             cRud
+        , def           : def[Field * FieldDef]~	                            cRud
+        , edit          : edit[FieldDef * Relation]                             cRud
+        , editFlp       : editFlp[FieldDef * Relation]                           cRud
+        , fieldIn       : fieldIn[FieldDef * ObjectDef] cRud
+    ]
+
+
 INTERFACE "JsonView"    : I [View] BOX
 [
     name                : name[View*ViewDefName]                              cRud
     ,viewSegment        : vdats[View*ViewSegment]                             cRud
-    ,concept        : vdcpt[View*Concept]                                       cRud 
+    ,concept            : vdcpt[View*Concept]                                       cRud 
     --, objectDef     : objView[ObjectDef*View]~                                  INTERFACE "JsonObjectDef"                
 ]
 
