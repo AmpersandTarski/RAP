@@ -7,9 +7,10 @@ CONTEXT RAP IN ENGLISH
             , patterns              : context[Pattern*Context]~                     INTERFACE "JsonPattern"
             , interfaces            : context[Interface*Context]~                   INTERFACE "JsonInterface"
             , objects               : context[Interface*Context]~                   INTERFACE "JsonObjectDef"
-            , conceptsContext       : context[Concept*Context]~     -(context~;concepts)    INTERFACE "JsonConcept"    -- all concepts within the Context - those in Patterns      
-            , rulesContext          : allRules[Rule*Context]~       -(context~;allRules)    INTERFACE "JsonRule"       -- all rules within the Context - those in Patterns 
-            , relationsContext      : relsDefdIn[Relation*Context]~ -(context~;declaredIn~) INTERFACE "JsonRelation"   -- all relations within the Context - those in Pattern
+            , conceptsCtx           : context[Concept*Context]~     -(context~;concepts)    INTERFACE "JsonConcept"    -- all concepts within the Context - those in Patterns
+            , representationsCtx    : context[Concept*Context]~     -(context~;concepts)    INTERFACE "JsonConcept"    -- all REPRESENTATIONS within the Context - those in Patterns      
+            , rulesCtx              : (allRules~ -proprules~)        -(context~;allRules)    INTERFACE "JsonRule"       -- all rules within the Context - those in Patterns 
+            , relationsCtx          : relsDefdIn[Relation*Context]~ -(context~;declaredIn~) INTERFACE "JsonRelation"   -- all relations within the Context - those in Pattern
             , purposes              : purpose[Context*Purpose] \/                 -- purposes of the context
                                         context[Interface*Context]~;purpose[Interface*Purpose]  INTERFACE "JsonPurpose"
                                         --todo: add view
@@ -23,15 +24,16 @@ CONTEXT RAP IN ENGLISH
 
     INTERFACE "JsonPattern" : I[Pattern]      BOX
     [
-            name         : name                                          cRud
-            , concepts      : concepts[Pattern*Concept]                     INTERFACE "JsonConcept"            
-            , rules         : allRules[Pattern*Rule] - proprules~           INTERFACE "JsonRule"
-            , relations     : declaredIn[Relation*Pattern]~                 INTERFACE "JsonRelation"
-            , properties    : proprules[PropertyRule*Pattern]~;declaredthrough[PropertyRule*Property]       cRud
-            , purposes      :   purpose[Pattern*Purpose] \/                                     -- purpose of the pattern
-                                concepts[Pattern*Concept];purpose[Concept*Purpose] \/           -- purpose of the concepts
-                                declaredIn[Relation*Pattern]~;purpose[Relation*Purpose] \/      -- purpose of the relations
-                                (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
+            name                : name                                          cRud
+            , concepts          : concepts[Pattern*Concept]                     INTERFACE "JsonConcept"
+            , representations   : concepts[Pattern*Concept]                     INTERFACE "JsonConcept"            
+            , rules             : allRules[Pattern*Rule] - proprules~           INTERFACE "JsonRule"
+            , relations         : declaredIn[Relation*Pattern]~                 INTERFACE "JsonRelation"
+            , properties        : proprules[PropertyRule*Pattern]~;declaredthrough[PropertyRule*Property]       cRud
+            , purposes          : purpose[Pattern*Purpose] \/                                     -- purpose of the pattern
+                                    concepts[Pattern*Concept];purpose[Concept*Purpose] \/           -- purpose of the concepts
+                                    declaredIn[Relation*Pattern]~;purpose[Relation*Purpose] \/      -- purpose of the relations
+                                    (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
             -- , views         :   views[Pattern*Views]    cRud
     ]
 
@@ -40,7 +42,7 @@ CONTEXT RAP IN ENGLISH
         [
             name            : name[Concept*ConceptName]                 cRud
             ,definition     : name;acdcpt~                              cRud
-            , type          : ttype[Concept*TType]                    cRud
+            , type          : ttype[Concept*TType]                      cRud
         -- , definitionmean : name;acdcpt~;acdmean                      cRud
         -- , definitionold : name;acdcpt~;acddef2                       cRud
         ]
@@ -49,7 +51,7 @@ CONTEXT RAP IN ENGLISH
     [         
             conceptPurp          :       purpose[Concept*Purpose]~;name                  cRud
             , relationPurp       :       purpose[Relation*Purpose]~                      BOX
-                [   
+                [
                     relation            : name[Relation*RelationName]                    cRud
                     , sign              : sign[Relation*Signature]                       INTERFACE "JsonSignature"
                 ]
