@@ -6,16 +6,19 @@ CONTEXT RAP IN ENGLISH
               name                  : I[Context];name                                           cRud
             , patterns              : context[Pattern*Context]~                     INTERFACE "JsonPattern"
             , interfaces            : context[Interface*Context]~                   INTERFACE "JsonInterface"
-            , objects               : context[Interface*Context]~                   INTERFACE "JsonObjectDef"
-            , conceptsCtx           : context[Concept*Context]~     -(context~;concepts)    INTERFACE "JsonConcept"    -- all concepts within the Context - those in Patterns
-            , representationsCtx    : context[Concept*Context]~     -(context~;concepts)    INTERFACE "JsonConcept"    -- all REPRESENTATIONS within the Context - those in Patterns      
-            , rulesCtx              : (allRules~ -proprules~)        -(context~;allRules)    INTERFACE "JsonRule"       -- all rules within the Context - those in Patterns 
-            , relationsCtx          : relsDefdIn[Relation*Context]~ -(context~;declaredIn~) INTERFACE "JsonRelation"   -- all relations within the Context - those in Pattern
+            -- , objects               : context[Interface*Context]~                   INTERFACE "JsonObjectDef"
+            , conceptsCtx           : context[Concept*Context]~                      INTERFACE "JsonConcept"      -- all concepts within the Context - those in Patterns                                       
+            , representationsCtx    : context[Concept*Context]~     
+                                        -(context~;concepts[Pattern*Concept])               INTERFACE "JsonRepresentation"      -- all REPRESENTATIONS within the Context - those in Patterns      
+            , rulesCtx              : (allRules~ -proprules~)        -(context~;allRules)    INTERFACE "JsonRule"        -- all rules within the Context - those in Patterns 
+            , relationsCtx          : relsDefdIn[Relation*Context]~ -(context~;declaredIn~) INTERFACE "JsonRelation"     -- all relations within the Context - those in Pattern
             , purposes              : purpose[Context*Purpose] \/                 -- purposes of the context
                                         context[Interface*Context]~;purpose[Interface*Purpose]  INTERFACE "JsonPurpose"
                                         --todo: add view
                                         --todo: add ident
+            , idents                  : identityRules[Rule*Context]~                           INTERFACE "JsonIdent"
             , "versionInfo" : versionInfo                                   cRud
+            , language      : language                                      cRud
             , scripts       : context[ScriptVersion*Context]~               BOX <PROPBUTTON>       
             [ property  : adlRequest                                        cRUd
             -- , disabled : I /\ funcSpec;funcSpec~  cRud
@@ -26,7 +29,7 @@ CONTEXT RAP IN ENGLISH
     [
             name                : name                                          cRud
             , concepts          : concepts[Pattern*Concept]                     INTERFACE "JsonConcept"
-            , representations   : concepts[Pattern*Concept]                     INTERFACE "JsonConcept"            
+            , representations   : concepts[Pattern*Concept]                     INTERFACE "JsonRepresentation"            
             , rules             : allRules[Pattern*Rule] - proprules~           INTERFACE "JsonRule"
             , relations         : declaredIn[Relation*Pattern]~                 INTERFACE "JsonRelation"
             , properties        : proprules[PropertyRule*Pattern]~;declaredthrough[PropertyRule*Property]       cRud
@@ -41,10 +44,15 @@ CONTEXT RAP IN ENGLISH
     INTERFACE "JsonConcept" : I[Concept] BOX
         [
             name            : name[Concept*ConceptName]                 cRud
+            , definition     : name;acdcpt~                              cRud
+            , type          : ttype[Concept*TType]                      cRud
+        ]
+
+    INTERFACE "JsonRepresentation" : I[Concept] BOX  -- kan weg
+        [
+            name            : name[Concept*ConceptName]                 cRud
             ,definition     : name;acdcpt~                              cRud
             , type          : ttype[Concept*TType]                      cRud
-        -- , definitionmean : name;acdcpt~;acdmean                      cRud
-        -- , definitionold : name;acdcpt~;acddef2                       cRud
         ]
 
     INTERFACE "JsonPurpose" : I [Purpose] BOX
@@ -79,12 +87,10 @@ CONTEXT RAP IN ENGLISH
         ]
 
 
-INTERFACE "JsonRule" : I[Rule] BOX                      -- todo: hulp vragen bij formal expression!!!!!
+INTERFACE "JsonRule" : I[Rule] BOX                      
        [    
          name            : name[Rule*RuleName]                              cRud    -- name of the rule
         , formexp       : formalTerm[Rule*Term];showADL[Term * ShowADL]     cRud    -- formal expression of the Rule
-        -- , properties     : prop[Relation*Property]                       cRud    -- properties of the relation ([uni],[tot])
-        -- , meaning        : meaning[Rule*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text]        cRud    -- Actual text of the meaning
         , meaning        : meaning[Rule*Meaning];markup;asMarkdown          cRud    -- Actual text of the meaning
         , message        : message[Rule*Message]                            cRud    -- Message of the rule
        ]
@@ -128,6 +134,22 @@ INTERFACE "JsonView"    : I [View] BOX
     ,viewSegment        : vdats[View*ViewSegment]                             cRud
     ,concept            : vdcpt[View*Concept]                                       cRud 
     --, objectDef     : objView[ObjectDef*View]~                                  INTERFACE "JsonObjectDef"                
+]
+
+
+INTERFACE "JsonIdent"    : I [Rule] BOX
+[
+    name                : name[Rule*RuleName]                       cRud
+    -- ,concept            : vdcpt[View*Concept]                              cRud           
+    -- , ident             :                                                  cRud
+    , concept           : name[Rule*RuleName]                       cRud  -- hier moet de naam van het concept waar het omgaat
+    , ident             : formalTerm[Rule * Term] BOX
+                            [
+                               name : sign[Term * Signature]        cRud -- hier moet de naam?
+                               ,text : showADL[Term * ShowADL]      cRud -- hier moet de text?
+                            ]  
+    , term              : formalTerm[Rule * Term]                   cRud
+    , usedIn            : formalTerm;usedIn[Relation*Term]~         cRud
 ]
 
 
