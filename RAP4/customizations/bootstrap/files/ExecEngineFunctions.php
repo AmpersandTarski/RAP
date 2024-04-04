@@ -343,15 +343,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $zipContentForCommandline = base64_encode($zipContent);
     $mainAldForCommandLine = base64_encode("main.adl");
 
-    //sanitize the username for usage later
     $userName = sanitize_username($userName);
-
-    // $pattern = '/[\W+]/';
-
-    // $userName=strtolower($userName);
-    // $userName = preg_replace($pattern, '-', $userName);
-
-    // $userName = 'st-' . $userName;
 
     $deployment = getenv('RAP_DEPLOYMENT');
     if ($deployment == 'Kubernetes') {
@@ -479,6 +471,12 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
 
+/**Sanitize the username
+ * As the user is allowed to choose any name, it is possible that the name they chose does not conform to restrictions places on the string in certain use cases.
+ * For example, a user could use special characters in their username. This might violate the restrictions placed on strings in a kubernetes metadata.name field.
+ * Therefore we remove all characters deemed unfit, and create a hash from these characters and append this hash at the end.
+ * To prevent casting errors between int and string, we append 'st' at the beginning.
+*/
 function sanitize_username($username) {
     // Define the pattern of illegal characters
     $pattern = '/[^a-zA-Z0-9]/';
