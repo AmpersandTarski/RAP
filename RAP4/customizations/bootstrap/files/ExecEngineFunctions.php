@@ -344,12 +344,14 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $mainAldForCommandLine = base64_encode("main.adl");
 
     //sanitize the username for usage later
-    $pattern = '/[\W+]/';
+    $userName = sanitize_username($userName);
 
-    $userName=strtolower($userName);
-    $userName = preg_replace($pattern, '-', $userName);
+    // $pattern = '/[\W+]/';
 
-    $userName = 'st-' . $userName;
+    // $userName=strtolower($userName);
+    // $userName = preg_replace($pattern, '-', $userName);
+
+    // $userName = 'st-' . $userName;
 
     $deployment = getenv('RAP_DEPLOYMENT');
     if ($deployment == 'Kubernetes') {
@@ -476,6 +478,25 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
     $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
+
+function sanitize_username($username) {
+    // Define the pattern of illegal characters
+    $pattern = '/[^a-zA-Z0-9]/';
+
+    // Find all illegal characters
+    preg_match_all($pattern, $username, $matches);
+
+    // Remove illegal characters
+    $sanitized_username = preg_replace($pattern, '', $username);
+
+    // Create a hash of the illegal characters
+    $hash = !empty($matches[0]) ? substr(md5(implode($matches[0])), 0, 5) : '';
+
+    // Append the hash to the sanitized username
+    $sanitized_username .= $hash;
+
+    return strtolower($sanitized_username);
+}
 
 /**
  * @phan-closure-scope \Ampersand\Rule\ExecEngine
