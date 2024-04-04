@@ -495,6 +495,8 @@ function sanitize_username($username) {
     // Append the hash to the sanitized username
     $sanitized_username .= $hash;
 
+    $sanitized_username = 'st' . $sanitized_username;
+
     return strtolower($sanitized_username);
 }
 
