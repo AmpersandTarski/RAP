@@ -93,6 +93,7 @@ INTERFACE "JsonRule" : I[Rule] BOX
         , formexp       : formalTerm[Rule*Term];showADL[Term * ShowADL]     cRud    -- formal expression of the Rule
         , meaning        : meaning[Rule*Meaning];markup;asMarkdown          cRud    -- Actual text of the meaning
         , message        : message[Rule*Message]                            cRud    -- Message of the rule
+        , term           : formalTerm[Rule*Term]                            INTERFACE "JsonTerm"
        ]
 
 INTERFACE "JsonProperty" : I[PropertyRule] BOX   -- on hold (samen doen met termen)
@@ -139,17 +140,71 @@ INTERFACE "JsonView"    : I [View] BOX
 
 INTERFACE "JsonIdent"    : I [Rule] BOX
 [
-    name                : name[Rule*RuleName]                       cRud
-    -- ,concept            : vdcpt[View*Concept]                              cRud           
+    name                : name[Rule*RuleName]                           cRud
+    -- ,concept            : vdcpt[View*Concept]                              cRud  -- todo: Stef vragen waar dit verstopt zit?
+    , concept           : "CONCEPT van een IDENT"         
     -- , ident             :                                                  cRud
-    , concept           : name[Rule*RuleName]                       cRud  -- hier moet de naam van het concept waar het omgaat
     , ident             : formalTerm[Rule * Term] BOX
                             [
-                               name : sign[Term * Signature]        cRud -- hier moet de naam?
-                               ,text : showADL[Term * ShowADL]      cRud -- hier moet de text?
-                            ]  
-    , term              : formalTerm[Rule * Term]                   cRud
-    , usedIn            : formalTerm;usedIn[Relation*Term]~         cRud
+                                name :  ""                              cRud -- lable name     Todo: not included in RAP
+                                , mview : ""                            cRud -- Optional View
+                                , ctx   : I[Term]                       INTERFACE "JsonTerm"
+                               -- , crud  :
+                               -- , msub  :  -- possible in compiler
+                            ]
+   , rc_orgRules        : rc_orgRules[Conjunct*Rule]~                   cRud                         
+]
+
+
+
+INTERFACE "JsonTerm"       : I[Term] BOX
+[
+    showADL            :   showADL                                 cRud
+    , operatorBin   : operator[BinaryTerm*Operator]                 cRud 
+    , operatorUn    : operator[UnaryTerm*Operator]                  cRud
+    , lhs           : first[BinaryTerm * Term]                  INTERFACE "JsonInsideTerm"        
+    , rhs           : second[BinaryTerm * Term]                 INTERFACE "JsonInsideTerm"
+    , constructor   : I                                         INTERFACE "JsonConstructor"
+    , term          : arg[UnaryTerm*Term] BOX [
+        constructor : I                                         INTERFACE "JsonConstructor"
+    ]
+]
+
+INTERFACE "JsonInsideTerm" : I[Term] BOX
+[          
+    showADL         : showADL                                       cRud
+    , operatorBin   : operator[BinaryTerm*Operator]                 cRud 
+    , operatorUn    : operator[UnaryTerm*Operator]                  cRud
+    , lhs           : first[BinaryTerm * Term]                      INTERFACE "JsonInsideTerm2"        
+    , rhs           : second[BinaryTerm * Term]                     INTERFACE "JsonInsideTerm2"
+    , constructor   : I                                             INTERFACE "JsonConstructor"
+    , term          : arg[UnaryTerm*Term] BOX [
+        constructor : I                                             INTERFACE "JsonConstructor"
+    ]
+
+]
+
+INTERFACE "JsonInsideTerm2" : I[Term] BOX               -- todo: stef vragen of deze loop zou kunnen
+[          
+    showADL         : showADL                                   cRud
+    , operatorBin   : operator[BinaryTerm*Operator]                 cRud 
+    , operatorUn    : operator[UnaryTerm*Operator]                  cRud
+    , lhs           : first[BinaryTerm * Term];showADL          cRud        
+    , rhs           : second[BinaryTerm * Term];showADL         cRud
+    , constructor   : I                                         INTERFACE "JsonConstructor"
+    , term          : arg[UnaryTerm*Term] BOX [
+        constructor : I                                         INTERFACE "JsonConstructor"
+    ]
+]
+
+
+INTERFACE "JsonConstructor" : I[Term] BOX                       
+[
+    name            : showADL                                                           cRud
+    , term          :  I                                                                cRud
+    , concept       : sign[Term * Signature];src;name[Concept*ConceptName]              cRud
+    , concept2      : sign[Term * Signature];tgt;name[Concept*ConceptName]              cRud
+    , relation      : usedIn[Relation*Term]~                                            INTERFACE "JsonRelation"
 ]
 
 
