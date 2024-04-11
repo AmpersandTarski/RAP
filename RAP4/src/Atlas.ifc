@@ -4,39 +4,43 @@ CONTEXT RAP IN ENGLISH
     INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
         [ 
               name                  : I[Context];name                                           cRud
-            , patterns              : context[Pattern*Context]~                     INTERFACE "JsonPattern"
-            , interfaces            : context[Interface*Context]~                   INTERFACE "JsonInterface"
+            , patterns              : context[Pattern*Context]~                                 INTERFACE "JsonPattern"
+            , interfaces            : context[Interface*Context]~                               INTERFACE "JsonInterface"
             -- , objects               : context[Interface*Context]~                   INTERFACE "JsonObjectDef"
-            , conceptsCtx           : context[Concept*Context]~                      INTERFACE "JsonConcept"      -- all concepts within the Context - those in Patterns                                       
-            , representationsCtx    : context[Concept*Context]~     
-                                        -(context~;concepts[Pattern*Concept])               INTERFACE "JsonRepresentation"      -- all REPRESENTATIONS within the Context - those in Patterns      
-            , rulesCtx              : (allRules~ -proprules~)        -(context~;allRules)    INTERFACE "JsonRule"        -- all rules within the Context - those in Patterns 
-            , relationsCtx          : relsDefdIn[Relation*Context]~ -(context~;declaredIn~) INTERFACE "JsonRelation"     -- all relations within the Context - those in Pattern
+            , conceptsCtx           : context[Concept*Context]~                                 INTERFACE "JsonConcept"      -- all concepts within the Context - those in Patterns                                       
+            , representationsCtx    : (context[Concept*Context]~     
+                                        -(context~;concepts[Pattern*Concept]))
+                                            ;(I-ttype[Concept*TType];"OBJECT";ttype~)           INTERFACE "JsonRepresentation"      -- all REPRESENTATIONS within the Context - those in Patterns      
+                                        
+            , rolerules             : allRoles[Context*Role]                                    INTERFACE "JsonRolerule"
+            , rulesCtx              : (allRules~ -proprules~)        -(context~;allRules)       INTERFACE "JsonRule"        -- all rules within the Context - those in Patterns 
+            , relationsCtx          : relsDefdIn[Relation*Context]~ -(context~;declaredIn~)     INTERFACE "JsonRelation"     -- all relations within the Context - those in Pattern
             , purposes              : purpose[Context*Purpose] \/                 -- purposes of the context
                                         context[Interface*Context]~;purpose[Interface*Purpose]  INTERFACE "JsonPurpose"
                                         --todo: add view
                                         --todo: add ident
-            , idents                  : identityRules[Rule*Context]~                           INTERFACE "JsonIdent"
+            , idents                  : identityRules[Rule*Context]~                            INTERFACE "JsonIdent"
             , "versionInfo" : versionInfo                                   cRud
             , language      : language                                      cRud
             , scripts       : context[ScriptVersion*Context]~               BOX <PROPBUTTON>       
             [ property  : adlRequest                                        cRUd
             -- , disabled : I /\ funcSpec;funcSpec~  cRud
             ]
+
         ]
 
     INTERFACE "JsonPattern" : I[Pattern]      BOX
     [
             name                : name                                          cRud
-            , concepts          : concepts[Pattern*Concept]                     INTERFACE "JsonConcept"
-            , representations   : concepts[Pattern*Concept]                     INTERFACE "JsonRepresentation"            
-            , rules             : allRules[Pattern*Rule] - proprules~           INTERFACE "JsonRule"
-            , relations         : declaredIn[Relation*Pattern]~                 INTERFACE "JsonRelation"
+            , concepts          : concepts[Pattern*Concept]                                     INTERFACE "JsonConcept"
+            , representations   : concepts[Pattern*Concept];(I-ttype;"OBJECT";ttype~)           INTERFACE "JsonRepresentation"            
+            , rules             : allRules[Pattern*Rule] - proprules~                           INTERFACE "JsonRule"
+            , relations         : declaredIn[Relation*Pattern]~                                 INTERFACE "JsonRelation"
             , properties        : proprules[PropertyRule*Pattern]~;declaredthrough[PropertyRule*Property]       cRud
             , purposes          : purpose[Pattern*Purpose] \/                                     -- purpose of the pattern
                                     concepts[Pattern*Concept];purpose[Concept*Purpose] \/           -- purpose of the concepts
                                     declaredIn[Relation*Pattern]~;purpose[Relation*Purpose] \/      -- purpose of the relations
-                                    (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
+                                    (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose]   INTERFACE "JsonPurpose"      -- purpose of the rules
             -- , views         :   views[Pattern*Views]    cRud
     ]
 
@@ -44,15 +48,17 @@ CONTEXT RAP IN ENGLISH
     INTERFACE "JsonConcept" : I[Concept] BOX
         [
             name            : name[Concept*ConceptName]                 cRud
-            , definition     : name;acdcpt~                              cRud
+            , definition    : name;acdcpt~                              cRud
             , type          : ttype[Concept*TType]                      cRud
         ]
 
     INTERFACE "JsonRepresentation" : I[Concept] BOX  -- kan weg
         [
-            name            : name[Concept*ConceptName]                 cRud
-            ,definition     : name;acdcpt~                              cRud
-            , type          : ttype[Concept*TType]                      cRud
+            name            : name[Concept*ConceptName]                             cRud
+            ,definition     : name;acdcpt~                                          cRud
+            , type          : ttype[Concept*TType]                                  cRud
+            -- , type          : ttype[Concept*TType] - (V[Concept*TType];"OBJECT")    cRud
+            -- , typehek       : ttype[Concept*TType] - I[Concept]#"OBJECT"            cRud
         ]
 
     INTERFACE "JsonPurpose" : I [Purpose] BOX
@@ -145,14 +151,13 @@ INTERFACE "JsonIdent"    : I [Rule] BOX
     , concept           : "CONCEPT van een IDENT"         
     -- , ident             :                                                  cRud
     , ident             : formalTerm[Rule * Term] BOX
-                            [
-                                name :  ""                              cRud -- lable name     Todo: not included in RAP
-                                , mview : ""                            cRud -- Optional View
-                                , ctx   : I[Term]                       INTERFACE "JsonTerm"
-                               -- , crud  :
-                               -- , msub  :  -- possible in compiler
-                            ]
-   , rc_orgRules        : rc_orgRules[Conjunct*Rule]~                   cRud                         
+                [
+                    name :  " "                              cRud -- lable name     Todo: not included in RAP
+                    , mview : " "                            cRud -- Optional View
+                    , ctx   : I[Term]                       INTERFACE "JsonTerm"
+                    -- , crud  :
+                    -- , msub  :  -- possible in compiler
+                ]                      
 ]
 
 
@@ -206,6 +211,23 @@ INTERFACE "JsonConstructor" : I[Term] BOX
     , concept2      : sign[Term * Signature];tgt;name[Concept*ConceptName]              cRud
     , relation      : usedIn[Relation*Term]~                                            INTERFACE "JsonRelation"
 ]
+
+
+
+INTERFACE "JsonRolerule" : I[Role] BOX  -- kan weg
+    [
+        role            : name[Role*RoleName]                          cRud
+        , rule          : maintains[Role*Rule];name                     cRud
+    ]
+
+INTERFACE "JsonRole" : I[Role] BOX
+[
+    role                :  name[Role*RoleName]                  cRud
+    -- ,service         :  ..                               cRud  mogelijkheid om service nog door te geven
+
+]
+
+-- INTERFACE "JsonEnforce" : I[]
 
 
 ENDCONTEXT
