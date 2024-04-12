@@ -17,7 +17,7 @@ RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debia
 # We only need the docker-cli because we connect to the docker deamon on the host machine using a volume bind to docker.sock
 RUN apt-get update \
   && apt-get install -y docker-ce-cli
-# We need to include kubernites cli to connect to the cluster
+# We need to include kubernetes cli to connect to the cluster
 RUN apt-get install -y curl && \
   curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
   chmod +x ./kubectl && \
