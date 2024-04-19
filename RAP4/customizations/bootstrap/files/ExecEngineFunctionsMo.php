@@ -4,6 +4,9 @@ namespace RAP4;
 
 use Ampersand\Rule\ExecEngine;
 
+use Ampersand\AmpersandApp;
+use Exception;
+use Ampersand\Extension\RAP4\Command;
 
 // ---------Mo----------------------------
 /**
@@ -88,8 +91,37 @@ ExecEngine::registerFunction('ConvertToADL', function ($scriptId, $scriptVersion
     $ee = $this; // because autocomplete does not work on $this
     $model = $ee->getApp()->getModel();
 
+    $scriptAtom = $model->getConceptByLabel('Script')->makeAtom($scriptId);
+    $scriptVersionAtom = $model->getConceptByLabel('ScriptVersion')->makeAtom($scriptVersionId);
+
+    // The relative path of the new file must be something like:
+    // ./scripts/<userId>/<scriptId>/<versionId>/out.adl
+    $basePath = "scripts/{$userName}/{$scriptId}/{$scriptVersionId}";
+    $relPath = $ee->getApp()->getSettings()->get('global.absolutePath') . '/data/' . $basePath;
+    $srsRelPath = "{$relPath}/ATLAS_file.json";
+    $tgtRelPath = "{$relPath}/out.adl";
+    $testPath = "{$relPath}/test/out.adl";
+
+
+    // Controleer of de directory bestaat, zo niet, maak deze
+    if (!file_exists(dirname($srsRelPath))) {
+        mkdir(dirname($srsRelPath), 0777, true);
+    }
+
     //generate the file from the ATLAS population, and get the path
     $path = ExecEngine::getFunction('GenerateJsonATLAS')->call($this, $scriptId, $scriptVersionId, $srcRelPath, $userName);
+
+    $command = new Command(
+        'ampersand atlas-import ATLAS_file.json out.adl',
+        [
+            // 'ATLAS_file.json',
+            // 'out.adl'
+            //// basename($srsRelPath),            // omit the document, so generate graphics only.
+            //// , basename($tgtRelPath)    // needed, or else Ampersand will not run.   // this is 'script.adl'
+        ],
+        $ee->getLogger()
+    );
+    $command->execute(dirname($srsRelPath));
 
     /**
      * de 'GenerateJsonATLAS' - functie moet worden aangeroepen, en de file moet worden opgehaald
