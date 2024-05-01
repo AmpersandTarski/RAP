@@ -16,4 +16,7 @@ spec:
     spec:
       containers:
         - image: ampersandtarski/rap4-student-prototype:v1.2.0
-          name: rap4-student-prototype          
+          name: rap4-student-prototype
+          env:
+          - name: RAP_DEPLOYMENT
+            value: Kubernetes

@@ -8,3 +8,4 @@ spec:
       containers:
         - image: ampersandtarski/rap4-student-prototype:dev-latest
           name: rap4-student-prototype          
+          imagePullPolicy: Never

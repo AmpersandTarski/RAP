@@ -13,11 +13,11 @@ RUN apt-get install -y unzip
 # COPY --from=ampersandtarski/ampersand:v4.6.0 /bin/ampersand /usr/local/bin
 # RUN chmod +x /usr/local/bin/ampersand
 
-COPY run-student-prototype.sh /
+COPY scripts /scripts
 
 COPY templates /templates
 
-RUN chmod +x /run-student-prototype.sh
+RUN chmod +x /scripts
 
 # RUN chown -R www-data:www-data /var/www/log /var/www/data /var/www/generics \
 #  && cd /var/www \
@@ -27,4 +27,6 @@ RUN chmod +x /run-student-prototype.sh
 #  # && gulp build-ampersand \
 #  # && gulp build-project
 
-ENTRYPOINT bash /run-student-prototype.sh
+WORKDIR /scripts
+
+ENTRYPOINT bash /scripts/run-student-prototype.sh
