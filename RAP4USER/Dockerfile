@@ -17,8 +17,6 @@ COPY scripts /scripts
 
 COPY templates /templates
 
-RUN chmod +x /scripts
-
 # RUN chown -R www-data:www-data /var/www/log /var/www/data /var/www/generics \
 #  && cd /var/www \
 #  # uncomment lines below if customizations are added to default prototype framework
