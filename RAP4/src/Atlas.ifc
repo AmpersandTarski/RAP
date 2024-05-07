@@ -4,11 +4,12 @@ CONTEXT RAP IN ENGLISH
     INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
         [ 
             
-            name                 : I[Context];name                                           cRud
+            name                 : I[Context];name                                           CRUD
             , patterns              : context[Pattern*Context]~                                 INTERFACE "JsonPattern"
             , interfaces            : context[Interface*Context]~                               INTERFACE "JsonInterface"
             -- , objects               : context[Interface*Context]~                   INTERFACE "JsonObjectDef"
-            , conceptsCtx           : context[Concept*Context]~                                 INTERFACE "JsonConcept"      -- all concepts within the Context - those in Patterns                                       
+            , conceptsCtx           : context[Concept*Context]~ 
+                                        -(context~;concepts[Pattern*Concept])                   INTERFACE "JsonConcept"      -- all concepts within the Context - those in Patterns                                       
             , representationsCtx    : (context[Concept*Context]~     
                                         -(context~;concepts[Pattern*Concept]))
                                             ;(I-ttype[Concept*TType];"OBJECT";ttype~)           INTERFACE "JsonRepresentation"      -- all REPRESENTATIONS within the Context - those in Patterns      
@@ -50,7 +51,7 @@ CONTEXT RAP IN ENGLISH
 
     INTERFACE "JsonConcept" : I[Concept] BOX
         [
-            name            : name[Concept*ConceptName]                 cRud
+            name            : name[Concept*ConceptName]                 CRUD
             , definition    : name;acdcpt~                              cRud
             , type          : ttype[Concept*TType]                      cRud
         ]
@@ -78,7 +79,7 @@ CONTEXT RAP IN ENGLISH
             , patternPurp        :       purpose[Pattern*Purpose]~;name                  cRud
             , interfacePurp      :       purpose[Interface*Purpose]~;name                cRud
             , contextPurp        :       purpose[Context*Purpose]~;name                  cRud                           
-            , meaning               :       markup;asMarkdown                               cRud
+            , meaning               :       markup;asMarkdown                               CRUD
     ]
 
     INTERFACE "JsonRelation" : I[Relation] BOX
