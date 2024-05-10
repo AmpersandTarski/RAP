@@ -43,17 +43,34 @@ Scenario: In the overview screen I can request the number of modules
 	When i request for modules
 	Then the result is 4
 
-Scenario: In the "List all interfaces" page I can edit an interface
+@myInterfaces
+Scenario: In the "List all interfaces" page I can request the "edit an interface" interface
 	Given i am in the list all interfaces screen of rap
 	When i edit the interface
 	Then the result is 123
 
-Scenario: In the "List all interfaces" page I can edit a menu item
+Scenario: In the "List all interfaces" page I can request the "edit a menu item" interface
 	Given i am in the list all interfaces screen of rap
 	When i edit a menu item
 	Then the result is 123
 
-Scenario: In the "List all interfaces" page I can list all interfaces
-	Given  i am in the list all interfaces screen of rap
+Scenario: In the "List all interfaces" page I can request the "list all interfaces" interface
+	Given i am in the list all interfaces screen of rap
 	When i request the sub listallinterfaces page
+	Then the result is 123
+
+Scenario: In the "List all interfaces" page I can request the "overview" interface
+    Given i am in the list all interfaces screen of rap
+	When i request the sub overview page
+	Then the result is 123
+
+Scenario: In the "List all interfaces" page I can request the "PF__AllRoles interface
+    Given i am in the list all interfaces screen of rap
+	When i request the sub pf allroles page
+	Then the result is 123
+
+
+Scenario: In the "List all interfaces" page I can request the "PF__MenuItems interface
+    Given i am in the list all interfaces screen of rap
+	When i request the sub pf menuitems page
 	Then the result is 123

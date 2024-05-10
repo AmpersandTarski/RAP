@@ -81,8 +81,6 @@ namespace SpecFlowRAP.StepDefinitions
             uriBuilder.Path     = string.Join("/", basePath, "SESSION/1/Login");
             string result       = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
             _result = respons.getRapArrJsonObject(result, "WhenITryToLogin");
-            // Na succesvolle login komt er een speciaal Json-bericht terug met login-informatie
-            // Is het zinvol om dit te controleren?
         }
 
         [When("i request the overview page")]
@@ -145,6 +143,33 @@ namespace SpecFlowRAP.StepDefinitions
             uriBuilder.Path = string.Join("/", basePath, "PF__Interface/List_32_all_32_interfaces/Edit_32_interface");
             string result = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
             _result = respons.getRapArrJsonObject(result, "WhenIRequestTheSubListallinterfacesPage");
+        }
+
+        [When("i request the sub overview page")]
+        public async Task WhenIRequestTheSubOverviewPage()
+        {
+            // http://stjohn.localhost/api/v1/resource/PF__Interface/Overview/Edit_32_interface
+            uriBuilder.Path = string.Join("/", basePath, "PF__Interface/Overview/Edit_32_interface");
+            string result = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            _result = respons.getRapArrJsonObject(result, "WhenIRequestTheSubOverviewPage");
+        }
+
+        [When("i request the sub pf allroles page")]
+        public async Task WhenIRequestTheSubPfAllrolesPage()
+        {
+            // http://stjohn.localhost/api/v1/resource/PF__Interface/PF__AllRoles/Edit_32_interface
+            uriBuilder.Path = string.Join("/", basePath, "PF__Interface/PF__AllRoles/Edit_32_interface");
+            string result = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            _result = respons.getRapArrJsonObject(result, "WhenIRequestTheSubPfAllrolesPage");
+        }
+
+        [When("i request the sub pf menuitems page")]
+        public async Task WhenIRequestTheSubPfMenuitemsPage()
+        {
+            // http://stjohn.localhost/api/v1/resource/PF__Interface/PF__MenuItems/Edit_32_interface
+            uriBuilder.Path = string.Join("/", basePath, "PF__Interface/PF__MenuItems/Edit_32_interface");
+            string result = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            _result = respons.getRapArrJsonObject(result, "WhenIRequestTheSubPfMenuitemsPage");
         }
 
         [When("i request for courses")]
