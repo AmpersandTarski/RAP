@@ -1,0 +1,5 @@
+resources:
+  - monitoring-namespace.yaml
+  - cadvisor.yaml
+  - prometheus.yaml
+  - grafana.yaml
