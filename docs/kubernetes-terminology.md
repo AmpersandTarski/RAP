@@ -1,6 +1,6 @@
 # Kubernetes terminology
 
-I asked ChatGPT to give defintions and examples of the different Kubernetes resources.
+I asked ChatGPT to give defintions and examples of the different Kubernetes resources. So, this terminology needs to be verified.
 
 **Compute**
 

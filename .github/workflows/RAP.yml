@@ -3,9 +3,9 @@ name: RAP pipeline
 on:
   push:
     branches:
-      - "main"
+      - main
     paths:
-      - "./RAP4/"
+      - "RAP4/**"
 
 jobs:
   Staging:

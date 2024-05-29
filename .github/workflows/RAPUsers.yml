@@ -3,9 +3,9 @@ name: RAP User pipeline
 on:
   push:
     branches:
-      - "main"
+      - main
     paths:
-      - "./RAP4USER/"
+      - "RAP4USER/**"
 
 jobs:
   Staging:
