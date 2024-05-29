@@ -21,3 +21,4 @@ Testing/Gatling/target
 Testing/Gatling/results
 Testing/Gatling/src/test/results
 Testing/Gatling/src/test/resources/recorder.conf
+gatling-3-7-2/*
