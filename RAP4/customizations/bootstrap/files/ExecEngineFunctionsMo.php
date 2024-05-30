@@ -33,19 +33,6 @@ ExecEngine::registerFunction('GenerateJsonATLAS', function ($scriptId, $scriptVe
         mkdir(dirname($srcAbsPath), 0777, true);
     }
 
-    // // -------------------- Probeersel intern de ResourceController aan te spreken (werkt niet)
-    // $resourceController = new ResourceController($ee->getLogger());
-    // // Stel de nodige parameters in
-    // $resourceType = 'ScriptVersion';
-    // $resourceId = $scriptAtomId; // Aannemende dat dit de ID is van de ScriptVersion
-    // $resourcePath = 'Atlas_32_population';
-    // $options = ['metaData' => 0, 'navIfc' => 0]; // Opties als query parameters
-    // // Roep getResourceData of een vergelijkbare methode aan om de data op te halen
-    // $data = $resourceController->getResourceData($resourceType, $resourceId, $resourcePath, $options);
-    // //$data = $this->getResourceData('ScriptVersion', $scriptAtomId, 'Atlas_32_population', ['metaData' => 0, 'navIfc' => 0]);
-    // --------------------
-
-
     // Definieer de API-call "/api/v1/resource/ScriptVersion/{$scriptAtomId}/Atlas_32_population?metaData=0&navIfc=0";
     // Dynamisch opbouwen van de host URL
     $scheme = isset($_SERVER['HTTPS']) ? 'https' : 'http';

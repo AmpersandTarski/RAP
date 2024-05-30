@@ -296,6 +296,8 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION vdIsDefault[View*Concept]
     RELATION vdpos[View*Origin]
     RELATION violatable[Interface*Rule]
+    -- EIGEN DINGEN
+    RELATION concept[ConceptDef*Concept] [UNI,TOT]
 ENDPATTERN
 
 PATTERN "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)

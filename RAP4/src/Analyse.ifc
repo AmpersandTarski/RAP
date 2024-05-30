@@ -3,15 +3,35 @@ RELATION markup[Purpose*Markup][UNI]
 RELATION markup[Meaning*Markup][UNI]
 REPRESENT Text TYPE BIGALPHANUMERIC   -- Fix for AmpersandTarski/Ampersand issue #1199
 
-RULE defaultMarkupPurpose : I[Purpose] |- markup;V
-VIOLATION ( TXT "The markup of the purpose of Concept ",   SRC purpose[Concept*Purpose]~,   TXT "is not defined\n"
-          , TXT "The markup of the purpose of Rule ",      SRC purpose[Rule*Purpose]~,      TXT "is not defined\n"
-          , TXT "The markup of the purpose of Relation ",  SRC purpose[Relation*Purpose]~,  TXT "is not defined\n"
-          , TXT "The markup of the purpose of Interface ", SRC purpose[Interface*Purpose]~, TXT "is not defined\n"
-          , TXT "The markup of the purpose of Pattern ",   SRC purpose[Pattern*Purpose]~,   TXT "is not defined\n"
-          , TXT "The markup of the purpose of Context ",   SRC purpose[Context*Purpose]~,   TXT "is not defined\n"
-          , TXT "The markup of the purpose of View ",      SRC purpose[View*Purpose]~,      TXT "is not defined\n"
-          )
+-- rule to notify not all concepts have a purpose
+-- RULE defaultMarkupPurpose : I[Purpose] /\ (purpose[Concept*Purpose]~;purpose) |- markup;V
+-- VIOLATION ( TXT "The markup of the purpose of Concept ",   SRC purpose[Concept*Purpose]~;name,   TXT " is not defined\n")
+--           -- , TXT "The markup of the purpose of Rule ",      SRC purpose[Rule*Purpose]~,      TXT "is not defined\n"
+--           -- , TXT "The markup of the purpose of Relation ",  SRC purpose[Relation*Purpose]~,  TXT "is not defined\n"
+--           -- , TXT "The markup of the purpose of Interface ", SRC purpose[Interface*Purpose]~, TXT "is not defined\n"
+--           -- , TXT "The markup of the purpose of Pattern ",   SRC purpose[Pattern*Purpose]~,   TXT "is not defined\n"
+--           -- , TXT "The markup of the purpose of Context ",   SRC purpose[Context*Purpose]~,   TXT "is not defined\n"
+--           -- , TXT "The markup of the purpose of View ",      SRC purpose[View*Purpose]~,      TXT "is not defined\n"
+--           -- )
+-- ROLE User MAINTAINS defaultMarkupPurpose
+
+-- rule to notify something (the TType in this case) is missing
+-- ROLE User MAINTAINS conceptMustHaveTType
+-- RULE conceptMustHaveTType : I[Concept] |- ttype[Concept*TType];V
+-- VIOLATION ( TXT "The TType of Concept ",   SRC name[Concept*ConceptName],   TXT " is not defined\n")
+-- VIOLATION (TXT "{EX} InsPair;seqFirstItem;Sequence;", TGT I, TXT ";Item;", SRC I)
+
+ROLE ExecEngine MAINTAINS conceptMustCreateTType
+RULE conceptMustCreateTType : I[Concept] |- ttype[Concept*TType];V
+MESSAGE "Type of CONCEPT was not defined, automatically set to OBJECT" 
+VIOLATION (TXT "{EX} InsPair;ttype;Concept;", SRC I, TXT ";TType;OBJECT")
+
+-- ROLE ExecEngine MAINTAINS ensureMarkupHasText
+-- RULE ensureMarkupHasText : I[Markup] |- text[Markup*MarkupText];V
+-- MESSAGE "Markup was empty and set to default"
+-- VIOLATION (TXT "{EX} InsPair;text;Markup;", SRC I, TXT ";MarkupText;''")
+
+
 
 RELATION name[Context*ContextName] [UNI]
 RELATION asMarkdown[Markup*Text][UNI,TOT]
@@ -22,23 +42,23 @@ VIEW MeaningContent: Meaning(markup;asMarkdown)
 VIEW PurposeContent: Purpose(markup;asMarkdown)
 
 
-INTERFACE Concept FOR User, Tutor : I[Concept] cRud BOX
-  [ "Concept:" : I cRud
-  , "Definition" : name;acdcpt~;(acddef2\/acdmean) cRud -- acddef2 is old syntax, acdmean is new syntax.
-  , "Purpose:" : purpose[Concept*Purpose]          cRud 
-  , "Used in rules": conceptualDiagram             cRud <ShowConceptualDiagram>
-  , "Context" : context                            cRud
+INTERFACE Concept FOR User, Tutor : I[Concept] CRUD BOX
+  [ "Concept:" : I CRUD
+  , "Definition" : name;acdcpt~;(acddef2\/acdmean) CRUD -- acddef2 is old syntax, acdmean is new syntax.
+  , "Purpose:" : purpose[Concept*Purpose]          CRUD 
+  , "Used in rules": conceptualDiagram             CRUD <ShowConceptualDiagram>
+  , "Context" : context                            CRUD
   ]
 
 INTERFACE Relation FOR User, Tutor : I[Relation] cRud BOX
   [ "Relation:" : I cRud
-  , "Source concept:" : source cRud LINKTO INTERFACE "Concept"
-  , "Target concept:" : target cRud LINKTO INTERFACE "Concept"
-  , "Eigenschappen:" : propertyRule;declaredthrough cRud
-  , "Properties:" : prop [Relation * Property] cRud
-  , "MEANING:" : decMean[Relation*Meaning] cRud 
-  , "PURPOSE:" : purpose[Relation*Purpose] cRud 
-  , "Context" : relsDefdIn cRud
+  , "Source concept:" : source CRUD LINKTO INTERFACE "Concept"
+  , "Target concept:" : target CRUD LINKTO INTERFACE "Concept"
+  , "Eigenschappen:" : propertyRule;declaredthrough CRUD
+  , "Properties:" : prop [Relation * Property] CRUD
+  , "MEANING:" : decMean[Relation*Meaning] CRUD 
+  , "PURPOSE:" : purpose[Relation*Purpose] CRUD 
+  , "Context" : relsDefdIn CRUD
   ]
 
 VIEW Rule : Rule(name)
