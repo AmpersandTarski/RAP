@@ -39,7 +39,7 @@ CONTEXT RAP IN ENGLISH
             name                : name                                          cRud
             , concepts          : concepts[Pattern*Concept]                                     INTERFACE "JsonConcept"
             , representations   : concepts[Pattern*Concept];(I-ttype;"OBJECT";ttype~)           INTERFACE "JsonRepresentation"            
-            , rules             : allRules[Pattern*Rule] - proprules~                           INTERFACE "JsonRule"
+            , rules             : udefrules~                                                    INTERFACE "JsonRule"
             , relations         : declaredIn[Relation*Pattern]~                                 INTERFACE "JsonRelation"
             , properties        : proprules[PropertyRule*Pattern]~;declaredthrough[PropertyRule*Property]       cRud
             , purposes          : purpose[Pattern*Purpose]                                      -- purpose of the pattern

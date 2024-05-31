@@ -16,20 +16,14 @@ INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;s
             [ context       : I                              cRud
             , patterns      : context[Pattern*Context]~      cRud
             , concepts      : context[Concept*Context]~      CRUD
-            , rules         : allRules~ - proprules~         cRud
+            , rules         : ctxrs~ \/ udefrules~           cRud
             , relations     : relsDefdIn[Relation*Context]~  cRud
             ]
       , "Detailed " : I BOX <TABS> 
          [ 
-          "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE "JsonConcept"          
-         , "Relaties"  : relsDefdIn[Relation*Context]~ cRud
-            BOX <TABLE sortable hideOnNoRecords>
-                 [ 
-                 ]
-         , "Regels"    : I
-            BOX <TABS>
-                 [
-                 ]
+          "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE "ATLASConcept"          
+         , "Relaties"  : relsDefdIn[Relation*Context]~ INTERFACE "ATLASRelation"
+         , "Regels"    : ctxrs~ \/ udefrules~          INTERFACE "ATLASRule"
          , "Patterns"   : context [Pattern * Context]~ INTERFACE "Patterns"
          ,  Purposes     : purpose[Context*Purpose]                                     -- Context Purpose
                                         \/ context[Concept*Context]~;purpose[Concept*Purpose]     -- concept purpose
