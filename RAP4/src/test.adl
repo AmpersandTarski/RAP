@@ -66,10 +66,10 @@ PATTERN PatternName
 
 -- Concepts in PATTERN
 CONCEPT Concept0Ptn "this is the definition of CONCEPT Concept0Ptn in de PATTERN"
-CONCEPT Classified1Ptn "this is the definition of CONCEPT Classified1Ptn in de PATTERN"
-CONCEPT Classified2Ptn "this is the definition of CONCEPT Classified2Ptn in de PATTERN"
+-- CONCEPT Classified1Ptn "this is the definition of CONCEPT Classified1Ptn in de PATTERN"
+-- CONCEPT Classified2Ptn "this is the definition of CONCEPT Classified2Ptn in de PATTERN"
 
-CLASSIFY Classified1Ptn, Classified2Ptn ISA Concept0Ptn
+-- CLASSIFY Classified1Ptn, Classified2Ptn ISA Concept0Ptn
 
 
 CONCEPT Concept1Ptn "this is the definition of CONCEPT Concept1Ptn in de PATTERN"

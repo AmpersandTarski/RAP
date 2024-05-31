@@ -1,0 +1,78 @@
+CONTEXT RAP IN ENGLISH
+
+-- rule to notify something (the TType in this case) is missing
+-- ROLE User MAINTAINS conceptMustHaveTType
+-- RULE conceptMustHaveTType : I[Concept] |- ttype[Concept*TType];V
+-- VIOLATION ( TXT "The TType of Concept ",   SRC name[Concept*ConceptName],   TXT " is not defined\n")
+-- VIOLATION (TXT "{EX} InsPair;seqFirstItem;Sequence;", TGT I, TXT ";Item;", SRC I)
+
+-- rule to notify something (the ConceptName in this case) is missing
+ROLE User MAINTAINS conceptMustHaveName 
+RULE conceptMustHaveName : I[Concept] |- name[Concept*ConceptName];V
+VIOLATION ( TXT "The name of a Concept is not defined: ",   SRC I[Concept] ,   TXT "\n")  -- hier zou de origin nog bijkunnen
+-- VIOLATION (TXT "{EX} InsPair;seqFirstItem;Sequence;", TGT I, TXT ";Item;", SRC I)
+
+-- rule to notify something (the RelationName in this case) is missing
+ROLE User MAINTAINS relationMustHaveName 
+RULE relationMustHaveName : I[Relation] |- name[Relation*RelationName];V
+VIOLATION ( TXT "The name of a Relation is not defined: ",   SRC I[Relation] ,   TXT "\n")  -- hier zou de origin nog bijkunnen
+
+-- rule to notify something (the RelationName in this case) is missing
+ROLE User MAINTAINS sourceMustHaveName 
+RULE sourceMustHaveName : I[Signature] |- src[Signature*Concept];V
+VIOLATION ( TXT "The source of a Relation is not defined: ",   SRC sign[Relation*Signature]~ ,   TXT "\n")  -- hier zou de origin nog bijkunnen
+
+-- rule to notify something (the RelationName in this case) is missing
+ROLE User MAINTAINS targetMustHaveName 
+RULE targetMustHaveName : I[Signature] |- src[Signature*Concept];V
+VIOLATION ( TXT "The target of a Relation is not defined: ",   TGT sign[Relation*Signature]~ ,   TXT "\n")  -- hier zou de origin nog bijkunnen
+
+-- ROLE ExecEngine MAINTAINS ensureMarkupHasText
+-- RULE ensureMarkupHasText : I[Markup] |- text[Markup*MarkupText];V
+-- MESSAGE "Markup was empty and set to default"
+-- VIOLATION (TXT "{EX} InsPair;text;Markup;", SRC I, TXT ";MarkupText;''")
+
+
+ROLE ExecEngine MAINTAINS conceptFillTType
+RULE conceptFillTType : I[Concept] |- ttype[Concept*TType];V
+MESSAGE "Type of CONCEPT was not defined, automatically set to OBJECT" 
+VIOLATION (TXT "{EX} InsPair;ttype;Concept;", SRC I, TXT ";TType;OBJECT")
+
+-- elke relatie moet een signature hebben (die moet dan door de user zelf gevuld worden)
+ROLE ExecEngine MAINTAINS relationCreateSign
+RULE relationCreateSign : I[Relation] |- sign[Relation*Signature];V
+MESSAGE "Sign of Relation was not defined, automatically set to empty signatrue" 
+VIOLATION (   TXT "{EX} InsAtom;Signature"
+            , TXT "{EX} InsPair;sign;Relation;", SRC I, TXT ";Signature;_NEW" )
+
+
+
+INTERFACE ATLASConcept FOR User, Tutor : I[Concept] CRUD BOX
+  [ name                : name[Concept*ConceptName]                                 CRUD
+    , definition        : concept[ConceptDef*Concept]~;meaning[ConceptDef*Meaning]  cRud -- todo: meaning naar text (bestaat nog niet)
+    , type              : ttype[Concept*TType]                                      cRud
+    -- , "Purpose:" : purpose[Concept*Purpose]          CRUD
+  ]
+
+INTERFACE ATLASRelation FOR User, Tutor : I[Relation] CRuD BOX
+  [ name                : name[Relation*RelationName]                               cRUd  
+    , sign              : sign[Relation*Signature]                                  cRUd BOX <TABLE>
+         [ Source       : src[Signature*Concept]                                    cRUd
+         , Target       : tgt[Signature*Concept]                                    cRUd
+         ]
+    , prop       : prop [Relation * Property]                                       cRUd
+  ]
+
+INTERFACE ATLASRule FOR User, Tutor : I[Rule] cRud BOX
+  [ 
+      "Regel:" : I[Rule] cRud
+      , "Formele expressie:" : formalTerm cRud
+      -- violation
+      -- message
+  ]
+
+
+
+
+
+ENDCONTEXT

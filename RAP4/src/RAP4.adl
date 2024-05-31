@@ -16,6 +16,8 @@ CONTEXT RAP4 IN ENGLISH
    INCLUDE "RAP4.xlsx"                      -- Initial, minimal set of people and accounts 
 
    INCLUDE "Atlas.ifc"                      -- Interfaces to export Altas population
+   INCLUDE "Atlas.adl"                      -- rules and interfaces to guide the ATLAS editor
+   
 
 REPRESENT Language TYPE ALPHANUMERIC
 REPRESENT AmpersandVersion,TType TYPE ALPHANUMERIC

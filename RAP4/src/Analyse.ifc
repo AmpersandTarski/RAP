@@ -15,23 +15,6 @@ REPRESENT Text TYPE BIGALPHANUMERIC   -- Fix for AmpersandTarski/Ampersand issue
 --           -- )
 -- ROLE User MAINTAINS defaultMarkupPurpose
 
--- rule to notify something (the TType in this case) is missing
--- ROLE User MAINTAINS conceptMustHaveTType
--- RULE conceptMustHaveTType : I[Concept] |- ttype[Concept*TType];V
--- VIOLATION ( TXT "The TType of Concept ",   SRC name[Concept*ConceptName],   TXT " is not defined\n")
--- VIOLATION (TXT "{EX} InsPair;seqFirstItem;Sequence;", TGT I, TXT ";Item;", SRC I)
-
-ROLE ExecEngine MAINTAINS conceptMustCreateTType
-RULE conceptMustCreateTType : I[Concept] |- ttype[Concept*TType];V
-MESSAGE "Type of CONCEPT was not defined, automatically set to OBJECT" 
-VIOLATION (TXT "{EX} InsPair;ttype;Concept;", SRC I, TXT ";TType;OBJECT")
-
--- ROLE ExecEngine MAINTAINS ensureMarkupHasText
--- RULE ensureMarkupHasText : I[Markup] |- text[Markup*MarkupText];V
--- MESSAGE "Markup was empty and set to default"
--- VIOLATION (TXT "{EX} InsPair;text;Markup;", SRC I, TXT ";MarkupText;''")
-
-
 
 RELATION name[Context*ContextName] [UNI]
 RELATION asMarkdown[Markup*Text][UNI,TOT]
