@@ -247,29 +247,29 @@ Besides cert manager, a let's encrypt Issuer should be deployed which issues the
 - [Staging Issuer](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/certmanager/letsencrypt-staging.yaml)
 - [Production Issuer](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/certmanager/letsencrypt-production.yaml)
 
-The staging Issuer will issue a fake certificate. This is used for development purposes to test the connection. Once everything works, only the production Issuer is used. As an Issuer only issues certificated for resources within its own namespace, each namespace requires its own Issuer.
+The staging Issuer will issue a fake certificate. This is useful for development purposes to test the connection. Once everything works, only the production Issuer is used. As an Issuer only issues certificated for resources within its own namespace, each namespace requires its own Issuer.
 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| cert-manager-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/cert-manager-namespace.yaml) |
-| cert-manager.yaml | Certificate manager Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/cert-manager.yaml) |
-| letsencrypt-production.yaml | ClusterIssuer | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/letsencrypt-production.yaml) |
-| letsencrypt-staging.yaml | ClusterIssuer for testing purposes (to avoid exceeded rate limit) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/cert-manager/letsencrypt-staging.yaml) |
+| cert-manager-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/general/certmanager/cert-manager-namespace.yaml) |
+| cert-manager.yaml | Certificate manager Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/general/certmanager/cert-manager.yaml) |
+| letsencrypt-production.yaml | ClusterIssuer | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/certmanager/letsencrypt-production.yaml) |
+| letsencrypt-staging.yaml | ClusterIssuer for testing purposes (to avoid exceeding rate limit) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/certmanager/letsencrypt-staging.yaml) |
 
 **Rate limit**
-Let's encrypt uses with rate limits, the maximum certificates per registered domain is 50 per week. Depending on the number of enrolled students, it is possible to request a wildecard certificate for the domain `*.rap.tarski.nl`.
+Let's encrypt uses rate limits. The maximum certificates per registered domain is 50 per week. Depending on the number of enrolled students, it might be possible to exceed this limit. If this is the case, it should be possible to request a wildcard certificate for the domain `*.rap.tarski.nl`.
 
-Check the [let's encrypt website](https://letsencrypt.org/docs/rate-limits/) for more information on the rate limit and [this announcements](https://community.letsencrypt.org/t/acme-v2-production-environment-wildcards/55578) to request a wildcard certificate.
+Check the [let's encrypt website](https://letsencrypt.org/docs/rate-limits/) for more information on the rate limit and [this announcement](https://community.letsencrypt.org/t/acme-v2-production-environment-wildcards/55578) on how to request a wildcard certificate.
 
 ### Namespace
 
-Before other resources are deployed, the namespace has to be created. Typically namespaces are development, staging and/or production.
+Before other resources are deployed, the namespace to which you are deploying said resources needs to be created. Typically namespaces are development, staging and/or production.
 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| rap-namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-namespace.yaml) |
+| namespace.yaml | Namespace | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/namespace.yaml) |
 
 ### Enroll
 
@@ -278,11 +278,11 @@ The Enroll Pod is a containerized application that is used as an example in this
 Consists of the following files:
 
 <!-- prettier-ignore -->
-| Name | Purpose | File |
+| Name | Purpose | Base | Patch |
 | - | - | - |
-| enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/enroll-deployment.yaml) |
-| enroll-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/enroll-service.yaml)    |
-| enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/enroll-ingress.yaml)      |
+| enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/dev/enroll/enroll-deployment.yaml) |
+| enroll-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-service.yaml) | N/A |
+| enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/dev/enroll/enroll-ingress.yaml)      |
 
 ### RAP
 
