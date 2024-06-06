@@ -280,9 +280,9 @@ Consists of the following files:
 <!-- prettier-ignore -->
 | Name | Purpose | Base | Patch |
 | - | - | - | - |
-| enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/enroll/enroll-deployment.yaml) |
-| enroll-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-service.yaml) | N/A |
-| enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/enroll/enroll-ingress.yaml)      |
+| enroll-deployment.yaml | Docker image, environmental variables                        | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-deployment.yaml) | [patch](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/enroll/enroll-deployment.yaml) |
+| enroll-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-service.yaml) | N/A |
+| enroll-ingress.yaml    | Ingress rule                                                 | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-ingress.yaml) | [patch](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/enroll/enroll-ingress.yaml)      |
 
 ### RAP
 
@@ -306,10 +306,10 @@ Consists of the following files:
 <!-- prettier-ignore -->
 | Name | Purpose | Base | Patch |
 | - | - | - | - |
-| rap-deployment.yaml | Docker image, environmental variables | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/rap/rap-deployment.yaml) |
-| rap-service.yaml | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-service.yaml) | N/A |
-| rap-ingress.yaml | Ingress rule | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/rap-ingress.yaml) |
-| administration-configmap.yaml | Administration ConfigMap | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/administration-configmap.yaml) | N/A |
+| rap-deployment.yaml | Docker image, environmental variables | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-deployment.yaml) | [patch](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/rap/rap-deployment.yaml) |
+| rap-service.yaml | Creates ClusterIP such that traffic can be routed to the pod | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-service.yaml) | N/A |
+| rap-ingress.yaml | Ingress rule | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-ingress.yaml) | [patch](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/rap-ingress.yaml) |
+| administration-configmap.yaml | Administration ConfigMap | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/administration-configmap.yaml) | N/A |
 
 ### phpMyAdmin
 
@@ -364,7 +364,7 @@ Student-prototype is a deployment with the image `ampersandtarski/rap4-student-p
 <!-- prettier-ignore -->
 | Name | Purpose | Base | Patch |
 | - | - | - | - |
-| student-prototype-deployment.yaml | Load docker image into Kubernetes cluster | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/student-prototype-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/student-prototype-deployment.yaml) |
+| student-prototype-deployment.yaml | Load docker image into Kubernetes cluster | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/student-prototype-deployment.yaml) | [patch](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/student-prototype-deployment.yaml) |
 
 ### Student-prototype cleanup
 
@@ -379,7 +379,7 @@ When the container is spun up, arguments are passed that loop over all deploymen
 <!-- prettier-ignore -->
 | Name | Purpose | Base | Patch |
 | - | - | - | - |
-| student-prototype-cleanup.yaml | Delete student-prototypes older than 1 hour | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/student-prototype-cleanup.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/student-prototype-cleanup.yaml) |
+| student-prototype-cleanup.yaml | Delete student-prototypes older than 1 hour | [base](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/student-prototype-cleanup.yaml) | [patch](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/student-prototype-cleanup.yaml) |
 
 # Deep dive RAP
 
