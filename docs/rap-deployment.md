@@ -280,9 +280,9 @@ Consists of the following files:
 <!-- prettier-ignore -->
 | Name | Purpose | Base | Patch |
 | - | - | - | - |
-| enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/enroll/enroll-deployment.yaml) |
+| enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/enroll/enroll-deployment.yaml) |
 | enroll-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-service.yaml) | N/A |
-| enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/enroll/enroll-ingress.yaml)      |
+| enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/enroll/enroll-ingress.yaml)      |
 
 ### RAP
 
@@ -306,30 +306,27 @@ Consists of the following files:
 <!-- prettier-ignore -->
 | Name | Purpose | Base | Patch |
 | - | - | - | - |
-| rap-deployment.yaml | Docker image, environmental variables | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/rap-deployment.yaml) |
+| rap-deployment.yaml | Docker image, environmental variables | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/rap/rap-deployment.yaml) |
 | rap-service.yaml | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-service.yaml) | N/A |
-| rap-ingress.yaml | Ingress rule | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap-ingress.yaml) |
+| rap-ingress.yaml | Ingress rule | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/local/dev/rap-ingress.yaml) |
 | administration-configmap.yaml | Administration ConfigMap | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/administration-configmap.yaml) | N/A |
 
 ### phpMyAdmin
 
-The phpMyAdmin Pod is a containerized application that provides a graphical user interface for managing the MariaDB MySQL database that is used the rap application. This pod contains the necessary software, libraries, and configuration files to run the phpMyAdmin service for your application.
+The phpMyAdmin Pod is a containerized application that provides a graphical user interface for managing the MariaDB MySQL database that is used by the rap application. This pod contains the necessary software, libraries, and configuration files to run the phpMyAdmin service for your application.
 
 To access phpMyAdmin you need access through the Kubernetes CLI. Create a port-forwarding service to your localhost:
 
 ```
-# get pod name
-$POD = kubectl get pods -n rap -l app.kubernetes.io/name=phpMyAdmin -o jsonpath='{.items[0].metadata.name}'
 # create port-forwarding
-kubectl port-forward $POD -n rap 8080:8080
+kubectl port-forward svc/<<service name>> -n <<namespace>> 8080:8080
 ```
 
-Access phpMyAdmin on <http://localhost:8080>
+Then you can access phpMyAdmin on [http://localhost:8080](http://localhost:8080)
 
-| Name            | Purpose               | File     |
-| --------------- | --------------------- | -------- |
-| phpMyAdmin.yaml         | phpMyAdmin Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/phpMyAdmin.yaml) |
-| phpMyAdmin-ingress.yaml | Ingress rule          | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/phpMyAdmin-ingress.yaml) |
+| Name | Purpose | File |
+| - | - | - |
+| phpMyAdmin.yaml         | phpMyAdmin Helm chart | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/phpMyAdmin.yaml) |
 
 ### MariaDB
 
