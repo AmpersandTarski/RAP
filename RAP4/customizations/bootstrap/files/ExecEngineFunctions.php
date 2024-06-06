@@ -341,7 +341,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
 
     $zipContent = file_get_contents($zipFile);
     $zipContentForCommandline = base64_encode($zipContent);
-    $mainAldForCommandLine = base64_encode("main.adl");
+    $mainAdlForCommandLine = base64_encode("main.adl");
 
     $userName = sanitize_username($userName);
 
@@ -397,7 +397,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         $manifest=str_replace("{{hostName}}", $hostname, $manifest);
         $manifest=str_replace("{{tlsSecret}}", $tlsSecret, $manifest);
         $manifest=str_replace("{{zipContent}}", $zipContentForCommandline, $manifest);
-        $manifest=str_replace("{{mainAdl}}", $mainAldForCommandLine, $manifest);
+        $manifest=str_replace("{{mainAdl}}", $mainAdlForCommandLine, $manifest);
         
         // Save manifest file
         $studentManifestFile="{$workDir}/student-manifest-{$userName}.yaml";
@@ -428,7 +428,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         
         // Run student prototype with Docker
         $command = new Command(
-            "echo \"{$zipContentForCommandline} {$mainAldForCommandLine}\" | docker run",
+            "echo \"{$zipContentForCommandline} {$mainAdlForCommandLine}\" | docker run",
             [ "--name \"{$userName}\"",
             "--rm",   # deletes the container when it is stopped. Useful to prevent container disk space usage to explode.
             "-i",
