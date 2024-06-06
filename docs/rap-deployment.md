@@ -89,7 +89,7 @@ It contains:
 
 RAP, Enroll, MariaDB and phpMyAdmin are running perpetually. From the RAP application student prototypes are spun up, which run temporarily.
 
-### Student-prototype
+### Student-prototype container
 
 Students who use RAP can store an Ampersand script, compile it towards a container and run it for roughly an hour to experiment with it.
 
@@ -370,34 +370,16 @@ Student-prototype is a deployment with the image `ampersandtarski/rap4-student-p
 
 A CronJob is included in the Kubernetes Cluster that runs every hour to delete student-prototypes, in order to prevent an excessive number of such pods from proliferating.
 
-The CronJob is scheduled to be triggered every hour. When it is triggered, a Job is started that uses a stock container image that can communicate with the Kubernetes API: `image: bitnami/kubectl:latest`.
+The CronJob is scheduled to be triggered every hour. When it is triggered, a Job is started using a stock container image that can communicate with the Kubernetes API: `image: bitnami/kubectl:latest`.
 
 To give the Pod permission to delete pods, a service account is coupled: `name: student-prototype-cleanup`.
 
-When the container is spun up, arguments are passed that loop over all deployments with the label `container-image=student-prototype`. Checks if the deployment is older than 1 hour and deletes the deployment, service and ingress rule.
-
-```
-# loop all deployments with label: container-image=student-prototype
-for deployment in $(kubectl get deployment -n rap -l container-image=student-prototype -o jsonpath='{.items[*].metadata.name}'); do
-    # calculate age in seconds
-    deployment_age=$(($(date +%s) - $(date +%s -d $(kubectl get deployment $deployment -n rap -o jsonpath='{.metadata.creationTimestamp}'))))
-    # delete deployment, service and ingress if age > 1 hour
-    if [ $deployment_age -gt 3600 ]; then
-        echo "Deleting deployment $deployment"
-        kubectl delete deployment $deployment -n rap
-        kubectl delete service $deployment -n rap
-        kubectl delete ingress $deployment-ingress -n rap
-        # TODO: delete database tables?
-    else
-        echo "Deployment $deployment is not older than 1 hour"
-    fi
-done
-```
+When the container is spun up, arguments are passed that loop over all deployments with the label `container-image=student-prototype`, checks if the deployment is older than 1 hour and deletes the associated deployment, service and ingress rule.
 
 <!-- prettier-ignore -->
-| Name | Purpose | File |
-| - | - | - |
-| student-prototype-cleanup.yaml | Delete student-prototypes older than 1 hour | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/student-prototype-cleanup.yaml) |
+| Name | Purpose | Base | Patch |
+| - | - | - | - |
+| student-prototype-cleanup.yaml | Delete student-prototypes older than 1 hour | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/student-prototype-cleanup.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/student-prototype-cleanup.yaml) |
 
 # Deep dive RAP
 
