@@ -359,12 +359,12 @@ volumeMounts:
 
 ### Student-prototype
 
-Student-prototype is a deployment with the image `ampersandtarski/rap4-student-prototype`. This is included such that the image file is in the Kubernetes Cluster memory. When creating a student-prototype with RAP, the image doesn't have to be downloaded.
+Student-prototype is a deployment with the image `ampersandtarski/rap4-student-prototype`. This way the image file can be cached to the Kubernetes Cluster memory, removing load times associated with downloading the image the first time a student prototype is created.
 
 <!-- prettier-ignore -->
-| Name | Purpose | File |
-| - | - | - |
-| student-prototype-deployment.yaml | Load docker image into Kubernetes cluster | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/student-prototype-deployment.yaml) |
+| Name | Purpose | Base | Patch |
+| - | - | - | - |
+| student-prototype-deployment.yaml | Load docker image into Kubernetes cluster | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/student-prototype-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/student-prototype-deployment.yaml) |
 
 ### Student-prototype cleanup
 
