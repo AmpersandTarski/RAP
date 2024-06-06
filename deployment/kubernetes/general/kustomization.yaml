@@ -1,4 +1,4 @@
 resources:
   - certmanager
   - ingress
-  - prometheus
+  - monitoring
