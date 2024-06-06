@@ -330,30 +330,15 @@ Then you can access phpMyAdmin on [http://localhost:8080](http://localhost:8080)
 
 ### MariaDB
 
-The Rap4-DB Pod is a containerized MariaDB MySQL database instance that is used by your application. This pod contains the necessary software, libraries, and configuration files to run the MariaDB service for the rap application.
+The RAP4-DB Pod is a containerized MariaDB MySQL database instance that is used by the application. This pod contains the necessary software, libraries, and configuration files to run the MariaDB service for the rap application.
 
 <!-- prettier-ignore -->
 | Name | Purpose | File |
 | - | - | - |
-| db-secrets.yaml | Secret with username and password to connect to database, used by multiple resources | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/db-secrets.yaml) |
-| db-users.yaml   | ConfigMap used to create database user and password with privileges                  | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/db-users-configmap.yaml) |
-| mariadb.yaml    | MariaDB Helm chart                                                                   | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/mariadb.yaml) |
+| db-users.yaml   | ConfigMap used to create database user and password with privileges                  | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/database/rap/db-users.yaml) |
+| mariadb.yaml    | MariaDB Helm chart                                                                   | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/database/mariadb/mariadb.yaml) |
 
 By default a root user with password is created by the Helm chart. To add another user in the manifest file, a ConfigMap is created, which is called when the mariadb manifest is created.
-
-ConfigMap:
-
-```
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: db-users
-  namespace: rap
-data:
-  create-user.sql: |-
-    CREATE USER '<<username>>'@'%' IDENTIFIED BY '<<password>>';
-    GRANT ALL PRIVILEGES ON *.* TO '<<username>>'@'%';
-```
 
 Reference configMap in the mariadb deployment volumes:
 
