@@ -279,37 +279,37 @@ Consists of the following files:
 
 <!-- prettier-ignore -->
 | Name | Purpose | Base | Patch |
-| - | - | - |
-| enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/dev/enroll/enroll-deployment.yaml) |
+| - | - | - | - |
+| enroll-deployment.yaml | Docker image, environmental variables                        | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/enroll/enroll-deployment.yaml) |
 | enroll-service.yaml    | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-service.yaml) | N/A |
-| enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/dev/enroll/enroll-ingress.yaml)      |
+| enroll-ingress.yaml    | Ingress rule                                                 | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/enroll/enroll-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/enroll/enroll-ingress.yaml)      |
 
 ### RAP
 
-The RAP Pod is a containerized application that is used to generated information systems. The tool stores ampersand-script in which the user can specify,analyze and building information systems.
+The RAP Pod is a containerized application that is used to generated information systems. The tool stores ampersand-script in which the user can specify, analyze and build information systems.
 
-Before installing make sure that the two variables in `administration-configmap` - `AMPERSAND_PRODUCTION_MODE` and `DISABLE_DB_INSTALL` - are set to `false`. This is to ensure that the database is properly installed and accessable.
+Before installing make sure that the two variables in `administration-configmap` - `AMPERSAND_PRODUCTION_MODE` and `DISABLE_DB_INSTALL` - are both set to `false`. This is to ensure that the database is properly installed and accessable.
 
-To avoid database resets after the first installation, both should be turned to `true` after installing the database, to take effect the pod running the RAP container should be restarted.
+To avoid database resets after the first installation, both should be turned to `true` after installing the database. Changes to configurations do not take effect when updating a config map. For the configuration to take effect the pod running the RAP container should be restarted.
 
-This can be executed through the (Azure) portal, or using Kubernetes CLI:
+This can be done through the (Azure) portal, or by using Kubernetes CLI:
 
 ```
 # get the pod name
-$POD = kubectl get pods -n rap -l app=rap -o jsonpath='{.items[0].metadata.name}'
+$POD = kubectl get pods -n <<namespace>> -l app=rap -o jsonpath='{.items[0].metadata.name}'
 # delete the pod (the Deployment will restart the pod)
-kubectl delete pod $POD -n rap
+kubectl delete pod $POD -n <<namespace>>
 ```
 
 Consists of the following files:
 
 <!-- prettier-ignore -->
-| Name | Purpose | File |
-| - | - | - |
-| rap-deployment.yaml | Docker image, environmental variables | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-deployment.yaml) |
-| rap-service.yaml | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/rap-service.yaml)    |
-| rap-ingress.yaml | Ingress rule| [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/ingress/rap-ingress.yaml)|
-| administration-configmap.yaml | Administration ConfigMap | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/resources/administration-configmap.yaml)|
+| Name | Purpose | Base | Patch |
+| - | - | - | - |
+| rap-deployment.yaml | Docker image, environmental variables | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-deployment.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap/rap-deployment.yaml) |
+| rap-service.yaml | Creates ClusterIP such that traffic can be routed to the pod | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-service.yaml) | N/A |
+| rap-ingress.yaml | Ingress rule | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/rap-ingress.yaml) | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/overlays/general/dev/rap-ingress.yaml) |
+| administration-configmap.yaml | Administration ConfigMap | [link](https://github.com/AmpersandTarski/RAP/blob/main/deployment/kubernetes/base/rap/administration-configmap.yaml) | N/A |
 
 ### phpMyAdmin
 
