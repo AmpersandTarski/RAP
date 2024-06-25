@@ -300,6 +300,7 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION violatable[Interface*Rule]
     -- EIGEN DINGEN
     RELATION concept[ConceptDef*Concept] [UNI,TOT]
+    RELATION showADL[PairView*ShowADL] [UNI]
 ENDPATTERN
 
 PATTERN "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)

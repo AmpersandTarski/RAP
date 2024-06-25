@@ -81,6 +81,7 @@ VIEW ShowConceptualDiagram: FileObject { imgfile : filePath }
 HTML TEMPLATE "ShowConceptualDiagram.html"
 ENDVIEW
 
+
 PURPOSE INTERFACE "Language"
 {+This interface shows the business language from one PATTERN.
 Its purpose is printed first to introduce the corresponding theme to the target audience.

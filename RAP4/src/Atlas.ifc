@@ -37,7 +37,7 @@ CONTEXT RAP IN ENGLISH
     INTERFACE "JsonPattern" : I[Pattern]      BOX
     [
             name                : name                                          cRud
-            , concepts          : concepts[Pattern*Concept]                                     INTERFACE "JsonConcept"
+            , concepts          : concepts[Pattern*Concept];(I-name;"ONE";name~)                INTERFACE "JsonConcept"
             , representations   : concepts[Pattern*Concept];(I-ttype;"OBJECT";ttype~)           INTERFACE "JsonRepresentation"            
             , rules             : udefrules~                                                    INTERFACE "JsonRule"
             , relations         : declaredIn[Relation*Pattern]~                                 INTERFACE "JsonRelation"
@@ -45,16 +45,16 @@ CONTEXT RAP IN ENGLISH
             , purposes          : purpose[Pattern*Purpose]                                      -- purpose of the pattern
                                    \/ concepts[Pattern*Concept];purpose[Concept*Purpose]        -- purpose of the concepts
                                    \/ declaredIn[Relation*Pattern]~;purpose[Relation*Purpose]   -- purpose of the relations
-                                   \/ (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
+                                   \/ (allRules[Pattern*Rule]-proprules [PropertyRule*Pattern]~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
     ]
 
 
     INTERFACE "JsonConcept" : I[Concept] CRuD BOX
         [
-            name                : name[Concept*ConceptName]                 CRUD
-            -- , olddefinition        : name;acdcpt~                              CRUD
-            , definition        : concept[ConceptDef*Concept]~;meaning[ConceptDef*Meaning] cRud -- todo: meaning naar text (bestaat nog niet)
-            , type              : ttype[Concept*TType]                          cRud
+            name                : name[Concept*ConceptName]                                 CRUD
+            , definition        : concept[ConceptDef*Concept]~;meaning[ConceptDef*Meaning];
+                                    markup[Meaning*Markup];text[Markup*MarkupText]          cRud
+            , type              : ttype[Concept*TType]                                      cRud
         ]
 
     INTERFACE "JsonRepresentation" : I[Concept] BOX  -- kan weg
@@ -71,7 +71,8 @@ CONTEXT RAP IN ENGLISH
          relation        : name[Relation*RelationName]                                      cRud    -- name of the relation
         , sign           : sign[Relation*Signature]                                         INTERFACE "JsonSignature"        -- signature of the relation (source and target)
         , properties     : prop[Relation*Property]                                          cRud    -- properties of the relation ([uni],[tot])
-        , meaning        : decMean[Relation*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text] cRud  -- todo: make this the actual text of the meaning
+        , meaning        : decMean[Relation*Meaning];markup;text                            cRud  -- todo: make this the actual text of the meaning
+        
        ] 
     
     INTERFACE "JsonSignature" : I[Signature] BOX                                    -- signature of the relation (source and target)
@@ -95,11 +96,14 @@ CONTEXT RAP IN ENGLISH
 
     INTERFACE "JsonRule" : I[Rule] BOX                      
         [    
-            name            : name[Rule*RuleName]                              cRud    -- name of the rule
+            name            : name[Rule*RuleName]                               cRud    -- name of the rule
             , formexp       : formalTerm[Rule*Term];showADL[Term * ShowADL]     cRud    -- formal expression of the Rule
-            , meaning        : meaning[Rule*Meaning];markup;asMarkdown          cRud    -- Actual text of the meaning
-            , message        : message[Rule*Message]                            cRud    -- Message of the rule    
+            , meaning       : meaning[Rule*Meaning];markup;text                 cRud    -- Actual text of the meaning
+            --, message       : message[Rule*Message];markup;text cRud    -- Message of the rule
+            , violation     : rrviol[Rule*PairView];showADL[PairView*ShowADL]   cRud    -- todo: zou moeten werken in theorie
+            , pairview      : rrviol[Rule*PairView]                             cRud
         ]
+
 
 INTERFACE "JsonEnforce" : I[Rule] BOX                                       
     [
@@ -135,8 +139,7 @@ INTERFACE "JsonIdent"    : I [Rule] BOX
 [
     name                : name[Rule*RuleName]                           cRud
     -- ,concept            : vdcpt[View*Concept]                              cRud  -- todo: Stef vragen waar dit verstopt zit?
-    , concept           : I                       cRud         -- todo: juist concept hieraan koppelen
-    -- , ident             :                                                  cRud
+    , concept           : I                                             cRud         -- todo: juist concept hieraan koppelen
     , ident             : formalTerm[Rule * Term] BOX
                 [
                     name :  showADL                                         cRud -- lable name     Todo: not yet included in RAP (todo: in new RAP)
@@ -146,5 +149,6 @@ INTERFACE "JsonIdent"    : I [Rule] BOX
                     -- , mview : "view name"                                   cRud -- Optional View
                 ]                      
 ]
+
 
 ENDCONTEXT
