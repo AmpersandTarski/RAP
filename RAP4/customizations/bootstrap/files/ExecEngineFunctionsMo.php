@@ -136,15 +136,44 @@ ExecEngine::registerFunction('ConvertToADL', function ($scriptId, $scriptVersion
         // Script content ophalen en schrijven naar bestandje
         $scriptAtom->link($scriptContent, 'content[Script*ScriptContent]')->add();
 
-
         /* hier kan nu ook de populatie van de ATLAS gegeneerd worden
         voor nu overbodig, misschien later */
     }
 
+    //generate the images once again form the script.adl
+    $path = ExecEngine::getFunction('UpdateImages')->call($this, $scriptId, $scriptVersionId, $srcRelPath, $userId);
 
-    /**
-     * de 'GenerateJsonATLAS' - functie moet worden aangeroepen, en de file moet worden opgehaald
-     * deze file moet doorgestuurd worden naar omgekeerde grinder, zodat hij in A_structuur staat
-     * dan kan van de A_structuur een .adl gegenereerd worden
-     */
+
+    // end function
+});
+
+
+
+/**
+ * @phan-closure-scope \Ampersand\Rule\ExecEngine
+ * function to regenerate all the images of the application
+ */
+ExecEngine::registerFunction('UpdateImages', function ($scriptId, $scriptVersionId, $srcRelPath, $userId) {
+    /** @var \Ampersand\Rule\ExecEngine $ee */
+    $ee = $this; // because autocomplete does not work on $this
+    $model = $ee->getApp()->getModel();
+
+    // The relative path of the new file must be something like:
+    // ./scripts/<userId>/<scriptId>/<versionId>/out.adl
+    $basePath = "scripts/{$userId}/{$scriptId}/{$scriptVersionId}";
+    $relPath = $ee->getApp()->getSettings()->get('global.absolutePath') . '/data/' . $basePath;
+    $srsRelPath = "{$relPath}/script.adl";
+
+
+    $command = new Command(
+        'ampersand documentation --format markdown script.adl',
+        [
+            // 'ATLAS_file.json',
+            // 'out.adl'
+            //// basename($srsRelPath),            // omit the document, so generate graphics only.
+            //// , basename($tgtRelPath)    // needed, or else Ampersand will not run.   // this is 'script.adl'
+        ],
+        $ee->getLogger()
+    );
+    $command->execute(dirname($srsRelPath));
 });
