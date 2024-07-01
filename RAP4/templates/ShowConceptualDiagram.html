@@ -1,4 +1,13 @@
 <!-- ShowConceptualDiagram.html -->
 <div ng-repeat="obj in requireArray(resource['$name$'])">
-    <img style="max-width : 500px;" ng-src="api/v1/file/{{obj._view_.imgfile}}" alt="Conceptual diagram" />
+    <img style="max-width: 500px;" src="api/v1/file/{{ obj._view_.imgfile }}" alt="Conceptual diagram"
+        onclick="refreshImage(this)" />
 </div>
+
+<script>
+    function refreshImage(imageElement) {
+        var src = imageElement.src;  // Get current src
+        imageElement.src = '';       // Clear src to force a browser cache bypass
+        imageElement.src = src + '?_=' + new Date().getTime();  // Reassign src with a cache busting parameter
+    }
+</script>
