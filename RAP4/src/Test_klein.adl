@@ -1,0 +1,44 @@
+CONTEXT ContextName  
+
+PATTERN PatternName
+-- Concepts
+CONCEPT Concept2Ptn   "this is the definition of CONCEPT Concept2Ptn in de PATTERN"
+CONCEPT Concept0Ptn   "this is the definition of CONCEPT Concept0Ptn in de PATTERN"
+CONCEPT Concept4Ptn   "this is the definition of CONCEPT Concept4Ptn in de PATTERN"
+CONCEPT Concept1Ptn   "this is the definition of CONCEPT Concept1Ptn in de PATTERN"
+CONCEPT Concept3Ptn   "this is the definition of CONCEPT Concept3Ptn in de PATTERN"
+
+
+
+-- Relations
+RELATION relatie2Ptn [Concept0Ptn*Concept0Ptn] 
+MEANING   "this is the meaning of the RELATION relatie2Ptn, gedefineerd in de PATTERN" 
+RELATION relatie7Ptn [Concept4Ptn*Concept3Ptn] 
+MEANING   "this is the meaning of the RELATION relatie7Ptn, gedefineerd in de PATTERN" 
+RELATION relatie4Ptn [Concept1Ptn*Concept2Ptn] [UNI]
+MEANING   "this is the meaning of the RELATION relatie4Ptn, gedefineerd in de PATTERN" 
+RELATION relatie6Ptn [Concept1Ptn*Concept3Ptn] 
+MEANING   "this is the meaning of the RELATION relatie6Ptn, gedefineerd in de PATTERN" 
+RELATION relatie1Ptn [Concept0Ptn*Concept0Ptn] 
+MEANING   "this is the meaning of the RELATION relatie1Ptn, gedefineerd in de PATTERN" 
+RELATION relatie5Ptn [Concept3Ptn*Concept2Ptn] 
+MEANING   "this is the meaning of the RELATION relatie5Ptn, gedefineerd in de PATTERN" 
+-- Rules
+RULE Rule1Ptn: relatie1Ptn [Concept0Ptn*Concept0Ptn]
+
+RULE Rule2Ptn: relatie6Ptn |- relatie4Ptn;relatie5Ptn~
+MEANING "this is the meaning of the RULE Rule2Ptn, gedefineerd in de PATTERN"
+MESSAGE "this is the message of the RULE Rule2Ptn, gedefineerd in de PATTERN"
+VIOLATION (TXT "Concept1Ptn ", SRC I, TXT "  is in relatie6Ptn with Concept3Ptn ", TGT I, TXT " which is not part of the Concept2Ptn ", SRC I[Concept1Ptn];relatie4Ptn)
+
+
+PURPOSE PATTERN PatternName  
+{+this is the purpose of the PATTERN PatternName, gedefineerd in de PATTERN+}
+PURPOSE CONCEPT Concept1Ptn  
+{+this is the purpose of the CONCEPT ConceptPtn, gedefineerd in de PATTERN+}
+PURPOSE RELATION relatie1Ptn [Concept0Ptn*Concept0Ptn]  
+{+this is the purpose of the RELATION relatie1Ptn, gedefineerd in de PATTERN+}
+ENDPATTERN
+
+
+ENDCONTEXT

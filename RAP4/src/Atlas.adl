@@ -42,6 +42,12 @@ RULE conceptFillTType : I[Concept] |- ttype[Concept*TType];V
 MESSAGE "Type of CONCEPT was not defined, automatically set to OBJECT" 
 VIOLATION (TXT "{EX} InsPair;ttype;Concept;", SRC I, TXT ";TType;OBJECT")
 
+-- elk concept moet bij het aanmaken een tijdelijke naam krijgen
+ROLE User MAINTAINS concepTempName
+RULE concepTempName : I[Concept] |- name[Concept*ConceptName];V
+MESSAGE "Type of CONCEPT was not defined, automatically set to OBJECT" 
+VIOLATION (TXT "{EX} InsPair;ConceptName;Concept;", SRC I, TXT ";ConceptName;TEMPNAME")
+
 -- elke relatie moet een signature hebben (die moet dan door de user zelf gevuld worden)
 ROLE ExecEngine MAINTAINS relationCreateSign
 RULE relationCreateSign : I[Relation] |- sign[Relation*Signature];V
@@ -54,34 +60,60 @@ VIOLATION (   TXT "{EX} InsAtom;Signature"
 -- RULE "del unused ShowADL" : I[ShowADL] |- (showADL[Term*ShowADL]~;showADL[Term*ShowADL]) \/ (showADL[PairView*ShowADL]~;showADL[PairView*ShowADL])
 -- MEANING "A ShowADL without Term or PairView will be removed."
 -- VIOLATION ( TXT "{EX}_;DelAtom_;ShowADL_;", SRC I )
-            
 
-INTERFACE ATLASConcept FOR User, Tutor : I[Concept] CRUD BOX
-  [ name          : name[Concept*ConceptName]                                 CRUD
-    , definition  : concept[ConceptDef*Concept]~;meaning[ConceptDef*Meaning];markup;text  cRud
-    , type        : ttype[Concept*TType]                                      cRud
-    -- , "Purpose:" : purpose[Concept*Purpose]          CRUD
+
+VIEW ShowConceptualDiagramSmall: FileObject { imgfile : filePath}
+HTML TEMPLATE "ShowConceptualDiagramSmall.html"
+ENDVIEW
+
+
+
+
+
+INTERFACE ATLASConcept FOR User, Tutor : I[Concept] CRUD BOX <TABLE>
+    [ info : I cRud BOX
+        [ name          : name[Concept*ConceptName]                                 CRUD
+          , definition  : concept[ConceptDef*Concept]~;meaning[ConceptDef*Meaning];markup;text   cRUd
+          , ConceptDef  : concept[ConceptDef*Concept]~ CRUD 
+          , type        : ttype[Concept*TType]                                      cRud
+          -- , "Purpose:" : purpose[Concept*Purpose]          CRUD
+        ]
+      , diagram : I cRud BOX <TABLE> [
+      usedin : source[Relation*Concept]~ \/ target[Relation*Concept]~
+      ,  ""      :  conceptualDiagram[Concept*FileObject] cRud <ShowConceptualDiagramSmall>
+    ]
   ]
 
-INTERFACE ATLASRelation FOR User, Tutor : I[Relation] CRUD BOX
-  [ name                : name[Relation*RelationName]                               cRUd  
-    , sign              : sign[Relation*Signature]                                  cRUd BOX <TABLE>
-         [ Source       : src[Signature*Concept]                                    cRUd
-         , Target       : tgt[Signature*Concept]                                    cRUd
-         ]
-    -- , prop              : prop [Relation * Property]                                cRUd -- Hier een dropdown toevoegen: krijg daar foutmelding omdat dit ding alphanumeric is
-    , prop              : I  cRud BOX <VALUEDROPDOWN>
-        [ "selectfrom": V[Relation*AllProperties] cRud -- <ValueView> -- population from which the user can make a selection.
-        , "setrelation": prop[Relation*Property] CRUD -- If the relation is [UNI], a newly selected value will replace the existing population.
-        -- , "instruction": expr or txt -- Text that shows when nothing is selected yet.
-        -- , "selectflag": selectEventFlag cRUd -- [PROP]-type relation that toggles when VALUE is selected.
-        -- , "deselectflag": deselectEventFlag cRUd -- [PROP]-type relation that toggles when NO VALUE is selected.
-        ]
-    , meaning           : decMean[Relation*Meaning];markup;text                     CRUD 
+
+
+INTERFACE ATLASRelation FOR User, Tutor : I[Relation] CRUD BOX <TABLE>
+  [ info : I cRud BOX
+    [ name                : name[Relation*RelationName]                               cRUd  
+      , sign              : sign[Relation*Signature]                                  cRUd BOX <TABLE>
+          [ Source       : src[Signature*Concept]                                    cRUd
+          , Target       : tgt[Signature*Concept]                                    cRUd
+          ]
+      -- , prop              : prop [Relation * Property]                                cRUd -- Hier een dropdown toevoegen: krijg daar foutmelding omdat dit ding alphanumeric is
+      , prop              : I  CRuD BOX <VALUEDROPDOWN>
+          [ "selectfrom": V[Relation*AllProperties] cRud -- <ValueView> -- population from which the user can make a selection.
+          , "setrelation": prop[Relation*Property] cRUd -- If the relation is [UNI], a newly selected value will replace the existing population.
+          -- , "instruction": expr or txt -- Text that shows when nothing is selected yet.
+          -- , "selectflag": selectEventFlag cRUd -- [PROP]-type relation that toggles when VALUE is selected.
+          -- , "deselectflag": deselectEventFlag cRUd -- [PROP]-type relation that toggles when NO VALUE is selected.
+          ]
+      , meaning           : decMean[Relation*Meaning];markup;text                     CRUD 
+    ]
+    , diagram : I cRud BOX <TABLE>
+    [ 
+      source      :  sign[Relation*Signature];src[Signature*Concept];
+                      conceptualDiagram[Concept*FileObject] cRud <ShowConceptualDiagramSmall>
+      , target    :  sign[Relation*Signature];tgt[Signature*Concept];
+                      conceptualDiagram[Concept*FileObject] cRud <ShowConceptualDiagramSmall>
+    ]
   ]
 
 CONCEPT AllProperties "Een verzameling van alle propeties bij elkaar"
-CLASSIFY AllPoperties ISA Property
+-- CLASSIFY AllPoperties ISA Property
 REPRESENT AllPoperties TYPE ALPHANUMERIC
 POPULATION AllProperties CONTAINS
 [ "UNI"
@@ -97,20 +129,20 @@ INTERFACE ATLASRule FOR User, Tutor : I[Rule] CRUD BOX
       , "Formele expressie:" : formalTerm                                 CRUD
       , meaning       : meaning[Rule*Meaning];markup;text                 CRUD    -- Actual text of the meaning
       --, message       : message[Rule*Message];markup;text                 cRud    -- todo: Message of the rule
+      , message       : message[Rule*Message]                 cRud    -- todo: Message of the rule
       , violation     : rrviol[Rule*PairView];showADL[PairView*ShowADL]    cRud    -- todo: zou moeten werken in theorie
   ]
 
- INTERFACE ATLASPurpose FOR User, Tutor : I[Purpose] CRUD BOX
+ INTERFACE ATLASPurpose FOR User, Tutor : I[Purpose] CRuD BOX
   [          
         "element"     : purpose[Concept*Purpose]~;name
                         \/ purpose[Relation*Purpose]~;name
                         \/ purpose[Rule*Purpose]~;name
-                        \/ purpose[Pattern*Purpose]~;name                 cRud
-        , meaning     :    explMarkup[Purpose*Markup];text[Markup*MarkupText]    cRud  
+                        \/ purpose[Pattern*Purpose]~;name                     cRUd
+        , purpose     : I                                                     CRUD       
+        , meaning     : explMarkup[Purpose*Markup];text[Markup*MarkupText]    cRud  
   
   ]
-
-
 
 
 ENDCONTEXT

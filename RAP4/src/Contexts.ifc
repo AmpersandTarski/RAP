@@ -17,6 +17,7 @@ INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;s
     , "Submit changes" : context[ScriptVersion*Context]~ BOX <PROPBUTTONrefresh>       
             [ property : adlRequest cRUd
             ]
+    , " ":  context[Pattern*Context]~; conceptualDiagram      CRUD <ShowConceptualDiagram> 
     , "" : I -- Context
         BOX<TABLE sortable>
             [ context       : I                                                 cRud
@@ -24,7 +25,6 @@ INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;s
             , concepts      : context[Concept*Context]~                         CRUD
             , rules         : ctxrs~ \/ udefrules~                              cRud
             , relations     : relsDefdIn[Relation*Context]~                     cRud
-            , diagram       : context[Pattern*Context]~; conceptualDiagram      CRUD <ShowConceptualDiagram>
             ]
       , "Detailed " : I BOX <TABS> 
          [ 
@@ -36,8 +36,8 @@ INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;s
                                 \/ (concepts[Pattern*Concept];purpose[Concept*Purpose]) -- purpose of the concepts
                                 \/ ( declaredIn[Relation*Pattern]~;purpose[Relation*Purpose])  -- purpose of the relations
                                 \/ (allRules[Pattern*Rule]-proprules[PropertyRule*Pattern]~);purpose[Rule*Purpose]) -- purpose of the rules
-
-         ]
+                                                        INTERFACE "ATLASPurpose"
+                                         ]
    ]
 
 INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>

@@ -99,6 +99,7 @@ CONTEXT RAP IN ENGLISH
             name            : name[Rule*RuleName]                               cRud    -- name of the rule
             , formexp       : formalTerm[Rule*Term];showADL[Term * ShowADL]     cRud    -- formal expression of the Rule
             , meaning       : meaning[Rule*Meaning];markup;text                 cRud    -- Actual text of the meaning
+            , message       : message[Rule*Message]                             cRud
             --, message       : message[Rule*Message];markup;text cRud    -- Message of the rule
             , violation     : rrviol[Rule*PairView];showADL[PairView*ShowADL]   cRud    -- todo: zou moeten werken in theorie
             , pairview      : rrviol[Rule*PairView]                             cRud
