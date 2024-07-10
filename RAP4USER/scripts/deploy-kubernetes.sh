@@ -1,5 +1,5 @@
 #import shared functions
-source shared.sh
+source /scripts/shared.sh
 
 #functions
 start_apache() {
