@@ -24,9 +24,18 @@ set_entry(){
 generate_prototype() {
     entrypath="$outfolder/$entry"
 
-    echo "Generating prototype from path: $entrypath"
+    echo "Generating prototype backend from path: $entrypath"
+    # Run ampersand compiler to generated new frontend and backend json model files (in generics folder)
+    ampersand proto --no-frontend "$entrypath" --proto-dir=/var/www/backend --verbose
 
-    ampersand proto "$entrypath" --proto-dir=/var/www --verbose
+    echo "Generating prototype frontend from path: $entrypath"
+    ampersand proto --frontend-version Angular --no-backend "$entrypath" --proto-dir=/var/www/frontend/src/app/generated --verbose
+
+    echo "Angular build started (will take up some time)"
+    npx ng build
+
+    # Copy output from frontend build
+    cp -r /var/www/frontend/dist/prototype-frontend/* /var/www/html
 }
 
 set_permissions() {
@@ -39,5 +48,5 @@ deploy(){
     unzip_content
     set_entry
     generate_prototype
-    set_permissions
+    #set_permissions
 }

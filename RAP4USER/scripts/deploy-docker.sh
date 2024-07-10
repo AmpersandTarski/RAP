@@ -1,8 +1,9 @@
 #import shared functions
-source shared.sh
+source /scripts/shared.sh
 
 #functions
 start_apache() {
+    echo "Starting webserver"
     docker-php-entrypoint apache2-foreground &
     sleep 3600
 }
@@ -11,9 +12,11 @@ start_apache() {
 echo "Deploying to docker"
 
 #these are required for the file to pick up the variables
-echo "Encoded zip: $1"
-echo "Encoded main: $2"
+echo "Encoded zip: '$1'"
+echo "Encoded main: '$2'"
 
 read_input "$1" "$2"
 deploy
+
+#Nog nodig?
 start_apache

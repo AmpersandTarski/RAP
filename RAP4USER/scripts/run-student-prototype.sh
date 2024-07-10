@@ -3,8 +3,8 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-kubernetes_file="deploy-kubernetes.sh"
-docker_file="deploy-docker.sh"
+kubernetes_file="/scripts/deploy-kubernetes.sh"
+docker_file="/scripts/deploy-docker.sh"
 
 # Functions
 deploy_kubernetes(){
@@ -42,6 +42,8 @@ deploy_docker(){
         else
             echo "Could't find file at $docker_file"
         fi
+
+        echo "Done!"
     fi
 }
 
