@@ -438,6 +438,14 @@ kubectl config use-context <<NAME>>
 - Verify that your prototype works.
 - Verify that `enroll.<hostname>` (e.g. enroll.rap.cs.ou.nl) works. When testing locally use the port-forward technique described above to connect to the newly created service. In such a case replace `svc/rap-dev` with `svc/enroll-dev`.
 
+### Monitoring
+
+While Azure provides some basic monitoring tools (e.g. node memory usage), additional and more specific monitoring may be required (e.g. memory usage per pod). To achieve this monitoring deployments are available in the solution. The monitoring consists of three parts:
+
+- cAdvisor: This is a deployment that scrapes useful metrics from running pods.
+- Prometheus: An open source monitoring tool. It takes the metrics from cAdvisor and saves them to a time series database. It also allows for alerts to be set.
+- Grafana: An open source visualisation tool. While Prometheus hase some basic visualisation, Grafana is used for more detailed information.
+
 ## Troubleshooting
 
 Sometimes, during installation, you might run into unexpected situations. It is impossible to mention all of them, but we mention those that are known to us:
