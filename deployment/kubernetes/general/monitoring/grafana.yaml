@@ -14,7 +14,7 @@ data:
                 "name": "prometheus",
                 "orgId": 1,
                 "type": "prometheus",
-                "url": "https://prometheus-service.monitoring.svc:9090",
+                "url": "https://<prometheus_service_ip>:9090",
                 "version": 1
             }
         ]
