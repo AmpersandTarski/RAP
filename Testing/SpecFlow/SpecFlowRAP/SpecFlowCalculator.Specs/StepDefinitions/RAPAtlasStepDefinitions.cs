@@ -55,22 +55,9 @@ namespace SpecFlowRAP.StepDefinitions
             uriBuilder.Query = "defaultPop=true";
             _featureContext.Set("NOT_REGISTERED", "Status");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Reinstalldata? installinfo = JsonSerializer.Deserialize<Reinstalldata>(body);
-        }
-
-        [Given("i request the navbar")]
-        public async Task GivenIRequestTheNavbar()
-        {
-            uriBuilder.Host = "localhost";
-            uriBuilder.Fragment = "";
-            uriBuilder.Path = "api/v1/app/navbar";
-            uriBuilder.Query = "";
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            string body = await resp.Content.ReadAsStringAsync();
-            Navbardata? rapArrClass = JsonSerializer.Deserialize<Navbardata>(body);
-            string? id = rapArrClass.Session.Id;
-            _featureContext.Set(id, "PHPsessid");
         }
 
 
@@ -82,6 +69,7 @@ namespace SpecFlowRAP.StepDefinitions
             uriBuilder.Host = "localhost";
             uriBuilder.Query = "";
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Save PHPsessionId in _featureContext for later use
             string body = await resp.Content.ReadAsStringAsync();
             ResponseData? respons = JsonSerializer.Deserialize<ResponseData>(body);
             string? id = respons._id_;
@@ -119,6 +107,7 @@ namespace SpecFlowRAP.StepDefinitions
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
             string body = await resp.Content.ReadAsStringAsync();
             ResponseData? respons = JsonSerializer.Deserialize<ResponseData>(body);
+            // Save RegisterId in _featureContext for later use
             Register? register = respons.Register;
             string? id = register._id_;
             _featureContext.Set(id, "Registerid");
@@ -143,6 +132,7 @@ namespace SpecFlowRAP.StepDefinitions
                 { "value", "Bertus" }
             };
             HttpResponseMessage resp = await Request.patchMessage(client, uriBuilder.Uri.AbsoluteUri, accountData);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? responsedata = JsonSerializer.Deserialize<PatchSessiondata>(body);
             uriBuilder.Fragment = "";
@@ -172,6 +162,7 @@ namespace SpecFlowRAP.StepDefinitions
                 { "value", "Bertje" }
             };
             HttpResponseMessage resp = await Request.patchMessage(client, uriBuilder.Uri.AbsoluteUri, accountData);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? responsedata = JsonSerializer.Deserialize<PatchSessiondata>(body);
         }
@@ -195,6 +186,7 @@ namespace SpecFlowRAP.StepDefinitions
                 { "value", true }
             };
             HttpResponseMessage resp = await Request.patchMessage(client, uriBuilder.Uri.AbsoluteUri, accountData);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? responsedata = JsonSerializer.Deserialize<PatchSessiondata>(body);
             _result = (int)resp.StatusCode;
@@ -224,6 +216,7 @@ namespace SpecFlowRAP.StepDefinitions
                 { "value", true }
             };
             HttpResponseMessage resp = await Request.patchMessage(client, uriBuilder.Uri.AbsoluteUri, logoutData);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Logoutdata? logoutClass = JsonSerializer.Deserialize<Logoutdata>(body);
         }
@@ -249,6 +242,7 @@ namespace SpecFlowRAP.StepDefinitions
                 { "value", true }
             };
             HttpResponseMessage resp = await Request.patchMessage(client, uriBuilder.Uri.AbsoluteUri, accountData);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? responsedata = JsonSerializer.Deserialize<PatchSessiondata>(body);
             _result = (int)resp.StatusCode;
@@ -271,6 +265,7 @@ namespace SpecFlowRAP.StepDefinitions
             uriBuilder.Path = string.Join("/", basePath, "Script");
             HttpResponseMessage resp = await Request.postMessage(client, uriBuilder.Uri.AbsoluteUri, data);
             string body = await resp.Content.ReadAsStringAsync();
+            // Save scriptId in _featureContext for later use
             ScriptIddata? scriptId = JsonSerializer.Deserialize<ScriptIddata>(body);
             _featureContext.Set(scriptId._id_, "scriptId");
             _result = (int)resp.StatusCode;
@@ -286,6 +281,7 @@ namespace SpecFlowRAP.StepDefinitions
             uriBuilder.Path = string.Join("/", basePath, "Script/" + scriptId + "/Nieuw_32_script");
             string path = "/Content";
             HttpResponseMessage resp = await Request.scriptOpdracht(client, uriBuilder, path, scriptje);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? scriptId2 = JsonSerializer.Deserialize<PatchSessiondata>(body);
         }
@@ -298,10 +294,11 @@ namespace SpecFlowRAP.StepDefinitions
             string path = "/Actual_32_info/compile/property";
             bool value = true;
             HttpResponseMessage resp = await Request.scriptOpdracht(client, uriBuilder, path, value);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? scriptId2 = JsonSerializer.Deserialize<PatchSessiondata>(body);
             _result = (int)resp.StatusCode;
-            string dumm = "domdom";
+            //string dumm = "domdom";
         }
 
         [Given("i do have an account")]
@@ -336,6 +333,7 @@ namespace SpecFlowRAP.StepDefinitions
             string body = await resp.Content.ReadAsStringAsync();
             List<Atlasdata>? atlas = JsonSerializer.Deserialize<List<Atlasdata>>(body);
 
+            // Save the Id's for all concepts, like Student, Module, SESSION, etc.
             string context_label = atlas[0]._EMPTY_.context._label_;
             _featureContext.Set(atlas[0]._EMPTY_.context._id_, "pattern_" + context_label.ToLower());
             for (int i = 0; i < atlas[0]._EMPTY_.concepts.Count; i++)
@@ -343,16 +341,19 @@ namespace SpecFlowRAP.StepDefinitions
                 string concepts_label = atlas[0]._EMPTY_.concepts[i]._label_;
                 _featureContext.Set(atlas[0]._EMPTY_.concepts[i]._id_, "concept_" + concepts_label.ToLower());
             }
+            // Save the Id's for all rules, like TOT and ModuleEnrollment.
             for (int i = 0; i < atlas[0]._EMPTY_.rules.Count; i++)
             {
                 string rules_label = atlas[0]._EMPTY_.rules[i]._label_.Split(" ")[0];
                 _featureContext.Set(atlas[0]._EMPTY_.rules[i]._id_, "rule_" + rules_label.ToLower());
             }
+            // Save the Id's for all relations, like takes and isPartOf, isEnrolledFor.
             for (int i = 0; i < atlas[0]._EMPTY_.relations.Count; i++)
             {
                 string relation_label = atlas[0]._EMPTY_.relations[i]._label_.Split("[")[0];
                 _featureContext.Set(atlas[0]._EMPTY_.relations[i]._id_, "relation_" + relation_label.ToLower());
             }
+            // Save the Id's for all patterns, like Courses.
             for (int i = 0; i < atlas[0]._EMPTY_.patterns.Count; i++)
             {
                 string pattern_label = atlas[0]._EMPTY_.patterns[i]._label_;
@@ -367,6 +368,7 @@ namespace SpecFlowRAP.StepDefinitions
             string course = _featureContext.Get<string>("concept_course");
             uriBuilder.Path = string.Join("/", basePath, "Concept/" + course + "/Concept");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
             _result = (int)resp.StatusCode;
@@ -380,6 +382,7 @@ namespace SpecFlowRAP.StepDefinitions
             string course = _featureContext.Get<string>("concept_student");
             uriBuilder.Path = string.Join("/", basePath, "Concept/" + course + "/Concept");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
             _result = (int)resp.StatusCode;
@@ -392,6 +395,7 @@ namespace SpecFlowRAP.StepDefinitions
             string module = _featureContext.Get<string>("concept_module");
             uriBuilder.Path = string.Join("/", basePath, "Concept/" + module + "/Concept");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
             _result = (int)resp.StatusCode;
@@ -404,6 +408,7 @@ namespace SpecFlowRAP.StepDefinitions
             string session = _featureContext.Get<string>("concept_session");
             uriBuilder.Path = string.Join("/", basePath, "Concept/" + session + "/Concept");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
             _result = (int)resp.StatusCode;
@@ -416,6 +421,7 @@ namespace SpecFlowRAP.StepDefinitions
             string one = _featureContext.Get<string>("concept_one");
             uriBuilder.Path = string.Join("/", basePath, "Concept/" + one + "/Concept");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
             _result = (int)resp.StatusCode;
@@ -428,6 +434,7 @@ namespace SpecFlowRAP.StepDefinitions
             string ModuleEnrollment = _featureContext.Get<string>("rule_moduleenrollment");
             uriBuilder.Path = string.Join("/", basePath, "Rule/" + ModuleEnrollment + "/Rule");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Ruledata? atlas = JsonSerializer.Deserialize<Ruledata>(body);
             _result = (int)resp.StatusCode;
@@ -440,6 +447,7 @@ namespace SpecFlowRAP.StepDefinitions
             string tot = _featureContext.Get<string>("rule_tot");
             uriBuilder.Path = string.Join("/", basePath, "Rule/" + tot + "/Rule");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Ruledata? atlas = JsonSerializer.Deserialize<Ruledata>(body);
             _result = (int)resp.StatusCode;
@@ -452,6 +460,7 @@ namespace SpecFlowRAP.StepDefinitions
             string takes = _featureContext.Get<string>("relation_takes");
             uriBuilder.Path = string.Join("/", basePath, "Relation/" + takes + "/Relation");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Relationdata? atlas = JsonSerializer.Deserialize<Relationdata>(body);
             _result = (int)resp.StatusCode;
@@ -465,6 +474,7 @@ namespace SpecFlowRAP.StepDefinitions
             string ispartof = _featureContext.Get<string>("relation_ispartof");
             uriBuilder.Path = string.Join("/", basePath, "Relation/" + ispartof + "/Relation");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
+            // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
             Relationdata? atlas = JsonSerializer.Deserialize<Relationdata>(body);
             _result = (int)resp.StatusCode;
