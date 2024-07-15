@@ -343,10 +343,7 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $zipContentForCommandline = base64_encode($zipContent);
     $mainAldForCommandLine = base64_encode("main.adl");
 
-    $pattern = '/[\W+]/';
-
-    $userName=strtolower($userName);
-    $userName = preg_replace($pattern, '-', $userName);
+    $userName = sanitize_username($userName);
 
     $deployment = getenv('RAP_DEPLOYMENT');
     if ($deployment == 'Kubernetes') {
@@ -360,12 +357,22 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
         */
 
         $namespace=getenv('RAP_KUBERNETES_NAMESPACE');
-        $containerImage=getenv('RAP_STUDENT_PROTO_IMAGE');
+        $suffix=substr($namespace, 3);
+
+        $getImageCommand = new Command(
+            "kubectl get deployment/student-prototype{$suffix} -n {$namespace}",
+            [ "-o=jsonpath='{\$.spec.template.spec.containers[0].image}'"
+            ],
+            $ee->getLogger()
+        );
+
+        $getImageCommand->execute();
+
+        $containerImage=$getImageCommand->getResponse();
 
         $hostname=getenv('RAP_HOST_NAME');
         $hostname="{$userName}.{$hostname}";
 
-        $suffix=substr($namespace, 3);
 
         $dbName="rap-db{$suffix}";
         
@@ -463,6 +470,33 @@ ExecEngine::registerFunction('Prototype', function (string $path, Atom $scriptAt
     $message = $command->getExitcode() === 0 ? "<a href=\"http://{$userName}.{$serverName}\" target=\"_blank\">Open prototype</a>" : $command->getResponse();
     $scriptVersionAtom->link($message, 'compileresponse[ScriptVersion*CompileResponse]')->add();
 });
+
+/**Sanitize the username
+ * As the user is allowed to choose any name, it is possible that the name they chose does not conform to restrictions places on the string in certain use cases.
+ * For example, a user could use special characters in their username. This might violate the restrictions placed on strings in a kubernetes metadata.name field.
+ * Therefore we remove all characters deemed unfit, and create a hash from these characters and append this hash at the end.
+ * To prevent casting errors between int and string, we append 'st' at the beginning.
+*/
+function sanitize_username($username) {
+    // Define the pattern of illegal characters
+    $pattern = '/[^a-zA-Z0-9]/';
+
+    // Find all illegal characters
+    preg_match_all($pattern, $username, $matches);
+
+    // Remove illegal characters
+    $sanitized_username = preg_replace($pattern, '', $username);
+
+    // Create a hash of the illegal characters
+    $hash = !empty($matches[0]) ? substr(md5(implode($matches[0])), 0, 5) : '';
+
+    // Append the hash to the sanitized username
+    $sanitized_username .= $hash;
+
+    $sanitized_username = 'st' . $sanitized_username;
+
+    return strtolower($sanitized_username);
+}
 
 /**
  * @phan-closure-scope \Ampersand\Rule\ExecEngine

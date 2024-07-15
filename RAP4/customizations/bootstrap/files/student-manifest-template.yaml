@@ -43,7 +43,7 @@ spec:
                 name: {{dbSecrets}}
           ports:
             - containerPort: 80
-          command: ["bash", "/run-student-prototype.sh"]
+          command: ["bash", "/scripts/run-student-prototype.sh"]
           args: [{{zipContent}},{{mainAdl}}]
 ---
 # student-prototype user service
