@@ -10,16 +10,30 @@ She can browse around in it. The Atlas displays only the contexts that are loade
 +}
 INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<FORM hideLabels>
    [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud   -- This works because VIEW Script: Script(TXT "Terug naar script")
-   , l2 LABEL "" : I
-      BOX<TABLE sortable>
-           [ context       : I                              cRud
-           , patterns      : context[Pattern*Context]~      cRud
-           , concepts      : context[Concept*Context]~      cRud
-           , rules         : allRules~ - proprules~         cRud
-           , properties    : proprules[PropertyRule*Context]~ cRud
-           , relations     : relsDefdIn[Relation*Context]~  cRud
-           , "versionInfo" : versionInfo                    cRud
-           ]
+    , "versionInfo" : versionInfo                    cRud
+    , l1 LABEL "" : I -- Context
+        BOX<TABLE sortable>
+            [ context       : I                              cRud
+            , patterns      : context[Pattern*Context]~      cRud
+            , concepts      : context[Concept*Context]~      CRUD
+            , rules         : ctxrs~ \/ udefrules~           cRud
+            , relations     : relsDefdIn[Relation*Context]~  cRud
+            ]
+      , "Detailed " : I BOX <TABS> 
+         [ 
+          "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE ATLASConcept         
+         , "Relaties"  : relsDefdIn[Relation*Context]~ INTERFACE ATLASRelation
+         , "Regels"    : ctxrs~ \/ udefrules~          INTERFACE ATLASRule
+         , "Patterns"   : context [Pattern * Context]~ INTERFACE Patterns
+         ,  Purposes     : purpose[Context*Purpose]                                     -- Context Purpose
+                                        \/ context[Concept*Context]~;purpose[Concept*Purpose]     -- concept purpose
+                                        \/ ctxds[Relation*Context]~ ;purpose[Relation*Purpose]    -- relation Purpose
+                                        \/ (ctxrs~ /\ udefrules~)   ; purpose[Rule*Purpose]   cRud    -- rule purpose
+            -- view purpose         purpose[View * Purpose]
+            -- interface purpose    purpose[Interface * Purpose]
+                                                                                                
+                                                                                   
+         ]
    ]
 
 INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>

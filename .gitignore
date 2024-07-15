@@ -12,7 +12,7 @@ prototype-src/
 .cache
 .env.*
 
-/vendor/
+**/vendor
 
 Testing/RobotFramework/Results
 Testing/Gatling/.idea/shelf/

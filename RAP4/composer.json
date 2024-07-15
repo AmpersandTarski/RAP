@@ -1,0 +1,9 @@
+{
+  "name": "ampersandtarski/rap",
+  "type": "project",
+  "require-dev": {
+    "ampersandtarski/prototype": "1.17.0"
+  },
+  "license": "MIT",
+  "require": {}
+}

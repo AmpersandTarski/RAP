@@ -1,22 +1,22 @@
 CONTEXT RAP4 IN ENGLISH
 
-VIEW ParseAsHtml : CompileResponse HTML TEMPLATE "View-ParseAsHtml.html" ENDVIEW
+VIEW "ParseAsHtml" : CompileResponse HTML TEMPLATE "View-ParseAsHtml.html" ENDVIEW
 
 PURPOSE INTERFACE MyScripts
 {+ Ik wil als student een overzicht krijgen van mijn scripts,
 waarin ik scripts kan maken, verwijderen en naar het script kan navigeren om erin te wijzigen,
 om zodoende volwaardig beheer over mijn eigen scripts te kunnen doen.
 +}
-INTERFACE MyScripts LABEL "My scripts" FOR User: "_SESSION";sessionAccount cRud BOX <TABLE hideOnNoRecords>
-   [ l1 LABEL "" : submittor~ CRuD BOX <TABLE sortable hideOnNoRecords>
+INTERFACE MyScripts FOR User: "_SESSION";sessionAccount cRud BOX <TABLE hideOnNoRecords>
+   [ l1 LABEL " " : submittor~ CRuD BOX <TABLE sortable hideOnNoRecords>
       [ content  : I[Script]  cRud
       , opdracht : assignment CRUd
       , tijdstip : submitted  cRud
       ]
-   , l2  LABEL "" : I-submittor~;submittor cRud BOX <TABLE hideOnNoRecords> [ "Klik op + (rechts boven in de menubalk) om een nieuw script te maken" : V[Account*A];" "[A] cRud ]
+   , l2 LABEL " " : I-submittor~;submittor cRud BOX <TABLE hideOnNoRecords> [ "Klik op + (rechts boven in de menubalk) om een nieuw script te maken" : V[Account*A];" "[A] cRud ]
    ]
 
-INTERFACE StudentScripts LABEL "Student Scripts" FOR Tutor : "_SESSION"[SESSION]#(I[Account]/\submittor~;submittor) cRud BOX <TABLE sortable>
+INTERFACE StudentScripts FOR Tutor : "_SESSION"[SESSION]#(I[Account]/\submittor~;submittor) cRud BOX <TABLE sortable>
     [ indiener : I cRud
     , scripts : submittor~ cRud BOX<TABLE sortable>  -- never empty, because of precondition I[Account]/\submittor~;submittor
        [ opdracht  : assignment cRud
@@ -25,7 +25,7 @@ INTERFACE StudentScripts LABEL "Student Scripts" FOR Tutor : "_SESSION"[SESSION]
        ]
     ]
 
-INTERFACE NieuwScript LABEL "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
+INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
    [ "Meta-info": I cRud BOX <TABLE sortable>
       [ indiener  : submittor cRud
       , opdracht  : assignment CRUd
@@ -33,17 +33,21 @@ INTERFACE NieuwScript LABEL "Nieuw script" FOR User : I[Script] CRuD BOX <FORM h
       ]
    , "Content":  content cRUd
    , "Actual info": I cRud BOX
-      [ compile : I BOX <PROPBUTTON>
+      [ Compile : I BOX <PROPBUTTON>
                   [ disabled : I-I
                   , property : compileRequest
-                  ]
+                  ] 
       , "Compiler message"  : compileresponse cRud
-      , controls: seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
+      , Controls: seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
          [ "Functional spec. document" : I BOX <PROPBUTTON>
                            [ property : funcSpecRequest cRUd
                            , disabled : I /\ funcSpec;funcSpec~  cRud
 --                         , "hide": <expression> cRud
 --                         , "popovertext": V;"Click this button to XXX"[PopoverText] cRud -- Don't forget to populate PopoverText with the string you specify here!
+                           ]
+         ,"Convert ald" : I BOX <PROPBUTTON>       
+                           [ property : adlRequest cRUd
+                           -- , disabled : I /\ funcSpec;funcSpec~  cRud
                            ]
 --       , "Atlas" :      I BOX <PROPBUTTON>
 --                         [ property : loadRequest cRUd
@@ -59,10 +63,11 @@ INTERFACE NieuwScript LABEL "Nieuw script" FOR User : I[Script] CRuD BOX <FORM h
                            ]
          , "Message" : compileresponse[ScriptVersion*CompileResponse] cRud <ParseAsHtml>
          ]
-      , "links to your results": seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
+      , "Results": seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
          [ "Download document" : funcSpec cRud
---       , "Atlas" :      context cRud LINKTO INTERFACE Context
+--       , "Atlas" :      context cRud LINKTO INTERFACE "Context"
          , "Prototype" :  protoOk;version~;proto cRud
+         , "Atlas population": I LINKTO INTERFACE "Atlas population"
          ]
       ]
    ]

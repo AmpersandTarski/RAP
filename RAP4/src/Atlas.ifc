@@ -1,0 +1,150 @@
+CONTEXT RAP IN ENGLISH
+
+
+    INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
+        [ 
+            
+            name                    : I[Context];name                                           CRUD
+            , patterns              : context[Pattern*Context]~                                 INTERFACE "JsonPattern"
+            , conceptsCtx           : context[Concept*Context]~ 
+                                        -(context~;concepts[Pattern*Concept])                   INTERFACE "JsonConcept"      -- all concepts within the Context - those in Patterns                                       
+            -- , conceptsNew           : context[Concept*Context]~                                 cRud todo: zouden alleen Context concepten in moeten zitten maar is niet
+            , representationsCtx    : (context[Concept*Context]~     
+                                        -(context~;concepts[Pattern*Concept]))
+                                            ;(I-ttype[Concept*TType];"OBJECT";ttype~)           INTERFACE "JsonRepresentation" -- todo: change to JsonConcept     -- all REPRESENTATIONS within the Context - those in Patterns      
+            , relationsCtx          : ctxds[Relation*Context]~                                  INTERFACE "JsonRelation"     -- all relations within the Context - those in Pattern                                        
+            , rolerules             : allRoles[Context*Role]                                    INTERFACE "JsonRolerule"
+            , rulesCtx              : ctxrs~ /\ udefrules~                                      INTERFACE "JsonRule"        -- all rules within the Context - those in Patterns 
+            , enforceCtx            : (allRules[Rule*Context]~;maintains[Role*Rule]~;
+                                                                        maintains[Role*Rule])   INTERFACE "JsonEnforce"  
+            , purposes              : purpose[Context*Purpose]                                  -- Context Purpose
+                                        \/ (context[Concept*Context]~ -(context~;concepts[Pattern*Concept]))
+                                                                    ;purpose[Concept*Purpose]   -- concept purpose
+                                        \/ ctxds[Relation*Context]~ ;purpose[Relation*Purpose]  -- relation Purpose
+                                        \/ (ctxrs~ /\ udefrules~)   ;purpose[Rule*Purpose]     -- rule purpose
+            -- view purpose         purpose[View * Purpose]
+            -- interface purpose    purpose[Interface * Purpose]
+                                                                                                INTERFACE "JsonPurpose"
+                                    
+            , idents                : identityRules[Rule*Context]~                              INTERFACE "JsonIdent"
+            , "versionInfo"         : versionInfo                                   cRud
+            , language              : language                                      cRud
+            , scripts               : context[ScriptVersion*Context]~               BOX <PROPBUTTON>       
+                [ "rebuild ADL"     : adlRequest                                    cRUd
+                ]
+        ]
+
+    INTERFACE "JsonPattern" : I[Pattern]      BOX
+    [
+            name                : name                                          cRud
+            , concepts          : concepts[Pattern*Concept]                                     INTERFACE "JsonConcept"
+            , representations   : concepts[Pattern*Concept];(I-ttype;"OBJECT";ttype~)           INTERFACE "JsonRepresentation"            
+            , rules             : udefrules~                                                    INTERFACE "JsonRule"
+            , relations         : declaredIn[Relation*Pattern]~                                 INTERFACE "JsonRelation"
+            , properties        : proprules[PropertyRule*Pattern]~;declaredthrough[PropertyRule*Property]       cRud
+            , purposes          : purpose[Pattern*Purpose]                                      -- purpose of the pattern
+                                   \/ concepts[Pattern*Concept];purpose[Concept*Purpose]        -- purpose of the concepts
+                                   \/ declaredIn[Relation*Pattern]~;purpose[Relation*Purpose]   -- purpose of the relations
+                                   \/ (allRules[Pattern*Rule]-proprules~);purpose[Rule*Purpose] INTERFACE "JsonPurpose"      -- purpose of the rules
+    ]
+
+
+    INTERFACE "JsonConcept" : I[Concept] CRuD BOX
+        [
+            name                : name[Concept*ConceptName]                 CRUD
+            -- , olddefinition        : name;acdcpt~                              CRUD
+            , definition        : concept[ConceptDef*Concept]~;meaning[ConceptDef*Meaning] cRud -- todo: meaning naar text (bestaat nog niet)
+            , type              : ttype[Concept*TType]                          cRud
+        ]
+
+    INTERFACE "JsonRepresentation" : I[Concept] BOX  -- kan weg
+        [
+            name            : name[Concept*ConceptName]                             cRud
+            ,definition     : name;acdcpt~                                          cRud
+            , type          : ttype[Concept*TType]                                  cRud
+            -- , type          : ttype[Concept*TType] - (V[Concept*TType];"OBJECT")    cRud
+            -- , typehek       : ttype[Concept*TType] - I[Concept]#"OBJECT"            cRud
+        ]
+
+    INTERFACE "JsonRelation" : I[Relation] BOX
+       [    
+         relation        : name[Relation*RelationName]                                      cRud    -- name of the relation
+        , sign           : sign[Relation*Signature]                                         INTERFACE "JsonSignature"        -- signature of the relation (source and target)
+        , properties     : prop[Relation*Property]                                          cRud    -- properties of the relation ([uni],[tot])
+        , meaning        : decMean[Relation*Meaning];markup[Meaning*Markup];asMarkdown[Markup*Text] cRud  -- todo: make this the actual text of the meaning
+       ] 
+    
+    INTERFACE "JsonSignature" : I[Signature] BOX                                    -- signature of the relation (source and target)
+        [ 
+         source         : src[Signature*Concept];name[Concept*ConceptName]  cRud     -- actual name of the source
+        ,target         : tgt[Signature*Concept];name[Concept*ConceptName]  cRud     -- actual name of the target
+        ]
+
+    INTERFACE "JsonRolerule" : I[Role] BOX  -- kan weg
+        [
+            role            : I                                             INTERFACE "JsonRole"
+            , rule          : maintains[Role*Rule];name                     cRud
+        ]
+
+    INTERFACE "JsonRole" : I[Role] BOX
+    [
+        role                :  name[Role*RoleName]                  cRud
+        -- ,service         :  ..                               cRud  mogelijkheid om service nog door te geven
+
+    ]
+
+    INTERFACE "JsonRule" : I[Rule] BOX                      
+        [    
+            name            : name[Rule*RuleName]                              cRud    -- name of the rule
+            , formexp       : formalTerm[Rule*Term];showADL[Term * ShowADL]     cRud    -- formal expression of the Rule
+            , meaning        : meaning[Rule*Meaning];markup;asMarkdown          cRud    -- Actual text of the meaning
+            , message        : message[Rule*Message]                            cRud    -- Message of the rule    
+        ]
+
+INTERFACE "JsonEnforce" : I[Rule] BOX                                       
+    [
+        name            : name[Rule*RuleName]                               cRud
+        , term          : formalTerm[Rule*Term];showADL                     cRud
+        , maintains     : maintains[Role*Rule]~                             INTERFACE "JsonRolerule"
+        , relation      : formalTerm;first[BinaryTerm * Term];usedIn~        INTERFACE "JsonRelation"
+        , rhs           : formalTerm;second[BinaryTerm * Term];showADL      cRud
+        , operator      : formalTerm;operator[BinaryTerm*Operator]          cRud   -- TODO: subset, superset hiervan maken, dit is opvul
+         
+    ]
+
+ INTERFACE "JsonPurpose" : I [Purpose] BOX
+    [         
+            conceptPurp          :       purpose[Concept*Purpose]~;name                  cRud
+            , relationPurp       :       purpose[Relation*Purpose]~                      BOX
+                [
+                    relation            : name[Relation*RelationName]                    cRud
+                    , sign              : sign[Relation*Signature]                       INTERFACE "JsonSignature"
+                ]
+            , rulePurp           :    purpose[Rule*Purpose]~;name                     cRud
+            --, identPurp          :  purpose[Ident*Purpose]~;name                  cRud -- the purpose for IDENT is not yet passed to ATLAS
+            , viewPurp           :    purpose[View*Purpose]~;name                     cRud
+            , patternPurp        :    purpose[Pattern*Purpose]~;name                  cRud
+            , interfacePurp      :    purpose[Interface*Purpose]~;name                cRud
+            , contextPurp        :    purpose[Context*Purpose]~;name                  cRud                           
+            -- , meaning_old        :       markup;asMarkdown                               CRUD -- todo: remove
+            , meaning            :    explMarkup[Purpose*Markup];text[Markup*MarkupText]    cRud
+            
+    ]
+
+INTERFACE "JsonIdent"    : I [Rule] BOX
+[
+    name                : name[Rule*RuleName]                           cRud
+    -- ,concept            : vdcpt[View*Concept]                              cRud  -- todo: Stef vragen waar dit verstopt zit?
+    , concept           : I                       cRud         -- todo: juist concept hieraan koppelen
+    -- , ident             :                                                  cRud
+    , ident             : formalTerm[Rule * Term] BOX
+                [
+                    name :  showADL                                         cRud -- lable name     Todo: not yet included in RAP (todo: in new RAP)
+                    , ctx : showADL                                         cRud
+                    -- , crud  :
+                    -- , msub  :  -- possible in compiler
+                    -- , mview : "view name"                                   cRud -- Optional View
+                ]                      
+]
+
+ENDCONTEXT
