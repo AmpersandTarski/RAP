@@ -5,72 +5,29 @@ Simple RAP features for a start
 ***Further read***: **[Learn more about how to generate Living Documentation](https://docs.specflow.org/projects/specflow-livingdoc/en/latest/LivingDocGenerator/Generating-Documentation.html)**
 
 
-#@myLogintag
-#Scenario: I can login when i just installed the application of RAP
-#	Given i just ran the installer of rap
+
+#@myinstallation
+#Scenario: 01 I can reinstall the application and create an account
+#    # "/admin/installer" -> response is 
+#	Given i reinstall the application
+#	And i need a session id of RAP
+#	And i need to see the register button
+#	And i need a register id of RAP
+#	When i fill in my userid
+#	And i fill in my password and name
+#	And i create my account
+#	#And i log out
+#	#And i confirm my log out
+#	Then the RAP result should be 200
+	 
+#Scenario: When I have an account I can login
+#	Given i need a session id of RAP
 #	When i try to login
-#	Then the result is 123
+#	Then the result should be 200
 
-@myWelcometag
-Scenario: In the welcome screen I can request the Overview-page
-	Given i am in the welcome screen of rap
-	When i request the overview page
-	Then the result is 123
-
-Scenario: In the welcome screen I can request the List-all-interfaces-page
-	Given i am in the welcome screen of rap
-	When i request the listallinterfaces page
-	Then the result is 7
-
-Scenario: In the welcome screen I can request the Edit-navigation-menu-page
-	Given i am in the welcome screen of rap
-	When i request the editnavigationmenu page
-	Then the result is 1
-
-@myOverviewtag
-Scenario: In the overview screen I can request the number of courses
-	Given i am in the overview screen of rap
-	When i request for courses
-	Then the result is 2
-
-Scenario: In the overview screen I can request the number of students
-	Given i am in the overview screen of rap
-	When i request for students
-	Then the result is 3
-
-Scenario: In the overview screen I can request the number of modules
-	Given i am in the overview screen of rap
-	When i request for modules
-	Then the result is 4
-
-@myInterfaces
-Scenario: In the "List all interfaces" page I can request the "edit an interface" interface
-	Given i am in the list all interfaces screen of rap
-	When i edit the interface
-	Then the result is 123
-
-Scenario: In the "List all interfaces" page I can request the "edit a menu item" interface
-	Given i am in the list all interfaces screen of rap
-	When i edit a menu item
-	Then the result is 123
-
-Scenario: In the "List all interfaces" page I can request the "list all interfaces" interface
-	Given i am in the list all interfaces screen of rap
-	When i request the sub listallinterfaces page
-	Then the result is 123
-
-Scenario: In the "List all interfaces" page I can request the "overview" interface
-    Given i am in the list all interfaces screen of rap
-	When i request the sub overview page
-	Then the result is 123
-
-Scenario: In the "List all interfaces" page I can request the "PF__AllRoles interface
-    Given i am in the list all interfaces screen of rap
-	When i request the sub pf allroles page
-	Then the result is 123
-
-
-Scenario: In the "List all interfaces" page I can request the "PF__MenuItems interface
-    Given i am in the list all interfaces screen of rap
-	When i request the sub pf menuitems page
-	Then the result is 123
+#@myWelcometag
+#Scenario: 02 When I am logged in I can add a new script
+#	Given i want to add a new script
+#	When i add my latest script
+#	And compile my latest script
+#	Then the RAP result should be 200

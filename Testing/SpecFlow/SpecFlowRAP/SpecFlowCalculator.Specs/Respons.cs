@@ -1,92 +1,128 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TechTalk.SpecFlow.CommonModels;
-using System.Text.Json;
-using SpecFlowRAP.Specs;
+﻿using System.Text.Json.Serialization;
 
-namespace SpecFlowRAP.StepDefinitions
+namespace SpecFlowRAP.Specs.Data
 {
-    public sealed class Respons
+
+    public class Navbardata
     {
+        [JsonPropertyName("home")]
+        public string? Home { get; set; }
 
-        public int getNumberOfRapArrayElements(string result)
-        {
-            // Deserialize the JSON array
-            RapArrClass[]? deserializedArray = JsonSerializer.Deserialize<RapArrClass[]>(result);
-            int numberOfArrayElements = 0;
+        [JsonPropertyName("navs")]
+        public List<Nav>? Navs { get; set; }
 
-            // Output the deserialized array
-            if (deserializedArray is not null)
-            {
-                foreach (RapArrClass item in deserializedArray)
-                {
-                    Console.WriteLine($"id: {item._id_}, label: {item._label_}, path: {item._path_} ");
-                    numberOfArrayElements += 1;
-                }
-            }
-            return numberOfArrayElements;
-        }
+        [JsonPropertyName("new")]
+        public List<object>? New { get; set; }
 
+        [JsonPropertyName("ext")]
+        public List<object>? Ext { get; set; }
 
-        public int getNumberOfNavArrayElements(HttpClient client, string result)
-        {
-            int numberOfArrayElements = 0;
-            try
-            {
-                // Deserialize the JSON array
-                RapDictClass[]? jsonObject = JsonSerializer.Deserialize<RapDictClass[]>(result);
+        [JsonPropertyName("role")]
+        public List<object>? Role { get; set; }
 
-                // Output the deserialized array
-                if (jsonObject is not null)
-                {
-                    foreach (RapDictClass item in jsonObject)
-                    {
-                        Console.WriteLine($"id: {item._id_}, label: {item._label_}, path: {item._path_} ");
-                        numberOfArrayElements += 1;
-                    }
-                }
+        [JsonPropertyName("defaultSettings")]
+        public DefaultSettings? DefaultSettings { get; set; }
 
-            }
-            catch (Exception e)
-            {
-                // Output any exception that occurred during the request
-                Console.WriteLine($"Request exception: {e.Message}");
-                return -1;
-            }
-            return numberOfArrayElements;
-        }
+        [JsonPropertyName("notifications")]
+        public Notifications? Notifications { get; set; }
 
-        public int getRapArrJsonObject(string result, string errstring)
-        {
-            if (result.Length == 0)
-            {
-                Console.WriteLine("Error in " + errstring + ".");
-                return -1;
-            }
-            // Deserialize the JSON array
-            RapArrClass? rapArrClass = JsonSerializer.Deserialize<RapArrClass>(result);
+        [JsonPropertyName("session")]
+        public Session? Session { get; set; }
 
-            // Output the deserialized array
-            if (rapArrClass is not null)
-            {
-                Console.WriteLine($"id: {rapArrClass._id_}, label: {rapArrClass._label_}, path: {rapArrClass._path_} ");
-            }
-            return 123;
-        }
+        [JsonPropertyName("sessionRoles")]
+        public List<SessionRole>? SessionRoles { get; set; }
 
-        public int getRepliedListLength(string result, string logmsg)
-        {
-            int resultInt = -1;
-            if (result.Length == 0)
-                Console.WriteLine("Error in " + logmsg + ".");
-            else
-            {
-                resultInt = getNumberOfRapArrayElements(result);
-            }
-            return resultInt;
-        }
+        [JsonPropertyName("sessionVars")]
+        public bool SessionVars { get; set; }
+    }
+
+    public class Nav
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+
+        [JsonPropertyName("label")]
+        public string? Label { get; set; }
+
+        [JsonPropertyName("seqNr")]
+        public int? SeqNr { get; set; }
+
+        [JsonPropertyName("ifc")]
+        public string? Ifc { get; set; }
+
+        [JsonPropertyName("url")]
+        public string? Url { get; set; }
+
+        [JsonPropertyName("parent")]
+        public string? Parent { get; set; }
+    }
+
+    public class DefaultSettings
+    {
+        [JsonPropertyName("notify_showSignals")]
+        public bool? NotifyShowSignals { get; set; }
+
+        [JsonPropertyName("notify_showInfos")]
+        public bool? NotifyShowInfos { get; set; }
+
+        [JsonPropertyName("notify_showSuccesses")]
+        public bool? NotifyShowSuccesses { get; set; }
+
+        [JsonPropertyName("notify_autoHideSuccesses")]
+        public bool NotifyAutoHideSuccesses { get; set; }
+
+        [JsonPropertyName("notify_showErrors")]
+        public bool NotifyShowErrors { get; set; }
+
+        [JsonPropertyName("notify_showWarnings")]
+        public bool NotifyShowWarnings { get; set; }
+
+        [JsonPropertyName("notify_showInvariants")]
+        public bool NotifyShowInvariants { get; set; }
+
+        [JsonPropertyName("autoSave")]
+        public bool AutoSave { get; set; }
+    }
+
+    public class Notifications
+    {
+        [JsonPropertyName("errors")]
+        public List<object>? Errors { get; set; }
+
+        [JsonPropertyName("warnings")]
+        public List<object>? Warnings { get; set; }
+
+        [JsonPropertyName("infos")]
+        public List<object>? Infos { get; set; }
+
+        [JsonPropertyName("successes")]
+        public List<Success>? Successes { get; set; }
+
+        [JsonPropertyName("invariants")]
+        public List<object>? Invariants { get; set; }
+
+        [JsonPropertyName("signals")]
+        public List<object>? Signals { get; set; }
+    }
+
+    public class Session
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+
+        [JsonPropertyName("loggedIn")]
+        public bool? LoggedIn { get; set; }
+    }
+
+    public class SessionRole
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+
+        [JsonPropertyName("label")]
+        public string? Label { get; set; }
+
+        [JsonPropertyName("active")]
+        public bool? Active { get; set; }
     }
 }

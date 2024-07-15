@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SpecFlowRAP.StepDefinitions
+﻿
+namespace SpecFlowRAP.Specs.Data
 {
     // Define a class to represent the objects in the JSON array
-    public class RapArrClass : BaseClass
+    public abstract class BaseClass : subBaseClass
     {
-        public string[]? _view_ { get; set; }
+        public string[]? _bview_ { get; set; }
+        public BaseClass()
+        {
+            _bview_ = null;
+        }
+        public BaseClass(string[] view)
+        {
+            _bview_ = view;
+        }
     }
 }

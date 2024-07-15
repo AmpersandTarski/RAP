@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 
-namespace SpecFlowRAP.StepDefinitions
+namespace SpecFlowRAP
 {
     public class HttpClientSingleton
     {

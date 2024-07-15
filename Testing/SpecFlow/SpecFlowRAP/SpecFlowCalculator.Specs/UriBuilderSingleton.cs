@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpecFlowRAP.Specs
+namespace SpecFlowRAP
 {
     using System;
 
