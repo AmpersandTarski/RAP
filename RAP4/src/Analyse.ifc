@@ -25,19 +25,19 @@ VIEW MeaningContent: Meaning(markup;asMarkdown)
 VIEW PurposeContent: Purpose(markup;asMarkdown)
 
 
-INTERFACE Concept FOR User, Tutor : I[Concept] CRUD BOX
-  [ "Concept:" : I CRUD
-  , "Definition" : name;acdcpt~;(acddef2\/acdmean) CRUD -- acddef2 is old syntax, acdmean is new syntax.
+INTERFACE Concept FOR User, Tutor : I[Concept] cRud BOX
+  [ "Concept:" : I cRud
+  , "Definition" : name;acdcpt~;(acddef2\/acdmean) CRuD -- acddef2 is old syntax, acdmean is new syntax.
   , "Purpose:" : purpose[Concept*Purpose]          CRUD 
   , "Used in rules": conceptualDiagram             CRUD <ShowConceptualDiagram>
   , "Context" : context                            CRUD
   ]
 
 INTERFACE Relation FOR User, Tutor : I[Relation] cRud BOX
-  [ "Relation:" : I CRUD
+  [ "Relation:" : I cRud
   , "Source concept:" : source cRud LINKTO INTERFACE Concept
   , "Target concept:" : target cRud LINKTO INTERFACE Concept
-  , "Eigenschappen:" : propertyRule;declaredthrough CRUD
+  , "Eigenschappen:" : propertyRule;declaredthrough CRuD
   , "Properties:" : prop [Relation * Property] CRUD
   , "MEANING:" : decMean[Relation*Meaning] CRUD 
   , "PURPOSE:" : purpose[Relation*Purpose] CRUD 

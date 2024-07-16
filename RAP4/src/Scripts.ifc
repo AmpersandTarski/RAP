@@ -1,6 +1,6 @@
 CONTEXT RAP4 IN ENGLISH
 
-VIEW "ParseAsHtml" : CompileResponse HTML TEMPLATE "View-ParseAsHtml.html" ENDVIEW
+VIEW ParseAsHtml : CompileResponse HTML TEMPLATE "View-ParseAsHtml.html" ENDVIEW
 
 PURPOSE INTERFACE MyScripts
 {+ Ik wil als student een overzicht krijgen van mijn scripts,
@@ -25,7 +25,7 @@ INTERFACE StudentScripts FOR Tutor : "_SESSION"[SESSION]#(I[Account]/\submittor~
        ]
     ]
 
-INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
+INTERFACE Nieuwscript LABEL "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
    [ "Meta-info": I cRud BOX <TABLE sortable>
       [ indiener  : submittor cRud
       , opdracht  : assignment CRUd
@@ -65,9 +65,9 @@ INTERFACE "Nieuw script" FOR User : I[Script] CRuD BOX <FORM hideLabels>
          ]
       , "Results": seqFirstItem ; I[ScriptVersion] cRud BOX <TABLE>
          [ "Download document" : funcSpec cRud
---       , "Atlas" :      context cRud LINKTO INTERFACE "Context"
+--       , "Atlas" :      context cRud LINKTO INTERFACE Context
          , "Prototype" :  protoOk;version~;proto cRud
-         , "Atlas population": I LINKTO INTERFACE "Atlas population"
+         , "Atlas population": I LINKTO INTERFACE AtlasPopulation
          ]
       ]
    ]

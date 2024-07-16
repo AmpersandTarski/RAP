@@ -41,10 +41,10 @@ PATTERN Compilation
 RELATION scriptOk[ScriptVersion*ScriptVersion] [PROP] -- A ScriptVersion may have the property that Ampersand can compile it
 
 RELATION compileRequest[Script*Script][PROP]
-ROLE ExecEngine MAINTAINS "Check script"
+ROLE ExecEngine MAINTAINS Checkscript
 
---RULE "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Check script" : compileRequest;submittor;accUserid |- -V[Script*Userid]
+--RULE Checkscript LABEL "Check script" : compileRequest |- -V -- Zie comment 20161111/RJ hiervoor
+RULE Checkscript LABEL "Check script" : compileRequest;submittor;accUserid |- -V[Script*Userid]
 VIOLATION ( TXT "{EX}CompileToNewVersion;", SRC I,TXT ";", TGT I
           , TXT "{EX}DelPair;compileRequest;Script;", SRC I, TXT ";Script;", SRC I
           )
@@ -54,9 +54,9 @@ RELATION funcSpecRequest[ScriptVersion*ScriptVersion] [PROP] -- User has request
 RELATION funcSpecOk[ScriptVersion*ScriptVersion] [PROP] -- a functional specification has actually been generated (no errors)
 RELATION funcSpec[ScriptVersion*FileObject] [UNI] -- the file **containing** the funcspec of the script, it has the property 'funcSpecOk'
 
-ROLE ExecEngine MAINTAINS "Create fspec" -- reset funcSpecRequest after an attempt to create it has been performed.
---RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V[ScriptVersion*FilePath]
+ROLE ExecEngine MAINTAINS Createfspec -- reset funcSpecRequest after an attempt to create it has been performed.
+--RULE Createfspec LABEL "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE Createfspec LABEL "Create fspec" : (funcSpecRequest-funcSpec;funcSpec~);source;filePath |- -V[ScriptVersion*FilePath]
 VIOLATION ( TXT "{EX}CompileWithAmpersand;fspec;", SRC version~, TXT ";", SRC I, TXT ";", TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;funcSpecRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
@@ -66,9 +66,9 @@ RELATION diagRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested t
 RELATION diagOk[ScriptVersion*ScriptVersion] [PROP] -- a diagnosis has actually been generated (no errors)
 RELATION diag[ScriptVersion*FileObject] [UNI] -- the file containing the diagnosis of the script, it has the property 'diagOk'
 
-ROLE ExecEngine MAINTAINS "Create diagnosis" -- reset diagRequest after an attempt to create it has been performed.
---RULE "Create diagnosis" : diagRequest-diag;diag~ |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Create diagnosis" : (diagRequest-diag;diag~);source;filePath |- -V
+ROLE ExecEngine MAINTAINS Creatediagnosis -- reset diagRequest after an attempt to create it has been performed.
+--RULE Creatediagnosis LABEL "Create diagnosis" : diagRequest-diag;diag~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE Creatediagnosis LABEL "Create diagnosis" : (diagRequest-diag;diag~);source;filePath |- -V
 VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;diagRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
@@ -78,16 +78,16 @@ RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested 
 RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
 RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP4 when it is loaded into the meta tables
 
-ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
---RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
+ROLE ExecEngine MAINTAINS Loadpopulationintometatables -- reset loadRequest after an attempt to create it has been performed.
+--RULE Loadpopulationintometatables LABEL "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
 -- Also make sure only to populate a new atlas, if it will be the only atlas population for that user. (that will be taken care of by the rule named "Trash all previous atlases of this account".)
-RULE "Load population into meta tables" : ((loadRequest-loadedInRAP4Ok)-(version~;submittor;submittor~;version;context;V));source;filePath |- -V
+RULE Loadpopulationintometatables LABEL "Load population into meta tables" : ((loadRequest-loadedInRAP4Ok)-(version~;submittor;submittor~;version;context;V));source;filePath |- -V
 VIOLATION ( TXT "{EX}CompileWithAmpersand;makeAtlas;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
 --[Cleaning up old atlases]
-ROLE ExecEngine MAINTAINS "Trash all previous atlases of this account" -- before a new atlas is populated, make sure all previous ones are removed to prevent disorder.
-RULE "Trash all previous atlases of this account" : loadRequest; version~ ;submittor;submittor~;version;context |- context;requestDestroy
+ROLE ExecEngine MAINTAINS Trashallpreviousatlasesofthisaccount -- before a new atlas is populated, make sure all previous ones are removed to prevent disorder.
+RULE Trashallpreviousatlasesofthisaccount LABEL "Trash all previous atlases of this account" : loadRequest; version~ ;submittor;submittor~;version;context |- context;requestDestroy
 VIOLATION (TXT "{EX}InsPair;requestDestroy;Context;", TGT I, TXT ";Context;", TGT I)
 
 --[Prototypes]--
@@ -95,17 +95,17 @@ RELATION protoRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested 
 RELATION protoOk[ScriptVersion*ScriptVersion] [PROP] -- a prototype has actually been generated (no errors)
 RELATION proto[Script*FileObject] [UNI] -- the index.php (or whatever) file that must be clicked to start the prototype
 
-ROLE ExecEngine MAINTAINS "Create prototype" -- reset protoRequest after an attempt to create it has been performed.
---RULE "Create prototype" : protoRequest-proto;proto~ |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Create prototype" : (protoRequest-protoOk;protoOk~);source;filePath |- -V
+ROLE ExecEngine MAINTAINS Createprototype -- reset protoRequest after an attempt to create it has been performed.
+--RULE Createprototype LABEL "Create prototype" : protoRequest-proto;proto~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE Createprototype LABEL "Create prototype" : (protoRequest-protoOk;protoOk~);source;filePath |- -V
 VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;protoRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
 
 --[Deletion of Context (Fully cascading!)]--
 RELATION requestDestroy[Context*Context] [PROP] -- a request to destroy this context. Beware: Experimental. You might burn all. The idea is that ALL atoms in the context of RAP4 that are linked with this context atom (transitive closure) will be deleted. ALL relations are taken into account, except for a set, specified in cli.php. Currently, the only relation in that set is context[ScriptVersion*Context]. This is to avoid that atoms are destroyed in the specific RAP4 part. 
-ROLE ExecEngine MAINTAINS "Destroy Context"  -- ExecEngine is een echte pyrotechnicus.... 
-RULE "Destroy Context" : requestDestroy |- -V
+ROLE ExecEngine MAINTAINS DestroyContext  -- ExecEngine is een echte pyrotechnicus.... 
+RULE DestroyContext LABEL "Destroy Context" : requestDestroy |- -V
 VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
           )
 
@@ -113,16 +113,16 @@ VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
 --[[Interactive ATLAS -MO-]]--
 -- dit wordt gebruikt om de ATLAS --> .ADL file te genereren
 -- RELATION convertToADL[Script*Script][PROP]
--- ROLE ExecEngine MAINTAINS "Convert adl"
+-- ROLE ExecEngine MAINTAINS Convertadl
 
 --[ATLAS converter]--
 RELATION adlRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested the script to be converted into a functional specification
 RELATION adlOk[ScriptVersion*ScriptVersion] [PROP] -- a functional specification has actually been generated (no errors)
 RELATION adl[ScriptVersion*FileObject] [UNI] -- the file **containing** the funcspec of the script, it has the property 'funcSpecOk'
 
-ROLE ExecEngine MAINTAINS "Convert adl" -- reset funcSpecRequest after an attempt to create it has been performed.
---RULE "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
-RULE "Convert adl" : (adlRequest-adl;adl~);source;filePath |- -V[ScriptVersion*FilePath]
+ROLE ExecEngine MAINTAINS Convertadl -- reset funcSpecRequest after an attempt to create it has been performed.
+--RULE Createfspec LABEL "Create fspec" : funcSpecRequest-funcSpec;funcSpec~ |- -V -- Zie comment 20161111/RJ hiervoor
+RULE Convertadl LABEL "Convert adl" : (adlRequest-adl;adl~);source;filePath |- -V[ScriptVersion*FilePath]
 VIOLATION ( TXT "{EX}ConvertToADL;", SRC version~, TXT ";", SRC I, TXT ";", TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;adlRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
@@ -131,7 +131,7 @@ VIOLATION ( TXT "{EX}ConvertToADL;", SRC version~, TXT ";", SRC I, TXT ";", TGT 
 
 ENDPATTERN
 
-PATTERN "Runtime"
+PATTERN Runtime
     RELATION atom[InsAtom*Atom] -- 
     RELATION content[Div*Atom] -- 
     RELATION div[InsAtom * Div]
@@ -143,7 +143,7 @@ PATTERN "Runtime"
     RELATION in[Pair*Relation]
 ENDPATTERN
 
-PATTERN "Pair views"
+PATTERN PairViews LABEL "Pair views"
     RELATION expSQL[PairViewSegment * MySQLQuery] [UNI]
     RELATION expTgt[PairViewSegment * Concept]
     RELATION segment[PairView * PairViewSegment] [INJ]
@@ -153,7 +153,7 @@ PATTERN "Pair views"
     RELATION text[PairViewSegment * String] [UNI]
 ENDPATTERN
 
-PATTERN "Static relations from FormalAmpersand"
+PATTERN StaticRelationsFromFormalAmpersand LABEL "Static relations from FormalAmpersand"
     REPRESENT ConceptDefinition TYPE BIGALPHANUMERIC
 
     RELATION acdcpt[ConceptDef*ConceptName] [UNI] -- ^ The name of the concept for which this is the definition. If there is no such concept, the conceptdefinition is ignored.
@@ -168,11 +168,13 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION asMarkdown[Markup*Text] [UNI] -- 
     RELATION bind[BindedRelation*Relation] [UNI] -- 
     RELATION concepts[Pattern*Concept] -- 
-    RELATION ctxcds[ConceptDef*Context] -- 
+    RELATION ctxcds[ConceptDef*Context] [UNI] -- 
+    RELATION ctxds[Relation*Context] [UNI] -- All relations defined in a context but outside a pattern
+    RELATION ctxrs[Rule*Context] [UNI]-- All rules defined in a context but outside a pattern
     RELATION conjunct[Conjunct*Term] -- 
     RELATION context[Concept*Context] [UNI] -- The context that contains the definition of a concept
     RELATION context[Interface*Context] [UNI] -- The context that contains an Interface
-    RULE "IDENT Interface" : name;name~ /\ context[Interface*Context];context~ |- I
+    RULE IDENTInterface LABEL "IDENT Interface" : name;name~ /\ context[Interface*Context];context~ |- I
     VIOLATION (TXT "Interface ", SRC name, TXT " in context ", SRC context;name, TXT " is not unique.")
     RELATION context[Isa*Context] [UNI]
     RELATION context[IsE*Context] [UNI]
@@ -301,9 +303,10 @@ PATTERN "Static relations from FormalAmpersand"
     -- EIGEN DINGEN
     RELATION concept[ConceptDef*Concept] [UNI,TOT]
     RELATION meaning[ConceptDef*Meaning] [UNI,TOT]
+    RELATION showADL[PairView*ShowADL] [UNI]
 ENDPATTERN
 
-PATTERN "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)
+PATTERN RegistrationOfConceptualDiagrams LABEL "Registration of conceptual diagrams" --later to be moved to Scripts.adl (This is only here because of ease of development)
 
 RELATION conceptualDiagram[Concept*FileObject] [UNI]
 RELATION conceptualDiagram[Rule*FileObject] [UNI]
@@ -312,8 +315,8 @@ RELATION conceptualDiagram[Context*FileObject] [UNI]
 
 RELATION basePath[ScriptVersion*FilePath] [UNI] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\Script_1475844318716509\Version2016-10-07T144605\)
 
-ROLE ExecEngine MAINTAINS "link cd of context"
-RULE "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]
+ROLE ExecEngine MAINTAINS linkcdofcontext
+RULE linkcdofcontext LABEL "link cd of context" : I[Context] /\ context[ScriptVersion*Context]~;context[ScriptVersion*Context]
                                |- conceptualDiagram[Context*FileObject];conceptualDiagram[Context*FileObject]~
 MEANING "Elke context in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
 VIOLATION ( TXT "{EX} InsAtom;FileObject"
@@ -325,8 +328,8 @@ VIOLATION ( TXT "{EX} InsAtom;FileObject"
                                  , TXT "/images/LogicalDataModel.png"
           )
 
-ROLE ExecEngine MAINTAINS "link cd of pattern"
-RULE "link cd of pattern" : I[Pattern] /\ context[Pattern*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Pattern*Context]~
+ROLE ExecEngine MAINTAINS linkcdofpattern
+RULE linkcdofpattern LABEL "link cd of pattern" : I[Pattern] /\ context[Pattern*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Pattern*Context]~
                                |- conceptualDiagram[Pattern*FileObject];conceptualDiagram[Pattern*FileObject]~
 MEANING "Elk pattern in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
 VIOLATION ( TXT "{EX} InsAtom;FileObject"
@@ -341,8 +344,8 @@ VIOLATION ( TXT "{EX} InsAtom;FileObject"
                                  , TXT ".png"
           )
 
-ROLE ExecEngine MAINTAINS "link cd of rule"
-RULE "link cd of rule" : I[Rule] /\ allRules[Rule*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];allRules[Rule*Context]~
+ROLE ExecEngine MAINTAINS linkcdofrule
+RULE linkcdofrule LABEL "link cd of rule" : I[Rule] /\ allRules[Rule*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];allRules[Rule*Context]~
                                |- conceptualDiagram[Rule*FileObject];conceptualDiagram[Rule*FileObject]~
 MEANING "Elke regel in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
 VIOLATION ( TXT "{EX} InsAtom;FileObject"
@@ -357,8 +360,8 @@ VIOLATION ( TXT "{EX} InsAtom;FileObject"
                                  , TXT ".png"
           )
 
-ROLE ExecEngine MAINTAINS "link cd of concept"
-RULE "link cd of concept" : I[Concept] /\(context[Concept*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Concept*Context]~)
+ROLE ExecEngine MAINTAINS linkcdofconcept
+RULE linkcdofconcept LABEL "link cd of concept" : I[Concept] /\(context[Concept*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];context[Concept*Context]~)
                                |- conceptualDiagram[Concept*FileObject];conceptualDiagram[Concept*FileObject]~
 MEANING "Elk concept in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
 VIOLATION ( TXT "{EX} InsAtom;FileObject"

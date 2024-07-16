@@ -4,36 +4,40 @@ VIEW Context : Context(name)
 VIEW Concept : Concept(name)
 VIEW Script: Script(TXT "Terug naar script")
 
+
+
+
 PURPOSE INTERFACE Atlas
 {+ The atlas helps the user to investigate his or her script.
 She can browse around in it. The Atlas displays only the contexts that are loaded in RAP4.
 +}
-INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<FORM hideLabels>
+INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<AtlasFORM hideLabels>
    [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud   -- This works because VIEW Script: Script(TXT "Terug naar script")
     , "versionInfo" : versionInfo                    cRud
-    , l1 LABEL "" : I -- Context
+    , "Submit changes" : context[ScriptVersion*Context]~ BOX <PROPBUTTONrefresh>       
+            [ property : adlRequest cRUd
+            ]
+    , l1 LABEL " ":  context[Pattern*Context]~; conceptualDiagram      CRuD <ShowConceptualDiagram> 
+    , l2 LABEL "" : I -- Context
         BOX<TABLE sortable>
-            [ context       : I                              cRud
-            , patterns      : context[Pattern*Context]~      cRud
-            , concepts      : context[Concept*Context]~      CRUD
-            , rules         : ctxrs~ \/ udefrules~           cRud
-            , relations     : relsDefdIn[Relation*Context]~  cRud
+            [ context       : I                                                 cRud
+            , patterns      : context[Pattern*Context]~                         cRud
+            , concepts      : context[Concept*Context]~                         CRUD
+            , rules         : ctxrs~ \/ udefrules~                              cRud
+            , relations     : relsDefdIn[Relation*Context]~                     cRud
             ]
       , "Detailed " : I BOX <TABS> 
          [ 
-          "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE ATLASConcept         
-         , "Relaties"  : relsDefdIn[Relation*Context]~ INTERFACE ATLASRelation
-         , "Regels"    : ctxrs~ \/ udefrules~          INTERFACE ATLASRule
-         , "Patterns"   : context [Pattern * Context]~ INTERFACE Patterns
-         ,  Purposes     : purpose[Context*Purpose]                                     -- Context Purpose
-                                        \/ context[Concept*Context]~;purpose[Concept*Purpose]     -- concept purpose
-                                        \/ ctxds[Relation*Context]~ ;purpose[Relation*Purpose]    -- relation Purpose
-                                        \/ (ctxrs~ /\ udefrules~)   ; purpose[Rule*Purpose]   cRud    -- rule purpose
-            -- view purpose         purpose[View * Purpose]
-            -- interface purpose    purpose[Interface * Purpose]
-                                                                                                
-                                                                                   
-         ]
+          "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE ATLASConcept
+         , "Relaties"  : relsDefdIn[Relation*Context]~  INTERFACE ATLASRelation
+         , "Regels"    : ctxrs~ \/ udefrules~           INTERFACE ATLASRule
+         , "Purposes"  :  context[Pattern*Context]~ ; 
+                                (purpose[Pattern*Purpose]
+                                \/ (concepts[Pattern*Concept];purpose[Concept*Purpose]) -- purpose of the concepts
+                                \/ ( declaredIn[Relation*Pattern]~;purpose[Relation*Purpose])  -- purpose of the relations
+                                \/ (allRules[Pattern*Rule]-proprules[PropertyRule*Pattern]~);purpose[Rule*Purpose]) -- purpose of the rules
+                                                        INTERFACE ATLASPurpose
+                                         ]
    ]
 
 INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>
