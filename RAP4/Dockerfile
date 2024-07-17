@@ -1,7 +1,7 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Ampersand compiler is also needed for RAP4 to compile student scripts
 
-FROM ampersandtarski/prototype-framework:v1.17.0
+FROM ampersandtarski/prototype-framework:v1.18.0
 # this prototype-framework builds on an Apache server
 
 # Install docker, so students can run their prototypes
@@ -30,8 +30,8 @@ RUN apt-get update && apt-get install -y graphviz
 RUN apt-get update && apt-get install -y libzip-dev && docker-php-ext-install zip
 
 # Copy Ampersand compiler
-# COPY --from=ampersandtarski/ampersand:2023-08-08 /bin/ampersand /usr/local/bin
-# RUN chmod +x /usr/local/bin/ampersand
+COPY --from=ampersandtarski/ampersand:v5.1.1 /bin/ampersand /usr/local/bin
+RUN chmod +x /usr/local/bin/ampersand
 
 COPY . /usr/local/project/
 
