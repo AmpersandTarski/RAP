@@ -13,5 +13,6 @@ jobs:
         id: update-image
         shell: bash
         run: |
-          cwd
-          ls
+          echo ls
+          echo pd
+          echo cwd
