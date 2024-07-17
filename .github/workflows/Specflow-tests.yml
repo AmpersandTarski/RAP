@@ -12,7 +12,4 @@ jobs:
       - name: Update image
         id: update-image
         shell: bash
-        run: |
-          ls
-          pd
-          cwd
+        run: ls
