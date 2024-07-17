@@ -13,18 +13,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      #   - name: Build docker
-      #     id: update-image
-      #     shell: bash
-      #     run: |
-      #       cd ./RAP4
-      #       docker build -t ampersandtarski/ampersand-rap:dev-latest .
-      #       cd ..
-      #       cp .example.env .env
-      #       docker compose build
-      #       docker network create proxy
-      #       docker network create rap_db
-      #       docker compose up -d
+      - name: Build docker
+        id: update-image
+        shell: bash
+        run: |
+          cd ./RAP4
+          docker build -t ampersandtarski/ampersand-rap:dev-latest .
+          cd ..
+          cp .example.env .env
+          docker compose build
+          docker network create proxy
+          docker network create rap_db
+          docker compose up -d
 
       - name: Navigate to test project
         id: navigate-to-test-project
