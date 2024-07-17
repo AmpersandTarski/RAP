@@ -12,55 +12,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      #   - name: build docker
-      #     id: update-image
-      #     shell: bash
-      #     run: |
-      #       cd ./RAP4
-      #       docker build -t ampersandtarski/ampersand-rap:dev-latest .
-      #       cd ..
-      #       cp .example.env .env
-      #       docker compose build
-      #       docker network create proxy
-      #       docker network create rap_db
-      #       docker compose up -d
+      - name: build docker
+        id: update-image
+        shell: bash
+        run: |
+          cd ./RAP4
+          docker build -t ampersandtarski/ampersand-rap:dev-latest .
+          cd ..
+          cp .example.env .env
+          docker compose build
+          docker network create proxy
+          docker network create rap_db
+          docker compose up -d
 
       - name: Navigate to test project
         id: navigate-to-test-project
         shell: bash
         run: |
           cd ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs
-      #   - name: Run tests
-      #     uses: actions/cryptic-wizard/run-specflow-tests@v1.3.1
-      #     with:
-      #       test-assembly-path: Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/
-      #       test-assembly-dll: SpecFlowRAP.Specs.dll
-      #       output-html: MyTestResults.html
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "6.0.x"
-
-      - name: ls -l
-        shell: bash
-        run: |
-          ls -l
 
       - name: BuildDotnetApp
         shell: bash
         run: |
           dotnet build ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
 
-      - name: ls -l
-        shell: bash
-        run: |
-          ls -l
-
       - name: RunSpecFlowTests
         shell: bash
         continue-on-error: true
         run: |
           dotnet test ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj --no-build -c Release -v minimal -f net6.0
-
-    #   cd ../RAP4USER
-    #   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
