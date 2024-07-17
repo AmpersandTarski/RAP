@@ -51,20 +51,16 @@ jobs:
         run: |
           dotnet build ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
 
+      - name: ls -l
+        shell: bash
+        run: |
+          ls -l
+
       - name: RunSpecFlowTests
         shell: bash
         continue-on-error: true
         run: |
-          _args=()
-          _logger_args=()
-          [ "Release" != 'null' ] && _args+=("-c" "Release")
-          [ "minimal" != 'null' ] && _args+=("-v" "minimal")
-          [ "net6.0" != 'null' ] && _args+=("-f" "net6.0")
-          [ "normal" != 'null' ] && _logger_args+=(";verbosity=normal")
-          [ "MyTestResults.trx" != 'null' ] && _logger_args+=(";LogFileName=MyTestResults.trx")
-          [ "trx" != 'null' ] && _args+=("-l" "trx$(IFS=; echo "${_logger_args[@]}")")
-
-          dotnet test --no-build -c Release -v minimal -f net6.0 -v normal
+          dotnet test ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj --no-build -c Release -v minimal -f net6.0
 
     #   cd ../RAP4USER
     #   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
