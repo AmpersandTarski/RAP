@@ -16,5 +16,5 @@ jobs:
         id: update-image
         shell: bash
         run: |
-          chd rap4
+          cd ./rap4
           ls
