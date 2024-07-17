@@ -7,22 +7,24 @@ on:
 jobs:
   Build_Docker:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build docker
-        id: update-image
-        shell: bash
-        run: |
-          cd ./RAP4
-          docker build -t ampersandtarski/ampersand-rap:dev-latest .
-          cd ..
-          cp .example.env .env
-          docker compose build
-          docker network create proxy
-          docker network create rap_db
-          docker compose up -d
+      #   - name: Build docker
+      #     id: update-image
+      #     shell: bash
+      #     run: |
+      #       cd ./RAP4
+      #       docker build -t ampersandtarski/ampersand-rap:dev-latest .
+      #       cd ..
+      #       cp .example.env .env
+      #       docker compose build
+      #       docker network create proxy
+      #       docker network create rap_db
+      #       docker compose up -d
 
       - name: Navigate to test project
         id: navigate-to-test-project
@@ -53,7 +55,14 @@ jobs:
           livingdoc test-assembly Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/bin/Release/net6.0/SpecFlowRAP.Specs.dll -t Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/bin/Release/net6.0/TestExecution.json -o Testing/SpecFlow/Results/TestResult.html
 
       - name: Publish Specflow Test Results
+        id: publish-specflow-test-results
         uses: actions/upload-artifact@v4
         with:
           name: "Specflow Test Results"
           path: Testing/SpecFlow/Results/TestResult.html
+
+      - name: Add artifact to pull request
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            Click here to download Specflow test results: ${{ steps.publish-specflow-test-results.artifact-url }}
