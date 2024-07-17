@@ -13,6 +13,5 @@ jobs:
         id: update-image
         shell: bash
         run: |
-          pd
           cwd
           ls
