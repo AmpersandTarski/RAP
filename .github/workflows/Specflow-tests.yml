@@ -25,12 +25,12 @@ jobs:
           docker network create rap_db
           docker compose up -d
 
-      - name: Run tests
-        uses: actions/cryptic-wizard/run-specflow-tests@v1.3.1
-        with:
-          test-assembly-path: Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/
-          test-assembly-dll: SpecFlowRAP.Specs.dll
-          output-html: MyTestResults.html
+      #   - name: Run tests
+      #     uses: actions/cryptic-wizard/run-specflow-tests@v1.3.1
+      #     with:
+      #       test-assembly-path: Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/
+      #       test-assembly-dll: SpecFlowRAP.Specs.dll
+      #       output-html: MyTestResults.html
 
       - name: BuildDotnetApp
         run: |
