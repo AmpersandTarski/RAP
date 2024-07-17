@@ -26,11 +26,36 @@ jobs:
           docker compose up -d
 
       - name: Run tests
-        uses: actions/cryptic-wizard/run-specflow-tests@v1.3.3
+        uses: actions/cryptic-wizard/run-specflow-tests@v1.3.1
         with:
           test-assembly-path: Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/
           test-assembly-dll: SpecFlowRAP.Specs.dll
           output-html: MyTestResults.html
 
-        #   cd ../RAP4USER
-        #   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
+      - name: BuildDotnetApp
+        run: |
+          _args=()
+          [ "Release" != 'null' ] && _args+=("-c" "Release")
+          [ "minimal" != 'null' ] && _args+=("-v" "minimal")
+          [ "net6.0" != 'null' ] && _args+=("-f" "net6.0")
+
+          [ false == 'true' ] && echo 'Build Skipped' || dotnet build "${_args[@]}"
+          shell: bash
+      - name: RunSpecFlowTests
+        run: |
+          _args=()
+          _logger_args=()
+          [ "Release" != 'null' ] && _args+=("-c" "Release")
+          [ "minimal" != 'null' ] && _args+=("-v" "minimal")
+          [ "net6.0" != 'null' ] && _args+=("-f" "net6.0")
+          [ "normal" != 'null' ] && _logger_args+=(";verbosity=normal")
+          [ "MyTestResults.trx" != 'null' ] && _logger_args+=(";LogFileName=MyTestResults.trx")
+          [ "trx" != 'null' ] && _args+=("-l" "trx$(IFS=; echo "${_logger_args[@]}")")
+
+          if ! dotnet test --no-build "${_args[@]}"; then
+              echo "_EXIT=1" >> $GITHUB_ENV
+          fi
+          shell: bash
+          continue-on-error: true
+    #   cd ../RAP4USER
+    #   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
