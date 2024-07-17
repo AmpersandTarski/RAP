@@ -46,3 +46,15 @@ jobs:
         continue-on-error: true
         run: |
           dotnet test ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj --no-build -c Release -v minimal -f net6.0
+
+      - name: Create living spec doc
+        shell: bash
+        run: |
+          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+          livingdoc test-assembly Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/bin/Release/net6.0/SpecFlowRAP.Specs.dll -t Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/bin/Release/net6.0/TestExecution.json -o Testing/SpecFlow/Results/TestResult.html
+
+      - name: Publish Specflow Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Specflow Test Results"
+          path: Testing/SpecFlow/Results/TestResult.html
