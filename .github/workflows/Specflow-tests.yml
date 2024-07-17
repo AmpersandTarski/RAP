@@ -25,6 +25,11 @@ jobs:
           docker network create rap_db
           docker compose up -d
 
+      - name: Navigate to test project
+        id: navigate-to-test-project
+        shell: bash
+        run: |
+          cd ./Testing/SpecFlow/SpecFlowRAP
       #   - name: Run tests
       #     uses: actions/cryptic-wizard/run-specflow-tests@v1.3.1
       #     with:
