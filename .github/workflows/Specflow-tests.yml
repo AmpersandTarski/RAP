@@ -65,4 +65,4 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            Click here to download Specflow test results: ${{ steps.publish-specflow-test-results.artifact-url }}
+            Click here to download Specflow test results: ${{ steps.publish-specflow-test-results.outputs.artifact-url }}
