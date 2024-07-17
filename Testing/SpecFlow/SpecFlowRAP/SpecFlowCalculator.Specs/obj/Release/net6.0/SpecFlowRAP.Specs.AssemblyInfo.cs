@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SpecFlowRAP.Specs")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c917b2ef0787ad460e18b50a75bd4db01ad1ed6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9ceaa02e753e5b51148df400a22c3f3ce7f416cd")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpecFlowRAP.Specs")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SpecFlowRAP.Specs")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

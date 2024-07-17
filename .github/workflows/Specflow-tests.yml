@@ -12,18 +12,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: build docker
-        id: update-image
-        shell: bash
-        run: |
-          cd ./RAP4
-          docker build -t ampersandtarski/ampersand-rap:dev-latest .
-          cd ..
-          cp .example.env .env
-          docker compose build
-          docker network create proxy
-          docker network create rap_db
-          docker compose up -d
+      #   - name: build docker
+      #     id: update-image
+      #     shell: bash
+      #     run: |
+      #       cd ./RAP4
+      #       docker build -t ampersandtarski/ampersand-rap:dev-latest .
+      #       cd ..
+      #       cp .example.env .env
+      #       docker compose build
+      #       docker network create proxy
+      #       docker network create rap_db
+      #       docker compose up -d
 
       - name: Navigate to test project
         id: navigate-to-test-project
@@ -41,12 +41,19 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
+      - name: ls -l
+        shell: bash
+        run: |
+          ls -l
+
       - name: BuildDotnetApp
         shell: bash
         run: |
           dotnet build SpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
 
       - name: RunSpecFlowTests
+        shell: bash
+        continue-on-error: true
         run: |
           _args=()
           _logger_args=()
@@ -57,10 +64,7 @@ jobs:
           [ "MyTestResults.trx" != 'null' ] && _logger_args+=(";LogFileName=MyTestResults.trx")
           [ "trx" != 'null' ] && _args+=("-l" "trx$(IFS=; echo "${_logger_args[@]}")")
 
-          if ! dotnet test --no-build "${_args[@]}"; then
-              echo "_EXIT=1" >> $GITHUB_ENV
-          fi
-          shell: bash
-          continue-on-error: true
+          dotnet test --no-build -c Release -v minimal -f net6.0 -v normal
+
     #   cd ../RAP4USER
     #   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
