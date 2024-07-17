@@ -29,7 +29,7 @@ jobs:
         id: navigate-to-test-project
         shell: bash
         run: |
-          cd ./Testing/SpecFlow/SpecFlowRAP
+          cd ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs
       #   - name: Run tests
       #     uses: actions/cryptic-wizard/run-specflow-tests@v1.3.1
       #     with:
