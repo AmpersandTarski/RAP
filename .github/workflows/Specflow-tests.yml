@@ -1,9 +1,8 @@
 name: Specflow tests
 
 on:
-  push:
-    branches:
-      - feature/Specflow-test-pipeline
+  pull_request:
+    branches: ["main"]
 
 jobs:
   Build_Docker:
@@ -12,18 +11,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      #   - name: build docker
-      #     id: update-image
-      #     shell: bash
-      #     run: |
-      #       cd ./RAP4
-      #       docker build -t ampersandtarski/ampersand-rap:dev-latest .
-      #       cd ..
-      #       cp .example.env .env
-      #       docker compose build
-      #       docker network create proxy
-      #       docker network create rap_db
-      #       docker compose up -d
+      - name: Build docker
+        id: update-image
+        shell: bash
+        run: |
+          cd ./RAP4
+          docker build -t ampersandtarski/ampersand-rap:dev-latest .
+          cd ..
+          cp .example.env .env
+          docker compose build
+          docker network create proxy
+          docker network create rap_db
+          docker compose up -d
 
       - name: Navigate to test project
         id: navigate-to-test-project
@@ -41,7 +40,7 @@ jobs:
         run: |
           dotnet build ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
 
-      - name: RunSpecFlowTests
+      - name: Run SpecFlow tests
         shell: bash
         continue-on-error: true
         run: |
