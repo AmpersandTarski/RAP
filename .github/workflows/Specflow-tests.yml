@@ -1,0 +1,20 @@
+name: Specflow tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "RAP4/**"
+
+jobs:
+  Build_Docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update image
+        id: update-image
+        shell: bash
+        run: |
+          pd
+          cwd
+          ls
