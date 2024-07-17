@@ -3,9 +3,7 @@ name: Specflow tests
 on:
   push:
     branches:
-      - main
-    paths:
-      - "RAP4/**"
+      - feature/Specflow-test-pipeline
 
 jobs:
   Build_Docker:
