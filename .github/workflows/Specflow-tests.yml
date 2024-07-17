@@ -36,8 +36,13 @@ jobs:
       #       test-assembly-path: Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/
       #       test-assembly-dll: SpecFlowRAP.Specs.dll
       #       output-html: MyTestResults.html
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "7.0.x"
 
       - name: BuildDotnetApp
+        shell: bash
         run: |
           _args=()
           [ "Release" != 'null' ] && _args+=("-c" "Release")
@@ -45,7 +50,7 @@ jobs:
           [ "net6.0" != 'null' ] && _args+=("-f" "net6.0")
 
           [ false == 'true' ] && echo 'Build Skipped' || dotnet build "${_args[@]}"
-          shell: bash
+
       - name: RunSpecFlowTests
         run: |
           _args=()
