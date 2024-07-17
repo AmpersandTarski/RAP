@@ -49,7 +49,7 @@ jobs:
       - name: BuildDotnetApp
         shell: bash
         run: |
-          dotnet build ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.SpecsSpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
+          dotnet build ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
 
       - name: RunSpecFlowTests
         shell: bash
