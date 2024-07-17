@@ -17,4 +17,4 @@ jobs:
         shell: bash
         run: |
           cd ./RAP4
-          ls
+          docker build -t ampersandtarski/ampersand-rap:dev-latest .
