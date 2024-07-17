@@ -1,6 +1,6 @@
-<!-- ShowConceptualDiagram.html -->
-<div ng-repeat="obj in requireArray(resource['$name$'])" style="margin:10px;">
-    <img style="max-width: 600px;" src="api/v1/file/{{ obj._view_.imgfile }}" alt="Conceptual diagram"
+<!-- ShowConceptualDiagramSmall.html -->
+<div ng-repeat="obj in requireArray(resource['$name$'])">
+    <img style="max-width: 200px;" src="api/v1/file/{{ obj._view_.imgfile }}" alt="Conceptual diagram"
         onclick="refreshImage(this)" />
 </div>
 

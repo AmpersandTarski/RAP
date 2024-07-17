@@ -1,0 +1,12 @@
+$if(verbose)$<!-- Box-RAW.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$, $if(!isRoot)$non-$endif$root box) -->
+$endif$$if(crudR)$$if(table)$<div>
+    <table>
+        <tr ng-repeat="resource in requireArray(resource['$name$'])">$subObjects:{subObj|
+            <td>
+                $subObj.subObjContents$
+            </td>}$
+        </tr>
+    </table>
+</div>$else$<div ng-repeat="resource in requireArray(resource['$name$'])">$subObjects:{subObj|
+    $subObj.subObjContents$}$
+</div>$endif$$else$<span><i>not readable</i></span>$endif$
