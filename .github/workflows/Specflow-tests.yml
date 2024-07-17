@@ -44,12 +44,7 @@ jobs:
       - name: BuildDotnetApp
         shell: bash
         run: |
-          _args=()
-          [ "Release" != 'null' ] && _args+=("-c" "Release")
-          [ "minimal" != 'null' ] && _args+=("-v" "minimal")
-          [ "net6.0" != 'null' ] && _args+=("-f" "net6.0")
-
-          [ false == 'true' ] && echo 'Build Skipped' || dotnet build "${_args[@]}"
+          dotnet build SpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
 
       - name: RunSpecFlowTests
         run: |
