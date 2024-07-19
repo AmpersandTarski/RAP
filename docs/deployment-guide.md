@@ -8,7 +8,7 @@ The following programs / APIs / SDKs should be installed in your system.
 
 - [VS Code](https://code.visualstudio.com/) (for development and the built-in terminal)
 
-All commands in this guide are run in VS Code's built-in terminal. On Windows this is Powershell, on Linux/macOS the default is Bash, but others are supported.
+All commands in this guide are run in VS Code's built-in terminal. On Windows this is Powershell, on Linux/macOS the default is Bash.
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for building and running local containers)
 
