@@ -1,6 +1,6 @@
 # SIAMv4 User Page
 
-This page needs to be updated for PF_Roles (in `session(Active|Allowed)Roles`)
+This page needs to be updated for prototypeContext.Roles (in `session(Active|Allowed)Roles`)
 This should also be added to the readme/changelog
 
 The purpose of this chapter is to acquaint people with version 3

@@ -50,23 +50,23 @@ CONTEXT SIAMv4_0 IN ENGLISH -- SIAM: Sessions, Identity- and Access Management
 -- VIEW STRONG: IfcText HTML TEMPLATE "View-STRONG.html" ENDVIEW   REPRESENT IfcText TYPE ALPHANUMERIC
 
 --[Session Menu (in)visibility]
-RELATION isVisible[PF_NavMenuItem*PF_NavMenuItem] [PROP] -- Defined in SystemContext.adl
-RELATION isInvisible[PF_NavMenuItem*PF_NavMenuItem] [PROP]
+RELATION isVisible[prototypeContext.NavMenuItem*prototypeContext.NavMenuItem] [PROP] -- Defined in SystemContext.adl
+RELATION isInvisible[prototypeContext.NavMenuItem*prototypeContext.NavMenuItem] [PROP]
 ROLE ExecEngine MAINTAINS DelPairIsInvisible
 RULE DelPairIsInvisible LABEL "DelPair `isInvisible`": isInvisible |- I-isVisible
-VIOLATION (TXT "{EX} DelPair;isVisible;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenuItem;", TGT I)
+VIOLATION (TXT "{EX} DelPair;isVisible;prototypeContext.NavMenuItem;", SRC I, TXT ";prototypeContext.NavMenuItem;", TGT I)
 ROLE ExecEngine MAINTAINS InsPairIsInvisible
 RULE InsPairIsInvisible LABEL "InsPair `isInvisible`": I-isInvisible |- isVisible
-VIOLATION (TXT "{EX} InsPair;isVisible;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenuItem;", TGT I)
+VIOLATION (TXT "{EX} InsPair;isVisible;prototypeContext.NavMenuItem;", SRC I, TXT ";prototypeContext.NavMenuItem;", TGT I)
 
-RELATION label[PF_NavMenuItem*PF_Label] [UNI]    REPRESENT PF_Label TYPE ALPHANUMERIC
-RELATION isPartOf[PF_NavMenuItem*PF_NavMenu] [UNI,TOT]
+RELATION label[prototypeContext.NavMenuItem*prototypeContext.Label] [UNI]    REPRESENT prototypeContext.Label TYPE ALPHANUMERIC
+RELATION isPartOf[prototypeContext.NavMenuItem*prototypeContext.NavMenu] [UNI,TOT]
 -- POPULATION isInvisible CONTAINS [ ("NavMenuItemsTrashBin", "NavMenuItemsTrashBin") ]
 -- INTERFACE NavMenuItemsTrashBin LABEL "Trash bin for NavMenu items": I[SESSION] cRud BOX [ "Something to please the compiler": I ]
 ROLE ExecEngine MAINTAINS FixNavMenuStuff
-RULE FixNavMenuStuff LABEL "Fix bugs in PF_NavMenu Stuff": I[PF_NavMenuItem] |- isPartOf;isPartOf~ /\ label;label~
-VIOLATION ( TXT "{EX} InsPair;isPartOf;PF_NavMenuItem;", SRC I, TXT ";PF_NavMenu;", TGT I
-          , TXT "{EX} InsPair;label;PF_NavMenuItem;", SRC I, TXT ";PF_Label;", TGT I
+RULE FixNavMenuStuff LABEL "Fix bugs in prototypeContext.NavMenu Stuff": I[prototypeContext.NavMenuItem] |- isPartOf;isPartOf~ /\ label;label~
+VIOLATION ( TXT "{EX} InsPair;isPartOf;prototypeContext.NavMenuItem;", SRC I, TXT ";prototypeContext.NavMenu;", TGT I
+          , TXT "{EX} InsPair;label;prototypeContext.NavMenuItem;", SRC I, TXT ";prototypeContext.Label;", TGT I
           )
 
 --[[Examples of possibly useful RULEs]]--
