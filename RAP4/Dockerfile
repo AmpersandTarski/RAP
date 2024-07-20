@@ -1,7 +1,7 @@
 # This script is meant to build from the root directory of your RAP-repo.
 # Ampersand compiler is also needed for RAP4 to compile student scripts
 
-FROM ampersandtarski/prototype-framework:v1.17.0
+FROM ampersandtarski/prototype-framework:namespaces
 # this prototype-framework builds on an Apache server
 
 # Install docker, so students can run their prototypes
@@ -29,28 +29,23 @@ RUN apt-get update && apt-get install -y graphviz
 
 RUN apt-get update && apt-get install -y libzip-dev && docker-php-ext-install zip
 
-# Copy Ampersand compiler
-# COPY --from=ampersandtarski/ampersand:2023-08-08 /bin/ampersand /usr/local/bin
-# RUN chmod +x /usr/local/bin/ampersand
 
 COPY . /usr/local/project/
 
-WORKDIR /usr/local/project
-
-# Generate prototype application from folder
-RUN ampersand proto RAP4.adl \
-  --proto-dir /var/www \
-  --build-recipe RAP \
+# Run ampersand compiler to generated new frontend and backend json model files (in generics folder)
+RUN ampersand proto --no-frontend /usr/local/project/RAP4.adl \
+  --proto-dir /var/www/backend \
+  --crud-defaults cRud \
   --verbose
 
-WORKDIR /var/www
+RUN ampersand proto --frontend-version Angular --no-backend /usr/local/project/RAP4.adl \
+  --proto-dir /var/www/frontend/src/app/generated \
+  --crud-defaults cRud \
+  --verbose
 
-# Copy customizations into generated application
-COPY customizations /var/www/
+WORKDIR /var/www/frontend
 
-RUN chown -R www-data:www-data /var/www/data /var/www/generics
-RUN composer install --prefer-dist --no-dev --profile --optimize-autoloader
-RUN npm update 
-RUN npm install 
-RUN gulp build-ampersand 
-RUN gulp build-project
+RUN npx ng build
+
+# Copy output from frontend build
+RUN cp -r /var/www/frontend/dist/prototype-frontend/* /var/www/html
