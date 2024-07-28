@@ -1,0 +1,71 @@
+$if(verbose)$<!-- Box-TABLEmenu.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$, $if(!isRoot)$non-$endif$root box) -->
+$endif$$if(crudR)$
+<!-- 
+<div ng-include="'app/src/notifications/notificationCenter.html'"></div> -->
+
+<div class="Atlas-interface-box box box-cols" ng-controller="BoxController" ng-init="parent = resource"
+    $if(hideOnNoRecords)$ ng-show="$if(exprIsUni)$resource['$name$'] !== null$else$resource['$name$'].length$endif$"
+    $endif$>
+    $if(!noRootTitle)$$if(title)$<h4>$title$</h4>$else$$if(isRoot)$<h4>$label$</h4>$endif$$endif$$endif$
+    <table style="width:100%;" class="table table-striped table-hover table-condensed" $if(sortable)$ si-table$endif$>
+        $if(!noHeader)$
+        <thead style="display:none">
+            <tr>$subObjects:{subObj|
+                <th$if(subObj.subObjExprIsUni)$$if(sortable)$ class="sortable-col"
+                    sort-by="_sortValues_['$subObj.subObjName$']"
+                    ng-attr-sort-init="{{'$subObj.subObjLabel$' === '$sortBy$' ? '$order$' : ''}}" $endif$$endif$>
+                    $subObj.subObjLabel$</th>}$
+                    <th class="box-cols-opt">$if(crudC)$
+                        <a $if(exprIsUni)$ng-if="!resource['$name$']" $endif$ng-hide="pendingPromises(resource)" href=""
+                            ng-click="createResource(resource, '$name$', patchResource, 0)">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>$endif$
+                    </th>
+            </tr>
+        </thead>$endif$
+        <tbody>
+            <tr $if(sortable)$ si-sortable$endif$ ng-repeat="resource in requireArray(resource['$name$'])"
+                ng-class="resource._status_" $if(isRoot)$ ng-init="patchResource = resource;" $endif$>
+                $subObjects:{subObj|
+                $if(verbose)$<!-- $subObj.subObjLabel$ -->
+                $endif$<td class="row-content">
+                    $subObj.subObjContents$
+                </td>}$
+                <td class="box-cols-opt">
+                    <button type="button" class="btn btn-warning btn-xs" ng-if="resource._showButtons_.save"
+                        ng-click="save(resource)">Save</button>
+                    <button type="button" class="btn btn-danger btn-xs" ng-if="resource._showButtons_.cancel"
+                        ng-click="cancel(resource)">Cancel</button>$if(crudU)$
+                    <button type="button" class="btn btn-xs"
+                        ng-click="remove(parent, '$name$', resource, $if(isRoot)$parent$else$patchResource$endif$)">
+                        <span class="glyphicon glyphicon-minus"></span>
+                    </button>$endif$$if(crudD)$
+                    <button type="button" class="btn btn-danger btn-xs" ng-click="delete(parent, '$name$', resource)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>$endif$
+                    <img ng-show="resource._isLoading_" src="app/images/loading.gif" alt="Loading..."
+                        style="height:20px;" />
+                </td>
+            </tr>$if(crudU)$
+            <tr$if(exprIsUni)$ ng-if="!resource['$name$']" $endif$ ng-controller="AtomicTypeAheadController">
+                <td colspan="42" $if(crudU)$ ng-init="getTypeahead('$target$')" $endif$>
+                    <input ng-model="selected.label" type="text" class="input-sm" placeholder="Add $target$"
+                        uib-typeahead="item._label_ for item in typeahead['$target$'] | filter:\$viewValue | limitTo:15"
+                        typeahead-editable="true"
+                        typeahead-on-select="typeaheadOnSelect(\$item, \$model, \$label, parent, '$name$', parent); selected.label=''">
+                </td>
+                </tr>$endif$
+        </tbody>$if(crudC)$ <!-- <tfoot> only needed if crudC -->
+        <tfoot>
+            <tr>$subObjects:{subObj|
+                <td></td>}$
+                <td class="box-cols-opt">$if(crudC)$
+                    <a $if(exprIsUni)$ng-if="!resource['$name$']" $endif$ng-hide="pendingPromises(resource)" href=""
+                        ng-click="createResource(resource, '$name$', patchResource)">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>$endif$
+                </td>
+            </tr>
+        </tfoot>$endif$
+    </table>
+</div>$else$<span><i>not readable</i></span>$endif$

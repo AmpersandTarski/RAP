@@ -1,6 +1,9 @@
 <!-- ShowConceptualDiagram.html -->
-<div ng-repeat="obj in requireArray(resource['$name$'])" style="margin:10px;">
-    <img style="max-width: 600px;" src="api/v1/file/{{ obj._view_.imgfile }}" alt="Conceptual diagram"
+
+<div ng-repeat="obj in requireArray(resource['$name$'])" class="Atlas-interface-box"
+    style="margin:10px; padding: 0px 15px 15px 15px; min-height: 300px;">
+    <div class="Atlas-title" style="font-size:24px;"> ATLAS overview </div>
+    <img style=" max-width: 100%;" src="api/v1/file/{{ obj._view_.imgfile }}" alt="Conceptual diagram"
         onclick="refreshImage(this)" />
 </div>
 

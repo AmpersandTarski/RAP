@@ -1,5 +1,5 @@
-$if(verbose)$<!-- Box-PROPBUTTON.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$ ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$) -->$endif$
-$if(crudR)$<div ng-controller="AtomicController">
+$if(verbose)$<!-- Box-PROPBUTTONrefresh.html "$label$" : $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$ ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$) -->$endif$
+$if(crudR)$<div class="propbuttonrefresh" ng-controller="AtomicController">
     <div
         ng-repeat="resource in $if(exprIsUni)$(resource['$name$'] === null ? [] : [resource['$name$']])$else$resource['$name$']$endif$">
         <div ng-if="resource.hasOwnProperty('disabledpopovertext') && resource.disabled">

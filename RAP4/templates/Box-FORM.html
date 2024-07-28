@@ -1,4 +1,4 @@
-$if(verbose)$<!-- Box-AtlasFORM.html "$label$" $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$, $if(!isRoot)$non-$endif$root box) -->
+$if(verbose)$<!-- Box-FORM.html "$label$" $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$, $if(!isRoot)$non-$endif$root box) -->
 $endif$$if(crudR)$<div class="box box-rows" ng-controller="BoxController" ng-init="parent = resource"
     $if(hideOnNoRecords)$ ng-if="$if(exprIsUni)$resource['$name$']$else$resource['$name$'].length$endif$" $endif$>
     $if(!noRootTitle)$$if(title)$<h4>$title$</h4>$else$$if(isRoot)$<h4>$label$</h4>$endif$$endif$$endif$$if(crudC)$
@@ -9,8 +9,8 @@ $endif$$if(crudR)$<div class="box box-rows" ng-controller="BoxController" ng-ini
         </div>
     </div>$endif$
     <ul class="list-group">
-        <li style="background-color: #eee;" class="list-group-item"
-            ng-repeat="resource in requireArray(resource['$name$'])" cg-busy="resource._loading_"
+        <li class="list-group-item" ng-repeat="resource in requireArray(resource['$name$'])"
+            cg-busy="resource._loading_"
             ng-class="{'list-group-item-warning' : resource._status_.warning, 'list-group-item-danger' : resource._status_.danger, 'list-group-item-success' : resource._status_.success}"
             $if(isRoot)$ ng-init="patchResource = resource" $endif$>
             <div class="box-li-opt">
@@ -31,19 +31,19 @@ $endif$$if(crudR)$<div class="box box-rows" ng-controller="BoxController" ng-ini
                     ng-click="delete(parent, '$name$', resource)" uib-tooltip="Delete" tooltip-trigger="mouseenter"
                     tooltip-placement="left">
                     <span class="glyphicon glyphicon-trash"></span>
-                </button>$endif$$if(showNavMenu)$
-                <my-nav-to-other-interfaces resource="resource"></my-nav-to-other-interfaces>$endif$
+                </button>$endif$
+                <my-nav-to-other-interfaces resource="resource"></my-nav-to-other-interfaces>
             </div>$subObjects:{subObj|$if(verbose)$
             <!-- $subObj.subObjLabel$ -->$endif$
-            <div class="row" $if(hideSubOnNoRecords)$ ng-if="requireArray(resource['$subObj.subObjName$']).length"
-                $endif$>$if(hideLabels)$
+            <div class="row">$if(hideLabels)$
                 <div class="row-content col-md-12">
                     $subObj.subObjContents$
                 </div>$else$
-                <div class="row-label col-md-2 wordwrap">
+                <!-- <div class="row-label col-md-2 wordwrap">  -- OLD -->
+                <div class="row-label col-md-12 wordwrap">
                     <strong>$subObj.subObjLabel$</strong>
                 </div>
-                <div class="row-content col-md-10">
+                <div class="row-content col-md-12">
                     $subObj.subObjContents$
                 </div>$endif$
             </div>}$
@@ -63,45 +63,3 @@ $endif$$if(crudR)$<div class="box box-rows" ng-controller="BoxController" ng-ini
         </li>$endif$
     </ul>
 </div>$else$<span><i>not readable</i></span>$endif$
-
-
-<style>
-    /* #notificationCenter {
-        margin-bottom: 10px;
-        position: fixed !important;
-        z-index: 99;
-        align-content: center;
-        width: 1140px;
-    } */
-
-    .Atlas-interface-box {
-        border-radius: 8px;
-        background-color: white;
-        border: 2px solid #ddd;
-        margin: 10px;
-    }
-
-    .Atlas-interface-box .Atlas-title {
-        text-align: center;
-        padding: 5px 20px 5px 20px;
-        margin: -2px 35% 1% 35%;
-        background-color: #eee;
-        width: 30%;
-        border-radius: 0px 0px 8px 8px;
-        border: solid #ddd;
-        border-width: 0px 2px 2px 2px;
-    }
-
-    .Atlas-sticky {
-        position: -webkit-sticky;
-        /* Safari */
-        position: sticky;
-        top: 0;
-    }
-
-    .propbuttonrefresh button {
-        width: 50%;
-        font-size: 15px;
-        margin: 0px 0px 0px 25%;
-    }
-</style>

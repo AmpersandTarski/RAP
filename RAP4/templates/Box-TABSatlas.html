@@ -1,5 +1,6 @@
-$if(verbose)$<!-- Box-TABS.html "$label$" $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$, $if(!isRoot)$non-$endif$root box) -->
-$endif$$if(crudR)$<div class="box box-tabs" ng-controller="BoxController" ng-init="parent = resource; activeTab = 0">
+$if(verbose)$<!-- Box-TABSatlas.html "$label$" $expAdl$ :: $source$ * $target$ $if(exprIsUni)$[UNI]$endif$$if(exprIsTot)$[TOT]$endif$  ($if(crudC)$C$else$c$endif$$if(crudR)$R$else$r$endif$$if(crudU)$U$else$u$endif$$if(crudD)$D$else$d$endif$, $if(!isRoot)$non-$endif$root box) -->
+$endif$$if(crudR)$<div class="Atlas-interface-box box-tabs" ng-controller="BoxController" ng-init="parent = resource">
+    <div class="Atlas-title" style="font-size:20px;"> Editor </div>
     $if(!noRootTitle)$$if(title)$<h4>$title$</h4>$else$$if(isRoot)$<h4>$label$</h4>$endif$$endif$$endif$$if(crudC)$
     <div class="row" ng-if="$if(exprIsUni)$!resource['$name$']$else$!resource['$name$'].length$endif$">
         <div class="col-xs-12">
@@ -31,7 +32,7 @@ $endif$$if(crudR)$<div class="box box-tabs" ng-controller="BoxController" ng-ini
                 </button>$endif$
                 <my-nav-to-other-interfaces resource="resource"></my-nav-to-other-interfaces>
             </div>
-            <uib-tabset active="activeTab">$subObjects:{subObj|$if(verbose)$
+            <uib-tabset>$subObjects:{subObj|$if(verbose)$
                 <!-- TAB: $subObj.subObjLabel$ -->$endif$
                 <uib-tab heading="$subObj.subObjLabel$" $if(hideOnNoRecords)$
                     ng-if="requireArray(resource['$subObj.subObjName$']).length" $endif$>

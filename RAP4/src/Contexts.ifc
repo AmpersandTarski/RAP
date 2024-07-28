@@ -2,7 +2,7 @@ CONTEXT RAP IN ENGLISH
 
 VIEW Context : Context(name)
 VIEW Concept : Concept(name)
-VIEW Script: Script(TXT "Terug naar script")
+VIEW Script: Script(TXT "Script editor >")
 
 
 
@@ -11,33 +11,44 @@ PURPOSE INTERFACE Atlas
 {+ The atlas helps the user to investigate his or her script.
 She can browse around in it. The Atlas displays only the contexts that are loaded in RAP4.
 +}
-INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<AtlasFORM hideLabels>
-   [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud   -- This works because VIEW Script: Script(TXT "Terug naar script")
-    , "versionInfo" : versionInfo                    cRud
-    , "Submit changes" : context[ScriptVersion*Context]~ BOX <PROPBUTTONrefresh>       
-            [ property : adlRequest cRUd
-            ]
-    , " ":  context[Pattern*Context]~; conceptualDiagram      CRUD <ShowConceptualDiagram> 
-    , "" : I -- Context
-        BOX<TABLE sortable>
-            [ context       : I                                                 cRud
-            , patterns      : context[Pattern*Context]~                         cRud
-            , concepts      : context[Concept*Context]~                         CRUD
-            , rules         : ctxrs~ \/ udefrules~                              cRud
-            , relations     : relsDefdIn[Relation*Context]~                     cRud
-            ]
-      , "Detailed " : I BOX <TABS> 
-         [ 
-          "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~ INTERFACE "ATLASConcept"          
-         , "Relaties"  : relsDefdIn[Relation*Context]~  INTERFACE "ATLASRelation"
-         , "Regels"    : ctxrs~ \/ udefrules~           INTERFACE "ATLASRule"
-         , "Purposes"  :  context[Pattern*Context]~ ; 
-                                (purpose[Pattern*Purpose]
-                                \/ (concepts[Pattern*Concept];purpose[Concept*Purpose]) -- purpose of the concepts
-                                \/ ( declaredIn[Relation*Pattern]~;purpose[Relation*Purpose])  -- purpose of the relations
-                                \/ (allRules[Pattern*Rule]-proprules[PropertyRule*Pattern]~);purpose[Rule*Purpose]) -- purpose of the rules
-                                                        INTERFACE "ATLASPurpose"
-                                         ]
+INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX <AtlasFORM hideLabels>
+   [ -- , "versionInfo" : versionInfo                    cRud
+     -- , "Compiler message"  : context[ScriptVersion*Context]~;compileresponse[ScriptVersion*CompileResponse] cRud
+    "script model":  context[Pattern*Context]~; conceptualDiagram      CRUD <ShowConceptualDiagram> 
+    , menubalk : I cRud BOX <TABLEmenu hideLabels>
+      [
+        "Message" : context[ScriptVersion*Context]~;compileresponse[ScriptVersion*CompileResponse] cRud <ParseAsHtml> 
+        , "Submit changes" : context[ScriptVersion*Context]~ BOX <PROPBUTTONrefresh>       
+              [ property : adlRequest cRUd
+              ]
+        , "Script editor" : context[ScriptVersion*Context]~;version~ cRud   -- This works because VIEW Script: Script(TXT "Terug naar script")
+      ]
+    , "" : context[Pattern*Context]~ cRud -- Context
+        BOX<TABLEoverview sortable> 
+            [
+            patterns      : I                        cRud
+            , Concepten : concepts[Pattern*Concept]        CRUD                    
+            , Relaties  : declaredIn[Relation*Pattern]~    CRUD
+            , Regels   : udefrules~                        CRUD
+            , Purposes  : (purpose[Pattern*Purpose]
+                              \/ (concepts[Pattern*Concept];purpose[Concept*Purpose]) -- purpose of the concepts
+                              \/ ( declaredIn[Relation*Pattern]~;purpose[Relation*Purpose])  -- purpose of the relations
+                              \/ (allRules[Pattern*Rule]-proprules[PropertyRule*Pattern]~);purpose[Rule*Purpose]) -- purpose of the rules
+                                                            cRud
+            ]                             
+    , "Detailed " : context[Pattern*Context]~ cRud
+        BOX 
+          [ 
+          -- "Concepten" : context[Pattern*Context]~;concepts[Pattern*Concept] \/ context[Concept*Context]~   INTERFACE "ATLASConcept"
+            "Concepten" : concepts[Pattern*Concept]        INTERFACE "ATLASConcept"                    
+          , "Relaties"  : declaredIn[Relation*Pattern]~    INTERFACE "ATLASRelation"
+          , "Regels"    : udefrules~                       INTERFACE "ATLASRule"
+          , "Purposes"  : (purpose[Pattern*Purpose]
+                            \/ (concepts[Pattern*Concept];purpose[Concept*Purpose]) -- purpose of the concepts
+                            \/ ( declaredIn[Relation*Pattern]~;purpose[Relation*Purpose])  -- purpose of the relations
+                            \/ (allRules[Pattern*Rule]-proprules[PropertyRule*Pattern]~);purpose[Rule*Purpose]) -- purpose of the rules
+                                                            INTERFACE "ATLASPurpose"
+                                          ]
    ]
 
 INTERFACE Context FOR User, Tutor : I[Context] cRud BOX<FORM hideLabels>

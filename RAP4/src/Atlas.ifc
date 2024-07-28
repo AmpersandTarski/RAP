@@ -1,7 +1,7 @@
 CONTEXT RAP IN ENGLISH
 
 
-    INTERFACE "Atlas population": I[ScriptVersion];context[ScriptVersion*Context] BOX
+    INTERFACE "Atlas population" : I[ScriptVersion];context[ScriptVersion*Context] BOX
         [ 
             
             name                    : I[Context];name                                           CRUD
@@ -34,7 +34,7 @@ CONTEXT RAP IN ENGLISH
                 ]
         ]
 
-    INTERFACE "JsonPattern" : I[Pattern]      BOX
+    INTERFACE JsonPattern  : I[Pattern]      BOX
     [
             name                : name                                          cRud
             , concepts          : concepts[Pattern*Concept];(I-name;"ONE";name~)                INTERFACE "JsonConcept"
@@ -49,15 +49,16 @@ CONTEXT RAP IN ENGLISH
     ]
 
 
-    INTERFACE "JsonConcept" : I[Concept] CRuD BOX
+    INTERFACE JsonConcept  : I[Concept] CRuD BOX
         [
             name                : name[Concept*ConceptName]                                 CRUD
             , definition        : concept[ConceptDef*Concept]~;meaning[ConceptDef*Meaning];
                                     markup[Meaning*Markup];text[Markup*MarkupText]          cRud
             , type              : ttype[Concept*TType]                                      cRud
+            , image          : conceptualDiagram[Concept*FileObject] cRud
         ]
 
-    INTERFACE "JsonRepresentation" : I[Concept] BOX  -- kan weg
+    INTERFACE JsonRepresentation  : I[Concept] BOX  -- kan weg
         [
             name            : name[Concept*ConceptName]                             cRud
             ,definition     : name;acdcpt~                                          cRud
@@ -66,35 +67,36 @@ CONTEXT RAP IN ENGLISH
             -- , typehek       : ttype[Concept*TType] - I[Concept]#"OBJECT"            cRud
         ]
 
-    INTERFACE "JsonRelation" : I[Relation] BOX
+    INTERFACE JsonRelation  : I[Relation] BOX
        [    
          relation        : name[Relation*RelationName]                                      cRud    -- name of the relation
         , sign           : sign[Relation*Signature]                                         INTERFACE "JsonSignature"        -- signature of the relation (source and target)
         , properties     : prop[Relation*Property]                                          cRud    -- properties of the relation ([uni],[tot])
         , meaning        : decMean[Relation*Meaning];markup;text                            cRud  -- todo: make this the actual text of the meaning
+        , image          : conceptualDiagram[Relation*FileObject] cRud
         
        ] 
     
-    INTERFACE "JsonSignature" : I[Signature] BOX                                    -- signature of the relation (source and target)
+    INTERFACE JsonSignature  : I[Signature] BOX                                    -- signature of the relation (source and target)
         [ 
          source         : src[Signature*Concept];name[Concept*ConceptName]  cRud     -- actual name of the source
         ,target         : tgt[Signature*Concept];name[Concept*ConceptName]  cRud     -- actual name of the target
         ]
 
-    INTERFACE "JsonRolerule" : I[Role] BOX  -- kan weg
+    INTERFACE JsonRolerule  : I[Role] BOX  -- kan weg
         [
             role            : I                                             INTERFACE "JsonRole"
             , rule          : maintains[Role*Rule];name                     cRud
         ]
 
-    INTERFACE "JsonRole" : I[Role] BOX
+    INTERFACE JsonRole : I[Role] BOX
     [
         role                :  name[Role*RoleName]                  cRud
         -- ,service         :  ..                               cRud  mogelijkheid om service nog door te geven
 
     ]
 
-    INTERFACE "JsonRule" : I[Rule] BOX                      
+    INTERFACE JsonRule  : I[Rule] BOX                      
         [    
             name            : name[Rule*RuleName]                               cRud    -- name of the rule
             , formexp       : formalTerm[Rule*Term];showADL[Term * ShowADL]     cRud    -- formal expression of the Rule
@@ -106,7 +108,7 @@ CONTEXT RAP IN ENGLISH
         ]
 
 
-INTERFACE "JsonEnforce" : I[Rule] BOX                                       
+INTERFACE JsonEnforce  : I[Rule] BOX                                       
     [
         name            : name[Rule*RuleName]                               cRud
         , term          : formalTerm[Rule*Term];showADL                     cRud
@@ -117,7 +119,7 @@ INTERFACE "JsonEnforce" : I[Rule] BOX
          
     ]
 
- INTERFACE "JsonPurpose" : I [Purpose] BOX
+ INTERFACE JsonPurpose  : I [Purpose] BOX
     [         
             conceptPurp          :       purpose[Concept*Purpose]~;name                  cRud
             , relationPurp       :       purpose[Relation*Purpose]~                      BOX
@@ -136,7 +138,7 @@ INTERFACE "JsonEnforce" : I[Rule] BOX
             
     ]
 
-INTERFACE "JsonIdent"    : I [Rule] BOX
+INTERFACE JsonIdent : I [Rule] BOX
 [
     name                : name[Rule*RuleName]                           cRud
     -- ,concept            : vdcpt[View*Concept]                              cRud  -- todo: Stef vragen waar dit verstopt zit?
