@@ -286,6 +286,7 @@ PATTERN "Static relations from FormalAmpersand"
     RELATION urlEncodedName[Concept*EncodedName] [UNI]
     RELATION urlEncodedName[Pattern*EncodedName] [UNI]
     RELATION urlEncodedName[Rule*EncodedName] [UNI]
+    RELATION urlEncodedName[Relation*EncodedName] [UNI]
     RELATION usedIn[Relation*Term]
     RELATION userSrc[Term*Concept] [UNI]
     RELATION userTgt[Term*Concept] [UNI]
@@ -309,6 +310,7 @@ RELATION conceptualDiagram[Concept*FileObject] [UNI]
 RELATION conceptualDiagram[Rule*FileObject] [UNI]
 RELATION conceptualDiagram[Pattern*FileObject] [UNI]
 RELATION conceptualDiagram[Context*FileObject] [UNI]
+RELATION conceptualDiagram[Relation*FileObject] [UNI]
 
 RELATION basePath[ScriptVersion*FilePath] [UNI] -- The path on the filesystem relative from RAP4 to the context stuff of this scriptversion ( i.e.:  scripts\123456\Script_1475844318716509\Version2016-10-07T144605\)
 
@@ -372,6 +374,22 @@ VIOLATION ( TXT "{EX} InsAtom;FileObject"
                                  , SRC urlEncodedName
                                  , TXT ".png"
           )
+
+ROLE ExecEngine MAINTAINS "link cd of relation"
+RULE "link cd of relation" : I[Relation] /\ (relsDefdIn[Relation*Context];context[ScriptVersion*Context]~;context[ScriptVersion*Context];relsDefdIn[Relation*Context]~)
+                               |- conceptualDiagram[Relation*FileObject];conceptualDiagram[Relation*FileObject]~
+MEANING "Elke Relatie in een ampersand-script wordt gevisualiseerd door middel van een conceptueel diagram"
+VIOLATION ( TXT "{EX} InsAtom;FileObject"
+          , TXT "{EX} InsPair;conceptualDiagram;Relation;",SRC I[Relation],TXT ";FileObject;_NEW"
+          , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;ConceptueelDiagram"
+          , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
+                                 , SRC relsDefdIn[Relation*Context];
+                                       context[ScriptVersion*Context]~;
+                                       basePath[ScriptVersion*FilePath]
+                                 , TXT "/images/PTCDRelation"
+                                 , SRC urlEncodedName
+                                 , TXT ".png"
+          )         
 
 ENDPATTERN
 
