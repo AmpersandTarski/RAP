@@ -138,10 +138,10 @@ ExecEngine::registerFunction('ConvertToADL', function ($scriptId, $scriptVersion
 
         /* hier kan nu ook de populatie van de ATLAS gegeneerd worden
         voor nu overbodig, misschien later */
-    }
 
-    //generate the images once again form the script.adl
-    $path = ExecEngine::getFunction('UpdateImages')->call($this, $scriptId, $scriptVersionId, $srcRelPath, $userId);
+        //generate the images once again form the script.adl
+        $path = ExecEngine::getFunction('UpdateImages')->call($this, $scriptId, $scriptVersionId, $srcRelPath, $userId);
+    }
 
 
     // end function
@@ -162,18 +162,22 @@ ExecEngine::registerFunction('UpdateImages', function ($scriptId, $scriptVersion
     // ./scripts/<userId>/<scriptId>/<versionId>/out.adl
     $basePath = "scripts/{$userId}/{$scriptId}/{$scriptVersionId}";
     $relPath = $ee->getApp()->getSettings()->get('global.absolutePath') . '/data/' . $basePath;
-    $srsRelPath = "{$relPath}/script.adl";
+    $srsAbsPath = "{$relPath}/script.adl";
 
 
     $command = new Command(
-        'ampersand documentation --format markdown script.adl',
+        'ampersand documentation',
         [
-            // 'ATLAS_file.json',
-            // 'out.adl'
-            //// basename($srsRelPath),            // omit the document, so generate graphics only.
-            //// , basename($tgtRelPath)    // needed, or else Ampersand will not run.   // this is 'script.adl'
+            "--no-text"             // omit the document, so generate graphics only.
+            , "--format docx"         // needed, or else Ampersand will not run.
+            , basename($srsAbsPath)   // this is 'script.adl'
         ],
         $ee->getLogger()
     );
-    $command->execute(dirname($srsRelPath));
+    $command->execute(dirname($srsAbsPath));
+
+    // get the identification of the current script and version 
+    $scriptAtom = $model->getConceptByLabel('Script')->makeAtom($scriptId);
+
+    # $scriptAtom->link($command->getResponse(), 'compileresponse[Script*CompileResponse]')->add();
 });
