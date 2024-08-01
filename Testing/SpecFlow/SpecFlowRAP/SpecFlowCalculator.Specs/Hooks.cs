@@ -12,17 +12,17 @@ namespace SpecFlowRAP.StepDefinitions
         {
             DIContainer.ConfigureServices();
 
-            RAPStepDefinitions rAPStepDefinitions = new RAPStepDefinitions(featureContext);
-            Task.Run(async () => await rAPStepDefinitions.GivenIReinstallTheApplication()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.GivenINeedASessionIdOfRAP()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.GivenINeedToSeeTheRegisterButton()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.GivenINeedARegisterIdOfRAP()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.WhenIFillInMyUserid()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.WhenIFillInMyPasswordAndName()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.WhenICreateMyAccount()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.ThenIWantToAddANewScript()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.WhenIAddMyLatestScript()).GetAwaiter().GetResult();
-            Task.Run(async () => await rAPStepDefinitions.WhenCompileMyLatestScript()).GetAwaiter().GetResult();
+            RAPStepDefinitions rapStepDefinitions = new RAPStepDefinitions(featureContext);
+            Task.Run(async () => await rapStepDefinitions.GivenIReinstallTheApplication()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.GivenINeedASessionIdOfRAP()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.GivenINeedToSeeTheRegisterButton()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.GivenINeedARegisterIdOfRAP()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.WhenIFillInMyUserid()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.WhenIFillInMyPasswordAndName()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.WhenICreateMyAccount()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.ThenIWantToAddANewScript()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.WhenIAddMyLatestScript()).GetAwaiter().GetResult();
+            Task.Run(async () => await rapStepDefinitions.WhenCompileMyLatestScript()).GetAwaiter().GetResult();
         }
     }
 }

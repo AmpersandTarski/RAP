@@ -1,7 +1,4 @@
-﻿using SpecFlowRAP.Specs.Data;
-using System;
-using TechTalk.SpecFlow;
-
+﻿
 namespace SpecFlowRAP.StepDefinitions
 {
     [Binding]
@@ -42,7 +39,6 @@ namespace SpecFlowRAP.StepDefinitions
             HttpResponseMessage resp = await Request.patchMessage(client, uriBuilder.Uri.AbsoluteUri, accountData);
             // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
-            //PatchSessiondata? responsedata = JsonSerializer.Deserialize<PatchSessiondata>(body);
             _result = (int)resp.StatusCode;
 
         }

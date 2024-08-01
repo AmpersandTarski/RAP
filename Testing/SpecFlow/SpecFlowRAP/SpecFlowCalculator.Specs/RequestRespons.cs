@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Http;
-using SpecFlowRAP.Specs;
+﻿using System.Text;
 using System.Text.Json;
-using System.Collections;
 using SpecFlowRAP.Specs.Data;
 
 
@@ -152,7 +144,7 @@ namespace SpecFlowRAP
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? responsedata = JsonSerializer.Deserialize<PatchSessiondata>(body);
             // Account Id opslaan in _featureContext
-            return resp; //.StatusCode;
+            return resp;
         }
 
         public static async Task<HttpResponseMessage> CreateAccount(HttpClient client, string url)
@@ -170,7 +162,7 @@ namespace SpecFlowRAP
             };
             HttpResponseMessage resp = await putMessage(client, url, accountData);
             // Account Id opslaan in _featureContext
-            return resp; // (int)resp.StatusCode;
+            return resp;
         }
 
 

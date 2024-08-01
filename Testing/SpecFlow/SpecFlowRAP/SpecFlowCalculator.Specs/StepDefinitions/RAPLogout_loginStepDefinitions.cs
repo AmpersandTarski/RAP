@@ -1,6 +1,4 @@
 ﻿using SpecFlowRAP.Specs.Data;
-using System;
-using TechTalk.SpecFlow;
 using System.Text.Json;
 
 namespace SpecFlowRAP.StepDefinitions
@@ -17,6 +15,7 @@ namespace SpecFlowRAP.StepDefinitions
         private int _result;
         string basePath = "/api/v1/resource";
 
+
         [When("i log out")]
         public async Task WhenILogOut()
         {
@@ -30,7 +29,7 @@ namespace SpecFlowRAP.StepDefinitions
         public async Task WhenIConfirmMyLogOut()
         {
             string sessionId = _featureContext.Get<string>("PHPsessid");
-            uriBuilder.Path = string.Join("/", basePath, "SESSION/1/Logout" + sessionId);
+            uriBuilder.Path = string.Join("/", basePath, "SESSION/1/Logout/" + sessionId);
             Dictionary<string, object>[] logoutData = new Dictionary<string, object>[1];
             logoutData[0] = new Dictionary<string, object>
             {
@@ -44,8 +43,8 @@ namespace SpecFlowRAP.StepDefinitions
             Logoutdata? logoutClass = JsonSerializer.Deserialize<Logoutdata>(body);
         }
 
-        [When("i try to login")]
-        public async Task WhenITryToLogin()
+        [Then("i can log myself in")]
+        public async Task ThenICanLogMyselfIn()
         {
             string sessionId = _featureContext.Get<string>("PHPsessid");
             string pathlocation_pasw = "/Login/" + sessionId + "/Login/" + sessionId + "/Password";
@@ -69,6 +68,13 @@ namespace SpecFlowRAP.StepDefinitions
             string body = await resp.Content.ReadAsStringAsync();
             PatchSessiondata? responsedata = JsonSerializer.Deserialize<PatchSessiondata>(body);
             _result = (int)resp.StatusCode;
+        }
+
+
+        [Then("the RAP result must be (.*)")]
+        public void ThenTheRAPResultMustBe(int result)
+        {
+            _result.Should().Be(result);
         }
     }
 }
