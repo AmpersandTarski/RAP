@@ -1,28 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Http;
-using SpecFlowRAP.Specs;
-using System.Security.Policy;
-using System.Collections;
-using TechTalk.SpecFlow.CommonModels;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Formats.Asn1;
-using System.Data;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
-using FluentAssertions.Execution;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using static System.Collections.Specialized.BitVector32;
-using static System.Net.Mime.MediaTypeNames;
-using System.Configuration;
-using System.Numerics;
-using System.Reflection;
-using TechTalk.SpecFlow;
-using Newtonsoft.Json.Linq;
-using System.IO;
+﻿using System.Text.Json;
 using SpecFlowRAP.Specs.Data;
 
 
@@ -42,34 +18,6 @@ namespace SpecFlowRAP.StepDefinitions
         private UriBuilder uriBuilder = UriBuilderSingleton.Instance;
         private int _result;
         string basePath = "/api/v1/resource";
-        //private RAPState state;
-
-
-        [BeforeScenario("@FeatureB")]
-        public void BeforeScenarioFeatureB()
-        {
-            Console.WriteLine($"BeforeScenarioFeatureB");
-        }
-
- 
-        [Then("the RAP result should be (.*)")]
-        public void ThenTheRAPResultShouldBe(int result)
-        {
-            _result.Should().Be(result);
-        }
-
-        [Given("i do have an account")]
-        //http://localhost/api/v1/resource/SESSION/1/MyAccount
-        public async Task GivenIDoHaveAnAccount()
-        {
-            string state = _featureContext.Get<string>("Status");
-            if (state.Equals("REGISTERED"))
-            {
-                uriBuilder.Host = "localhost";
-                HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-                _result = (int)resp.StatusCode;
-            }
-        }
 
 
 
@@ -90,11 +38,12 @@ namespace SpecFlowRAP.StepDefinitions
             string body = await resp.Content.ReadAsStringAsync();
             List<Atlasdata>? atlas = JsonSerializer.Deserialize<List<Atlasdata>>(body);
 
-            // Save the Id's for all concepts, like Student, Module, SESSION, etc.
             string? context_label = atlas?[0]._EMPTY_?.context?._label_;
             _featureContext.Set(atlas?[0]._EMPTY_?.context?._id_, "context_" + context_label?.ToLower());
             string? properties_label = atlas?[0]._EMPTY_?.properties?[0]._label_;
             _featureContext.Set(atlas?[0]._EMPTY_?.properties?[0]._id_, "properties_" + properties_label?.ToLower());
+
+            // Save the Id's for all concepts, like Student, Module, SESSION, etc.
             for (int i = 0; i < atlas?[0]._EMPTY_?.concepts?.Count; i++)
             {
                 string? concepts_label = atlas?[0]._EMPTY_?.concepts?[i]._label_;
@@ -120,138 +69,23 @@ namespace SpecFlowRAP.StepDefinitions
             }
         }
 
-        [When("i check the concept course")]
-        public async Task WhenICheckTheConceptCourse()
-        {
-            // http://localhost/api/v1/resource/Concept/Concept_36a30387-d780-47bd-b7e1-105cbc33f9e3/Concept
-            string course = _featureContext.Get<string>("concept_course");
-            uriBuilder.Path = string.Join("/", basePath, "Concept/" + course + "/Concept");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
-            _result = (int)resp.StatusCode;
-        }
 
-
-        [When("i check the concept student")]
-        public async Task WhenICheckTheConceptStudent()
-        {
-            // http://localhost/api/v1/resource/Concept/Concept_36a30387-d780-47bd-b7e1-105cbc33f9e3/Concept
-            string course = _featureContext.Get<string>("concept_student");
-            uriBuilder.Path = string.Join("/", basePath, "Concept/" + course + "/Concept");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the concept module")]
-        public async Task WhenICheckTheConceptModule()
-        {
-            // http://localhost/api/v1/resource/Concept/Concept_36a30387-d780-47bd-b7e1-105cbc33f9e3/Concept
-            string module = _featureContext.Get<string>("concept_module");
-            uriBuilder.Path = string.Join("/", basePath, "Concept/" + module + "/Concept");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the concept session")]
-        public async Task WhenICheckTheConceptSession()
-        {
-            // http://localhost/api/v1/resource/Concept/Concept_36a30387-d780-47bd-b7e1-105cbc33f9e3/Concept
-            string session = _featureContext.Get<string>("concept_session");
-            uriBuilder.Path = string.Join("/", basePath, "Concept/" + session + "/Concept");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the concept one")]
-        public async Task WhenICheckTheConceptOne()
-        {
-            // http://localhost/api/v1/resource/Concept/Concept_36a30387-d780-47bd-b7e1-105cbc33f9e3/Concept
-            string one = _featureContext.Get<string>("concept_one");
-            uriBuilder.Path = string.Join("/", basePath, "Concept/" + one + "/Concept");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Conceptdata? atlas = JsonSerializer.Deserialize<Conceptdata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the rule moduleenrollment")]
-        public async Task WhenICheckTheRuleModuleEnrollment()
+        [When("i check the '(.*)' '(.*)'")]
+        public async Task WhenICheckThe(string entity, string entity_type)
         {
             // http://localhost/api/v1/resource/Rule/PropertyRule_4e579c72-08eb-46ea-9719-1bba89a5c8af/Rule
-            string ModuleEnrollment = _featureContext.Get<string>("rule_moduleenrollment");
-            uriBuilder.Path = string.Join("/", basePath, "Rule/" + ModuleEnrollment + "/Rule");
+            string entityType = _featureContext.Get<string>(entity.ToLower() + "_" + entity_type.ToLower());
+            uriBuilder.Path = string.Join("/", basePath, entity + "/" + entityType + "/" + entity);
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
             // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
-            Ruledata? atlas = JsonSerializer.Deserialize<Ruledata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the rule tot")]
-        public async Task WhenICheckTheRuleTot()
-        {
-            // http://localhost/api/v1/resource/Rule/PropertyRule_4e579c72-08eb-46ea-9719-1bba89a5c8af/Rule
-            string tot = _featureContext.Get<string>("rule_tot");
-            uriBuilder.Path = string.Join("/", basePath, "Rule/" + tot + "/Rule");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Ruledata? atlas = JsonSerializer.Deserialize<Ruledata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the relation takes")]
-        public async Task WhenICheckTheRelationTakes()
-        {
-            // http://localhost/api/v1/resource/Relation/PropertyRule_4e579c72-08eb-46ea-9719-1bba89a5c8af/Relation
-            string takes = _featureContext.Get<string>("relation_takes");
-            uriBuilder.Path = string.Join("/", basePath, "Relation/" + takes + "/Relation");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Relationdata? atlas = JsonSerializer.Deserialize<Relationdata>(body);
+            // Deserialization not really necessary to get the statuscode
+            // Ruledata? atlas = JsonSerializer.Deserialize<Ruledata>(body);
             _result = (int)resp.StatusCode;
         }
 
 
-        [When("i check the relation ispartof")]
-        public async Task WhenICheckTheRelationIspartof()
-        {
-            // http://localhost/api/v1/resource/Relation/PropertyRule_4e579c72-08eb-46ea-9719-1bba89a5c8af/Relation
-            string ispartof = _featureContext.Get<string>("relation_ispartof");
-            uriBuilder.Path = string.Join("/", basePath, "Relation/" + ispartof + "/Relation");
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Relationdata? atlas = JsonSerializer.Deserialize<Relationdata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the relation IsEnrolledFor")]
-        public async Task WhenICheckTheRelationIsEnrolledFor()
-        {
-            string isenrolledfor = _featureContext.Get<string>("relation_isenrolledfor");
-            uriBuilder.Path = string.Join("/", basePath, "Relation/" + isenrolledfor + "/Relation");
-
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            Relationdata? atlas = JsonSerializer.Deserialize<Relationdata>(body);
-            _result = (int)resp.StatusCode;
-        }
-
+        // Deze when is een bijzonder geval omdat het path afwijkt van de standaard (PropertyRule != PropRule)
         [When("i check the properties tot")]
         public async Task WhenICheckThePropertiesTot()
         {
@@ -263,20 +97,6 @@ namespace SpecFlowRAP.StepDefinitions
             string body = await resp.Content.ReadAsStringAsync();
             //Propertiesdata? atlas = JsonSerializer.Deserialize<Propertiesdata>(body);
             _result = (int)resp.StatusCode;
-        }
-
-        [When("i check the context Enrolledment")]
-        public async Task WhenICheckTheContextEnrollment()
-        {
-            string context_enrollment = _featureContext.Get<string>("context_enrollment");
-            uriBuilder.Path = string.Join("/", basePath, "Context/" + context_enrollment + "/Context");
-
-            HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-            // Get content of respons just for illustration.
-            string body = await resp.Content.ReadAsStringAsync();
-            //Propertiesdata? atlas = JsonSerializer.Deserialize<Propertiesdata>(body);
-            _result = (int)resp.StatusCode;
-
         }
     }
 }

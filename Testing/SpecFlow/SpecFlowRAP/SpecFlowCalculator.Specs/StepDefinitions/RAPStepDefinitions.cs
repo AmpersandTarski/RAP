@@ -1,28 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Http;
-using SpecFlowRAP.Specs;
-using System.Security.Policy;
-using System.Collections;
-using TechTalk.SpecFlow.CommonModels;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Formats.Asn1;
-using System.Data;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
-using FluentAssertions.Execution;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using static System.Collections.Specialized.BitVector32;
-using static System.Net.Mime.MediaTypeNames;
-using System.Configuration;
-using System.Numerics;
-using System.Reflection;
-using TechTalk.SpecFlow;
-using Newtonsoft.Json.Linq;
-using System.IO;
+﻿using System.Text.Json;
 using SpecFlowRAP.Specs.Data;
 
 
@@ -39,18 +15,10 @@ namespace SpecFlowRAP.StepDefinitions
             _featureContext = featureContext;
         }
 
-
         private UriBuilder uriBuilder = UriBuilderSingleton.Instance;
         private int _result;
         string basePath = "/api/v1/resource";
-        //private RAPState state;
 
-        [BeforeScenario("@FeatureA")]
-        public void BeforeScenarioFeatureA()
-        {
-            Console.WriteLine($"BeforeScenarioFeatureA");
-
-        }
 
         [Given("i reinstall the application")]
         public async Task GivenIReinstallTheApplication()
@@ -59,7 +27,6 @@ namespace SpecFlowRAP.StepDefinitions
             uriBuilder.Fragment = "";
             uriBuilder.Path = "api/v1/admin/installer";
             uriBuilder.Query = "defaultPop=true";
-            _featureContext?.Set("NOT_REGISTERED", "Status");
             HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
             // Get content of respons just for illustration.
             string body = await resp.Content.ReadAsStringAsync();
@@ -91,17 +58,11 @@ namespace SpecFlowRAP.StepDefinitions
             //api/v1/resource/SESSION/1/Login       //RegisterForAccount werkt, maar eerst inloggen
             uriBuilder.Fragment = "";
             uriBuilder.Host = "localhost";
-            string? state = _featureContext?.Get<string>("Status");
             string? sessionId = _featureContext?.Get<string>("PHPsessid");
             uriBuilder.Path = string.Join("/", basePath, "SESSION/1");
-            //if (state.Equals("NOT_REGISTERED"))
-            //{
-                HttpResponseMessage resp = await Request.RegisterForAccount(client, uriBuilder.Uri.AbsoluteUri, sessionId);
-                string body = await resp.Content.ReadAsStringAsync();
-                ResponseData? rapArrClass = JsonSerializer.Deserialize<ResponseData>(body);
-                _featureContext?.Set("BUSY_REGISTERING", "Status");
-            //}
-
+            HttpResponseMessage resp = await Request.RegisterForAccount(client, uriBuilder.Uri.AbsoluteUri, sessionId);
+            string body = await resp.Content.ReadAsStringAsync();
+            ResponseData? rapArrClass = JsonSerializer.Deserialize<ResponseData>(body);
         }
 
 
@@ -119,7 +80,6 @@ namespace SpecFlowRAP.StepDefinitions
             Register? register = respons?.Register;
             string? id = register?._id_;
             _featureContext?.Set(id, "Registerid");
-            //_result = (int)resp.StatusCode;
         }
 
 
@@ -128,7 +88,6 @@ namespace SpecFlowRAP.StepDefinitions
         {
             uriBuilder.Fragment = "";
             uriBuilder.Host = "localhost";
-            string? state = _featureContext?.Get<string>("Status");
             string? sessionId = _featureContext?.Get<string>("PHPsessid");
             string? registerId = _featureContext?.Get<string>("Registerid");
             uriBuilder.Path = string.Join("/", basePath, "SESSION/1");
@@ -152,7 +111,6 @@ namespace SpecFlowRAP.StepDefinitions
         public async Task WhenIFillInMyPasswordAndName()
         {
             uriBuilder.Host = "localhost";
-            string? state = _featureContext?.Get<string>("Status");
             string? sessionId = _featureContext?.Get<string>("PHPsessid");
             string? registerId = _featureContext?.Get<string>("Registerid");
             uriBuilder.Path = string.Join("/", basePath, "SESSION/1");
@@ -183,7 +141,6 @@ namespace SpecFlowRAP.StepDefinitions
         {
             uriBuilder.Fragment = "";
             uriBuilder.Host = "localhost";
-            string? state = _featureContext?.Get<string>("Status");
             string? sessionId = _featureContext?.Get<string>("PHPsessid");
             string? registerId = _featureContext?.Get<string>("Registerid");
             uriBuilder.Path = string.Join("/", basePath, "SESSION/1");
@@ -210,20 +167,11 @@ namespace SpecFlowRAP.StepDefinitions
         }
 
 
-        [AfterScenario("@FeatureA")]
-        public void AfterScenarioFeatureA()
-        {
-            Console.WriteLine($"AfterScenarioFeatureA");
-
-        }
-
-
         [Given("i want to add a new script")]
         public async Task ThenIWantToAddANewScript()
         {
             //Dictionary<string, object>[] data = new Dictionary<string, object>[1];
             object data = new { };
-            //data[0] = { };
             uriBuilder.Host = "localhost";
             uriBuilder.Path = string.Join("/", basePath, "Script");
             HttpResponseMessage resp = await Request.postMessage(client, uriBuilder.Uri.AbsoluteUri, data);

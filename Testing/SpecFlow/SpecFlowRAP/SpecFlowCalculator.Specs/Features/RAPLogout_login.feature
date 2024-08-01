@@ -6,4 +6,5 @@ A short summary of the feature
 Scenario: Log out when you are logged in
 	When i log out
 	And i confirm my log out
-	And i try to login
+	Then i can log myself in
+	And the RAP result must be 200
