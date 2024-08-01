@@ -134,11 +134,11 @@ namespace SpecFlowRAP
             //string pathlocation = "/Login/" + sessId + "/Register/" + sessId + "/Form_32_to_32_fill_32_in/Userid_32__40__42__41_";
             string body = await resp.Content.ReadAsStringAsync();
             ResponseData? responsedata = JsonSerializer.Deserialize<ResponseData>(body, options);
-            string? id = responsedata.Register._id_;
+            string? id = responsedata?.Register?._id_;
             return resp;
         }
 
-        public static async Task<HttpResponseMessage> RegisterForAccount(HttpClient client, string url, string sessId)
+        public static async Task<HttpResponseMessage> RegisterForAccount(HttpClient client, string url, string? sessId)
         {
             string pathlocation = "/Login/" + sessId + "/Login/" + sessId + "/_32__32__32_/" + sessId + "/Register/property";
             Dictionary<string, object>[] accountData = new Dictionary<string, object>[1];
