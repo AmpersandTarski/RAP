@@ -40,7 +40,6 @@ namespace SpecFlowRAP.StepDefinitions
         }
 
 
-        //private HttpClient client = DIContainer.GetService<HttpClient>(); //HttpClientSingleton.Instance;
         private UriBuilder uriBuilder = UriBuilderSingleton.Instance;
         private int _result;
         string basePath = "/api/v1/resource";
@@ -260,21 +259,6 @@ namespace SpecFlowRAP.StepDefinitions
             PatchSessiondata? scriptId2 = JsonSerializer.Deserialize<PatchSessiondata>(body);
             _result = (int)resp.StatusCode;
         }
-
-        //        [Given("i do have an account")]
-        //        //http://localhost/api/v1/resource/SESSION/1/MyAccount
-        //        public async Task GivenIDoHaveAnAccount()
-        //        {
-        //            string state = _featureContext.Get<string>("Status");
-        //            if (state.Equals("REGISTERED"))
-        //            {
-        //                uriBuilder.Host = "localhost";
-        //                HttpResponseMessage resp = await Request.requestMessage(client, uriBuilder.Uri.AbsoluteUri);
-        //                _result = (int)resp.StatusCode;
-        //            }
-        //        }
-
-
 
     }
 }
