@@ -22,4 +22,9 @@ Testing/Gatling/results
 Testing/Gatling/src/test/results
 Testing/Gatling/src/test/resources/recorder.conf
 
+Testing/SpecFlow/SpecFlowRAP/.vs
+Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/bin/
+Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/obj/
+Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/Features/*.feature.cs
+
 gatling-3-7-2/

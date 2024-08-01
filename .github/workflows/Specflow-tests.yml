@@ -1,0 +1,68 @@
+name: Specflow tests
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  Build_Docker:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build docker
+        id: update-image
+        shell: bash
+        run: |
+          cd ./RAP4
+          docker build -t ampersandtarski/ampersand-rap:dev-latest .
+          cd ..
+          cp .example.env .env
+          docker compose build
+          docker network create proxy
+          docker network create rap_db
+          docker compose up -d
+
+      - name: Navigate to test project
+        id: navigate-to-test-project
+        shell: bash
+        run: |
+          cd ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: BuildDotnetApp
+        shell: bash
+        run: |
+          dotnet build ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj -c Release -v minimal -f net6.0
+
+      - name: Run SpecFlow tests
+        shell: bash
+        continue-on-error: true
+        run: |
+          dotnet test ./Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/SpecFlowRAP.Specs.csproj --no-build -c Release -v minimal -f net6.0
+
+      - name: Create living spec doc
+        shell: bash
+        run: |
+          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+          livingdoc test-assembly Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/bin/Release/net6.0/SpecFlowRAP.Specs.dll -t Testing/SpecFlow/SpecFlowRAP/SpecFlowCalculator.Specs/bin/Release/net6.0/TestExecution.json -o Testing/SpecFlow/Results/TestResult.html
+
+      - name: Publish Specflow Test Results
+        id: publish-specflow-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Specflow Test Results"
+          path: Testing/SpecFlow/Results/TestResult.html
+
+      - name: Add artifact to pull request
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            Click here to download Specflow test results: ${{ steps.publish-specflow-test-results.outputs.artifact-url }}
