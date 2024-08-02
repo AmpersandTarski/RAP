@@ -57,5 +57,12 @@ namespace SpecFlowRAP.StepDefinitions
             string body = await resp.Content.ReadAsStringAsync();
             _result = (int)resp.StatusCode;
         }
+
+
+        [Then("the RAP result has to be (.*)")]
+        public void ThenTheRAPResultHasToBe(int result)
+        {
+            _result.Should().Be(result);
+        }
     }
 }

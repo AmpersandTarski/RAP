@@ -160,13 +160,6 @@ namespace SpecFlowRAP.StepDefinitions
         }
 
 
-        [Then("the RAP result has to be (.*)")]
-        public void ThenTheRAPResultHasToBe(int result)
-        {
-            _result.Should().Be(result);
-        }
-
-
         [Given("i want to add a new script")]
         public async Task ThenIWantToAddANewScript()
         {

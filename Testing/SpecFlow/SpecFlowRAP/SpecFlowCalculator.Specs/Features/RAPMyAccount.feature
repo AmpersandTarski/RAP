@@ -6,4 +6,4 @@ Change password in my account
 Scenario: Wijzig het wachtwoord voor een user
 	Given i go to MyAccount
 	#When i change my password
-	Then the result is 200
+	Then the RAP result has to be 200
