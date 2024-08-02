@@ -1,4 +1,4 @@
-﻿Feature: Featurelogin
+﻿Feature: Logout_login
 
 A short summary of the feature
 
