@@ -15,8 +15,8 @@ namespace SpecFlowRAP.StepDefinitions
 
         // For additional details on SpecFlow hooks see http://go.specflow.org/doc-hooks
 
-        [When("i change my wachtwoord")]
-        public async Task WhenIChangeMyWachtwoord()
+        [When("i change my password")]
+        public async Task WhenIChangeMyPassword()
         {
             // Het wijzigen van het wachtwoord in RAP werkt niet. De test is ook niet af
             string sessionId = _featureContext.Get<string>("PHPsessid");
