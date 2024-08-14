@@ -160,13 +160,6 @@ namespace SpecFlowRAP.StepDefinitions
         }
 
 
-        [Then("the RAP result has to be (.*)")]
-        public void ThenTheRAPResultHasToBe(int result)
-        {
-            _result.Should().Be(result);
-        }
-
-
         [Given("i want to add a new script")]
         public async Task ThenIWantToAddANewScript()
         {
@@ -186,7 +179,7 @@ namespace SpecFlowRAP.StepDefinitions
         {
             string scriptje = "CONTEXT Enrollment IN ENGLISH\r\nPURPOSE CONTEXT Enrollment\r\n{+ A complete course consists of several modules.\r\nStudents of a course can enroll for any module that is part of the course,\r\n+}\r\n\r\nPATTERN Courses\r\n-- The concepts\r\nCONCEPT Student \"Someone who wants to study at this institute\"\r\nPURPOSE CONCEPT Student\r\n{+We have to know what person studies at this institute, so the system needs to keep track of them.+}\r\nCONCEPT Course \"A complete course that prepares for a diploma\"\r\nPURPOSE CONCEPT Course\r\n{+We have to know what courses there are, so the system needs to keep track of them.+}\r\nCONCEPT Module \"An educational entity with a single exam\"\r\nPURPOSE CONCEPT Module\r\n{+We have to know what modules exist, so the system needs to keep track of them.+}\r\n\r\n-- The relations and the initial population\r\nRELATION takes [Student*Course][TOT]\r\nMEANING \"A student takes a complete course\"\r\n\r\nPOPULATION takes CONTAINS\r\n[ (\"Peter\", \"Management\")\r\n; (\"Susan\", \"Business IT\")\r\n; (\"John\", \"Business IT\")\r\n]\r\n\r\nRELATION isPartOf[Module*Course]\r\nMEANING \"A module part of a complete course\"\r\n\r\nPOPULATION isPartOf[Module*Course] CONTAINS\r\n[ (\"Finance\", \"Management\")\r\n; (\"Business Rules\", \"Business IT\")\r\n; (\"Business Analytics\", \"Business IT\")\r\n; (\"IT-Governance\", \"Business IT\")\r\n; (\"IT-Governance\", \"Management\")\r\n]\r\n\r\nRELATION isEnrolledFor [Student*Module]\r\nMEANING \"Students enroll for each module in the course separately\"\r\n\r\n-- The one rule in this model\r\nRULE ModuleEnrollment: isEnrolledFor |- takes;isPartOf~\r\nMEANING \"A student can enroll for any module that is part of the course the student takes\"\r\nMESSAGE \"Attempt to enroll student(s) for a module that is not part of the student's course.\"\r\nVIOLATION (TXT \"Student \", SRC I, TXT \" enrolled for the module \", TGT I, TXT \" which is not part of the course \", SRC I[Student];takes)\r\nENDPATTERN\r\n\r\nINTERFACE Overview : \"_SESSION\"                  cRud\r\nBOX <TABS>\r\n     [ Students : V[SESSION*Student]             cRuD\r\n       BOX <TABLE>\r\n                [ \"Student\" : I[Student]         cRud\r\n                , \"Enrolled for\" : isEnrolledFor cRUD\r\n                , \"Course\" : takes CRUD\r\n                ]\r\n     , Course : V[SESSION*Course]                cRuD\r\n       BOX <TABLE>\r\n                [ \"Course\" : I                   cRud\r\n                , \"Modules\" : isPartOf~          CRUD\r\n                ]\r\n     , Modules : V[SESSION*Module]               cRud\r\n       BOX <TABLE>\r\n                [ \"Modules\" : I                  cRuD\r\n                , \"Course\" : isPartOf            cRUd\r\n                , \"Students\" : isEnrolledFor~    CRUD\r\n                ]\r\n     ]\r\n\r\nENDCONTEXT";
             //http://localhost/api/v1/resource/Script/Script_8c65c75e-dd99-4e28-a9d3-a6bf33d6c18e/Nieuw_32_script
-            string scriptId = _featureContext.Get<string>("scriptId");
+            string? scriptId = _featureContext?.Get<string>("scriptId");
 
             uriBuilder.Path = string.Join("/", basePath, "Script/" + scriptId + "/Nieuw_32_script");
             string path = "/Content";
@@ -198,7 +191,7 @@ namespace SpecFlowRAP.StepDefinitions
         [When("compile my latest script")]
         public async Task WhenCompileMyLatestScript()
         {
-            string scriptId = _featureContext.Get<string>("scriptId");
+            string? scriptId = _featureContext?.Get<string>("scriptId");
             uriBuilder.Path = string.Join("/", basePath, "Script/" + scriptId + "/Nieuw_32_script");
             string path = "/Actual_32_info/compile/property";
             bool value = true;
