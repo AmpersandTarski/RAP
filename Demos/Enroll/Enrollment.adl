@@ -62,8 +62,8 @@ BOX <TABS>
                 ]
      , Modules : V[SESSION*Module]               cRud
        BOX <TABLE>
-                [ "Modules" : I                  cRuD
-                , "Course" : isPartOf            cRUd
+                [ "Modules"  : I                 cRuD
+                , "Course"   : isPartOf          cRUd
                 , "Students" : isEnrolledFor~    CRUD
                 ]
      ]

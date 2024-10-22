@@ -61,7 +61,7 @@ VIOLATION (TXT "{EX} InsPair;isVisible;prototypeContext.NavMenuItem;", SRC I, TX
 
 RELATION label[prototypeContext.NavMenuItem*prototypeContext.Label] [UNI]    REPRESENT prototypeContext.Label TYPE ALPHANUMERIC
 RELATION isPartOf[prototypeContext.NavMenuItem*prototypeContext.NavMenu] [UNI,TOT]
--- POPULATION isInvisible CONTAINS [ ("NavMenuItemsTrashBin", "NavMenuItemsTrashBin") ]
+-- POPULATION isInvisible CONTAINS [ ("prototypeContext.NavMenuItemsTrashBin", "NavMenuItemsTrashBin") ]
 -- INTERFACE NavMenuItemsTrashBin LABEL "Trash bin for NavMenu items": I[SESSION] cRud BOX [ "Something to please the compiler": I ]
 ROLE ExecEngine MAINTAINS FixNavMenuStuff
 RULE FixNavMenuStuff LABEL "Fix bugs in prototypeContext.NavMenu Stuff": I[prototypeContext.NavMenuItem] |- isPartOf;isPartOf~ /\ label;label~
