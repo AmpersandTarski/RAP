@@ -1,6 +1,6 @@
 # Deployment
 
-This guide will lay down the steps required to deploy to Docker and to Kubernetes.
+This guide will lay down the steps required to deploy RAP to Docker and to Kubernetes.
 
 ## General Requirements
 
@@ -316,7 +316,14 @@ Binding the Kubernetes CLI to Azure can be done with the following command. Note
 ```pwsh
 az aks get-credentials -g <resource-group-name> -n <aks-cluster-name> --overwrite-existing
 ```
+bijvoorbeeld
+```pwsh
+az aks get-credentials -g kubernetes-prd -n ampersand-rap-aks-prd --overwrite-existing
+```
+Dit commando zorgt ervoor dat de kubectl commando's worden uitgevoerd op de verbonden cluster.
+Je kunt nu ook k9s gebruiken om dit cluster aan alle kanten te inspecteren.
 
+```pwsh
 After executing the command, any kubectl commands will be run on the connected cluster. To connect to a different cluster, first retreive a list of all available clusters.
 
 ```pwsh
@@ -480,3 +487,56 @@ This will show the configuration of Kubernetes. In my case, it says that minikub
 I also found [help at stackoverflow](https://stackoverflow.com/questions/37921222/kubectl-connection-to-server-was-refused).
 
 Good luck & Happy coding!
+
+
+## Maintenance of RAP
+Maintenance of the RAP application has diverse tasks, such as:
+* resetting the RAP-application, to resolve operational issues such as a slow response time or memory leaks,
+* updating the RAP-application,
+* updating the database, and
+* updating the images.
+This section explains how to perform these tasks.
+### Getting started
+To manage and maintain RAP, you need access to the Azure platform of the OU.
+Once you can log in on portal.azure.com, you need access to the resource group `ampersand-rap-aks-prd`.
+You need the following role assignments (roltoewijzingen) for executing maintenance tasks:
+*  Azure Kubernetes Service RBAC-clusterbeheer, for managing all resources in the cluster.
+*  Lezer, for reading all resources in the resource group.
+
+Your maintenance work is done under the Azure subscription `informatica-prd`, which is managed by the OU.
+Verify that you can see the namespaces `rap-staging` and `rap-production` in the Azure portal.
+For the sequel, we assume that you are working on cluster `ampersand-rap-aks-prd` in namespace `ampersand-rap-aks-prd` and resource group `kubernetes-prd`.
+
+### Connecting to Azure
+You can log in to Azure from your CLI.
+```pwsh
+az login
+```
+Now connect to the cluster to let your kubectl commands take effect on this cluster.
+```pwsh
+az aks get-credentials -g kubernetes-prd -n ampersand-rap-aks-prd --overwrite-existing
+```
+From this moment on, you can also use k9s to inspect this cluster.
+
+Find out about the available clusters:
+```pwsh
+kubectl config get-contexts
+```
+Switch to another cluster:
+```pwsh
+kubectl config use-context <<NAME>>
+```
+
+### Changing environment variables in production
+You must change the environment variable `DISABLE_DB_INSTALL` for resetting RAP.
+This occurs every now and then when users experience irreproducible problems such as gateway timeouts, extremely slow behaviour, and the like.
+
+Environment variable `DISABLE_DB_INSTALL` resides in the configmap `administration-configmap-production`,
+but there are also environment variables in the pod manifest or the configmap `administration-configmap-production`.
+In K9s, you can list all pods with command `:pods`, select (but not click) the pod starting with rap-production, and edit it by pressing e.
+Similarly, you can list all configmaps with command `:configmaps`, select (but not click) the configmap `administration-configmap-production`, and edit it by pressing e.
+
+For editing in k9s you need to know the most basic vi commands.
+
+After editing, you need to restart the pod to let the changes take effect.
+I do that by deleting the pod, which kubernetes will then recreate immediately.
