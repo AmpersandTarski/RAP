@@ -24,10 +24,6 @@ spec:
               value: rap
             - name: AMPERSAND_DEBUG_MODE
               value: "true"
-            - name: DISABLE_DB_INSTALL
-              value: "true"
-            - name: AMPERSAND_PRODUCTION_MODE
-              value: "true"
             - name: AMPERSAND_LOG_CONFIG
               value: logging.yaml
             - name: AMPERSAND_SERVER_URL
