@@ -45,7 +45,7 @@ The process for building images will be explained here.
    docker build -t ampersandtarski/ampersand-rap:dev-latest .
 
    # To build rap4-student-prototype
-   docker build -t ampersandtarski/rap4-student-prototype:dev-latest .
+   docker build -t ampersandtarski/rap4-student-prototype:2024-12-13 .
    ```
 
    This will build the image and assign the dev-latest tag to it. An image with this tag will be stored by Docker for later use.

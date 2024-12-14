@@ -13,4 +13,4 @@ spec:
             - name: RAP_KUBERNETES_NAMESPACE
               value: rap-production
             - name: RAP_STUDENT_PROTO_IMAGE
-              value: ampersandtarski/rap4-student-prototype:production-latest
+              value: ampersandtarski/rap4-student-prototype:2024-12-13
