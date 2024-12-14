@@ -1,4 +1,4 @@
-FROM ampersandtarski/prototype-framework:v1.12.0
+FROM ampersandtarski/prototype-framework:v1.18.1
 
 COPY . /usr/local/project/
 

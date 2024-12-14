@@ -1,4 +1,4 @@
-FROM ampersandtarski/prototype-framework:v1.12.0
+FROM ampersandtarski/prototype-framework:v1.18.1
 
 COPY . /usr/local/project/
 
@@ -9,8 +9,7 @@ RUN ampersand proto /usr/local/project/Enrollment.adl \
 
 RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
   && cd /var/www
-  # && composer install --prefer-dist --no-dev --profile \
-  # && npm install \
-  # && gulp build-ampersand \
-  # && gulp build-project
-  
+# && composer install --prefer-dist --no-dev --profile \
+# && npm install \
+# && gulp build-ampersand \
+# && gulp build-project

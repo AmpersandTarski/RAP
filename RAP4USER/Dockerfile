@@ -1,4 +1,4 @@
-FROM ampersandtarski/prototype-framework:v1.17.0
+FROM ampersandtarski/prototype-framework:v1.18.1
 
 RUN apt-get update \
     && apt-get install -y \
