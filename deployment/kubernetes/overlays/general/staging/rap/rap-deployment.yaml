@@ -15,4 +15,4 @@ spec:
             - name: RAP_KUBERNETES_NAMESPACE
               value: rap-staging
             - name: RAP_STUDENT_PROTO_IMAGE
-              value: ampersandtarski/rap4-student-prototype:staging-latest
+              value: ampersandtarski/rap4-student-prototype:2025-02-21

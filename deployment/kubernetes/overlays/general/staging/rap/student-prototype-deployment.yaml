@@ -6,5 +6,5 @@ spec:
   template:
     spec:
       containers:
-        - image: ampersandtarski/rap4-student-prototype:staging-latest
-          name: rap4-student-prototype          
+        - image: ampersandtarski/rap4-student-prototype:2025-02-21
+          name: rap4-student-prototype
