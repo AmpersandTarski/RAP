@@ -3,11 +3,15 @@ kind: Deployment
 metadata:
   name: rap
 spec:
+  selector:
+    matchLabels:
+      app: rap
   template:
     spec:
       containers:
         - name: ampersand-rap
-          image: ampersandtarski/ampersand-rap:2025-02-21
+          image: ampersandtarski/ampersand-rap:2025-02-28
+          imagePullPolicy: Always
           env:
             - name: RAP_HOST_NAME
               value: staging.rap.tarski.nl

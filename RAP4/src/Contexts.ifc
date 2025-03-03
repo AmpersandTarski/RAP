@@ -8,7 +8,7 @@ PURPOSE INTERFACE Atlas
 {+ The atlas helps the user to investigate his or her script.
 She can browse around in it. The Atlas displays only the contexts that are loaded in RAP4.
 +}
-INTERFACE Atlas FOR User, Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<FORM hideLabels>
+INTERFACE Atlas FOR Tutor: "_SESSION"[SESSION];sessionAccount;submittor~;seqFirstItem;context[ScriptVersion*Context] cRud BOX<FORM hideLabels>
    [ "Terug naar script" : context[ScriptVersion*Context]~;version~ cRud   -- This works because VIEW Script: Script(TXT "Terug naar script")
    , "" : I
       BOX<TABLE sortable>

@@ -72,20 +72,16 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;diagnosis;", SRC version~, TXT ";", SR
 --[Loading of the script]--
 RELATION loadRequest[ScriptVersion*ScriptVersion] [PROP]  -- User has requested the script to be loaded into the FormalAmpersand metatables of RAP4
 RELATION loadedInRAP4Ok[ScriptVersion*ScriptVersion] [PROP] -- The exec-engine has loaded the population of the script.
-RELATION context[ScriptVersion*Context][UNI] -- The context that is created in RAP4 when it is loaded into the meta tables
+RELATION context[ScriptVersion*Context] [UNI] -- The context that is created in RAP4 that contains the population of the script. It has the property 'loadedInRAP4Ok'.
 
 ROLE ExecEngine MAINTAINS "Load population into meta tables" -- reset loadRequest after an attempt to create it has been performed.
---RULE "Load population into meta tables" : loadRequest-loadedInRAP4Ok |- -V -- Zie comment 20161111/RJ hiervoor
+RULE "Load population into meta tables" : ((loadRequest-loadedInRAP4Ok)-((I/\version~;submittor;submittor~;version);context;V));source;filePath |- -V[ScriptVersion*FilePath] -- Zie comment 20161111/RJ hiervoor
 -- Also make sure only to populate a new atlas, if it will be the only atlas population for that user. (that will be taken care of by the rule named "Trash all previous atlases of this account".)
-RULE "Load population into meta tables" : ((loadRequest-loadedInRAP4Ok)-(version~;submittor;submittor~;version;context;V));source;filePath |- -V
+-- The term ((I/\version~;submittor;submittor~;version);context;V) causes this rule to ignore scriptversions that have a submittor and a context.
+-- RULE "Load population into meta tables" : ((loadRequest-loadedInRAP4Ok)-((I/\version~;submittor;submittor~;version);context;V));source;filePath |- -V[ScriptVersion*FilePath]
 VIOLATION ( TXT "{EX}CompileWithAmpersand;makeAtlas;", SRC version~, TXT ";", SRC I, TXT ";",TGT I, TXT ";", SRC version~;submittor;accUserid
           , TXT "{EX}DelPair;loadRequest;ScriptVersion;", SRC I, TXT ";ScriptVersion;", SRC I
           )
---[Cleaning up old atlases]
-ROLE ExecEngine MAINTAINS "Trash all previous atlases of this account" -- before a new atlas is populated, make sure all previous ones are removed to prevent disorder.
-RULE "Trash all previous atlases of this account" : loadRequest; version~ ;submittor;submittor~;version;context |- context;requestDestroy
-VIOLATION (TXT "{EX}InsPair;requestDestroy;Context;", TGT I, TXT ";Context;", TGT I)
-
 --[Prototypes]--
 RELATION protoRequest[ScriptVersion*ScriptVersion] [PROP] -- User has requested the script to be converted into a prototype
 RELATION protoOk[ScriptVersion*ScriptVersion] [PROP] -- a prototype has actually been generated (no errors)
@@ -99,11 +95,20 @@ VIOLATION ( TXT "{EX}CompileWithAmpersand;prototype;", SRC version~, TXT ";", SR
           )
 
 --[Deletion of Context (Fully cascading!)]--
-RELATION requestDestroy[Context*Context] [PROP] -- a request to destroy this context. Beware: Experimental. You might burn all. The idea is that ALL atoms in the context of RAP4 that are linked with this context atom (transitive closure) will be deleted. ALL relations are taken into account, except for a set, specified in cli.php. Currently, the only relation in that set is context[ScriptVersion*Context]. This is to avoid that atoms are destroyed in the specific RAP4 part. 
-ROLE ExecEngine MAINTAINS "Destroy Context"  -- ExecEngine is een echte pyrotechnicus.... 
-RULE "Destroy Context" : requestDestroy |- -V
-VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
-          )
+-- RELATION requestDestroy[Context*Context] [PROP] -- a request to destroy this context. Beware: Experimental. You might burn all. The idea is that ALL atoms in the context of RAP4 that are linked with this context atom (transitive closure) will be deleted. ALL relations are taken into account, except for a set, specified in cli.php. Currently, the only relation in that set is context[ScriptVersion*Context]. This is to avoid that atoms are destroyed in the specific RAP4 part. 
+-- ROLE ExecEngine MAINTAINS "Destroy Context"  -- ExecEngine is een echte pyrotechnicus.... 
+-- RULE "Destroy Context" : requestDestroy |- -V
+-- VIOLATION ( TXT "{EX}Cleanup;", SRC I, TXT ";Context"
+--           )
+--[Cleaning up old atlases]
+-- ROLE ExecEngine MAINTAINS "Trash all previous atlases of this account" -- before a new atlas is populated, make sure all previous ones are removed to prevent disorder.
+-- RULE "Trash all previous atlases of this account" : loadRequest; version~ ;submittor;submittor~;version;context |- context;requestDestroy
+-- VIOLATION (TXT "{EX}InsPair;requestDestroy;Context;", TGT I, TXT ";Context;", TGT I)
+
+-- ROLE ExecEngine MAINTAINS "Trash context of non-latest scriptversion"
+-- RULE "Trash context of non-latest scriptversion" :
+--    context[ScriptVersion*Context] |- -(nextItem;V)
+-- VIOLATION (TXT "{EX}Cleanup;", SRC nextItem;context[ScriptVersion*Context], TXT ";Context")
 ENDPATTERN
 
 PATTERN "Runtime"
@@ -292,9 +297,8 @@ VIOLATION ( TXT "{EX} InsAtom;FileObject"
           , TXT "{EX} InsPair;conceptualDiagram;Context;",SRC I[Context],TXT ";FileObject;_NEW"
           , TXT "{EX} InsPair;originalFileName;FileObject;_NEW;FileName;LogicalDataModel"
           , TXT "{EX} InsPair;filePath;FileObject;_NEW;FilePath;"
-                                 , SRC context[ScriptVersion*Context]~;
-                                       basePath[ScriptVersion*FilePath]
-                                 , TXT "/images/LogicalDataModel.png"
+          , SRC context[ScriptVersion*Context]~;basePath[ScriptVersion*FilePath]
+          , TXT "/images/LogicalDataModel.png"
           )
 
 ROLE ExecEngine MAINTAINS "link cd of pattern"

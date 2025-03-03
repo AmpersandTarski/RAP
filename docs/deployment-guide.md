@@ -42,13 +42,13 @@ The process for building images will be explained here.
 
    ```pwsh
    # To build ampersand-rap
-   docker build -t ampersandtarski/ampersand-rap:2025-02-21 .
+   docker build -t ampersandtarski/ampersand-rap:2025-02-28 .
 
    # To build rap4-student-prototype
-   docker build -t ampersandtarski/rap4-student-prototype:2024-12-13 .
+   docker build -t ampersandtarski/rap4-student-prototype:2025-02-28 .
    ```
 
-   This will build the image and assign the 2025-02-21 tag to it. An image with this tag will be stored by Docker for later use.
+   This will build the image and assign the 2025-02-28 tag to it. An image with this tag will be stored by Docker for later use.
 
 ## Docker
 

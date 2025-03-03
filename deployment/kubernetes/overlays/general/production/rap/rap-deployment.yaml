@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: rap
 spec:
+  selector:
+    matchLabels:
+      app: rap
   template:
     spec:
       containers:
@@ -13,4 +16,4 @@ spec:
             - name: RAP_KUBERNETES_NAMESPACE
               value: rap-production
             - name: RAP_STUDENT_PROTO_IMAGE
-              value: ampersandtarski/rap4-student-prototype:2024-12-13
+              value: ampersandtarski/rap4-student-prototype:2025-02-28

@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: enroll
 spec:
+  selector:
+    matchLabels:
+      app: enroll
   template:
     spec:
       containers:
