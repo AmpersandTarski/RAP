@@ -18,7 +18,7 @@ jobs:
         shell: bash
         run: |
           cd ./RAP4
-          docker build -t ampersandtarski/ampersand-rap:dev-latest .
+          docker build -t ampersandtarski/ampersand-rap:2025-02-28 .
           cd ..
           cp .example.env .env
           docker compose build

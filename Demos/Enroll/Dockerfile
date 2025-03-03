@@ -7,7 +7,7 @@ RUN ampersand proto /usr/local/project/Enrollment.adl \
   --proto-dir /var/www \
   --verbose
 
-RUN chown -R www-data:www-data /var/www/data /var/www/log /var/www/generics \
+RUN chown -R www-data:www-data /var/www \
   && cd /var/www
 # && composer install --prefer-dist --no-dev --profile \
 # && npm install \

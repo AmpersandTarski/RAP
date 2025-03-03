@@ -4,3 +4,6 @@ metadata:
   name: rap-ingress
   annotations:
     cert-manager.io/issuer: "letsencrypt-production"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "10"

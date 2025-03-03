@@ -111,14 +111,16 @@ az login --tenant <TENANT_NAME>
 az account set -n <SUBSCRIPTION_NAME>
 ```
 
-2. Create an Azure Active Directory Application then get the appId and save it in an environment variable:
+2. Create an Azure Active Directory Application to manage authentication and authorization for RAP, to access Azure resources, call Azure APIs and assign roles. An Azure AD Application is an identity configuration that defines RAP's identity and access permissions. It represents RAP, so it can be integrated with Azure AD for authentication and authorization.
+Then get the appId and save it in an environment variable:
 
 ```
 az ad app create --display-name <APP_NAME>
 $appId = $(az ad app list --display-name <APP_NAME> --query "[].appId" -o tsv)
 ```
 
-3. Create a service principal and save the id
+3. Create a service principal (aka service account) to grant RAP permissions to access Azure resouces without user intervention. It includes credentials and role assignments, so it can grant access to the right resources.
+Then save the id in variable $assigneeObjectId.
 
 ```
 az ad sp create --id $appId

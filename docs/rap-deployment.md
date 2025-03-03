@@ -10,7 +10,7 @@ This page explains how RAP application is deployed using Docker or Kubernetes.
 
 ## RAP docker image
 
-To understand the contents of the RAP docker imager, it is important to discuss two other images first; Ampersand and Prototype-framework.
+To understand the contents of the RAP docker image, it is important to discuss two other images first; Ampersand and Prototype-framework.
 
 **Ampersand** ([repository](https://github.com/AmpersandTarski/Ampersand))
 The application that checks and compiles ADL-scripts (business rules in Ampersand language). It returns a set of files (json and sql) containing the information system; backend, API and frontend and database queries.
@@ -121,13 +121,13 @@ The Kubernetes deployment chart consists of several components that work togethe
 A user of RAP uses the URL of RAP in her browser.
 The Kubernetes cluster receives this traffic.
 The Kubernetes cluster uses an Azure public IP address.
-Azur forwards this traffic through a load balancer to the ingress controller of the RAP application.
+A load balancer forwards this traffic to the ingress controller of the RAP application.
 
 A seperate document is available explaining how to create the Kubernetes cluster on Azure using Azure Kubernetes Service: [Preparing Kubernetes environment on Azure](preparing-azure.md)
 
 ## Kubernetes objects
 
-In this section all Kubernetes objects required in the cluster are defined. For development purposes a PowerShell script is available to create the objects: [create-rap-manifest.ps1](https://github.com/AmpersandTarski/RAP/blob/main/deployment/create-rap-manifest.ps1)
+This section defines all Kubernetes objects required in the cluster. For development purposes a PowerShell script is available to create the objects: [create-rap-manifest.ps1](https://github.com/AmpersandTarski/RAP/blob/main/deployment/create-rap-manifest.ps1)
 
 Below the most important terms for Kubernetes are listed.
 
@@ -138,7 +138,7 @@ Below the most important terms for Kubernetes are listed.
 | - | - |
 | Kubernetes object | Describe the desired state of your application, such as what container images to use, how many replicas to run, and what resources to allocate. Kubernetes objects include resources such as Deployments, Services, ConfigMaps, Secrets, Jobs, CronJobs, and many others. |
 | Container​ | A lightweight and portable executable unit that contains application code, libraries, and dependencies, and is run by a pod. Containers provide a consistent runtime environment across different infrastructure platforms.​ |
-| Pod​ | The smallest and simplest Kubernetes object. A pod encapsulates one or more containers and provides them with a shared network namespace, shared storage, and an IP address. Pods are scheduled on nodes and communicate with the Kubernetes API server.​ |
+| Pod​ | The smallest deployable object Kubernetes manages. A pod encapsulates one or more containers and provides them with a shared network namespace, shared storage, and an IP address. Pods are scheduled on nodes and communicate with the Kubernetes API server.​ |
 | Node | A worker machine in a Kubernetes cluster that runs pods. A node can be a physical machine or a virtual machine, and it has all the necessary services to run containers, such as Docker or containerd. Nodes are managed by the control plane components of the Kubernetes master.​ |
 | Cluster | A set of nodes that run containerized applications managed by Kubernetes. A cluster typically consists of a master node and one or more worker nodes. The master node manages the control plane components of the Kubernetes system, while the worker nodes run the applications. |​
 | Cluster network | The network that connects the nodes in a Kubernetes cluster and facilitates communication between them. The cluster network is divided into two parts: the pod network, which is used for communication between pods, and the service network, which is used for communication between services.​ |
@@ -200,7 +200,10 @@ The nginx ingress controller is deployed in the namespace `ingress-nginx`, only 
 
 ### Let's encrypt
 
-The Ingress Nginx Controller works together with Let’s Encrypt to secure the connection. Let's Encrypt is a Certificate Authority (CA) that provides an easy way to obtain and install free TLS/SSL certificates, thereby enabling encrypted HTTPS on web servers. It simplifies the process by providing a software client, Certbot, that attempts to automate most (if not all) of the required steps. Currently, the entire process of obtaining and installing a certificate is fully automated on both Apache and Nginx.
+The Ingress Nginx Controller works together with Let’s Encrypt to secure the connection.
+Let's Encrypt is a Certificate Authority (CA) that provides an easy way to obtain and install free TLS/SSL certificates, thereby enabling encrypted HTTPS on web servers.
+It simplifies the process by providing a software client, Certbot, that attempts to automate most (if not all) of the required steps.
+Currently, the entire process of obtaining and installing a certificate is fully automated on both Apache and Nginx.
 
 ```
 helm template `
