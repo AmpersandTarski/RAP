@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
         - name: ampersand-rap
-          image: ampersandtarski/ampersand-rap:2025-02-28
+          image: ampersandtarski/ampersand-rap:2025-03-03
           env:
             - name: RAP_HOST_NAME
               value: rap.tarski.nl

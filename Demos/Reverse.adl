@@ -1,0 +1,42 @@
+CONTEXT Reverse
+
+PURPOSE PATTERN Specification
+{+ This specification defines the reverse of a list. +}
+PATTERN Specification
+    CLASSIFY Empty, NonEmpty ISA List
+    RELATION head[NonEmpty*Element] [UNI,TOT]
+    RELATION tail[NonEmpty*List]    [UNI,TOT]
+    RELATION last[NonEmpty*Element] [UNI,TOT]
+    RELATION init[NonEmpty*List]    [UNI,TOT]
+
+    RULE r0 : V[Empty] |- I[Empty]
+    RULE r1 : init;I[Empty] = tail;I[Empty]
+    RULE r2 : init;head |- head
+    RULE r3 : tail;last |- last
+    RULE r4 : head;head~ /\ tail;tail~ |- I[NonEmpty]
+    RULE r5 : head~;(I/\tail;I[Empty];tail~);last |- I[Element]
+    RULE r6 : init;tail = tail;init
+ENDPATTERN
+
+PURPOSE PATTERN Implementation
+{+ This pattern defines the ConsLeft representation of a list. +}
+PATTERN Implementation
+    CLASSIFY EmptyLeft, ConsLeft ISA ListLeft
+    CLASSIFY EmptyRight, ConsRight ISA ListRight
+
+    RELATION sem[ListLeft*List] [UNI,TOT]
+    PURPOSE RELATION sem[ListLeft*List]
+    {+ This relation provides the semantics in the ConsLeft representation of a list. +}
+    RELATION sem[ListRight*List] [UNI,TOT]
+    PURPOSE RELATION sem[ListRight*List]
+    {+ This relation provides the semantics in the ConsLeft representation of a list. +}
+
+    RELATION reverse[ListLeft*ListRight] [UNI,TOT]
+    PURPOSE RELATION reverse[ListLeft*ListRight]
+    {+ This relation provides the semantics of the reverse of a list. +}
+
+    RULE SemReverse : sem~;reverse;sem |- I
+    RULE SemEmpty : I[EmptyLeft];sem[ListLeft*List];sem[ListRight*List]~;I[EmptyRight]
+ENDPATTERN
+
+ENDCONTEXT
